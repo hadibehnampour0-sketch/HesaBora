@@ -33,10 +33,7 @@
 
                 <div>
                     @if ($latestHistoryStatus === 'UNKNOWN')
-                        <form method="POST" action="{{ route('invoices.moadian-check-status', $invoice) }}">
-                            @csrf
-                            <button type="submit" class="btn btn-sm btn-warning">{{ __('Check Status') }}</button>
-                        </form>
+                        @include('tax.moadian.inquiry-widget', ['invoice' => $invoice])
                     @elseif($latestHistoryStatus === 'FAILED')
                         <form method="POST" action="{{ route('invoices.send-moadian', $invoice) }}">
                             @csrf
