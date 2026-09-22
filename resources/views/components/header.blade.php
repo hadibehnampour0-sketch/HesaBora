@@ -2,7 +2,7 @@
     <div class="navbar min-h-14 items-center justify-between gap-3 px-3 min-[1430px]:w-[1430px] min-[1430px]:mx-auto">
         <nav class="flex min-w-0 flex-1 items-center gap-1" aria-label="{{ __('Main navigation') }}">
             <a href="/" class="flex shrink-0 items-center rounded-lg p-1.5 transition-colors hover:bg-base-200" aria-label="{{ config('app.name') }}">
-                <img src="/images/logo.png" alt="Logo" class="h-9 w-9 object-contain">
+                <img src="/images/logo.svg" alt="Logo" class="h-9 w-9 object-contain">
             </a>
             <ul class="app-main-menu menu px-1 lg:menu-horizontal lg:flex-nowrap" data-main-menu>
                 <x-menu />
@@ -17,6 +17,9 @@
                             {{ __('Admin panel') }}
                         </a>
                     </li>
+                @endcan
+                @can('tax-alerts.index')
+                    <x-tax-alert-bell />
                 @endcan
                 <li>
                     <label class="swap swap-rotate btn btn-ghost btn-square btn-sm" aria-label="{{ __('Dark mode') }}">
@@ -76,6 +79,7 @@
                     <details class="app-main-menu-dropdown" data-main-menu-dropdown>
                         <summary class="font-medium text-sm">{{ Auth::user()->name }}</summary>
                         <ul class="app-main-menu-panel z-50 w-52">
+                            <li><a href="{{ route('account.edit') }}">{{ __('Account Settings') }}</a></li>
                             @can('api-tokens.index')
                                 <li><a href="{{ route('api-tokens.index') }}">{{ __('API Tokens') }}</a></li>
                             @endcan
