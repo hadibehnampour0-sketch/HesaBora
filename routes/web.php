@@ -4,7 +4,7 @@ use App\Http\Controllers;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [Controllers\Auth\LoginController::class, 'login']);
+Route::post('/login', [Controllers\Auth\LoginController::class, 'login'])->middleware('throttle:6,1');
 Route::get('/logout', [Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 Route::post('/locale', [Controllers\Auth\LoginController::class, 'locale'])->name('locale');
 Route::post('/impersonation/leave', [Controllers\Management\UserController::class, 'leaveImpersonation'])->middleware('auth')->name('impersonation.leave');
@@ -12,7 +12,7 @@ Route::post('/impersonation/leave', [Controllers\Management\UserController::clas
 Route::get('/forgot-password', [Controllers\Auth\PasswordResetController::class, 'showForgotPasswordForm'])->name('password.request');
 Route::post('/forgot-password', [Controllers\Auth\PasswordResetController::class, 'sendResetLink'])->middleware('throttle:6,1')->name('password.email');
 Route::get('/reset-password/{token}', [Controllers\Auth\PasswordResetController::class, 'showResetPasswordForm'])->name('password.reset');
-Route::post('/reset-password', [Controllers\Auth\PasswordResetController::class, 'resetPassword'])->name('password.update');
+Route::post('/reset-password', [Controllers\Auth\PasswordResetController::class, 'resetPassword'])->middleware('throttle:6,1')->name('password.update');
 
 Route::middleware('ensure-feature-enabled:registration')->group(function () {
     Route::get('/register', [Controllers\Auth\RegisterController::class, 'showRegisterForm'])->name('register');
@@ -27,6 +27,9 @@ Route::middleware(['auth', 'ensure-feature-enabled:email_verification'])->group(
     Route::get('/about', [Controllers\AboutController::class, 'index'])->name('about');
     Route::get('/registered-user/company', [Controllers\CompanyController::class, 'createCompanyForRegisteredUser'])->name('registered-user.company.create');
     Route::post('/registered-user/company', [Controllers\CompanyController::class, 'storeCompanyForRegisteredUser'])->name('registered-user.company.store');
+    Route::get('/account', [Controllers\AccountController::class, 'edit'])->name('account.edit');
+    Route::put('/account', [Controllers\AccountController::class, 'update'])->name('account.update');
+    Route::patch('/account/ui-mode', [Controllers\AccountController::class, 'updateUiMode'])->name('account.update-ui-mode');
 });
 
 Route::middleware(['auth', 'permission:access-super-admin-panel', 'ensure-feature-enabled:email_verification'])->prefix('management')->group(function () {
@@ -152,6 +155,10 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::get('ancillary-costs/search-invoice', [Controllers\AncillaryCostController::class, 'searchInvoice'])->name('ancillary-costs.search-invoice');
         Route::get('ancillary-costs/get-products/{invoice_id}', [Controllers\AncillaryCostController::class, 'getBuyInvoiceProducts'])->name('ancillary-costs.get-products');
         Route::post('ancillary-costs/{ancillary_cost}/change-status/{status}', [Controllers\AncillaryCostController::class, 'changeStatus'])->name('ancillary-costs.change-status');
+        Route::patch('ancillary-costs/{ancillary_cost}/tax-deductible-status', [Controllers\AncillaryCostController::class, 'setTaxDeductibleStatus'])->name('ancillary-costs.set-tax-deductible-status');
+        Route::post('ancillary-costs/{ancillary_cost}/tax-evidences', [Controllers\TaxEvidenceController::class, 'storeForAncillaryCost'])->name('tax-evidences.store');
+        Route::get('tax-evidences/{tax_evidence}/download', [Controllers\TaxEvidenceController::class, 'download'])->name('tax-evidences.download');
+        Route::delete('tax-evidences/{tax_evidence}', [Controllers\TaxEvidenceController::class, 'destroy'])->name('tax-evidences.destroy');
         Route::get('ancillary-costs/', [Controllers\AncillaryCostController::class, 'index'])->name('ancillary-costs.index');
         Route::get('{invoice}/ancillary-costs/create', [Controllers\AncillaryCostController::class, 'create'])->name('invoices.ancillary-costs.create');
         Route::post('{invoice}/ancillary-costs', [Controllers\AncillaryCostController::class, 'store'])->name('invoices.ancillary-costs.store');
@@ -177,6 +184,9 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
     Route::delete('invoices/{invoice}/payments/{payment}', [Controllers\PaymentController::class, 'destroy'])->name('invoices.payments.destroy');
     Route::post('invoices/{invoice}/payments/{payment}/document', [Controllers\PaymentController::class, 'createDocument'])->name('invoices.payments.create-document');
     Route::delete('invoices/{invoice}/payments/{payment}/document', [Controllers\PaymentController::class, 'destroyDocument'])->name('invoices.payments.destroy-document');
+    Route::post('customers/{customer}/credit-payments', [Controllers\PaymentAllocationController::class, 'storeCreditPayment'])->name('customers.credit-payments.store');
+    Route::post('payments/{payment}/allocations', [Controllers\PaymentAllocationController::class, 'allocate'])->name('payments.allocations.store');
+    Route::delete('payments/{payment}/allocations/{allocation}', [Controllers\PaymentAllocationController::class, 'destroy'])->name('payments.allocations.destroy');
     Route::post('invoices/{invoice}/transfer', [Controllers\InvoiceController::class, 'transfer'])->name('invoices.transfer');
     Route::group(['prefix' => 'management'], function () {
         Route::resource('companies', Controllers\CompanyController::class);
@@ -190,6 +200,51 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             ->name('users.impersonate');
         Route::resource('users', Controllers\Management\UserController::class)->except(['show']);
         Route::resource('configs', Controllers\ConfigController::class);
+        Route::get('workflow-governance', [Controllers\WorkflowGovernanceController::class, 'edit'])->name('workflow-governance.edit');
+        Route::put('workflow-governance', [Controllers\WorkflowGovernanceController::class, 'update'])->name('workflow-governance.update');
+        Route::get('tax-readiness', [Controllers\TaxReadinessController::class, 'index'])->name('tax-readiness.index');
+        Route::post('tax-readiness/recalculate', [Controllers\TaxReadinessController::class, 'recalculate'])->name('tax-readiness.recalculate');
+
+        // P12.2 (Tax Alert & Smart Notification Engine).
+        Route::get('tax-alerts', [Controllers\TaxAlertController::class, 'index'])->name('tax-alerts.index');
+        Route::post('tax-alerts/read-all', [Controllers\TaxAlertController::class, 'readAll'])->name('tax-alerts.read-all');
+        Route::post('tax-alerts/{tax_alert}/read', [Controllers\TaxAlertController::class, 'read'])->name('tax-alerts.read');
+
+        // P12.3 (Seasonal Tax & VAT Reporting Engine).
+        Route::get('seasonal-tax', [Controllers\SeasonalTaxController::class, 'index'])->name('seasonal-tax.index');
+        Route::get('seasonal-tax/export-csv', [Controllers\SeasonalTaxController::class, 'exportCsv'])->name('seasonal-tax.export-csv');
+        Route::get('seasonal-tax/export-pdf', [Controllers\SeasonalTaxController::class, 'exportPdf'])->name('seasonal-tax.export-pdf');
+
+        // P12.4 (Field Operations Commission & Route Analytics Engine).
+        Route::get('field-operations-analytics', [Controllers\FieldOperationsAnalyticsController::class, 'index'])->name('field-operations-analytics.index');
+        Route::post('field-operations-analytics/recalculate', [Controllers\FieldOperationsAnalyticsController::class, 'recalculate'])->name('field-operations-analytics.recalculate');
+
+        // P11 (Field Sales & Distribution -- "FieldOperations"). Backend
+        // only for this pass -- JSON endpoints matching the same style
+        // P3's Currency/PaymentTerm controllers established (no dedicated
+        // Blade UI yet, consumed by future API/mobile clients).
+        Route::get('sales-routes', [Controllers\SalesRouteController::class, 'index'])->name('sales-routes.index');
+        Route::post('sales-routes', [Controllers\SalesRouteController::class, 'store'])->name('sales-routes.store');
+        Route::put('sales-routes/{sales_route}', [Controllers\SalesRouteController::class, 'update'])->name('sales-routes.update');
+        Route::delete('sales-routes/{sales_route}', [Controllers\SalesRouteController::class, 'destroy'])->name('sales-routes.destroy');
+        Route::post('sales-routes/{sales_route}/customers', [Controllers\SalesRouteController::class, 'assignCustomer'])->name('sales-routes.assign-customer');
+        Route::delete('sales-routes/{sales_route}/customers/{customer}', [Controllers\SalesRouteController::class, 'removeCustomer'])->name('sales-routes.remove-customer');
+
+        Route::get('visit-plans', [Controllers\VisitPlanController::class, 'index'])->name('visit-plans.index');
+        Route::post('visit-plans', [Controllers\VisitPlanController::class, 'store'])->name('visit-plans.store');
+        Route::patch('visit-plans/{visit_plan}/status', [Controllers\VisitPlanController::class, 'updateStatus'])->name('visit-plans.update-status');
+        Route::delete('visit-plans/{visit_plan}', [Controllers\VisitPlanController::class, 'destroy'])->name('visit-plans.destroy');
+
+        Route::get('promotions', [Controllers\PromotionController::class, 'index'])->name('promotions.index');
+        Route::post('promotions', [Controllers\PromotionController::class, 'store'])->name('promotions.store');
+        Route::put('promotions/{promotion}', [Controllers\PromotionController::class, 'update'])->name('promotions.update');
+        Route::delete('promotions/{promotion}', [Controllers\PromotionController::class, 'destroy'])->name('promotions.destroy');
+        Route::post('promotions/evaluate', [Controllers\PromotionController::class, 'evaluate'])->name('promotions.evaluate');
+
+        Route::get('daily-settlements', [Controllers\DailySettlementController::class, 'index'])->name('daily-settlements.index');
+        Route::post('daily-settlements', [Controllers\DailySettlementController::class, 'store'])->name('daily-settlements.store');
+        Route::post('daily-settlements/{daily_settlement}/submit', [Controllers\DailySettlementController::class, 'submit'])->name('daily-settlements.submit');
+        Route::post('daily-settlements/{daily_settlement}/approve', [Controllers\DailySettlementController::class, 'approve'])->name('daily-settlements.approve');
     });
 
     Route::group(['prefix' => 'hr', 'as' => 'hr.'], function () {
@@ -246,6 +301,88 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
     Route::post('monthly-budgets/rollover', [Controllers\MonthlyBudgetController::class, 'rollover'])->name('budgets.rollover');
     Route::delete('monthly-budgets/{monthlyBudget}', [Controllers\MonthlyBudgetController::class, 'destroy'])->name('budgets.destroy');
 
+    Route::group(['prefix' => 'sync-conflicts', 'as' => 'sync-conflicts.'], function () {
+        Route::get('/', [Controllers\SyncConflictController::class, 'index'])->name('index');
+        Route::post('{conflict}/resolve', [Controllers\SyncConflictController::class, 'resolve'])->name('resolve');
+    });
+    Route::group(['prefix' => 'devices', 'as' => 'devices.'], function () {
+        Route::get('/', [Controllers\DeviceController::class, 'index'])->name('index');
+        Route::post('activation-codes', [Controllers\DeviceController::class, 'storeActivationCode'])->name('activation-codes.store');
+        Route::post('{installation}/revoke', [Controllers\DeviceController::class, 'revoke'])->name('revoke');
+    });
+    Route::group(['prefix' => 'settlements', 'as' => 'settlements.'], function () {
+        Route::post('cheques/{cheque}', [Controllers\SettlementController::class, 'storeForCheque'])->name('store-for-cheque');
+        Route::get('{obligation}', [Controllers\SettlementController::class, 'show'])->name('show');
+        Route::post('{obligation}/installments', [Controllers\SettlementController::class, 'storeInstallments'])->name('installments.store');
+        Route::post('installments/{installment}/payments', [Controllers\SettlementController::class, 'recordPayment'])->name('installments.record-payment');
+    });
+    Route::group(['prefix' => 'bank-reconciliation', 'as' => 'bank-reconciliation.'], function () {
+        Route::get('{bankAccount}', [Controllers\BankReconciliationController::class, 'index'])->name('index');
+        Route::post('{bankAccount}/import', [Controllers\BankReconciliationController::class, 'import'])->name('import');
+        Route::post('lines/{line}/match', [Controllers\BankReconciliationController::class, 'match'])->name('match');
+        Route::post('lines/{line}/unmatch', [Controllers\BankReconciliationController::class, 'unmatch'])->name('unmatch');
+    });
+    Route::group(['prefix' => 'ageing', 'as' => 'ageing.'], function () {
+        Route::get('receivables', [Controllers\AgeingController::class, 'receivables'])->name('receivables');
+        Route::get('payables', [Controllers\AgeingController::class, 'payables'])->name('payables');
+        Route::get('statement/{customer}/{type}', [Controllers\AgeingController::class, 'statement'])->name('statement');
+    });
+    Route::group(['prefix' => 'analytic-dimensions', 'as' => 'analytic-dimensions.'], function () {
+        Route::get('/', [Controllers\AnalyticDimensionController::class, 'index'])->name('index');
+        Route::post('/', [Controllers\AnalyticDimensionController::class, 'store'])->name('store');
+        Route::put('{analyticDimension}', [Controllers\AnalyticDimensionController::class, 'update'])->name('update');
+        Route::delete('{analyticDimension}', [Controllers\AnalyticDimensionController::class, 'destroy'])->name('destroy');
+        Route::get('{analyticDimension}/report', [Controllers\AnalyticDimensionController::class, 'report'])->name('report');
+        Route::put('transactions/{transaction}', [Controllers\AnalyticDimensionController::class, 'syncOnTransaction'])->name('transactions.sync');
+    });
+    Route::group(['prefix' => 'payment-terms', 'as' => 'payment-terms.'], function () {
+        Route::get('/', [Controllers\PaymentTermController::class, 'index'])->name('index');
+        Route::post('/', [Controllers\PaymentTermController::class, 'store'])->name('store');
+        Route::put('{paymentTerm}', [Controllers\PaymentTermController::class, 'update'])->name('update');
+        Route::post('invoices/{invoice}/apply', [Controllers\PaymentTermController::class, 'applyToInvoice'])->name('apply');
+    });
+    Route::group(['prefix' => 'recurring-invoice-templates', 'as' => 'recurring-invoice-templates.'], function () {
+        Route::get('/', [Controllers\RecurringInvoiceTemplateController::class, 'index'])->name('index');
+        Route::post('/', [Controllers\RecurringInvoiceTemplateController::class, 'store'])->name('store');
+        Route::post('{recurringInvoiceTemplate}/generate', [Controllers\RecurringInvoiceTemplateController::class, 'generateNow'])->name('generate');
+    });
+    Route::group(['prefix' => 'currencies', 'as' => 'currencies.'], function () {
+        Route::get('/', [Controllers\CurrencyController::class, 'index'])->name('index');
+        Route::post('/', [Controllers\CurrencyController::class, 'store'])->name('store');
+        Route::post('{currency}/rates', [Controllers\CurrencyController::class, 'storeRate'])->name('rates.store');
+    });
+    Route::group(['prefix' => 'fixed-assets', 'as' => 'fixed-assets.'], function () {
+        Route::get('/', [Controllers\FixedAssetController::class, 'index'])->name('index');
+        Route::post('/', [Controllers\FixedAssetController::class, 'store'])->name('store');
+        Route::post('{fixedAsset}/depreciation', [Controllers\FixedAssetController::class, 'postDepreciation'])->name('depreciation.store');
+        Route::post('{fixedAsset}/dispose', [Controllers\FixedAssetController::class, 'dispose'])->name('dispose');
+    });
+    Route::group(['prefix' => 'stock-reservations', 'as' => 'stock-reservations.'], function () {
+        Route::post('/', [Controllers\StockReservationController::class, 'store'])->name('store');
+        Route::post('{stockReservation}/release', [Controllers\StockReservationController::class, 'release'])->name('release');
+        Route::get('availability', [Controllers\StockReservationController::class, 'availability'])->name('availability');
+    });
+    Route::group(['prefix' => 'invoices', 'as' => 'invoices.'], function () {
+        Route::post('{invoice}/goods-receipt', [Controllers\InvoiceFulfillmentController::class, 'storeReceipt'])->name('goods-receipt.store');
+        Route::post('{invoice}/delivery-note', [Controllers\InvoiceFulfillmentController::class, 'storeDelivery'])->name('delivery-note.store');
+    });
+    Route::group(['prefix' => 'product-lots', 'as' => 'product-lots.'], function () {
+        Route::post('/', [Controllers\ProductTrackingController::class, 'storeLot'])->name('store');
+    });
+    Route::group(['prefix' => 'product-serial-numbers', 'as' => 'product-serial-numbers.'], function () {
+        Route::post('/', [Controllers\ProductTrackingController::class, 'storeSerial'])->name('store');
+        Route::post('{productSerialNumber}/sell', [Controllers\ProductTrackingController::class, 'markSerialSold'])->name('sell');
+    });
+    Route::group(['prefix' => 'inventory-reports', 'as' => 'inventory-reports.'], function () {
+        Route::get('valuation', [Controllers\InventoryReportController::class, 'valuation'])->name('valuation');
+        Route::get('slow-moving', [Controllers\InventoryReportController::class, 'slowMoving'])->name('slow-moving');
+    });
+    Route::group(['prefix' => 'dashboards', 'as' => 'dashboards.'], function () {
+        Route::get('cash-flow', [Controllers\ReportingDashboardController::class, 'cashFlow'])->name('cash-flow');
+        Route::get('cash-flow/drill-down', [Controllers\ReportingDashboardController::class, 'cashFlowDrillDown'])->name('cash-flow.drill-down');
+        Route::get('cheque-risk', [Controllers\ReportingDashboardController::class, 'chequeRisk'])->name('cheque-risk');
+        Route::get('profitability-by-dimension', [Controllers\ReportingDashboardController::class, 'profitabilityByDimension'])->name('profitability-by-dimension');
+    });
     Route::group(['prefix' => 'reports', 'as' => 'reports.'], function () {
         Route::get('ledger', [Controllers\ReportsController::class, 'ledger'])->name('ledger');
         Route::get('journal', [Controllers\ReportsController::class, 'journal'])->name('journal');

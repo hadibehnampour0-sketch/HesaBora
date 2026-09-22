@@ -88,6 +88,34 @@ class RolesAndPermissionsSeeder extends Seeder
                 'closing-wizard', 'closing-wizard.step1', 'closing-wizard.step3',
             ],
 
+            // P6 (API v1 Platform): outbound webhook registrations.
+            'webhooks' => self::CRUD_NO_SHOW,
+
+            // P7 (Role & Workflow Governance): the self-approval-prevention
+            // toggle and the invoice approval-chain threshold.
+            'workflow-governance' => ['edit', 'update'],
+
+            // P9.6 (Evidence Vault).
+            'tax-evidences' => ['store', 'download', 'destroy'],
+
+            // P9.7 (Tax Readiness Score).
+            'tax-readiness' => ['index', 'recalculate'],
+
+            // P12.2 (Tax Alert & Smart Notification Engine).
+            'tax-alerts' => ['index', 'read', 'read-all'],
+
+            // P12.3 (Seasonal Tax & VAT Reporting Engine).
+            'seasonal-tax' => ['index', 'export-csv', 'export-pdf'],
+
+            // P12.4 (Field Operations Commission & Route Analytics Engine).
+            'field-operations-analytics' => ['index', 'recalculate'],
+
+            // P11 (Field Sales & Distribution -- "FieldOperations").
+            'sales-routes' => [...self::CRUD_NO_SHOW, 'assign-customer', 'remove-customer'],
+            'visit-plans' => ['index', 'store', 'update-status', 'destroy'],
+            'promotions' => [...self::CRUD_NO_SHOW, 'evaluate'],
+            'daily-settlements' => ['index', 'store', 'submit', 'approve'],
+
             // Backups
             'backups' => ['create', 'export', 'import', 'upload', 'document-files-size'],
 
@@ -100,7 +128,7 @@ class RolesAndPermissionsSeeder extends Seeder
             // Invoices and their statuses
             'invoices' => [
                 ...self::CRUD,
-                'dashboard', 'print', 'export', 'change-status', 'search', 'approve', 'get-items',
+                'dashboard', 'print', 'export', 'change-status', 'search', 'approve', 'final-approve', 'get-items',
                 'moadian-form', 'moadian-histories.index', 'moadian-histories.show', 'send-moadian', 'moadian-check-status',
                 'search-customer', 'search-product-service',
                 'inactive', 'inactive.approve',
@@ -109,11 +137,15 @@ class RolesAndPermissionsSeeder extends Seeder
             ],
 
             // Ancillary costs
-            'ancillary-costs' => ['index', 'search-customer', 'search-invoice', 'get-products', 'approve', 'change-status'],
+            'ancillary-costs' => ['index', 'search-customer', 'search-invoice', 'get-products', 'approve', 'change-status', 'set-tax-deductible-status'],
             'invoices.ancillary-costs' => ['create', 'store', 'show', 'edit', 'update', 'destroy'],
 
             // Invoice payments
             'invoices.payments' => ['store', 'store-cheque', 'destroy', 'create-document', 'destroy-document'],
+
+            // Payment allocation (advance/credit payments allocated across invoices)
+            'customers.credit-payments' => ['store'],
+            'payments.allocations' => ['store', 'destroy'],
 
             // Users / Roles / Permissions / Configs
             'users' => [...self::CRUD, 'create-employee', 'impersonate'],
@@ -164,6 +196,23 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // Reports
             'reports' => ['ledger', 'journal', 'sub-ledger', 'trial-balance', 'trial-balance.print', 'trial-balance.export-csv', 'documents', 'result', 'cost-income', 'company-overview', 'company-overview.cash-banks', 'company-overview.bank-account', 'company-overview.seed-demo-data', 'company-overview.refresh-database'],
+
+            // AR/AP ageing
+            'ageing' => ['receivables', 'payables', 'statement'],
+
+            // Bank reconciliation
+            'bank-reconciliation' => ['index', 'import', 'match', 'unmatch'],
+
+            // CheckSettlement (D-070)
+            'settlements' => ['store-for-cheque', 'show'],
+            'settlements.installments' => ['store', 'record-payment'],
+
+            // Device pairing / Offline sync foundation (D-071)
+            'devices' => ['index', 'revoke'],
+            'devices.activation-codes' => ['store'],
+
+            // Conflict Resolution Workflow (D-072)
+            'sync-conflicts' => ['index', 'resolve'],
 
             // API
             'api-tokens' => ['index', 'create', 'store', 'destroy'],
@@ -264,6 +313,7 @@ class RolesAndPermissionsSeeder extends Seeder
                     ->orWhereIn('name', ['home', 'home.summary']))
                 ->whereNotIn('name', [
                     'invoices.approve',
+                    'invoices.final-approve',
                     'invoices.change-status',
                     'invoices.conflicts',
                     'invoices.conflicts.more',
@@ -273,6 +323,7 @@ class RolesAndPermissionsSeeder extends Seeder
                     'invoices.transfer',
                     'ancillary-costs.approve',
                     'ancillary-costs.change-status',
+                    'ancillary-costs.set-tax-deductible-status',
                     'invoices.payments.store',
                     'invoices.payments.store-cheque',
                     'invoices.payments.destroy',
@@ -304,36 +355,6 @@ class RolesAndPermissionsSeeder extends Seeder
                 'org_chart' => 'مدیرعامل',
                 'org_unit' => 'مدیریت',
             ],
-            'accountant' => [
-                'roles' => [__('Accountant'), __('Employee')],
-                'org_chart' => 'حسابدار ارشد',
-                'org_unit' => 'حسابداری',
-            ],
-            'seller' => [
-                'roles' => [__('Seller'), __('Employee')],
-                'org_chart' => 'کارشناس فروش',
-                'org_unit' => 'فروش و بازاریابی',
-            ],
-            'Warehousekeeper' => [
-                'roles' => [__('Warehousekeeper'), __('Employee')],
-                'org_chart' => 'سرپرست انبار',
-                'org_unit' => 'انبار و لجستیک',
-            ],
-            'seller-Warehousekeeper' => [
-                'roles' => [__('Seller'), __('Warehousekeeper'), __('Employee')],
-                'org_chart' => 'کارشناس فروش',
-                'org_unit' => 'فروش و بازاریابی',
-            ],
-            'accountant-seller-Warehousekeeper' => [
-                'roles' => [__('Accountant'), __('Seller'), __('Warehousekeeper'), __('Employee')],
-                'org_chart' => 'مدیر مالی',
-                'org_unit' => 'امور مالی',
-            ],
-            'employee' => [
-                'roles' => [__('Employee')],
-                'org_chart' => 'کارشناس منابع انسانی',
-                'org_unit' => 'منابع انسانی',
-            ],
         ];
 
         $workSite = WorkSite::firstOrCreate(
@@ -363,15 +384,30 @@ class RolesAndPermissionsSeeder extends Seeder
         $orgUnits = OrganizationUnit::withoutGlobalScopes()->where('company_id', $companyId)->get()->keyBy('name');
 
         foreach ($users as $name => $config) {
-            $email = $name === 'super-admin' ? 'admin@example.com' : $name.'@example.com';
+            // SECURITY: intentionally simple/memorable per owner request
+            // (2026-09-14) so every fresh install has an easy first login.
+            // This is a known, public default baked into open-source code,
+            // not a secret. See CLOUD_AUTONOMOUS_EXECUTION_LOG.md (P0-02) for
+            // the open follow-up to force a password change on first login
+            // before any public release, since "1234" must never remain the
+            // active password on a real deployment.
+            $email = 'admin@dakhl.local';
+            $username = 'admin';
+            $password = '1234';
 
             $user = User::firstOrCreate(
                 ['email' => $email],
                 [
                     'name' => __($name),
-                    'password' => bcrypt('password'),
+                    'username' => $username,
+                    'password' => bcrypt($password),
                 ]
             );
+
+            // Backfill username for accounts created before username support.
+            if ($user->username === null) {
+                $user->forceFill(['username' => $username])->save();
+            }
 
             if (! $user->hasVerifiedEmail()) {
                 $user->markEmailAsVerified();
