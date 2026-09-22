@@ -227,6 +227,27 @@
             </div>
         @endif
 
+        {{-- Settlement: deliberately independent of the cheque lifecycle above (D-070) --}}
+        @if ($cheque->status === \App\Enums\ChequeType::BOUNCED)
+            <div class="card border border-base-200 bg-base-100 shadow-sm">
+                <div class="card-body p-5 sm:p-6">
+                    <h2 class="mb-2 font-bold text-base-content">{{ __('Settlement') }}</h2>
+                    @if ($settlementObligation)
+                        <a href="{{ route('settlements.show', $settlementObligation) }}" class="btn btn-outline btn-sm">
+                            {{ __('View settlement') }}
+                        </a>
+                    @else
+                        @can('settlements.store-for-cheque')
+                            <form method="POST" action="{{ route('settlements.store-for-cheque', $cheque) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-outline btn-sm">{{ __('Create settlement') }}</button>
+                            </form>
+                        @endcan
+                    @endif
+                </div>
+            </div>
+        @endif
+
         {{-- History --}}
         <div class="card border border-base-200 bg-base-100 shadow-sm">
             <div class="card-body p-5 sm:p-6">

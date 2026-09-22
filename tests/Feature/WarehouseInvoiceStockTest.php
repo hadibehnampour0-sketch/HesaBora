@@ -54,7 +54,7 @@ class WarehouseInvoiceStockTest extends TestCase
         config(['active-company-id' => $this->company->id]);
 
         $this->user = User::factory()->create();
-        $this->company->users()->attach($this->user);
+        $this->company->users()->syncWithoutDetaching($this->user);
         $this->actingAs($this->user);
 
         $this->importSubjects($this->company->id);
@@ -92,6 +92,19 @@ class WarehouseInvoiceStockTest extends TestCase
 
         $this->unapprove($buy);
         $this->assertStock($this->mainWarehouse, 0);
+    }
+
+    public function test_the_same_product_can_be_sold_again_in_a_separate_later_invoice(): void
+    {
+        $this->createInvoice(InvoiceType::BUY, 10, $this->mainWarehouse, true);
+
+        $firstSell = $this->createInvoice(InvoiceType::SELL, 2, $this->mainWarehouse, false);
+        $this->approve($firstSell);
+        $this->assertStock($this->mainWarehouse, 8);
+
+        $secondSell = $this->createInvoice(InvoiceType::SELL, 2, $this->mainWarehouse, false);
+        $this->approve($secondSell);
+        $this->assertStock($this->mainWarehouse, 6);
     }
 
     public function test_return_invoices_apply_and_reverse_stock_in_the_selected_warehouse(): void

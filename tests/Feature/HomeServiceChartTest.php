@@ -41,7 +41,7 @@ class HomeServiceChartTest extends TestCase
         $company = Company::factory()->create(['fiscal_year' => 1405]);
         $this->companyId = $company->id;
         $this->user = User::factory()->create();
-        $company->users()->attach($this->user);
+        $company->users()->syncWithoutDetaching($this->user);
 
         $this->withCookies(['active-company-id' => (string) $this->companyId]);
         $_COOKIE['active-company-id'] = (string) $this->companyId;
@@ -560,7 +560,7 @@ class HomeServiceChartTest extends TestCase
     private function signInWith(array $permissions): User
     {
         $user = User::factory()->create();
-        Company::find($this->companyId)->users()->attach($user);
+        Company::find($this->companyId)->users()->syncWithoutDetaching($user);
 
         $permissionModels = collect(['home', ...$permissions])->unique()->map(fn (string $name) => Permission::firstOrCreate(['name' => $name]));
 

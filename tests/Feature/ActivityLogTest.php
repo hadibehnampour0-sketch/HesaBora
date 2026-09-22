@@ -28,6 +28,14 @@ class ActivityLogTest extends TestCase
 {
     use RefreshDatabase;
 
+    // Every test's `givePermissionTo(Permission::firstOrCreate(['name' =>
+    // 'access-super-admin-panel']))` setup call now itself creates one
+    // 'security' source `permission_attached` activity row (Workstream Q
+    // closure, AppServiceProvider::logPermissionEvent()) -- counts/totals
+    // below are +1 versus what this file asserted before that listener
+    // existed, to account for that row alongside each test's own manually
+    // logged 'model'/'request' activity.
+
     public function test_activity_log_page_is_limited_to_super_admin_panel_users(): void
     {
         $regularUser = User::factory()->create();
@@ -511,7 +519,7 @@ class ActivityLogTest extends TestCase
             ->assertViewHas('activities', function ($activities): bool {
                 $row = $activities->getCollection()->first();
 
-                return $activities->count() === 1
+                return $activities->count() === 2
                     && $row['requestMethod'] === 'PUT'
                     && $row['changes']->count() === 1
                     && $row['requestInput'] !== null;
@@ -556,7 +564,7 @@ class ActivityLogTest extends TestCase
             ->assertViewHas('activities', function ($activities) use ($company): bool {
                 $row = $activities->getCollection()->first();
 
-                return $activities->count() === 1
+                return $activities->count() === 2
                     && $row['actionLabel'] === __('Created')
                     && $row['requestMethod'] === 'POST'
                     && $row['route'] === 'companies.store'
@@ -643,7 +651,7 @@ class ActivityLogTest extends TestCase
             ->assertViewHas('activities', function ($activities) use ($firstCompany, $secondCompany): bool {
                 $row = $activities->getCollection()->first();
 
-                return $activities->count() === 1
+                return $activities->count() === 2
                     && $row['requestMethod'] === 'POST'
                     && $row['modelContextLabels']->contains(__('Company').' #'.$firstCompany->id)
                     && $row['modelContextLabels']->contains(__('Company').' #'.$secondCompany->id)
@@ -690,7 +698,7 @@ class ActivityLogTest extends TestCase
             ->assertViewHas('activities', function ($activities) use ($firstCompany, $secondCompany): bool {
                 $changes = $activities->getCollection()->first()['changes'];
 
-                return $activities->count() === 1
+                return $activities->count() === 2
                     && $changes->count() === 2
                     && $changes->pluck('model')->contains(__('Company').' #'.$firstCompany->id)
                     && $changes->pluck('model')->contains(__('Company').' #'.$secondCompany->id);
@@ -738,8 +746,8 @@ class ActivityLogTest extends TestCase
                 $row = $activities->getCollection()->last();
 
                 return $activities->count() === 25
-                    && $activities->total() === 25
-                    && $activities->lastPage() === 1
+                    && $activities->total() === 26
+                    && $activities->lastPage() === 2
                     && $row['route'] === 'companies.store'
                     && $row['modelContextLabels']->contains(__('Company').' #'.$firstCompany->id)
                     && $row['modelContextLabels']->contains(__('Company').' #'.$secondCompany->id);
@@ -767,7 +775,7 @@ class ActivityLogTest extends TestCase
         $this->actingAs($superAdmin)
             ->get(route('management.activity-logs.index'))
             ->assertOk()
-            ->assertViewHas('activities', fn ($activities): bool => $activities->count() === 2)
+            ->assertViewHas('activities', fn ($activities): bool => $activities->count() === 3)
             ->assertSee('companies.update')
             ->assertSee('users.update');
     }
@@ -851,7 +859,7 @@ class ActivityLogTest extends TestCase
             ->assertDontSee(__('Recent activity'))
             ->assertSee(route('management.activity-logs.index'), false)
             ->assertViewHas('activityMetrics', fn (array $metrics): bool => $metrics === [
-                'total' => 2,
+                'total' => 3,
             ])
             ->assertViewMissing('recentActivities');
     }

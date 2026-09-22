@@ -63,7 +63,7 @@ class BackupControllerTest extends TestCase
         $this->company = Company::factory()->create();
 
         $this->user = User::factory()->create();
-        $this->company->users()->attach($this->user);
+        $this->company->users()->syncWithoutDetaching($this->user);
 
         $this->user->givePermissionTo(
             Permission::firstOrCreate(['name' => 'backups.create']),
@@ -1491,6 +1491,13 @@ class BackupControllerTest extends TestCase
 
     public function test_payroll_status_history_payroll_ids_are_remapped_on_import(): void
     {
+        // Occupy id=1 first so the imported payroll is guaranteed to land on
+        // a different id, making the "was it actually remapped" assertion
+        // below meaningful regardless of auto-increment start value (a fresh
+        // SQLite test database and a long-lived MySQL one do not necessarily
+        // agree on what the very first inserted row's id would be).
+        Payroll::factory()->create();
+
         $payload = $this->makeMinimalPayrollPayload([
             'payroll_status_histories' => [
                 [

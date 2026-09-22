@@ -112,11 +112,11 @@ class InvoiceController extends Controller
         );
 
         $builder->when($request->filled('start_date'),
-            fn ($q) => $q->where('date', '>=', convertToGregorian($request->start_date))
+            fn ($q) => $q->where('date', '>=', str_replace('/', '-', convertToGregorian($request->start_date)))
         );
 
         $builder->when($request->filled('end_date'),
-            fn ($q) => $q->where('date', '<=', convertToGregorian($request->end_date))
+            fn ($q) => $q->where('date', '<=', str_replace('/', '-', convertToGregorian($request->end_date)))
         );
 
         $builder->when($request->filled('text'),
@@ -273,8 +273,8 @@ class InvoiceController extends Controller
 
         $approved = false;
         if ($request->has('approve')) {
+            abort_unless(auth()->user()->can('invoices.approve'), 403);
             $approved = true;
-            auth()->user()->can('invoices.approve');
         }
 
         $result = $this->invoiceService->createInvoice(auth()->user(), $invoiceData, $items, $approved);
@@ -442,8 +442,8 @@ class InvoiceController extends Controller
 
         $approved = false;
         if ($request->has('approve')) {
+            abort_unless(auth()->user()->can('invoices.approve'), 403);
             $approved = true;
-            auth()->user()->can('invoices.approve');
         }
 
         $result = $this->invoiceService->updateInvoice($invoice->id, $invoiceData, $items, $approved);
@@ -672,6 +672,14 @@ class InvoiceController extends Controller
 
     public function changeStatus(Invoice $invoice, string $status)
     {
+        // P7.1 (Approval Chains): the SECOND step of a two-step chain
+        // (invoice currently PENDING_FINAL_APPROVAL, requesting 'approved')
+        // requires the separate `invoices.final-approve` permission instead
+        // of the ordinary `invoices.approve` -- every other transition,
+        // including the FIRST approval step of a chain, is unchanged.
+        $requiresFinalApprove = $status === 'approved' && $invoice->status->isPendingFinalApproval();
+        abort_unless(auth()->user()->can($requiresFinalApprove ? 'invoices.final-approve' : 'invoices.approve'), 403);
+
         $sellAllowedStatuses = ['approved', 'unapproved', 'ready_to_approve', 'rejected'];
         $defaultAllowedStatuses = ['approved', 'unapproved'];
         $allowedStatuses = $invoice->invoice_type === InvoiceType::SELL ? $sellAllowedStatuses : $defaultAllowedStatuses;

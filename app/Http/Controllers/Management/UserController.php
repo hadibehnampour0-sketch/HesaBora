@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Lab404\Impersonate\Services\ImpersonateManager;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class UserController extends Controller
 {
@@ -96,11 +97,13 @@ class UserController extends Controller
             $user = new User;
             $user->name = $request->input('name');
             $user->email = $request->input('email');
-            $user->password = bcrypt($request->input('password'));
+            // Normalize Farsi digits so an all-digit password set on a
+            // Persian keyboard still matches on login.
+            $user->password = bcrypt(toEnglish($request->input('password')));
             $user->save();
 
-            $user->syncRoles($role);
-            $user->companies()->sync($company);
+            $this->logCompanyMembershipChange($user, $user->companies()->sync($company));
+            $this->syncCompanyScopedRoles($user, $role, $company);
         });
 
         try {
@@ -186,7 +189,9 @@ class UserController extends Controller
             $company = array_values($request->company);
 
             if ($request->input('password')) {
-                $user->password = bcrypt($request->input('password'));
+                // Normalize Farsi digits so an all-digit password set on a
+                // Persian keyboard still matches on login.
+                $user->password = bcrypt(toEnglish($request->input('password')));
             }
 
             $user->save();
@@ -195,8 +200,8 @@ class UserController extends Controller
                 $employee->update(['user_id' => $user->id]);
             }
 
-            $user->syncRoles($role);
-            $user->companies()->sync($company);
+            $this->logCompanyMembershipChange($user, $user->companies()->sync($company));
+            $this->syncCompanyScopedRoles($user, $role, $company);
         });
 
         return redirect()->route('users.index')->with('success', __('User updated successfully!'));
@@ -294,9 +299,108 @@ class UserController extends Controller
 
     private function assignableRoles()
     {
+        $activeCompanyId = getActiveCompany();
+
         return Role::query()
-            ->when(! auth()->user()->hasRole('Super-Admin'), fn ($query) => $query->where('name', '!=', 'Super-Admin'))
+            ->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $activeCompanyId))
+            ->when(! auth()->user()->isSuperAdmin(), fn ($query) => $query->where('name', '!=', 'Super-Admin'))
             ->get();
+    }
+
+    /**
+     * Organization Authorization phase (r12): role assignments are
+     * company-scoped via Spatie's teams feature (`company_id` as the team
+     * key). The form still lets an admin pick one role set applied across
+     * every selected company (faithfully preserving the pre-existing UX),
+     * but storage now creates one scoped assignment row per company instead
+     * of a single global row. Super-Admin is the sole exception: it is a
+     * system-wide oversight grant (see User::isSuperAdmin()) and is always
+     * assigned/removed globally, using the reserved sentinel company id 0
+     * (never per company; see the r12 migration's docblock for why 0, not
+     * NULL, represents "no company" in this pivot table).
+     *
+     * A company removed from the selection loses every company-scoped role
+     * assignment for that company -- role grants must not outlive the
+     * membership that justified them.
+     *
+     * @param  array<int, string>  $roleNames
+     * @param  array<int, int>  $companyIds
+     */
+    /**
+     * Workstream Q (audit/security evidence): `company_user` is a plain
+     * custom belongsToMany pivot -- unlike model_has_roles, Spatie fires no
+     * event for it, and sync()/attach()/detach() never trigger an Eloquent
+     * model event either. This is the only place membership changes become
+     * visible in the activity log.
+     *
+     * @param  array{attached: array<int,int>, detached: array<int,int>, updated: array<int,int>}  $syncResult
+     */
+    private function logCompanyMembershipChange(User $user, array $syncResult): void
+    {
+        if (! config('activitylog.enabled')) {
+            return;
+        }
+
+        if (empty($syncResult['attached']) && empty($syncResult['detached'])) {
+            return;
+        }
+
+        activity('security')
+            ->causedBy(auth()->user())
+            ->performedOn($user)
+            ->withProperties([
+                'companies_attached' => array_values($syncResult['attached']),
+                'companies_detached' => array_values($syncResult['detached']),
+            ])
+            ->log('company_membership_changed');
+    }
+
+    private function syncCompanyScopedRoles(User $user, array $roleNames, array $companyIds): void
+    {
+        $registrar = app(PermissionRegistrar::class);
+        $globalSentinelCompanyId = 0;
+
+        try {
+            $registrar->setPermissionsTeamId($globalSentinelCompanyId);
+            $user->unsetRelation('roles');
+
+            if (in_array('Super-Admin', $roleNames, true)) {
+                $user->assignRole('Super-Admin');
+            } else {
+                $user->removeRole('Super-Admin');
+            }
+
+            $nonGlobalRoleNames = array_values(array_diff($roleNames, ['Super-Admin']));
+
+            foreach ($companyIds as $companyId) {
+                $registrar->setPermissionsTeamId($companyId);
+                $user->unsetRelation('roles');
+
+                // A role selected in the form may be a custom role scoped
+                // to a different company than this one (e.g. a company-A
+                // custom role while company B is also being assigned); it
+                // simply does not apply there rather than raising.
+                $applicableRoleNames = Role::query()
+                    ->whereIn('name', $nonGlobalRoleNames)
+                    ->where(fn ($query) => $query->whereNull('company_id')->orWhere('company_id', $companyId))
+                    ->pluck('name')
+                    ->all();
+
+                $user->syncRoles($applicableRoleNames);
+            }
+
+            DB::table(config('permission.table_names.model_has_roles'))
+                ->where('model_id', $user->id)
+                ->where('model_type', User::class)
+                ->where('company_id', '!=', $globalSentinelCompanyId)
+                ->whereNotIn('company_id', $companyIds)
+                ->delete();
+        } finally {
+            // Clear, never "restore a captured value" -- see
+            // CompanyPermissionsTeamResolver's docblock for why.
+            $registrar->setPermissionsTeamId(null);
+            $user->unsetRelation('roles');
+        }
     }
 
     /**
@@ -359,7 +463,7 @@ class UserController extends Controller
 
     private function ensureUserRoleManagementAccess(User $user): void
     {
-        abort_if($user->hasRole('Super-Admin') && ! auth()->user()->hasRole('Super-Admin'), 403);
+        abort_if($user->isSuperAdmin() && ! auth()->user()->isSuperAdmin(), 403);
     }
 
     private function splitName(string $name): array

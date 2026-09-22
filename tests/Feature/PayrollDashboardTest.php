@@ -29,7 +29,7 @@ class PayrollDashboardTest extends TestCase
         $this->companyId = $company->id;
 
         $this->user = User::factory()->create();
-        $company->users()->attach($this->user);
+        $company->users()->syncWithoutDetaching($this->user);
 
         $this->employee = Employee::factory()->create([
             'company_id' => $this->companyId,

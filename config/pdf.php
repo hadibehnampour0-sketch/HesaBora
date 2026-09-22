@@ -21,7 +21,7 @@ return [
     'margin_header' => 0,
     'margin_footer' => 0,
     'orientation' => 'L',
-    'title' => 'FreeAmir PDF Document',
+    'title' => 'Dakhl PDF Document',
     'subject' => '',
     'author' => '',
     'watermark' => '',

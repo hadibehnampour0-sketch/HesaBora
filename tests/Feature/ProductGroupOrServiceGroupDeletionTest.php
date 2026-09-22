@@ -41,7 +41,7 @@ class ProductGroupOrServiceGroupDeletionTest extends TestCase
         $this->importConfigs($this->companyId);
 
         $this->user = User::factory()->create();
-        $company->users()->attach($this->user);
+        $company->users()->syncWithoutDetaching($this->user);
 
         $this->user->givePermissionTo([
             Permission::firstOrCreate(['name' => 'product-groups.index']),

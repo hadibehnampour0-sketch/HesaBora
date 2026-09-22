@@ -1,12 +1,12 @@
-# Amir: Free Open-Source Accounting & ERP for Iran
+# Dakhl: Free Open-Source Accounting & ERP for Iran
 
 **[نسخه فارسی](README.md)**
 
-**Project status:** Amir is under active development and is not yet recommended for production use without independent review and testing. Before using it in production, validate the workflows you need with test data.
+**Project status:** Dakhl is under active development and is not yet recommended for production use without independent review and testing. Before using it in production, validate the workflows you need with test data.
 
 ## Introduction
 
-**Amir** is an open-source accounting and ERP platform for Iranian businesses. The project focuses on double-entry bookkeeping, sales and purchase invoices, inventory cost flows, fiscal-year operations, payroll, and compliance with Iranian tax requirements including the Moadian system.
+**Dakhl** is an open-source accounting and ERP platform for Iranian businesses. The project focuses on double-entry bookkeeping, sales and purchase invoices, inventory cost flows, fiscal-year operations, payroll, and compliance with Iranian tax requirements including the Moadian system.
 
 ---
 
@@ -127,23 +127,23 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for bug report
 
 ## FAQ
 
-**Is Amir really free?**
-Yes. Amir is released under the GPL-3 license with no license fees or subscriptions.
+**Is Dakhl really free?**
+Yes. Dakhl is released under the GPL-3 license with no license fees or subscriptions.
 
 **Can I host it on my own server?**
-Yes. Amir is designed for self-hosted deployment. Your data stays fully under your control.
+Yes. Dakhl is designed for self-hosted deployment. Your data stays fully under your control.
 
 **Does it support Moadian?**
-Yes. Amir supports the Moadian system. Each company can configure its own certificate and private key. [Moadian setup guide](docs/moadian.en.md)
+Yes. Dakhl supports the Moadian system. Each company can configure its own certificate and private key. [Moadian setup guide](docs/moadian.en.md)
 
 **Does it support multiple companies?**
-Yes. Amir supports multiple companies with independent fiscal years.
+Yes. Dakhl supports multiple companies with independent fiscal years.
 
 **Does it support payroll?**
 Yes. Salary calculation, attendance, payslips, and reports are all included.
 
 **Is it production-ready?**
-Amir is under active development. Evaluate with test data before production use.
+Dakhl is under active development. Evaluate with test data before production use.
 
 ---
 

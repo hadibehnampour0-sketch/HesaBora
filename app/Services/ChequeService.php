@@ -12,6 +12,9 @@ use App\Models\Customer;
 use App\Models\Document;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\PaymentAllocation;
+use App\Models\SettlementInstallment;
+use App\Models\SettlementObligation;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Support\Carbon;
@@ -27,7 +30,10 @@ class ChequeService
 
     private const DOCUMENTS_PAYABLE_CONFIG = 'cheque_documents_payable';
 
-    public function __construct(private readonly PaymentService $paymentService) {}
+    public function __construct(
+        private readonly PaymentService $paymentService,
+        private readonly SettlementService $settlementService,
+    ) {}
 
     public function directionForInvoice(Invoice $invoice): ?ChequeType
     {
@@ -89,6 +95,19 @@ class ChequeService
             $lockedCheque = Cheque::query()->lockForUpdate()->findOrFail($cheque->id);
             if ($lockedCheque->histories()->whereNotNull('from_status')->exists()) {
                 throw ValidationException::withMessages(['cheque' => __('A cheque cannot be edited after a lifecycle action. Register a replacement cheque to preserve its audit history.')]);
+            }
+
+            // Final Closure Pass finding: SettlementObligation.original_amount
+            // is a one-time snapshot of the cheque's amount at obligation-
+            // creation time (createObligationForCheque() has no status
+            // precondition, so an obligation can exist for a cheque that has
+            // never had a lifecycle transition yet, and is therefore still
+            // editable by the guard above). Editing the amount afterward
+            // would silently desync the obligation from the cheque it was
+            // created for. Same "something meaningful already happened,
+            // register a replacement instead" principle as the guard above.
+            if (SettlementObligation::where('source_type', Cheque::class)->where('source_id', $lockedCheque->id)->exists()) {
+                throw ValidationException::withMessages(['cheque' => __('A cheque cannot be edited once a settlement obligation exists for it. Register a replacement cheque to preserve its audit history.')]);
             }
 
             $direction = ChequeType::from((int) $data['direction']);
@@ -154,10 +173,40 @@ class ChequeService
         });
     }
 
+    /**
+     * Batch 1 (Settlement/Unsettlement/Reversal Boundary Closure) finding:
+     * `settlement_obligations.source_id` is a plain polymorphic reference
+     * with no foreign key (by design -- D-070's own migration docblock).
+     * Deleting a Cheque with a SettlementObligation that has real settled
+     * activity (an actual PaymentAllocation against one of its
+     * installments) would silently orphan that Obligation/Installment and
+     * destroy a real, already-collected posted financial record with no
+     * trace of why it exists -- the same class of violation Batch A's
+     * Invoice deletion guard closed. An Obligation with no payment yet
+     * carries no posted financial history, so it does not block deletion,
+     * mirroring that same guard's "no payment yet" exception.
+     */
     public function delete(Cheque $cheque): void
     {
         DB::transaction(function () use ($cheque) {
             $lockedCheque = Cheque::query()->lockForUpdate()->findOrFail($cheque->id);
+
+            $obligationIds = SettlementObligation::where('source_type', Cheque::class)
+                ->where('source_id', $lockedCheque->id)
+                ->pluck('id');
+
+            if ($obligationIds->isNotEmpty()) {
+                $installmentIds = SettlementInstallment::whereIn('obligation_id', $obligationIds)->pluck('id');
+                $hasSettledActivity = $installmentIds->isNotEmpty() && PaymentAllocation::where('allocatable_type', SettlementInstallment::class)
+                    ->whereIn('allocatable_id', $installmentIds)
+                    ->exists();
+
+                if ($hasSettledActivity) {
+                    throw ValidationException::withMessages([
+                        'cheque' => [__('This cheque has a settlement obligation with real settled payments and cannot be deleted.')],
+                    ]);
+                }
+            }
 
             $invoices = Invoice::whereIn('id', $lockedCheque->payments()->whereNotNull('invoice_id')->pluck('invoice_id')->unique())->get();
             $documentIds = $lockedCheque->histories()->pluck('document_id')->merge($lockedCheque->payments()->pluck('document_id'))
@@ -179,7 +228,9 @@ class ChequeService
 
     public function transition(Cheque $cheque, User $user, string $action, array $data = []): Cheque
     {
-        return DB::transaction(function () use ($cheque, $user, $action, $data) {
+        $previousStatus = $cheque->status;
+
+        $result = DB::transaction(function () use ($cheque, $user, $action, $data) {
             $lockedCheque = Cheque::query()->lockForUpdate()->findOrFail($cheque->id);
 
             if (! in_array($action, $lockedCheque->availableActions(), true)) {
@@ -197,6 +248,14 @@ class ChequeService
                 default => throw ValidationException::withMessages(['action' => __('This action is not allowed in the current status.')]),
             };
         });
+
+        // P6 (API v1 Platform): fired only after the transaction commits,
+        // mirroring InvoiceService::changeInvoiceStatus()'s own event.
+        if ($result->status !== $previousStatus) {
+            event(new \App\Events\ChequeStatusChanged($result, $previousStatus, $result->status, $action));
+        }
+
+        return $result;
     }
 
     private function deposit(Cheque $cheque, User $user, array $data): Cheque
@@ -287,11 +346,82 @@ class ChequeService
         $cheque->update(['status' => ChequeType::BOUNCED]);
         $this->history($cheque, $user, $from, ChequeType::BOUNCED, $document, null, $data['description'] ?? null);
 
+        $this->reverseInvoicePaymentCredit($cheque);
+
         return $cheque->fresh();
+    }
+
+    /**
+     * A bounced cheque must stop counting toward the invoice it was
+     * registered against: the customer's/supplier's obligation is not
+     * settled just because a cheque was received or issued, only once it
+     * actually clears. Without this, an invoice paid via a cheque that later
+     * bounces stays incorrectly marked PARTIALLY_PAID/PAID.
+     *
+     * Only the registration-time payment ever carries invoice_id (clear()
+     * intentionally creates a separate, invoice-less payment for the bank
+     * leg), so removing it and re-syncing is sufficient and does not touch
+     * any other financial history.
+     */
+    private function reverseInvoicePaymentCredit(Cheque $cheque): void
+    {
+        $registrationPayment = $cheque->payments()->whereNotNull('invoice_id')->first();
+
+        if (! $registrationPayment) {
+            return;
+        }
+
+        $invoice = $registrationPayment->invoice;
+        $registrationPayment->delete();
+
+        if ($invoice) {
+            $this->paymentService->syncInvoiceStatus($invoice);
+        }
+    }
+
+    /**
+     * Financial Integrity Closure Batch, Section 5 finding: giving a
+     * received cheque back to the customer without ever depositing it
+     * means the invoice it was registered against was never actually
+     * collected -- the exact same "the money never really moved" fact
+     * bounce() already accounts for via reverseInvoicePaymentCredit().
+     * Without this, an invoice paid via a cheque that is later returned
+     * (rather than deposited-then-bounced) stays incorrectly marked
+     * PARTIALLY_PAID/PAID. Zero test coverage existed for this action
+     * before this fix, which is how the gap went unnoticed.
+     */
+    /**
+     * Epic Pack 3 audit finding: mirrors the "something meaningful already
+     * happened" guards update()/delete() already apply for a linked
+     * SettlementObligation -- returning the physical cheque hands back the
+     * only collateral/claim securing that debt, so it must not be allowed
+     * while real settlement activity is still outstanding. An obligation
+     * with zero payment activity (or none at all) carries no posted
+     * financial history to protect, matching delete()'s own "no payment
+     * yet" exception.
+     */
+    private function ensureNoOutstandingSettlementObligation(Cheque $cheque): void
+    {
+        $obligation = SettlementObligation::where('source_type', Cheque::class)
+            ->where('source_id', $cheque->id)
+            ->first();
+
+        if (! $obligation) {
+            return;
+        }
+
+        $hasRealSettlementActivity = $this->settlementService->settledAmount($obligation) > 0.0;
+        if ($hasRealSettlementActivity && ! $this->settlementService->isSettled($obligation)) {
+            throw ValidationException::withMessages([
+                'cheque' => [__('This cheque has an outstanding settlement obligation and cannot be returned until it is fully settled.')],
+            ]);
+        }
     }
 
     private function returnToCustomer(Cheque $cheque, User $user, array $data): Cheque
     {
+        $this->ensureNoOutstandingSettlementObligation($cheque);
+
         $from = $cheque->status;
         $amount = (float) $cheque->amount;
         $document = $this->post($user, $cheque, 'return', [
@@ -302,9 +432,21 @@ class ChequeService
         $cheque->update(['status' => ChequeType::RETURNED]);
         $this->history($cheque, $user, $from, ChequeType::RETURNED, $document, null, $data['description'] ?? null);
 
+        $this->reverseInvoicePaymentCredit($cheque);
+
         return $cheque->fresh();
     }
 
+    /**
+     * Financial Integrity Closure Batch, Section 5 finding: same gap as
+     * returnToCustomer() -- an ISSUED payable cheque registered against a
+     * Buy invoice already carries an invoice-linked Payment (created at
+     * registration); cancelling it before it is ever given to the vendor/
+     * deposited means the invoice was never actually paid, so its payment
+     * credit must be reversed exactly like bounce()/return() already do.
+     * A no-op when called from BOUNCED (bounce() already removed the
+     * registration payment) or for a cheque never linked to an invoice.
+     */
     private function cancel(Cheque $cheque, User $user, array $data): Cheque
     {
         $from = $cheque->status;
@@ -319,6 +461,8 @@ class ChequeService
 
         $cheque->update(['status' => ChequeType::CANCELLED]);
         $this->history($cheque, $user, $from, ChequeType::CANCELLED, $document, null, $data['description'] ?? null);
+
+        $this->reverseInvoicePaymentCredit($cheque);
 
         return $cheque->fresh();
     }

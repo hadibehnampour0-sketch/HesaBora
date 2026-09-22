@@ -43,7 +43,11 @@ class GroupActionService
                     ]);
                 }
 
-                $this->invoiceService->changeInvoiceStatus($invoice, 'approved');
+                // D-087: this internal COG-dependency recalculation never
+                // goes through the general-purpose, D-086-guarded
+                // changeInvoiceStatus() -- it uses its own explicit,
+                // separately-named entry point instead.
+                $this->invoiceService->recycleInvoiceStatusForDependencyRecalculation($invoice, 'approved');
 
                 foreach ($invoice->ancillaryCosts as $ancillaryCost) {
                     $validation = $this->ancillaryCostService->getChangeStatusValidation($ancillaryCost);
@@ -95,8 +99,13 @@ class GroupActionService
                     }
                 }
 
-                // Then unapprove the invoice itself
-                $this->invoiceService->changeInvoiceStatus($conflictInvoice, 'unapproved');
+                // Then unapprove the invoice itself. D-087: this internal
+                // COG-dependency recalculation never goes through the
+                // general-purpose, D-086-guarded changeInvoiceStatus() --
+                // it uses its own explicit, separately-named entry point,
+                // even for an invoice that already has a Payment (this
+                // cycle never touches Payment/PaymentAllocation rows).
+                $this->invoiceService->recycleInvoiceStatusForDependencyRecalculation($conflictInvoice, 'unapproved');
                 $conflictInvoice->status = InvoiceStatus::APPROVED_INACTIVE;
                 $conflictInvoice->save();
             }

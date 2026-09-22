@@ -52,21 +52,21 @@ class AuthLifecycleTest extends TestCase
             'users.edit',
         ])->mapWithKeys(fn (string $name) => [$name => Permission::firstOrCreate(['name' => $name])]);
 
-        $adminRole = Role::create(['name' => __('Admin')]);
+        $adminRole = Role::create(['name' => __('Admin'), 'company_id' => null]);
         $adminRole->syncPermissions($permissions);
-        Role::create(['name' => 'Super-Admin']);
+        Role::create(['name' => 'Super-Admin', 'company_id' => null]);
 
         $ownCompany = $this->company('Admin Company');
         $otherCompany = $this->company('Other Company');
         $admin = User::factory()->create();
-        $admin->companies()->attach($ownCompany);
+        $admin->companies()->syncWithoutDetaching($ownCompany);
         $admin->assignRole($adminRole);
         config(['active-company-id' => $ownCompany->id]);
 
         $ownUser = User::factory()->create(['name' => 'Own Company User']);
-        $ownUser->companies()->attach($ownCompany);
+        $ownUser->companies()->syncWithoutDetaching($ownCompany);
         $otherUser = User::factory()->create(['name' => 'Other Company User']);
-        $otherUser->companies()->attach($otherCompany);
+        $otherUser->companies()->syncWithoutDetaching($otherCompany);
 
         $this->actingAs($admin)->get(route('roles.index'))->assertForbidden();
         $this->actingAs($admin)->get(route('permissions.index'))->assertForbidden();
@@ -121,7 +121,7 @@ class AuthLifecycleTest extends TestCase
 
         $company = $this->company('Viewer Company');
         $viewer = User::factory()->create();
-        $viewer->companies()->attach($company);
+        $viewer->companies()->syncWithoutDetaching($company);
         $viewer->assignRole($viewerRole);
         config(['active-company-id' => $company->id]);
 
@@ -185,7 +185,7 @@ class AuthLifecycleTest extends TestCase
             'fiscal_year' => (int) toEnglish(jdate('Y')),
             'currency' => 'Rial',
         ]);
-        $user->companies()->attach($company);
+        $user->companies()->syncWithoutDetaching($company);
 
         $workspace = $this->actingAs($user)
             ->withCookie('active-company-id', (string) $company->id)
@@ -246,7 +246,7 @@ class AuthLifecycleTest extends TestCase
         );
 
         $superAdmin = User::factory()->create(['email' => 'hidden-super-admin@example.com']);
-        $superAdmin->assignRole(Role::create(['name' => 'Super-Admin']));
+        $superAdmin->assignRole(Role::create(['name' => 'Super-Admin', 'company_id' => null]));
 
         $this->actingAs($actor)->withSession(['interface_mode' => 'workspace'])->get(route('users.index'))->assertOk()
             ->assertDontSee('hidden-super-admin@example.com');
@@ -258,10 +258,10 @@ class AuthLifecycleTest extends TestCase
     public function test_super_admin_dashboard_links_users_and_uses_edit_actions(): void
     {
         $actor = User::factory()->create();
-        $actor->assignRole(Role::create(['name' => 'Super-Admin']));
+        $actor->assignRole(Role::create(['name' => 'Super-Admin', 'company_id' => null]));
         $company = $this->company('Recent Fiscal Company');
         $target = User::factory()->unverified()->create(['name' => 'Recent Unverified User']);
-        $target->companies()->attach($company);
+        $target->companies()->syncWithoutDetaching($company);
         $companylessTarget = User::factory()->create(['name' => 'Recent Companyless User']);
 
         $dashboard = $this->actingAs($actor)->get(route('management.dashboard'))->assertOk();
@@ -380,7 +380,7 @@ class AuthLifecycleTest extends TestCase
     public function test_user_show_displays_profile_roles_company_and_account_timestamps(): void
     {
         $actor = User::factory()->create();
-        $actor->assignRole(Role::create(['name' => 'Super-Admin']));
+        $actor->assignRole(Role::create(['name' => 'Super-Admin', 'company_id' => null]));
         $company = Company::create([
             'name' => 'Profile Company',
             'fiscal_year' => 1405,
@@ -402,7 +402,7 @@ class AuthLifecycleTest extends TestCase
             'email_verified_at' => $verifiedAt,
         ]);
         $target->assignRole(Role::create(['name' => 'Profile Auditor']));
-        $target->companies()->attach($company);
+        $target->companies()->syncWithoutDetaching($company);
 
         $this->actingAs($actor)->get(route('users.show', $target))->assertOk()
             ->assertSee('<table', false)
@@ -443,7 +443,7 @@ class AuthLifecycleTest extends TestCase
     public function test_user_show_displays_pending_and_empty_assignment_states(): void
     {
         $actor = User::factory()->create();
-        $actor->assignRole(Role::create(['name' => 'Super-Admin']));
+        $actor->assignRole(Role::create(['name' => 'Super-Admin', 'company_id' => null]));
         $target = User::factory()->unverified()->create(['name' => 'Pending Profile User']);
 
         $this->actingAs($actor)->get(route('users.show', $target))->assertOk()
@@ -461,10 +461,10 @@ class AuthLifecycleTest extends TestCase
         $actorCompany = $this->company('Actor Company');
         $otherCompany = $this->company('Other Company');
         $actor = User::factory()->create();
-        $actor->companies()->attach($actorCompany);
-        $actor->assignRole(Role::create(['name' => 'Super-Admin']));
+        $actor->companies()->syncWithoutDetaching($actorCompany);
+        $actor->assignRole(Role::create(['name' => 'Super-Admin', 'company_id' => null]));
         $target = User::factory()->unverified()->create();
-        $target->companies()->attach($otherCompany);
+        $target->companies()->syncWithoutDetaching($otherCompany);
 
         $this->actingAs($actor)
             ->from(route('management.dashboard'))
@@ -491,8 +491,8 @@ class AuthLifecycleTest extends TestCase
         Notification::fake();
 
         $actor = User::factory()->create();
-        $actor->assignRole(Role::create(['name' => 'Super-Admin']));
-        Role::create(['name' => __('Admin')]);
+        $actor->assignRole(Role::create(['name' => 'Super-Admin', 'company_id' => null]));
+        Role::create(['name' => __('Admin'), 'company_id' => null]);
         $company = $this->company('Managed Company');
 
         $this->actingAs($actor)->get(route('users.create'))->assertOk()->assertSee('Super-Admin');
@@ -508,8 +508,9 @@ class AuthLifecycleTest extends TestCase
 
         $user = User::where('email', 'new-super-admin@example.com')->firstOrFail();
 
-        $this->assertTrue($user->hasRole('Super-Admin'));
-        $this->assertTrue($user->hasRole(__('Admin')));
+        $this->assertTrue($user->isSuperAdmin());
+        app(PermissionRegistrar::class)->setPermissionsTeamId($company->id);
+        $this->assertTrue($user->fresh()->hasRole(__('Admin')));
     }
 
     public function test_platform_permission_without_super_admin_role_cannot_view_or_assign_super_admin(): void
@@ -524,15 +525,15 @@ class AuthLifecycleTest extends TestCase
             Permission::firstOrCreate(['name' => 'users.edit']),
             Permission::firstOrCreate(['name' => 'users.update']),
         );
-        Role::create(['name' => 'Super-Admin']);
-        $adminRole = Role::create(['name' => __('Admin')]);
+        Role::create(['name' => 'Super-Admin', 'company_id' => null]);
+        $adminRole = Role::create(['name' => __('Admin'), 'company_id' => null]);
         $company = $this->company('Platform Company');
         $target = User::factory()->create();
         $target->assignRole($adminRole);
-        $target->companies()->attach($company);
+        $target->companies()->syncWithoutDetaching($company);
         $superAdminTarget = User::factory()->create();
         $superAdminTarget->assignRole('Super-Admin');
-        $superAdminTarget->companies()->attach($company);
+        $superAdminTarget->companies()->syncWithoutDetaching($company);
 
         $this->actingAs($actor)->get(route('users.create'))->assertOk()->assertDontSee('Super-Admin');
         $this->get(route('users.edit', $target))->assertOk()->assertDontSee('Super-Admin');
@@ -580,18 +581,18 @@ class AuthLifecycleTest extends TestCase
         ]);
     }
 
-    public function test_verified_user_with_a_company_can_login_with_a_normalized_email(): void
+    public function test_verified_user_with_a_company_can_login_with_a_normalized_username(): void
     {
-        $user = User::factory()->create(['email' => 'login@example.com']);
+        $user = User::factory()->create(['username' => 'loginuser']);
         $company = Company::create([
             'name' => 'Login Company',
             'fiscal_year' => 1405,
             'currency' => 'Rial',
         ]);
-        $user->companies()->attach($company);
+        $user->companies()->syncWithoutDetaching($company);
 
         $response = $this->post(route('login'), [
-            'email' => ' LOGIN@EXAMPLE.COM ',
+            'username' => ' loginuser ',
             'password' => 'password',
         ]);
 
@@ -599,27 +600,27 @@ class AuthLifecycleTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
-    public function test_login_form_displays_a_remember_me_checkbox(): void
+    public function test_login_form_displays_only_username_password_and_login(): void
     {
         $this->get(route('login'))
             ->assertOk()
-            ->assertSee('name="email"', false)
-            ->assertSee('type="email"', false)
+            ->assertSee('name="username"', false)
+            ->assertSee('type="text"', false)
             ->assertSee('autocomplete="username"', false)
             ->assertSee('name="password"', false)
             ->assertSee('type="password"', false)
             ->assertSee('autocomplete="current-password"', false)
-            ->assertSee('name="remember"', false)
-            ->assertSee('id="remember"', false)
-            ->assertSee('type="hidden" name="remember" value="0"', false)
-            ->assertSee(__('Remember Me'));
+            ->assertSee(__('Login'))
+            ->assertDontSee('name="email"', false)
+            ->assertDontSee('name="remember"', false)
+            ->assertDontSee(__('Remember Me'));
     }
 
     public function test_user_can_be_remembered_after_login(): void
     {
         $user = User::factory()->create();
 
-        $response = $this->post(route('login'), ['email' => $user->email, 'password' => 'password', 'remember' => '1']);
+        $response = $this->post(route('login'), ['username' => $user->username, 'password' => 'password', 'remember' => '1']);
 
         $response->assertCookie(Auth::guard()->getRecallerName());
         $this->assertAuthenticatedAs($user);
@@ -631,7 +632,7 @@ class AuthLifecycleTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->post(route('login'), [
-            'email' => $user->email,
+            'username' => $user->username,
             'password' => 'password',
             'remember' => '0',
         ]);
@@ -648,9 +649,13 @@ class AuthLifecycleTest extends TestCase
             'fiscal_year' => 1405,
             'currency' => 'Rial',
         ]);
-        $user->companies()->attach($company);
+        $user->companies()->syncWithoutDetaching($company);
 
-        $loginResponse = $this->post(route('login'), ['email' => $user->email, 'password' => 'password', 'remember' => '1']);
+        $loginResponse = $this->post(route('login'), [
+            'username' => $user->username,
+            'password' => 'password',
+            'remember' => '1',
+        ]);
 
         $guard = Auth::guard();
         $recallerName = $guard->getRecallerName();
@@ -674,7 +679,7 @@ class AuthLifecycleTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->post(route('login'), [
-            'email' => $user->email,
+            'username' => $user->username,
             'password' => 'password',
         ]);
 
@@ -687,7 +692,7 @@ class AuthLifecycleTest extends TestCase
         $user = User::factory()->unverified()->create();
 
         $response = $this->post(route('login'), [
-            'email' => $user->email,
+            'username' => $user->username,
             'password' => 'password',
         ]);
 
@@ -708,7 +713,7 @@ class AuthLifecycleTest extends TestCase
         $user = User::factory()->unverified()->create();
 
         $response = $this->post(route('login'), [
-            'email' => $user->email,
+            'username' => $user->username,
             'password' => 'password',
         ]);
 
@@ -746,11 +751,11 @@ class AuthLifecycleTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->post(route('login'), [
-            'email' => $user->email,
+            'username' => $user->username,
             'password' => 'wrong-password',
         ]);
 
-        $response->assertSessionHasErrors('email');
+        $response->assertSessionHasErrors('username');
         $this->assertGuest();
     }
 
@@ -924,8 +929,13 @@ class AuthLifecycleTest extends TestCase
 
         $this->assertSame($previousCompany->id, config('active-company-id'));
         $this->assertTrue($company->users()->whereKey($user->id)->exists());
+
+        // Organization Authorization phase (r12): the Admin grant is scoped
+        // to the newly created company, not whatever company happened to be
+        // "active" in config -- check it in the company it actually applies to.
+        app(PermissionRegistrar::class)->setPermissionsTeamId($company->id);
         $this->assertTrue($user->fresh()->hasRole(__('Admin')));
-        $this->assertFalse($user->fresh()->hasRole('Super-Admin'));
+        $this->assertFalse($user->fresh()->isSuperAdmin());
         $this->assertTrue($user->fresh()->can('users.index'));
         $this->assertFalse($user->fresh()->can('roles.index'));
         $this->assertFalse($user->fresh()->can('permissions.index'));
@@ -960,6 +970,7 @@ class AuthLifecycleTest extends TestCase
 
         $company = Company::where('name', 'Registered Company')->firstOrFail();
 
+        app(PermissionRegistrar::class)->setPermissionsTeamId($company->id);
         $this->assertTrue($user->fresh()->can('home'));
         $this->assertTrue($user->fresh()->can('documents.show'));
         $this->withCookie('active-company-id', (string) $company->id)->get(route('home'))->assertOk();

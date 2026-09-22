@@ -135,6 +135,36 @@ class InvoiceService
         $transactionBuilder = new InvoiceTransactionBuilder($items, $invoiceData);
         $buildResult = $transactionBuilder->build();
 
+        /**
+         * D-086: once this Invoice has real financially effective activity
+         * (a Payment or a PaymentAllocation), its financial content is
+         * immutable at the service layer -- requesting the approved-edit
+         * rebuild is always rejected outright; a plain (non-rebuild) update
+         * is rejected only if it would actually change the financial
+         * content (totals, customer, or warehouse -- COG-relevant).
+         * Non-financial metadata (title/description/date/document_number)
+         * remains editable exactly as before. An Approved invoice with no
+         * payment/allocation yet is completely unaffected by this guard.
+         */
+        if ($wasApproved && self::hasEffectiveFinancialActivity($invoice)) {
+            if ($approved) {
+                throw ValidationException::withMessages([
+                    'invoice' => [__('This invoice has posted payments or allocations and its financial content cannot be changed.')],
+                ]);
+            }
+
+            $financialContentChanged = abs((float) $buildResult['totalAmount'] - (float) $invoice->amount) > 0.01
+                || abs((float) $buildResult['totalVat'] - (float) $invoice->vat) > 0.01
+                || (int) $invoiceData['customer_id'] !== (int) $invoice->customer_id
+                || (int) ($invoiceData['warehouse_id'] ?? 0) !== (int) ($invoice->warehouse_id ?? 0);
+
+            if ($financialContentChanged) {
+                throw ValidationException::withMessages([
+                    'invoice' => [__('This invoice has posted payments or allocations and its financial content cannot be changed.')],
+                ]);
+            }
+        }
+
         $createdDocument = null;
         $handledApprovedEdit = false;
 
@@ -410,18 +440,153 @@ class InvoiceService
         app(ActivityLogService::class)->deleteModels($invoice->items()->whereNotIn('id', $itemId)->getQuery());
     }
 
+    /**
+     * Concurrency (Workstream S): two genuinely concurrent requests both
+     * binding the same not-yet-approved Invoice before either commits would
+     * both read "not approved" and both run approveInvoice() -- a second
+     * phantom Document plus double-counted warehouse quantity/COG, the
+     * exact disaster class the sequential idempotency guards below exist
+     * to prevent, just reached through a different door (empirically
+     * reproduced: two independently-fetched Invoice instances both calling
+     * this method created two Documents for the same invoice). Fixed with
+     * a row lock, re-reading the authoritative status into $invoice's OWN
+     * attributes (via setRawAttributes(), not a separate instance) so
+     * every match arm below sees fresh state -- and so callers that keep
+     * mutating the SAME $invoice object afterward (e.g.
+     * SyncPilotService::applyApprove()'s subsequent forceFill()->save() on
+     * $existing) still see the changes this method made.
+     */
     public function changeInvoiceStatus(Invoice $invoice, string $status): void
     {
-        DB::transaction(function () use ($invoice, $status) {
+        $statusChange = null;
+
+        DB::transaction(function () use ($invoice, $status, &$statusChange) {
+            $locked = Invoice::query()->lockForUpdate()->findOrFail($invoice->id);
+            $invoice->setRawAttributes($locked->getAttributes(), true);
+            $previousStatus = $invoice->status;
+
             match ($status) {
                 'ready_to_approve' => $invoice->update(['status' => InvoiceStatus::READY_TO_APPROVE]),
-                'rejected' => $invoice->update(['status' => InvoiceStatus::REJECTED]),
-                'approved' => $this->approveInvoice($invoice),
+                'rejected' => $this->userFacingRejectInvoice($invoice),
+                'approved' => $this->userFacingApproveInvoice($invoice),
                 'unapproved' => $this->unapproveInvoice($invoice),
                 default => null,
             };
+
+            if ($invoice->status !== $previousStatus) {
+                $statusChange = $previousStatus;
+            }
         });
 
+        // P6 (API v1 Platform): fired only for a genuine transition, never
+        // an idempotent no-op re-approve/re-reject, and only after the
+        // transaction commits so listeners see committed state.
+        if ($statusChange !== null) {
+            event(new \App\Events\InvoiceStatusChanged($invoice->fresh(), $statusChange, $invoice->status));
+        }
+    }
+
+    /**
+     * D-086 boundary hardening: the user-facing (re-)approve action. An
+     * already-Approved-or-settled invoice must never re-run
+     * approveInvoice() -- doing so silently rebuilds a SECOND Document
+     * (orphaning the first, double-counting revenue/COG in the ledger) and
+     * double-adds warehouse quantities, with no error and no concurrency
+     * required at all: a plain double-click/resubmit of the same "approve"
+     * request is enough (empirically confirmed, Final Marathon Closure
+     * Pass -- the original docblock's claim that
+     * `InvoiceController::changeStatus()` already prevents reaching this
+     * state was never actually true; that controller has no "already in
+     * target status" check of its own).
+     *
+     * With real financial activity (Payment/PaymentAllocation), this is a
+     * hard rejection (D-086's own invariant). With none yet, re-approving
+     * an already-approved invoice is instead treated as a safe idempotent
+     * no-op -- the exact same reasoning `SyncPilotService::applyApprove()`
+     * already uses for a repeat approve whose caller's version matches
+     * current reality (D-076 decision 6): "a safe idempotent no-op, never
+     * a second posting." This is not new policy, it is finally applying
+     * that same already-established principle to the web/service entry
+     * point that was missing it.
+     *
+     * `approveInvoice()` itself stays unguarded, because
+     * recycleInvoiceStatusForDependencyRecalculation() (D-087) and
+     * voidInvoice() (a brand-new, never-before-approved Invoice row) both
+     * legitimately call it directly and must not be blocked.
+     */
+    private function userFacingApproveInvoice(Invoice $invoice): void
+    {
+        if ($invoice->status->isApprovedOrSettled()) {
+            if (self::hasEffectiveFinancialActivity($invoice)) {
+                throw ValidationException::withMessages([
+                    'invoice' => [__('This invoice has posted payments or allocations and its financial content cannot be changed.')],
+                ]);
+            }
+
+            return;
+        }
+
+        // P7.1 (Approval Chains): the SECOND (final) approval step of a
+        // two-step chain. Requires a DIFFERENT user than whoever performed
+        // the first step, on top of the ordinary creator-cannot-approve
+        // (P7.2) check -- both checked BEFORE any financial effect.
+        if ($invoice->status->isPendingFinalApproval()) {
+            if ($invoice->first_approved_by !== null && $invoice->first_approved_by === auth()->id()) {
+                throw ValidationException::withMessages([
+                    'invoice' => [__('The final approval must be performed by a different user than the first approval.')],
+                ]);
+            }
+
+            app(SegregationOfDutiesService::class)->guardAgainstSelfApproval($invoice, $invoice->creator_id, 'invoice');
+
+            $this->approveInvoice($invoice);
+
+            return;
+        }
+
+        app(SegregationOfDutiesService::class)->guardAgainstSelfApproval($invoice, $invoice->creator_id, 'invoice');
+
+        // P7.1 (Approval Chains): only an invoice at/above the company's
+        // configured threshold enters the two-step chain -- every invoice
+        // below threshold (or when no threshold is configured, the
+        // default) takes exactly the same single-step path as before this
+        // feature existed.
+        $threshold = app(WorkflowGovernanceSettingsService::class)->invoiceApprovalChainThreshold();
+        if ($threshold !== null && (float) $invoice->amount >= $threshold) {
+            $invoice->update(['status' => InvoiceStatus::PENDING_FINAL_APPROVAL, 'first_approved_by' => auth()->id()]);
+
+            return;
+        }
+
+        $this->approveInvoice($invoice);
+    }
+
+    /**
+     * D-086 boundary hardening (Phase 5 cross-module audit): marking an
+     * invoice REJECTED once it has real financial activity is the same
+     * "reversal by a different status label" D-086 already forbids for
+     * update/re-approve -- the Document, Transactions, Payment(s) and
+     * PaymentAllocation(s) all stay exactly as they are; only the label
+     * changes, silently detaching the invoice's status from its own
+     * ledger. `InvoiceController::changeStatus()` already blocks this
+     * today via its own `isPartiallyPaid()/isPaid()` check before calling
+     * changeInvoiceStatus(), but -- mirroring the exact reasoning behind
+     * D-087/D-088 -- that must not be the only barrier: a future caller
+     * (Sync, console command, another controller) must not be able to
+     * reach `changeInvoiceStatus($invoice, 'rejected')` and bypass it with
+     * a bare status flip. Mechanical, symmetrical extension of the
+     * already-locked D-086 invariant to a transition it did not yet
+     * cover -- not a new business decision.
+     */
+    private function userFacingRejectInvoice(Invoice $invoice): void
+    {
+        if (self::hasEffectiveFinancialActivity($invoice)) {
+            throw ValidationException::withMessages([
+                'invoice' => [__('This invoice has posted payments or allocations and its financial content cannot be changed.')],
+            ]);
+        }
+
+        $invoice->update(['status' => InvoiceStatus::REJECTED]);
     }
 
     /**
@@ -441,11 +606,67 @@ class InvoiceService
     }
 
     /**
-     * Unapprove the given invoice: delete document, revert quantities and COG, and unapprove ancillary costs.
+     * D-086: once an Invoice has real financially effective activity against
+     * it (a Payment, direct or cheque-linked, or a PaymentAllocation), the
+     * updateInvoice() paths that could alter its financial content are
+     * rejected -- mirroring D-084's Payment/Allocation immutability
+     * principle one level up, at the Invoice's own effective amount. An
+     * Approved invoice with NO payment/allocation yet is unaffected --
+     * editing/correcting it before any money has moved is existing,
+     * legitimate, heavily-tested bookkeeping behavior (see
+     * COGSCalculationTest) that this Decision does not touch.
+     */
+    private static function hasEffectiveFinancialActivity(Invoice $invoice): bool
+    {
+        return $invoice->payments()->exists() || $invoice->paymentAllocations()->exists();
+    }
+
+    /**
+     * D-087: the user-facing unapprove action. Rejects outright once the
+     * Invoice has real financially effective activity (D-086) -- never
+     * mutates status, Document, quantities, or COG in that case. This is
+     * the ONLY path `changeInvoiceStatus('unapproved')` -- and therefore
+     * `InvoiceController::changeStatus()` -- can ever reach.
+     *
+     * Also guards against re-running the reversal mechanics on an invoice
+     * that is already not approved (Final Marathon Closure Pass finding,
+     * the exact mirror image of userFacingApproveInvoice()'s double-post
+     * bug): `cycleInvoiceStatusMechanics()` unconditionally calls
+     * `ProductService::subProductsQuantities()`, with no check that a
+     * Document even existed to reverse. A plain double-click/resubmit of
+     * the same "unapprove" request against an already-unapproved invoice
+     * silently subtracted warehouse quantity a second time, manufacturing
+     * phantom inventory out of nothing -- empirically confirmed, no
+     * concurrency required. Already-unapproved is now a safe idempotent
+     * no-op, the same principle `userFacingApproveInvoice()` now uses.
      */
     private function unapproveInvoice(Invoice $invoice): void
     {
-        $invoice->status = InvoiceStatus::UNAPPROVED;
+        if (! $invoice->status->isApprovedOrSettled()) {
+            return;
+        }
+
+        if (self::hasEffectiveFinancialActivity($invoice)) {
+            throw ValidationException::withMessages([
+                'invoice' => [__('This invoice has posted payments or allocations and its financial content cannot be changed.')],
+            ]);
+        }
+
+        $this->cycleInvoiceStatusMechanics($invoice, InvoiceStatus::UNAPPROVED);
+    }
+
+    /**
+     * D-087: the actual unapprove mechanics (delete Document, revert
+     * quantities/COG, unapprove ancillary costs) -- shared by the guarded
+     * user-facing unapproveInvoice() above and the unguarded internal
+     * dependency-recalculation primitive below. Never call this directly
+     * from anywhere else; every other caller must go through one of those
+     * two named entry points, never this one and never a boolean
+     * bypass/force parameter.
+     */
+    private function cycleInvoiceStatusMechanics(Invoice $invoice, InvoiceStatus $status): void
+    {
+        $invoice->status = $status;
 
         if ($invoice->document) {
             DocumentService::deleteDocument($invoice->document_id);
@@ -456,6 +677,44 @@ class InvoiceService
         ProductService::subProductsQuantities($invoice->items->toArray(), $invoice->invoice_type);
         CostOfGoodsService::updateProductsAverageCost($invoice);
         ProductService::updateWarehouseAverageCosts($invoice);
+    }
+
+    /**
+     * D-087: explicit, separately-named internal primitive reserved for
+     * GroupActionService::inactivateDependentInvoices()/
+     * approveInactiveInvoices() -- the existing, trusted mechanism that
+     * temporarily cycles a *downstream* invoice's status (Approved ->
+     * unapprove -> APPROVED_INACTIVE -> reapprove) purely to keep COG/
+     * average-cost chains consistent when an *earlier* Buy invoice
+     * changes. This intentionally never applies the D-086 financial guard
+     * -- unlike the user-facing unapproveInvoice(), never through a
+     * bypass flag on that method, but because this is a structurally
+     * separate method with its own name and its own, single, intended
+     * caller.
+     *
+     * Provably non-financial in the sense D-086/D-087 protect: it never
+     * touches the Invoice's own amount, vat, customer_id, or item rows,
+     * and never creates/deletes/modifies a Payment or PaymentAllocation
+     * row. It DOES delete and later recreate the Document row and
+     * recompute warehouse/COG state -- an intrinsic, necessary part of
+     * this dependency-recalculation mechanism (it is applied even to an
+     * already-Paid invoice, whose Payment/allocation rows are never
+     * touched by it) -- the Document's own row identity is not itself the
+     * "financial truth" these Decisions protect; the invoice's owed/paid
+     * amount and its Payment/Allocation history are, and neither changes
+     * across this cycle.
+     *
+     * Never call this from a controller or any other user-facing action.
+     */
+    public function recycleInvoiceStatusForDependencyRecalculation(Invoice $invoice, string $status): void
+    {
+        DB::transaction(function () use ($invoice, $status) {
+            match ($status) {
+                'approved' => $this->approveInvoice($invoice),
+                'unapproved' => $this->cycleInvoiceStatusMechanics($invoice, InvoiceStatus::UNAPPROVED),
+                default => throw new \InvalidArgumentException("Unsupported status for dependency recalculation: {$status}"),
+            };
+        });
     }
 
     private function unapproveAncillaryCostsOfInvoice(Invoice $invoice): void

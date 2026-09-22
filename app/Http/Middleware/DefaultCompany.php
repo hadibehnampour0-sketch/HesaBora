@@ -32,11 +32,7 @@ class DefaultCompany
 
                 $this->setDefaultCompany();
             } else {
-                config([
-                    'active-company-id' => $company->id,
-                    'active-company-name' => $company->name,
-                    'active-company-fiscal-year' => $company->fiscal_year,
-                ]);
+                $this->activateCompany($company);
             }
         } else {
             $this->setDefaultCompany();
@@ -52,12 +48,17 @@ class DefaultCompany
             if ($company) {
                 Cookie::queue('active-company-id', $company->id, 362 * 24 * 60);
 
-                config([
-                    'active-company-id' => $company->id,
-                    'active-company-name' => $company->name,
-                    'active-company-fiscal-year' => $company->fiscal_year,
-                ]);
+                $this->activateCompany($company);
             }
         }
+    }
+
+    private function activateCompany(Company $company): void
+    {
+        config([
+            'active-company-id' => $company->id,
+            'active-company-name' => $company->name,
+            'active-company-fiscal-year' => $company->fiscal_year,
+        ]);
     }
 }

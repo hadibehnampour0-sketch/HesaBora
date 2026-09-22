@@ -33,7 +33,7 @@ class ApiTest extends TestCase
 
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->company->users()->attach($this->user);
+        $this->company->users()->syncWithoutDetaching($this->user);
 
         $permissions = [
             'api.access',
@@ -69,7 +69,7 @@ class ApiTest extends TestCase
     public function test_api_requires_api_access_permission_for_token_requests(): void
     {
         $user = User::factory()->create();
-        $this->company->users()->attach($user);
+        $this->company->users()->syncWithoutDetaching($user);
         $user->givePermissionTo(Permission::firstOrCreate(['name' => 'hr.employees.index']));
         $token = $user->createToken('limited', ['hr.employees.index'])->plainTextToken;
 
@@ -99,6 +99,28 @@ class ApiTest extends TestCase
         ]);
 
         $response->assertForbidden();
+    }
+
+    public function test_a_token_with_a_past_expiration_date_is_rejected(): void
+    {
+        $token = $this->user->createToken('expired', ['companies.index'], now()->subMinute());
+
+        $response = $this->getJson('/api/companies', [
+            'Authorization' => 'Bearer '.$token->plainTextToken,
+        ]);
+
+        $response->assertUnauthorized();
+    }
+
+    public function test_a_token_with_a_future_expiration_date_still_works(): void
+    {
+        $token = $this->user->createToken('not-yet-expired', ['companies.index'], now()->addDay());
+
+        $response = $this->getJson('/api/companies', [
+            'Authorization' => 'Bearer '.$token->plainTextToken,
+        ]);
+
+        $response->assertOk();
     }
 
     public function test_employee_api_lists_ids_and_creates_employee(): void
@@ -194,7 +216,7 @@ class ApiTest extends TestCase
         $secondCompany = Company::factory()->create(['name' => 'Second API Company']);
         $unattachedCompany = Company::factory()->create(['name' => 'Hidden API Company']);
         $this->company->update(['name' => 'First API Company']);
-        $this->user->companies()->attach($secondCompany);
+        $this->user->companies()->syncWithoutDetaching($secondCompany);
 
         $this->getJson('/api/companies', $this->apiHeaders())
             ->assertOk()
@@ -213,7 +235,7 @@ class ApiTest extends TestCase
         ])->assertForbidden();
 
         $userWithoutPermission = User::factory()->create();
-        $this->company->users()->attach($userWithoutPermission);
+        $this->company->users()->syncWithoutDetaching($userWithoutPermission);
         $userWithoutPermission->givePermissionTo(Permission::firstOrCreate(['name' => 'api.access']));
         $token = $userWithoutPermission->createToken('companies', ['companies.index'])->plainTextToken;
 

@@ -16,6 +16,21 @@ class DocumentService
     /**
      * Create a new document.
      *
+     * Concurrency (Workstream S, Phase 2): the number fallback used to be
+     * `Document::max('number') + 1`, computed OUTSIDE any transaction and
+     * with no lock -- and `documents.number` has no unique constraint at
+     * all. Two genuinely concurrent creations (this fallback is hit on
+     * EVERY credit payment and direct invoice payment, since
+     * PaymentService always passes `'number' => null`) reading the same
+     * MAX before either commits would silently produce two accounting
+     * documents with the IDENTICAL reference number -- no error, no
+     * collision, just wrong data (reproduced with two real MariaDB
+     * connections; see tests/Feature/DocumentNumberingRaceTest.php).
+     * Fixed the same way `AncillaryCostService::
+     * nextAncillaryCostNumberForUpdate()` already protects ITS OWN
+     * numbering sequence: lock the current-max row inside the same
+     * transaction that inserts the new one.
+     *
      * @return Document
      */
     public static function createDocument(User $user, array $data, array $transactions)
@@ -32,17 +47,26 @@ class DocumentService
         }
 
         $data['creator_id'] = $user->id;
-        if (empty($data['number'])) {
-            $data['number'] = Document::max('number') + 1;
-        }
-
         $data['company_id'] = isset($data['company_id']) ? $data['company_id'] : getActiveCompany();
 
         $document = null;
-        DB::transaction(function () use ($data, $transactions, $user, &$document) {
+        DB::transaction(function () use (&$data, $transactions, $user, &$document) {
+            if (empty($data['number'])) {
+                $data['number'] = self::nextDocumentNumberForUpdate();
+            }
 
-            $document = Document::create($data);
-            self::syncDocumentable($document, $data['documentable'] ?? null);
+            // The documentable association (if any) is set on the model
+            // BEFORE the initial save -- not as a second save afterward --
+            // so a Document's very first `created` event already reflects
+            // its true final shape (manual draft vs. automatic/linked).
+            // This matters for D-073 stage 2.7A's Document Draft Sync,
+            // which decides sync-eligibility from that event.
+            $document = new Document($data);
+            if (! empty($data['documentable'] ?? null)) {
+                $document->documentable()->associate($data['documentable']);
+            }
+            $document->save();
+
             if (! empty($data['approved_at']) && ! empty($data['approver_id'])) {
                 self::approveDocument($user, $document);
             }
@@ -54,11 +78,31 @@ class DocumentService
         return $document;
     }
 
+    /**
+     * Locks the current highest-numbered document (scoped to the active
+     * company, same as the FiscalYearScope-filtered `Document::max()` this
+     * replaces) so a genuinely concurrent caller is forced to wait behind
+     * this transaction rather than reading the same stale max. Like
+     * AncillaryCostService's equivalent, this does not protect the very
+     * first document ever created for a company (no row yet to lock) --
+     * an accepted, narrow edge case matching that existing precedent.
+     */
+    private static function nextDocumentNumberForUpdate(): float
+    {
+        $last = Document::query()
+            ->whereNotNull('number')
+            ->orderByDesc('number')
+            ->lockForUpdate()
+            ->first();
+
+        return ((float) ($last?->number ?? 0)) + 1;
+    }
+
     private static function approveDocument(User $user, Document $document): void
     {
         $sum = $document->transactions()->sum('value');
 
-        if ($sum != 0) {
+        if (abs($sum) > 0.005) {
             throw ValidationException::withMessages([
                 'transactions' => [__('The sum of transactions must be zero.')],
             ]);
@@ -227,7 +271,7 @@ class DocumentService
             ->with('transactions')
             ->each(function (Document $document) use ($user, &$approved, &$skipped) {
                 $sum = $document->transactions->sum('value');
-                if ($sum != 0) {
+                if (abs($sum) > 0.005) {
                     $skipped++;
 
                     return;

@@ -30,7 +30,7 @@ class CustomerImportExportTest extends TestCase
         $this->companyId = $company->id;
 
         $this->user = User::factory()->create();
-        $company->users()->attach($this->user);
+        $company->users()->syncWithoutDetaching($this->user);
 
         $this->user->givePermissionTo([
             Permission::firstOrCreate(['name' => 'customers.index']),
@@ -236,5 +236,22 @@ class CustomerImportExportTest extends TestCase
 
         $this->assertDatabaseMissing('customers', ['name' => 'Good Row']);
         $this->assertDatabaseMissing('customers', ['name' => 'Bad Row']);
+    }
+
+    /**
+     * Security (Workstream T): StoreCustomerRequest's own name validation
+     * rejects `<`/`>`/`"`/`'` on the web form; this import path previously
+     * applied no such restriction at all. See ProductImportService's
+     * identical fix.
+     */
+    public function test_import_rejects_a_customer_name_containing_html_markup(): void
+    {
+        $csv = "name,group_name\n"."<script>alert(1)</script>,{$this->customerGroup->name}\n";
+
+        $this->actingAs($this->user)
+            ->post(route('customers.import.store'), ['file' => $this->upload($csv)])
+            ->assertSessionHas('error');
+
+        $this->assertDatabaseCount('customers', 0);
     }
 }

@@ -1,7 +1,7 @@
 <header class="bg-gray-200 py-2 px-4 flex items-center justify-between">
     <div class="flex items-center">
-        <img src="/images/logo.png" alt="Logo" width="50" class="mr-2">
-        <h1 class="font-bold">{{ __('Amirs free accounting software') }}</h1>
+        <img src="/images/logo.svg" alt="Logo" width="50" class="mr-2">
+        <h1 class="font-bold">{{ __('Dakhl free accounting software') }}</h1>
     </div>
     <div class="language-select">
         <form method="POST" action="{{ route('locale') }}" class="language-picker__form">

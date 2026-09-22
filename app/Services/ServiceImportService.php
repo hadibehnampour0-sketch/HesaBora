@@ -117,8 +117,20 @@ class ServiceImportService
                     $this->fail(__('Line :line: service name is required.', ['line' => $line]));
                 }
 
+                // Security (Workstream T): same fix as ProductImportService/
+                // CustomerImportService -- StoreServiceRequest's own name
+                // validation rejects `<`/`>`/`"`/`'`; this import path
+                // previously applied no such restriction.
+                if (preg_match('/[<>"\'`]/u', $name)) {
+                    $this->fail(__('Line :line: service name contains characters that are not allowed.', ['line' => $line]));
+                }
+
                 if ($groupName === '') {
                     $this->fail(__('Line :line: group name is required.', ['line' => $line]));
+                }
+
+                if (preg_match('/[<>"\'`]/u', $groupName)) {
+                    $this->fail(__('Line :line: group name contains characters that are not allowed.', ['line' => $line]));
                 }
 
                 // 1. Resolve the group: reuse an existing one with the same name, otherwise create it.

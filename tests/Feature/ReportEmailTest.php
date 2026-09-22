@@ -28,7 +28,7 @@ class ReportEmailTest extends TestCase
         app()->setLocale('en');
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->company->users()->attach($this->user);
+        $this->company->users()->syncWithoutDetaching($this->user);
         $this->withCookies(['active-company-id' => $this->company->id]);
         config(['active-company-id' => $this->company->id]);
     }

@@ -132,12 +132,27 @@ class InvoiceStatusDecision
         };
     }
 
+    /**
+     * Security (Workstream T): `toDetailText()`'s output is rendered
+     * unescaped (`{!! !!}`) via `<x-show-messages>`. The product's `name`
+     * here is free text set by the company's own staff -- normally
+     * restricted to a safe character set by `StoreProductRequest`/
+     * `UpdateProductRequest`'s validation regex, but `ProductImportService`
+     * (CSV import) applies no such restriction, so a crafted import file
+     * can set an arbitrary HTML/script payload as a product name. Every
+     * other interpolated field here (document numbers, the ancillary
+     * cost type enum's value) is numeric or drawn from a closed,
+     * developer-defined set, not user free text, so only `name` needs
+     * escaping -- but it is escaped here at the output boundary rather
+     * than relied upon to always be pre-validated upstream (see
+     * tests/Feature/InvoiceStatusDecisionXssTest.php).
+     */
     private function formatConflicts(string $type, Collection $conflicts): Collection
     {
         return match ($type) {
             'buy invoice', 'sell invoice' => $conflicts->map(fn ($inv) => formatDocumentNumber(data_get($inv, 'number', 'unknown'))),
             'product' => $conflicts->map(fn ($prod) => sprintf('%s: %s, %s: %s', __('Code'), formatDocumentNumber(data_get($prod, 'code', 'unknown')),
-                __('Name'), data_get($prod, 'name', 'unknown'))),
+                __('Name'), e(data_get($prod, 'name', 'unknown')))),
             'ancillarycost' => $conflicts->map(fn ($cost) => sprintf('%s: %s, %s: %s', __('Invoice Number'), data_get($cost, 'invoice.number', 'unknown'),
                 __('Type'), data_get($cost, 'type.value', 'unknown'))),
             default => collect(),

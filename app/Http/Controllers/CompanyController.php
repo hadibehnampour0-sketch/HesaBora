@@ -30,6 +30,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class CompanyController extends Controller
 {
@@ -418,6 +419,17 @@ class CompanyController extends Controller
             $company = $sourceCompanyId === null ? Company::create($companyData) : FiscalYearService::createWithCopiedData($companyData, $sourceCompanyId, $sectionsToCopy);
             $company->users()->syncWithoutDetaching([$creator->id]);
 
+            // Workstream Q: company_user is a plain custom pivot -- no
+            // Spatie/Eloquent event exists for it, so this is the only
+            // place the new owner's membership becomes audit-visible.
+            if (config('activitylog.enabled')) {
+                activity('security')
+                    ->causedBy(auth()->user())
+                    ->performedOn($creator)
+                    ->withProperties(['companies_attached' => [$company->id], 'companies_detached' => []])
+                    ->log('company_membership_changed');
+            }
+
             if ($sourceCompanyId === null) {
                 foreach ([
                     SubjectSeeder::class,
@@ -441,8 +453,20 @@ class CompanyController extends Controller
                 $adminRole = Role::where('name', __('Admin'))->firstOrFail();
             }
 
+            // Organization Authorization phase (r12): the Admin grant is
+            // scoped to the newly created company, not whatever company
+            // happened to be active before this request -- creating or
+            // duplicating a company must not silently grant Admin
+            // elsewhere, and per the locked migration decision, joining a
+            // new company never implicitly inherits a role from another one.
+            $registrar = app(PermissionRegistrar::class);
+            $registrar->setPermissionsTeamId($company->id);
             $creator->unsetRelation('roles');
             $creator->assignRole($adminRole);
+            // Clear, never "restore a captured value" -- see
+            // CompanyPermissionsTeamResolver's docblock for why.
+            $registrar->setPermissionsTeamId(null);
+            $creator->unsetRelation('roles');
 
             // The authorization check before company creation caches this user's wildcard permissions.
             $creator->forgetWildcardPermissionIndex();

@@ -127,6 +127,21 @@ class InvoiceTransactionBuilder
     /**
      * Extract common numeric values from an item and accumulate totals.
      *
+     * Money/decimal safety (bounded hardening, post-D-088): `unit_price *
+     * quantity` and the percentage-based VAT calculation are the two
+     * multiplication/division results in this builder -- the only
+     * operations that can introduce more than 2 decimal places. Every DB
+     * column downstream is `decimal(x,2)`; MySQL/MariaDB (production)
+     * silently rounds each row independently at insert time, but SQLite
+     * (every automated test) does not round at all (verified empirically),
+     * and rounding N related values independently, after the fact, does
+     * not guarantee their sum still equals exactly zero the way the
+     * balancing `buildCustomerTransaction()` line requires. Rounding here,
+     * immediately after the only multiplication/division in this method,
+     * before any further addition/subtraction, guarantees the exact same
+     * result on every database engine and preserves the SUM(transactions.
+     * value) = 0 invariant by construction, not by coincidence.
+     *
      * @return array{quantity: float, unitPrice: float, itemDiscount: float, itemVat: float, itemAmount: float}
      */
     private function extractItemValues(array $item): array
@@ -135,16 +150,44 @@ class InvoiceTransactionBuilder
         $unitPrice = $item['unit'];
         $itemDiscount = $item['unit_discount'] ?? 0;
         $vatIsValue = $item['vat_is_value'] ?? false;
-        $itemVat = $vatIsValue
-            ? floatval($item['vat'] ?? 0)
-            : (($item['vat'] ?? 0) / 100) * ($quantity * $unitPrice - $itemDiscount);
-        $itemAmount = $quantity * $unitPrice;
+        $itemVat = round(
+            $vatIsValue
+                ? floatval($item['vat'] ?? 0)
+                : (($item['vat'] ?? 0) / 100) * ($quantity * $unitPrice - $itemDiscount),
+            2
+        );
+        $itemAmount = round($quantity * $unitPrice, 2);
 
         $this->totalDiscount += $itemDiscount;
         $this->totalVat += $itemVat;
         $this->totalAmount += $itemAmount - $itemDiscount;
 
         return compact('quantity', 'unitPrice', 'itemDiscount', 'itemVat', 'itemAmount');
+    }
+
+    /**
+     * Money/decimal safety (Batch 2, Financial Integrity hardening chain):
+     * `extractItemValues()`'s docblock claimed unit_price*quantity and the
+     * VAT calculation were "the only operations that can introduce more
+     * than 2 decimal places" -- proven wrong empirically (a probe: buy at
+     * a clean 2-decimal average_cost, sell a fractional quantity, and
+     * `averageCost * quantity` in buildSellItemsTransactions() produces a
+     * 4-decimal value that DocumentService::createDocument()'s own
+     * validation rejects outright). The same shape of multiplication by a
+     * possibly-fractional `quantity` (a real `decimal(10,2)` column, not
+     * always a whole number) recurs in COG, return-cost, and
+     * irrevocable-ancillary-cost calculations throughout this class. Every
+     * transaction value now routes through this single choke point instead
+     * of being rounded ad hoc at each of the ~15 call sites, so no future
+     * addition to this class can reintroduce the same class of bug.
+     */
+    private function pushTransaction(?int $subjectId, string $desc, float $value): void
+    {
+        $this->transactions[] = [
+            'subject_id' => $subjectId,
+            'desc' => $desc,
+            'value' => round($value, 2),
+        ];
     }
 
     /**
@@ -215,29 +258,17 @@ class InvoiceTransactionBuilder
 
             // Sales revenue (credit)
             $subjectId = $product ? $product->income_subject_id : $service->subject_id;
-            $this->transactions[] = [
-                'subject_id' => $subjectId,
-                'desc' => $desc,
-                'value' => $vals['itemAmount'],
-            ];
+            $this->pushTransaction($subjectId, $desc, $vals['itemAmount']);
 
             // Inventory and cost of goods (products only)
             if ($product) {
                 $averageCost = $product->average_cost ?? 0;
 
                 // Inventory ← credit (decrease)
-                $this->transactions[] = [
-                    'subject_id' => $product->inventory_subject_id,
-                    'desc' => $desc,
-                    'value' => $averageCost * $vals['quantity'],
-                ];
+                $this->pushTransaction($product->inventory_subject_id, $desc, $averageCost * $vals['quantity']);
 
                 // Cost of goods sold ← debit
-                $this->transactions[] = [
-                    'subject_id' => $product->cogs_subject_id,
-                    'desc' => $this->cogsDescription(__('Cost of Goods Sold')),
-                    'value' => -$averageCost * $vals['quantity'],
-                ];
+                $this->pushTransaction($product->cogs_subject_id, $this->cogsDescription(__('Cost of Goods Sold')), -$averageCost * $vals['quantity']);
             }
         }
     }
@@ -265,20 +296,12 @@ class InvoiceTransactionBuilder
 
             if ($product) {
                 // Inventory ← debit
-                $this->transactions[] = [
-                    'subject_id' => $product->inventory_subject_id,
-                    'desc' => $desc,
-                    'value' => -($vals['unitPrice'] * $vals['quantity']),
-                ];
+                $this->pushTransaction($product->inventory_subject_id, $desc, -($vals['unitPrice'] * $vals['quantity']));
             }
 
             if ($service) {
                 // Cost of services (pure service invoice only)
-                $this->transactions[] = [
-                    'subject_id' => $service->cogs_subject_id,
-                    'desc' => $this->cogsDescription(__('Cost of Services')),
-                    'value' => -($vals['unitPrice'] * $vals['quantity']),
-                ];
+                $this->pushTransaction($service->cogs_subject_id, $this->cogsDescription(__('Cost of Services')), -($vals['unitPrice'] * $vals['quantity']));
             }
         }
     }
@@ -307,29 +330,17 @@ class InvoiceTransactionBuilder
 
             // Sales returns (debit)
             $subjectId = $product ? $product->sales_returns_subject_id : $service->sales_returns_subject_id;
-            $this->transactions[] = [
-                'subject_id' => $subjectId,
-                'desc' => $desc,
-                'value' => -$vals['itemAmount'],
-            ];
+            $this->pushTransaction($subjectId, $desc, -$vals['itemAmount']);
 
             // Inventory and cost of goods (products only)
             if ($product) {
                 $returnedCost = $this->getReturnedItemCost($product);
 
                 // Inventory ← debit (increase)
-                $this->transactions[] = [
-                    'subject_id' => $product->inventory_subject_id,
-                    'desc' => $desc,
-                    'value' => -$returnedCost * $vals['quantity'],
-                ];
+                $this->pushTransaction($product->inventory_subject_id, $desc, -$returnedCost * $vals['quantity']);
 
                 // Cost of goods sold ← credit (decrease)
-                $this->transactions[] = [
-                    'subject_id' => $product->cogs_subject_id,
-                    'desc' => $this->cogsDescription(__('Cost of Goods Sold')),
-                    'value' => $returnedCost * $vals['quantity'],
-                ];
+                $this->pushTransaction($product->cogs_subject_id, $this->cogsDescription(__('Cost of Goods Sold')), $returnedCost * $vals['quantity']);
             }
         }
     }
@@ -365,30 +376,21 @@ class InvoiceTransactionBuilder
                 }
 
                 // Inventory ← credit (decrease)
-                $this->transactions[] = [
-                    'subject_id' => $product->inventory_subject_id,
-                    'desc' => $desc,
-                    'value' => ($vals['unitPrice'] - $diff_cog_and_unitPrice) * $vals['quantity'],
-                ];
+                $this->pushTransaction($product->inventory_subject_id, $desc, ($vals['unitPrice'] - $diff_cog_and_unitPrice) * $vals['quantity']);
             }
 
             if ($service) {
                 // Cost of services (pure service invoice only)
-                $this->transactions[] = [
-                    'subject_id' => $service->cogs_subject_id,
-                    'desc' => $this->cogsDescription(__('Cost of Services')),
-                    'value' => $vals['unitPrice'] * $vals['quantity'],
-                ];
+                $this->pushTransaction($service->cogs_subject_id, $this->cogsDescription(__('Cost of Services')), $vals['unitPrice'] * $vals['quantity']);
             }
         }
 
         if ($diff_cog_and_unitPrice !== 0) {
-            $this->transactions[] = [
-                'subject_id' => config('amir.sundry_cost'),
-                'desc' => __('Irrevocable ancillary cost of').' '.__('Invoice').' '.$this->invoiceType->label()
-                    .' '.__(' with number ').' '.formatNumber($this->invoiceData['number']),
-                'value' => $diff_cog_and_unitPrice * $invoice_items_quantity_on_irrevocable_ancillary_costs,
-            ];
+            $this->pushTransaction(
+                config('amir.sundry_cost'),
+                __('Irrevocable ancillary cost of').' '.__('Invoice').' '.$this->invoiceType->label().' '.__(' with number ').' '.formatNumber($this->invoiceData['number']),
+                $diff_cog_and_unitPrice * $invoice_items_quantity_on_irrevocable_ancillary_costs
+            );
         }
     }
 
@@ -416,11 +418,7 @@ class InvoiceTransactionBuilder
             InvoiceType::RETURN_BUY => -$this->totalDiscount,
         };
 
-        $this->transactions[] = [
-            'subject_id' => $discountSubjectId,
-            'desc' => $this->invoiceType->label().' '.__('Invoice discount with number').' '.formatNumber($this->invoiceData['number']),
-            'value' => $value,
-        ];
+        $this->pushTransaction($discountSubjectId, $this->invoiceType->label().' '.__('Invoice discount with number').' '.formatNumber($this->invoiceData['number']), $value);
     }
 
     /**
@@ -443,11 +441,7 @@ class InvoiceTransactionBuilder
             InvoiceType::RETURN_BUY => $this->totalVat,
         };
 
-        $this->transactions[] = [
-            'subject_id' => $vatSubjectId,
-            'desc' => __('Invoice').' '.$this->invoiceType->label().' '.__(' with number ').' '.formatNumber($this->invoiceData['number']),
-            'value' => $value,
-        ];
+        $this->pushTransaction($vatSubjectId, __('Invoice').' '.$this->invoiceType->label().' '.__(' with number ').' '.formatNumber($this->invoiceData['number']), $value);
     }
 
     /**
@@ -470,11 +464,7 @@ class InvoiceTransactionBuilder
             InvoiceType::RETURN_BUY => -$this->subtractions,
         };
 
-        $this->transactions[] = [
-            'subject_id' => $subtractionSubjectId,
-            'desc' => $this->invoiceType->label().' '.__('Invoice subtraction with number').' '.formatNumber($this->invoiceData['number']),
-            'value' => $value,
-        ];
+        $this->pushTransaction($subtractionSubjectId, $this->invoiceType->label().' '.__('Invoice subtraction with number').' '.formatNumber($this->invoiceData['number']), $value);
     }
 
     /**
@@ -495,10 +485,6 @@ class InvoiceTransactionBuilder
             InvoiceType::RETURN_BUY => -$customerTotal,
         };
 
-        $this->transactions[] = [
-            'subject_id' => $subjectId,
-            'desc' => __('Invoice').' '.$this->invoiceType->label().' '.__(' with number ').' '.formatNumber($this->invoiceData['number']),
-            'value' => $value,
-        ];
+        $this->pushTransaction($subjectId, __('Invoice').' '.$this->invoiceType->label().' '.__(' with number ').' '.formatNumber($this->invoiceData['number']), $value);
     }
 }

@@ -76,7 +76,7 @@ class DocumentImportExportTest extends TestCase
 
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->company->users()->attach($this->user);
+        $this->company->users()->syncWithoutDetaching($this->user);
 
         foreach (['documents.create', 'documents.index', 'documents.export', 'documents.import'] as $perm) {
             $this->user->givePermissionTo(Permission::firstOrCreate(['name' => $perm]));

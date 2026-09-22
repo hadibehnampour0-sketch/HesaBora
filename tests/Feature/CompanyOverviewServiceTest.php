@@ -38,7 +38,7 @@ class CompanyOverviewServiceTest extends TestCase
         $company = Company::factory()->create(['fiscal_year' => 1405]);
         $this->companyId = $company->id;
         $this->user = User::factory()->create();
-        $company->users()->attach($this->user);
+        $company->users()->syncWithoutDetaching($this->user);
 
         $this->withCookies(['active-company-id' => (string) $this->companyId]);
         $_COOKIE['active-company-id'] = (string) $this->companyId;

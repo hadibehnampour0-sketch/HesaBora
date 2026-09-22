@@ -34,7 +34,7 @@ class SubjectTransferTest extends TestCase
 
         $this->user = User::factory()->create();
         $this->company = Company::factory()->create(['fiscal_year' => 1403]);
-        $this->user->companies()->attach([$this->company->id]);
+        $this->user->companies()->syncWithoutDetaching([$this->company->id]);
         $this->user->givePermissionTo(
             Permission::firstOrCreate(['name' => 'subjects.index']),
             Permission::firstOrCreate(['name' => 'subjects.destroy']),

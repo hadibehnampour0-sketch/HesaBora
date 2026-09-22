@@ -90,7 +90,7 @@ class CompanyAccessTest extends TestCase
     {
         $superAdmin = User::factory()->create();
         $superAdmin->assignRole(Role::firstOrCreate(['name' => 'Super-Admin']));
-        $this->accessibleCompany->users()->attach($superAdmin);
+        $this->accessibleCompany->users()->syncWithoutDetaching($superAdmin);
 
         $response = $this->actingAs($superAdmin)->withSession(['interface_mode' => 'management'])->get(route('companies.index'));
         $response->assertOk()->assertDontSee('data-testid="create-first-company"', false);

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -8,10 +9,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if ($this->isSqlite()) {
-            return;
-        }
-
         foreach ($this->schemaChanges() as $table => $columns) {
             foreach ($columns as $column => $definition) {
                 $this->convertToTinyInteger($table, $column, $definition['map'], $definition['integer_default'], $definition['nullable'] ?? false);
@@ -21,10 +18,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        if ($this->isSqlite()) {
-            return;
-        }
-
         foreach ($this->schemaChanges() as $table => $columns) {
             foreach ($columns as $column => $definition) {
                 $this->restoreToString($table, $column, $definition['map'], $definition['string_default'], $definition['nullable'] ?? false);
@@ -220,6 +213,8 @@ return new class extends Migration
     private function convertToTinyInteger(string $table, string $column, array $map, ?int $default, bool $nullable = false): void
     {
         if ($this->isSqlite()) {
+            $this->convertToTinyIntegerSqlite($table, $column, $map, $default, $nullable);
+
             return;
         }
 
@@ -264,6 +259,8 @@ return new class extends Migration
     private function restoreToString(string $table, string $column, array $map, ?string $default, bool $nullable = false): void
     {
         if ($this->isSqlite()) {
+            $this->restoreToStringSqlite($table, $column, $map, $default, $nullable);
+
             return;
         }
 
@@ -295,6 +292,104 @@ return new class extends Migration
             DB::table($table)->where(function ($query) use ($column, $validStringValues) {
                 $query->whereNull($column)->orWhereNotIn($column, $validStringValues);
             })->update([$column => $default]);
+        }
+    }
+
+    private function convertToTinyIntegerSqlite(string $table, string $column, array $map, ?int $default, bool $nullable = false): void
+    {
+        if (! Schema::hasTable($table)) {
+            return;
+        }
+
+        if (! $this->hasColumn($table, $column)) {
+            return;
+        }
+
+        if ($this->isIntegerColumn($table, $column)) {
+            // Already converted; just make sure no unexpected string values remain.
+            $this->normalizeSqliteValues($table, $column, $map, $default, $nullable);
+
+            return;
+        }
+
+        // Rebuild the column as tinyInteger first. This drops the CHECK
+        // constraint that SQLite generates for ENUM columns so the values can
+        // be rewritten as integers below.
+        Schema::table($table, function (Blueprint $table) use ($column, $default, $nullable) {
+            $columnDefinition = $table->tinyInteger($column);
+
+            if ($nullable) {
+                $columnDefinition->nullable();
+                $columnDefinition->default(null);
+            } else {
+                $columnDefinition->default($default);
+            }
+
+            $columnDefinition->change();
+        });
+
+        // Map the string enum values to their integer representations.
+        foreach ($map as $stringValue => $integerValue) {
+            DB::table($table)->where($column, $stringValue)->update([$column => $integerValue]);
+        }
+
+        $this->normalizeSqliteValues($table, $column, $map, $default, $nullable);
+    }
+
+    private function restoreToStringSqlite(string $table, string $column, array $map, ?string $default, bool $nullable = false): void
+    {
+        if (! Schema::hasTable($table)) {
+            return;
+        }
+
+        if (! $this->hasColumn($table, $column)) {
+            return;
+        }
+
+        if ($this->isStringColumn($table, $column)) {
+            return;
+        }
+
+        // Restore the integer values to their string representations.
+        $reverseMap = array_flip($map);
+
+        foreach ($reverseMap as $integerValue => $stringValue) {
+            DB::table($table)->where($column, (string) $integerValue)->update([$column => $stringValue]);
+        }
+
+        $validStringValues = array_keys($map);
+
+        if ($nullable) {
+            DB::table($table)->whereNotNull($column)->whereNotIn($column, $validStringValues)->update([$column => null]);
+        } else {
+            DB::table($table)
+                ->where(function ($query) use ($column, $validStringValues) {
+                    $query->whereNull($column)->orWhereNotIn($column, $validStringValues);
+                })->update([$column => $default]);
+        }
+
+        Schema::table($table, function (Blueprint $table) use ($column, $default, $nullable) {
+            $columnDefinition = $table->string($column, 50)->default($default);
+
+            if ($nullable) {
+                $columnDefinition->nullable();
+            }
+
+            $columnDefinition->change();
+        });
+    }
+
+    private function normalizeSqliteValues(string $table, string $column, array $map, ?int $default, bool $nullable): void
+    {
+        $validIntegerValues = array_map('strval', array_values($map));
+
+        if ($nullable) {
+            DB::table($table)->whereNotNull($column)->whereNotIn($column, $validIntegerValues)->update([$column => null]);
+        } else {
+            DB::table($table)
+                ->where(function ($query) use ($column, $validIntegerValues) {
+                    $query->whereNull($column)->orWhereNotIn($column, $validIntegerValues);
+                })->update([$column => (string) $default]);
         }
     }
 

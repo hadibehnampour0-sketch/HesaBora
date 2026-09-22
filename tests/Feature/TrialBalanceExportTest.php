@@ -30,7 +30,7 @@ class TrialBalanceExportTest extends TestCase
 
         $this->company = Company::factory()->create();
         $this->user = User::factory()->create();
-        $this->company->users()->attach($this->user);
+        $this->company->users()->syncWithoutDetaching($this->user);
 
         foreach (['reports.trial-balance', 'reports.trial-balance.export-csv'] as $perm) {
             $this->user->givePermissionTo(Permission::firstOrCreate(['name' => $perm]));

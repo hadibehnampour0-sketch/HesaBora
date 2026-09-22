@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\InvoiceType;
+use App\Enums\TaxDeductibleStatus;
 use App\Http\Requests\StoreAncillaryCostRequest;
 use App\Models\AncillaryCost;
 use App\Models\Customer;
@@ -12,6 +13,7 @@ use App\Models\Product;
 use App\Services\AncillaryCostService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AncillaryCostController extends Controller
 {
@@ -93,8 +95,8 @@ class AncillaryCostController extends Controller
 
         $approved = false;
         if ($request->has('approve')) {
+            abort_unless(auth()->user()->can('ancillary-costs.approve'), 403);
             $approved = true;
-            auth()->user()->can('ancillary-costs.approve');
         }
 
         if ($invoice) {
@@ -178,8 +180,8 @@ class AncillaryCostController extends Controller
 
         $approved = false;
         if ($request->has('approve')) {
+            abort_unless(auth()->user()->can('ancillary-costs.approve'), 403);
             $approved = true;
-            auth()->user()->can('ancillary-costs.approve');
         }
 
         if ($invoice) {
@@ -270,7 +272,7 @@ class AncillaryCostController extends Controller
                 ->with('error', __('Invalid status action.'));
         }
 
-        auth()->user()->can('ancillary-costs.approve');
+        abort_unless(auth()->user()->can('ancillary-costs.approve'), 403);
 
         if (! $service->getChangeStatusValidation($ancillaryCost)['allowed']) {
             return redirect()->back()->with('error', $service->getChangeStatusValidation($ancillaryCost)['reason']);
@@ -281,6 +283,24 @@ class AncillaryCostController extends Controller
         $message = $status === 'approve' ? __('Ancillary Cost approved successfully.') : __('Ancillary Cost unapproved successfully.');
 
         return redirect()->route('invoices.ancillary-costs.show', [$ancillaryCost->invoice_id, $ancillaryCost])->with('success', value: __($message));
+    }
+
+    /**
+     * P9.5 (Expense tax-deductibility classification). Deliberately a
+     * separate, single-purpose action -- classifying an already-existing
+     * ancillary cost for tax purposes is an accounting/tax concern, not
+     * part of editing its financial content, and does not require the
+     * `getEditDeleteStatus()` guard `update()` enforces.
+     */
+    public function setTaxDeductibleStatus(Request $request, AncillaryCost $ancillaryCost)
+    {
+        $validated = $request->validate([
+            'tax_deductible_status' => ['required', 'string', Rule::in(TaxDeductibleStatus::valueNames())],
+        ]);
+
+        $ancillaryCost->update(['tax_deductible_status' => $validated['tax_deductible_status']]);
+
+        return redirect()->back()->with('success', __('Tax deductibility status updated successfully.'));
     }
 
     private function ensureInvoiceMatchesAncillaryCost(?Invoice $invoice, AncillaryCost $ancillaryCost): void

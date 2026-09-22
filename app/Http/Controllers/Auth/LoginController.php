@@ -17,21 +17,37 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $this->normalizeEmail($request);
-
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'username' => ['required', 'string', 'max:255'],
             'password' => ['required'],
             'remember' => ['nullable', 'boolean'],
         ]);
 
         $remember = $request->boolean('remember');
-        unset($credentials['remember']);
+        // A Persian keyboard layout types Farsi digits (۰-۹) for numeric
+        // keys, so an all-digit username/password (like the seeded default
+        // admin password) silently fails to match unless normalized first —
+        // the same normalization already applied to the OTP field.
+        $identifier = toEnglish(trim($credentials['username']));
+        $password = toEnglish($credentials['password']);
 
-        if (! Auth::attempt($credentials, $remember)) {
+        $authenticated = Auth::attempt([
+            'username' => $identifier,
+            'password' => $password,
+        ], $remember);
+
+        // Backwards compatibility: accounts that predate username support log in with their email.
+        if (! $authenticated && str_contains($identifier, '@')) {
+            $authenticated = Auth::attempt([
+                'email' => $identifier,
+                'password' => $password,
+            ], $remember);
+        }
+
+        if (! $authenticated) {
             return back()->withErrors([
-                'email' => __('The provided credentials do not match our records.'),
-            ])->onlyInput('email', 'remember');
+                'username' => __('The provided credentials do not match our records.'),
+            ])->onlyInput('username', 'remember');
         }
 
         $request->session()->regenerate();
@@ -59,15 +75,6 @@ class LoginController extends Controller
         $request->session()->regenerateToken(); // Optional: Regenerate session token for CSRF protection
 
         return redirect('/login');
-    }
-
-    private function normalizeEmail(Request $request): void
-    {
-        if (is_string($request->input('email'))) {
-            $request->merge([
-                'email' => strtolower(trim($request->input('email'))),
-            ]);
-        }
     }
 
     public function locale(Request $request): RedirectResponse

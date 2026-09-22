@@ -33,7 +33,7 @@ class ServiceImportExportTest extends TestCase
         $this->companyId = $company->id;
 
         $this->user = User::factory()->create();
-        $company->users()->attach($this->user);
+        $company->users()->syncWithoutDetaching($this->user);
 
         $this->user->givePermissionTo([
             Permission::firstOrCreate(['name' => 'services.index']),
@@ -239,5 +239,19 @@ class ServiceImportExportTest extends TestCase
         $response->assertSessionHasErrors('file');
         $this->assertDatabaseMissing('services', ['name' => 'Good Service']);
         $this->assertDatabaseMissing('services', ['name' => 'Bad Service']);
+    }
+
+    /**
+     * Security (Workstream T): StoreServiceRequest's own name validation
+     * rejects `<`/`>`/`"`/`'` on the web form; this import path previously
+     * applied no such restriction at all. See ProductImportService's
+     * identical fix.
+     */
+    public function test_import_rejects_a_service_name_containing_html_markup(): void
+    {
+        $csv = "name,group_name\n"."<script>alert(1)</script>,{$this->serviceGroup->name}\n";
+        $response = $this->actingAs($this->user)->post(route('services.import.store'), ['file' => $this->upload($csv)]);
+        $response->assertSessionHasErrors('file');
+        $this->assertDatabaseCount('services', 0);
     }
 }

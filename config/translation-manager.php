@@ -12,7 +12,7 @@ return [
     */
     'route' => [
         'prefix' => 'translations',
-        // 'middleware' => 'auth',
+        'middleware' => ['web', 'auth', 'permission:access-super-admin-panel'],
     ],
 
     /**

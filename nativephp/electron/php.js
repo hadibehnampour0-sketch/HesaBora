@@ -1,8 +1,10 @@
 import fs from 'fs';
 import fs_extra from 'fs-extra';
+import { createRequire } from 'module';
 import { join } from 'path';
-import unzip from 'yauzl';
+import { execSync } from 'child_process';
 const { removeSync, ensureDirSync } = fs_extra;
+const require = createRequire(import.meta.url);
 
 const isBuilding = Boolean(process.env.NATIVEPHP_BUILDING);
 const phpBinaryPath = process.env.NATIVEPHP_PHP_BINARY_PATH;
@@ -63,35 +65,19 @@ if (platform.phpBinary) {
 
         ensureDirSync(binaryDestDir);
 
-        // Unzip the files
-        unzip.open(binarySrcDir, { lazyEntries: true }, function (err, zipfile) {
-            if (err) throw err;
-            zipfile.readEntry();
-            zipfile.on('entry', function (entry) {
-                zipfile.openReadStream(entry, function (err, readStream) {
-                    if (err) throw err;
-
-                    const binaryPath = join(binaryDestDir, platform.phpBinary);
-                    const writeStream = fs.createWriteStream(binaryPath);
-
-                    readStream.pipe(writeStream);
-
-                    writeStream.on('close', function () {
-                        console.log('Copied PHP binary to ', binaryPath);
-
-                        // Add execute permissions
-                        fs.chmod(binaryPath, 0o755, (err) => {
-                            if (err) {
-                                console.log(`Error setting permissions: ${err}`);
-                            }
-                        });
-
-                        zipfile.readEntry();
-                    });
-                });
-            });
+        // Unzip the files with 7za (yauzl streaming truncates large binaries)
+        const sevenZip = require('7zip-bin');
+        execSync(`"${sevenZip.path7za}" e "${binarySrcDir}" -o"${binaryDestDir}" -y`, {
+            stdio: 'inherit',
         });
+
+        const binaryPath = join(binaryDestDir, platform.phpBinary);
+        console.log('Copied PHP binary to ', binaryPath);
+
+        // Add execute permissions
+        fs.chmodSync(binaryPath, 0o755);
     } catch (e) {
         console.error('Error copying PHP binary', e);
+        process.exit(1);
     }
 }

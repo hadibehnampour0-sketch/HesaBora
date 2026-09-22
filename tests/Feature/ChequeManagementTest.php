@@ -585,6 +585,100 @@ class ChequeManagementTest extends TestCase
         $this->assertEqualsWithDelta(400, app(PaymentService::class)->remainingAmount($invoice), 0.01);
     }
 
+    public function test_bouncing_a_received_settlement_cheque_restores_invoice_status(): void
+    {
+        $invoice = $this->invoice(InvoiceType::SELL, $this->customer, 1000);
+        $cheque = $this->service->register($this->user, $this->invoiceChequeData($invoice, ChequeType::RECEIVABLE, 1000));
+        $registrationPaymentId = $invoice->payments()->firstOrFail()->id;
+        $this->assertTrue($invoice->fresh()->status->isPaid());
+
+        $cheque = $this->service->transition($cheque, $this->user, 'deposit', ['bank_account_id' => $this->account->id]);
+        $cheque = $this->service->transition($cheque, $this->user, 'bounce');
+
+        $this->assertSame(ChequeType::BOUNCED, $cheque->status);
+        $this->assertNull(Payment::find($registrationPaymentId));
+        $this->assertTrue($invoice->fresh()->status->isApproved());
+        $this->assertEqualsWithDelta(1000, app(PaymentService::class)->remainingAmount($invoice->fresh()), 0.01);
+    }
+
+    public function test_bouncing_an_issued_settlement_cheque_restores_invoice_status(): void
+    {
+        $invoice = $this->invoice(InvoiceType::BUY, $this->vendor, 1000);
+        $cheque = $this->service->register($this->user, $this->invoiceChequeData($invoice, ChequeType::PAYABLE, 1000));
+        $registrationPaymentId = $invoice->payments()->firstOrFail()->id;
+        $this->assertTrue($invoice->fresh()->status->isPaid());
+
+        $cheque = $this->service->transition($cheque, $this->user, 'bounce');
+
+        $this->assertSame(ChequeType::BOUNCED, $cheque->status);
+        $this->assertNull(Payment::find($registrationPaymentId));
+        $this->assertTrue($invoice->fresh()->status->isApproved());
+        $this->assertEqualsWithDelta(1000, app(PaymentService::class)->remainingAmount($invoice->fresh()), 0.01);
+    }
+
+    /**
+     * Financial Integrity Closure Batch, Section 5 finding: returning a
+     * received cheque to the customer without ever depositing it must
+     * restore the invoice's status exactly like bouncing does -- the
+     * cheque was never actually collected. Zero test coverage existed
+     * for the 'return' action before this fix.
+     */
+    public function test_returning_a_received_cheque_restores_invoice_status(): void
+    {
+        $invoice = $this->invoice(InvoiceType::SELL, $this->customer, 1000);
+        $cheque = $this->service->register($this->user, $this->invoiceChequeData($invoice, ChequeType::RECEIVABLE, 1000));
+        $registrationPaymentId = $invoice->payments()->firstOrFail()->id;
+        $this->assertTrue($invoice->fresh()->status->isPaid());
+
+        $cheque = $this->service->transition($cheque, $this->user, 'return');
+
+        $this->assertSame(ChequeType::RETURNED, $cheque->status);
+        $this->assertNull(Payment::find($registrationPaymentId));
+        $this->assertTrue($invoice->fresh()->status->isApproved());
+        $this->assertEqualsWithDelta(1000, app(PaymentService::class)->remainingAmount($invoice->fresh()), 0.01);
+    }
+
+    public function test_returning_a_cheque_not_linked_to_an_invoice_does_not_error(): void
+    {
+        $cheque = $this->service->register($this->user, $this->data(ChequeType::RECEIVABLE, ChequeType::SETTLEMENT, $this->customer));
+
+        $cheque = $this->service->transition($cheque, $this->user, 'return');
+
+        $this->assertSame(ChequeType::RETURNED, $cheque->status);
+    }
+
+    /**
+     * Financial Integrity Closure Batch, Section 5 finding: the same gap
+     * as 'return' exists for 'cancel' on an issued payable cheque -- it is
+     * reachable directly from ISSUED (a mistakenly-issued cheque cancelled
+     * before ever being given to the vendor/deposited) and, like 'return',
+     * never reversed the invoice payment credit registration created.
+     */
+    public function test_cancelling_an_issued_cheque_restores_invoice_status(): void
+    {
+        $invoice = $this->invoice(InvoiceType::BUY, $this->vendor, 1000);
+        $cheque = $this->service->register($this->user, $this->invoiceChequeData($invoice, ChequeType::PAYABLE, 1000));
+        $registrationPaymentId = $invoice->payments()->firstOrFail()->id;
+        $this->assertTrue($invoice->fresh()->status->isPaid());
+
+        $cheque = $this->service->transition($cheque, $this->user, 'cancel');
+
+        $this->assertSame(ChequeType::CANCELLED, $cheque->status);
+        $this->assertNull(Payment::find($registrationPaymentId));
+        $this->assertTrue($invoice->fresh()->status->isApproved());
+        $this->assertEqualsWithDelta(1000, app(PaymentService::class)->remainingAmount($invoice->fresh()), 0.01);
+    }
+
+    public function test_bouncing_a_cheque_not_linked_to_an_invoice_does_not_error(): void
+    {
+        $cheque = $this->receivedCheque();
+        $cheque = $this->service->transition($cheque, $this->user, 'deposit', ['bank_account_id' => $this->account->id]);
+
+        $cheque = $this->service->transition($cheque, $this->user, 'bounce');
+
+        $this->assertSame(ChequeType::BOUNCED, $cheque->status);
+    }
+
     public function test_deleting_invoice_cheque_payment_removes_all_cheque_records_and_restores_invoice_status(): void
     {
         $this->withoutMiddleware(CheckPermission::class);

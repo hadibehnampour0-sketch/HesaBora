@@ -32,7 +32,7 @@ class PayrollWorkflowTest extends TestCase
         $this->companyId = $company->id;
 
         $this->user = User::factory()->create();
-        $company->users()->attach($this->user);
+        $company->users()->syncWithoutDetaching($this->user);
         $this->actingAs($this->user);
         $this->withCookies(['active-company-id' => $this->companyId]);
 

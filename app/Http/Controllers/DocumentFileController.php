@@ -33,6 +33,7 @@ class DocumentFileController extends Controller
 
     public function edit(Document $document, DocumentFile $documentFile)
     {
+        abort_unless($documentFile->document_id === $document->id, 404);
         $document = $documentFile->document;
 
         return view('documents.documentFiles.edit', compact('documentFile', 'document'));
@@ -40,6 +41,8 @@ class DocumentFileController extends Controller
 
     public function update(StoreDocumentFileRequest $request, Document $document, DocumentFile $documentFile)
     {
+        abort_unless($documentFile->document_id === $document->id, 404);
+
         $validated = $request->validated();
         $validated['user_id'] ??= $request->user()->id;
 
@@ -50,6 +53,7 @@ class DocumentFileController extends Controller
 
     public function destroy(Document $document, DocumentFile $documentFile)
     {
+        abort_unless($documentFile->document_id === $document->id, 404);
         $documentId = $documentFile->document_id;
 
         $this->service->delete($documentFile);
@@ -59,6 +63,8 @@ class DocumentFileController extends Controller
 
     public function view(Document $document, DocumentFile $documentFile)
     {
+        abort_unless($documentFile->document_id === $document->id, 404);
+
         $disk = Storage::disk('public');
         $path = $this->service->resolvePath($documentFile);
 
@@ -71,6 +77,8 @@ class DocumentFileController extends Controller
 
     public function download(Document $document, DocumentFile $documentFile)
     {
+        abort_unless($documentFile->document_id === $document->id, 404);
+
         $disk = Storage::disk('public');
         $path = $this->service->resolvePath($documentFile);
 

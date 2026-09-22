@@ -24,6 +24,18 @@ enum InvoiceStatus: int
 
     case PAID = 9;
 
+    /**
+     * P7.1 (Approval Chains). The first-approval step of a two-step chain
+     * has been done, but the invoice is NOT yet posted -- no Document, no
+     * stock movement, exactly like PENDING/READY_TO_APPROVE. Only entered
+     * when the invoice amount is at/above the company's configured
+     * approval-chain threshold; every invoice below threshold (or when no
+     * threshold is configured) skips this status entirely and goes
+     * straight from PENDING/READY_TO_APPROVE to APPROVED, unchanged from
+     * before this feature existed.
+     */
+    case PENDING_FINAL_APPROVAL = 10;
+
     public function label(): string
     {
         return match ($this) {
@@ -36,6 +48,7 @@ enum InvoiceStatus: int
             self::READY_TO_APPROVE => __('ready to approve'),
             self::PARTIALLY_PAID => __('Partially paid'),
             self::PAID => __('Paid'),
+            self::PENDING_FINAL_APPROVAL => __('pending final approval'),
         };
     }
 
@@ -51,6 +64,7 @@ enum InvoiceStatus: int
             self::READY_TO_APPROVE => 'ready_to_approve',
             self::PARTIALLY_PAID => 'partially_paid',
             self::PAID => 'paid',
+            self::PENDING_FINAL_APPROVAL => 'pending_final_approval',
         };
     }
 
@@ -140,5 +154,10 @@ enum InvoiceStatus: int
     public function isUnapproved(): bool
     {
         return $this === self::UNAPPROVED;
+    }
+
+    public function isPendingFinalApproval(): bool
+    {
+        return $this === self::PENDING_FINAL_APPROVAL;
     }
 }

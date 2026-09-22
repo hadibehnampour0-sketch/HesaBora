@@ -108,7 +108,7 @@
     </li>
 @endcanany
 @canany(['reports.documents', 'reports.journal', 'reports.ledger', 'reports.sub-ledger', 'reports.trial-balance',
-    'reports.cost-income', 'budgets.index', 'reports.company-overview'])
+    'reports.cost-income', 'budgets.index', 'reports.company-overview', 'ageing.receivables', 'ageing.payables'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary>{{ __('Reports') }}</summary>
@@ -142,6 +142,21 @@
                                 @endcan
                                 @can('reports.trial-balance')
                                     <li><a href="{{ route('reports.trial-balance') }}">{{ __('Trial Balance') }}</a></li>
+                                @endcan
+                            </ul>
+                        </details>
+                    </li>
+                @endcanany
+                @canany(['ageing.receivables', 'ageing.payables'])
+                    <li>
+                        <details>
+                            <summary>{{ __('AR / AP Ageing') }}</summary>
+                            <ul>
+                                @can('ageing.receivables')
+                                    <li><a href="{{ route('ageing.receivables') }}">{{ __('Accounts Receivable Ageing') }}</a></li>
+                                @endcan
+                                @can('ageing.payables')
+                                    <li><a href="{{ route('ageing.payables') }}">{{ __('Accounts Payable Ageing') }}</a></li>
                                 @endcan
                             </ul>
                         </details>

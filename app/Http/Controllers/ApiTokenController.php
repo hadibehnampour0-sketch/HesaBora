@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\ApiTokenAbilityService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -32,9 +33,12 @@ class ApiTokenController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'permissions' => ['required', 'array', 'min:1'],
             'permissions.*' => ['required', 'string', Rule::in($availablePermissions)],
+            'expires_at' => ['nullable', 'date', 'after:now'],
         ]);
 
-        $token = $request->user()->createToken($validated['name'], $validated['permissions']);
+        $expiresAt = isset($validated['expires_at']) ? Carbon::parse($validated['expires_at']) : null;
+
+        $token = $request->user()->createToken($validated['name'], $validated['permissions'], $expiresAt);
 
         return redirect()->route('api-tokens.index')
             ->with('success', __('API token created successfully.'))

@@ -1,5 +1,13 @@
 <x-app-layout :title="$isServiceBuy ? __('Create') . ' ' . __('Service Buy Invoice') : __('Create Invoice')">
-    <div>
+    @php
+        $invoice = $invoice ?? new \App\Models\Invoice();
+        // P8.2 (Zero-Knowledge UX): the guided wizard is scoped to a brand
+        // new Sell invoice in Simple mode -- editing an existing invoice
+        // always uses the full form regardless of mode, and every other
+        // invoice type/edit flow is completely untouched.
+        $isSellWizard = $invoice_type === 'sell' && ! $invoice->exists && auth()->user()->isSimpleMode();
+    @endphp
+    <div @if ($isSellWizard) x-data="{ step: 1, wizardMode: true }" @endif>
         <form action="{{ route('invoices.store') }}" method="POST">
             @csrf
             <div class="card-body">
@@ -12,10 +20,17 @@
                 </h2>
                 <x-show-message-bags />
 
-                @php($invoice = $invoice ?? new \App\Models\Invoice())
+                @if ($isSellWizard)
+                    <ul class="steps w-full mb-4">
+                        <li class="step" :class="{ 'step-primary': step >= 1 }">{{ __('Buyer & invoice info') }}</li>
+                        <li class="step" :class="{ 'step-primary': step >= 2 }">{{ __('Items & discounts') }}</li>
+                        <li class="step" :class="{ 'step-primary': step >= 3 }">{{ __('Description & submit') }}</li>
+                    </ul>
+                @endif
+
                 @switch($invoice_type)
                     @case('sell')
-                        @include('invoices.forms.sell')
+                        @include('invoices.forms.sell', ['wizardMode' => $isSellWizard])
                     @break
 
                     @case('buy')

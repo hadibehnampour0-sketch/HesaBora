@@ -139,8 +139,32 @@ class ProductImportService
                     $this->fail(__('Line :line: product name is required.', ['line' => $line]));
                 }
 
+                // Security: a deliberately narrower check than
+                // StoreProductRequest/UpdateProductRequest's own character
+                // allowlist regex -- that regex's `\w` doesn't match Persian
+                // typography's zero-width non-joiner (used in compound words
+                // like "نوشت‌افزار"), which real Persian product names
+                // legitimately contain, so mechanically copying it here would
+                // reject valid business data the web form's own imperfect
+                // regex happens not to encounter in practice. The actual
+                // security goal is narrower: an imported CSV must not be a
+                // way to store raw HTML/script markup in a name that later
+                // renders unescaped in invoice conflict messages (see
+                // InvoiceStatusDecision::formatConflicts()) -- so this rejects
+                // only the specific characters that make that possible.
+                if (preg_match('/[<>"\'`]/u', $name)) {
+                    $this->fail(__('Line :line: product name contains characters that are not allowed.', ['line' => $line]));
+                }
+
                 if ($groupName === '') {
                     $this->fail(__('Line :line: group name is required.', ['line' => $line]));
+                }
+
+                // Security: same narrower denylist as the product name check
+                // above, for the same reason (ProductGroupController's own
+                // regex has the same Persian-ZWNJ gap).
+                if (preg_match('/[<>"\'`]/u', $groupName)) {
+                    $this->fail(__('Line :line: group name contains characters that are not allowed.', ['line' => $line]));
                 }
 
                 // 1. Resolve the group: reuse an existing one with the same name, otherwise create it.

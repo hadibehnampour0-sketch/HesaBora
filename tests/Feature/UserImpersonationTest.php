@@ -41,7 +41,7 @@ class UserImpersonationTest extends TestCase
         $user->assignRole($role);
 
         if ($company) {
-            $user->companies()->attach($company);
+            $user->companies()->syncWithoutDetaching($company);
         }
 
         return $user;
@@ -179,7 +179,7 @@ class UserImpersonationTest extends TestCase
     {
         $company = $this->company('Shared Company');
         $actor = User::factory()->create();
-        $actor->companies()->attach($company);
+        $actor->companies()->syncWithoutDetaching($company);
         $actor->givePermissionTo($this->impersonationPermission());
         $target = $this->userWithRole('Employee', $company);
         $this->setActiveCompany($company);
@@ -279,7 +279,7 @@ class UserImpersonationTest extends TestCase
 
         foreach (['Admin', 'Accountant', 'Warehousekeeper', 'Seller', 'Employee', null] as $targetRole) {
             $target = $targetRole === null ? User::factory()->create(['email_verified_at' => null]) : $this->userWithRole($targetRole, attributes: ['email_verified_at' => null]);
-            $target->companies()->attach($company);
+            $target->companies()->syncWithoutDetaching($company);
             $targets[] = $target;
 
             $this->actingAs($superAdmin)->post(route('users.impersonate', $target))->assertRedirect(route('about'));
@@ -417,7 +417,7 @@ class UserImpersonationTest extends TestCase
 
         foreach (['Admin', 'Accountant', 'Warehousekeeper', 'Seller', 'Employee', null] as $targetRole) {
             $target = $targetRole === null ? User::factory()->create() : $this->userWithRole($targetRole);
-            $target->companies()->attach($company);
+            $target->companies()->syncWithoutDetaching($company);
 
             $this->post(route('users.impersonate', $target))->assertRedirect(route('about'));
             $this->assertAuthenticatedAs($target);
@@ -448,7 +448,7 @@ class UserImpersonationTest extends TestCase
 
         foreach (['Admin', 'Accountant', 'Warehousekeeper', 'Seller', 'Employee', null] as $targetRole) {
             $target = $targetRole === null ? User::factory()->create() : $this->userWithRole($targetRole);
-            $target->companies()->attach($company);
+            $target->companies()->syncWithoutDetaching($company);
 
             $this->post(route('users.impersonate', $target))->assertRedirect(route('about'));
             $this->assertAuthenticatedAs($target);
@@ -476,7 +476,7 @@ class UserImpersonationTest extends TestCase
         $company = $this->company('Shared Company');
         $accountant = $this->userWithRole('Accountant', $company, canImpersonate: true);
         $target = User::factory()->create();
-        $target->companies()->attach($company);
+        $target->companies()->syncWithoutDetaching($company);
         $target->assignRole([
             $this->role('Accountant'),
             $this->role('Seller'),
@@ -494,7 +494,7 @@ class UserImpersonationTest extends TestCase
         $company = $this->company('Shared Company');
         $accountant = $this->userWithRole('Accountant', $company, canImpersonate: true);
         $target = User::factory()->create();
-        $target->companies()->attach($company);
+        $target->companies()->syncWithoutDetaching($company);
         $target->assignRole([
             $this->role('Seller'),
             $this->role('Warehousekeeper'),
@@ -544,7 +544,7 @@ class UserImpersonationTest extends TestCase
         $activeCompany = $this->company('Active Company');
         $secondCompany = $this->company('Second Company');
         $admin = $this->userWithRole('Admin', $activeCompany, canImpersonate: true);
-        $admin->companies()->attach($secondCompany);
+        $admin->companies()->syncWithoutDetaching($secondCompany);
         $target = $this->userWithRole('Employee', $secondCompany);
         $this->setActiveCompany($activeCompany);
 
@@ -560,7 +560,7 @@ class UserImpersonationTest extends TestCase
         $inaccessibleCompany = $this->company('Inaccessible Company');
         $admin = $this->userWithRole('Admin', $ownCompany, canImpersonate: true);
         $target = $this->userWithRole('Employee', $ownCompany);
-        $target->companies()->attach($inaccessibleCompany);
+        $target->companies()->syncWithoutDetaching($inaccessibleCompany);
         $this->setActiveCompany($ownCompany);
 
         $this->actingAs($admin)->post(route('users.impersonate', $target))->assertForbidden();
@@ -573,9 +573,9 @@ class UserImpersonationTest extends TestCase
         $activeCompany = $this->company('Active Company');
         $secondCompany = $this->company('Second Company');
         $admin = $this->userWithRole('Admin', $activeCompany, canImpersonate: true);
-        $admin->companies()->attach($secondCompany);
+        $admin->companies()->syncWithoutDetaching($secondCompany);
         $target = $this->userWithRole('Employee', $activeCompany);
-        $target->companies()->attach($secondCompany);
+        $target->companies()->syncWithoutDetaching($secondCompany);
         $this->setActiveCompany($activeCompany);
 
         $this->actingAs($admin)->withCookie('active-company-id', (string) $activeCompany->id)
@@ -663,10 +663,10 @@ class UserImpersonationTest extends TestCase
 
         $admin = User::factory()->create();
         $admin->assignRole($adminRole);
-        $admin->companies()->attach($company);
+        $admin->companies()->syncWithoutDetaching($company);
         $target = User::factory()->create();
         $target->assignRole($employeeRole);
-        $target->companies()->attach($company);
+        $target->companies()->syncWithoutDetaching($company);
         app()->setLocale('en');
         $this->setActiveCompany($company);
 

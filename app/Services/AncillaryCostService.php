@@ -103,6 +103,7 @@ class AncillaryCostService
                 'amount' => $data['amount'],
                 'vat' => $data['vatPrice'] ?? 0,
                 'status' => InvoiceStatus::UNAPPROVED,
+                'created_by' => auth()->id(),
             ]);
 
             self::syncAncillaryCostItems($ancillaryCost, $data['ancillaryCosts'] ?? []);
@@ -201,9 +202,25 @@ class AncillaryCostService
      *
      * @throws Exception
      */
+    /**
+     * Concurrency (Workstream S, Phase 3, Area 3): `destroy()` validates
+     * via `getEditDeleteStatus()` against the route-bound instance, then
+     * calls this method with that SAME possibly-stale instance -- the
+     * same "check-then-act on a stale object" shape as guardrail #23,
+     * here on the rarer deletion path rather than approve/reject. If the
+     * record were approved by someone else between the controller's
+     * check and this call, `$wasApproved` below would incorrectly read
+     * false from the stale instance, skipping the average-cost reversal
+     * while still deleting an actually-approved record. Locked and
+     * refreshed for consistency with every other status-dependent
+     * mutation fixed this phase.
+     */
     public static function deleteAncillaryCost(AncillaryCost $ancillaryCost): void
     {
         DB::transaction(function () use ($ancillaryCost) {
+            $locked = AncillaryCost::query()->lockForUpdate()->findOrFail($ancillaryCost->id);
+            $ancillaryCost->setRawAttributes($locked->getAttributes(), true);
+
             $invoice = $ancillaryCost->invoice;
             $wasApproved = $ancillaryCost->status->isApproved();
 
@@ -296,12 +313,44 @@ class AncillaryCostService
         }
     }
 
+    /**
+     * Final Marathon Closure Pass finding: the exact same double-post bug
+     * as InvoiceService's approve/unapprove -- toggleInvoiceApproval()
+     * unconditionally created a Document/adjusted average cost with no
+     * check that the ancillary cost wasn't already in the target status. A
+     * plain double-click/resubmit of "approve" against an already-approved
+     * ancillary cost silently created a second, orphaned Document (two
+     * ledger entries for one approval) -- empirically confirmed, no
+     * concurrency required. Already being in the requested status is now a
+     * safe idempotent no-op, the same principle applied to Invoice's
+     * userFacingApproveInvoice()/unapproveInvoice().
+     *
+     * Concurrency (Workstream S): identical race to InvoiceService::
+     * changeInvoiceStatus() -- two concurrent requests both reading the
+     * same not-yet-approved status would both run toggleInvoiceApproval(),
+     * creating a second, orphaned Document. Fixed the same way: a row
+     * lock, with the authoritative status re-read into $ancillaryCost's
+     * OWN attributes (setRawAttributes(), not a separate instance) so
+     * callers relying on the same mutated object still see the result --
+     * notably GroupActionService::inactivateDependentInvoices(), which
+     * calls changeAncillaryCostStatus($ancillaryCost, 'unapprove') and
+     * then immediately sets $ancillaryCost->status =
+     * InvoiceStatus::APPROVED_INACTIVE and saves the SAME instance; a
+     * detached $locked instance instead of setRawAttributes() would have
+     * left that subsequent save() overwriting a stale, pre-unapprove
+     * document_id.
+     */
     public function changeAncillaryCostStatus(AncillaryCost $ancillaryCost, string $status): void
     {
         DB::transaction(function () use ($ancillaryCost, $status) {
+            $locked = AncillaryCost::query()->lockForUpdate()->findOrFail($ancillaryCost->id);
+            $ancillaryCost->setRawAttributes($locked->getAttributes(), true);
+
+            $isApproved = $ancillaryCost->status->isApproved();
+
             match ($status) {
-                'approve' => $this->toggleInvoiceApproval($ancillaryCost, true),
-                'unapprove' => $this->toggleInvoiceApproval($ancillaryCost, false),
+                'approve' => $isApproved ? null : $this->toggleInvoiceApproval($ancillaryCost, true),
+                'unapprove' => $isApproved ? $this->toggleInvoiceApproval($ancillaryCost, false) : null,
                 default => null,
             };
         });
@@ -310,6 +359,8 @@ class AncillaryCostService
     private function toggleInvoiceApproval(AncillaryCost $ancillaryCost, bool $approve): void
     {
         if ($approve) {
+            app(SegregationOfDutiesService::class)->guardAgainstSelfApproval($ancillaryCost, $ancillaryCost->created_by, 'ancillary_cost');
+
             $ancillaryCost->status = InvoiceStatus::APPROVED;
 
             $createdDocument = self::createDocumentFromAncillaryCostItems(auth()->user(), $ancillaryCost);

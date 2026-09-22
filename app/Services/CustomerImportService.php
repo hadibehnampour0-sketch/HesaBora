@@ -102,8 +102,22 @@ class CustomerImportService
                     throw ValidationException::withMessages(['file' => __('Line :line: customer name is required.', ['line' => $line])]);
                 }
 
+                // Security (Workstream T): StoreCustomerRequest's own name
+                // validation rejects `<`/`>`/`"`/`'`; this import path
+                // previously applied no such restriction at all. See
+                // ProductImportService's identical fix and
+                // InvoiceStatusDecision::formatConflicts() for the class of
+                // rendering-side risk this closes off preventively.
+                if (preg_match('/[<>"\'`]/u', $name)) {
+                    throw ValidationException::withMessages(['file' => __('Line :line: customer name contains characters that are not allowed.', ['line' => $line])]);
+                }
+
                 if ($groupName === '') {
                     throw ValidationException::withMessages(['file' => __('Line :line: group name is required.', ['line' => $line])]);
+                }
+
+                if (preg_match('/[<>"\'`]/u', $groupName)) {
+                    throw ValidationException::withMessages(['file' => __('Line :line: group name contains characters that are not allowed.', ['line' => $line])]);
                 }
 
                 // 1. Resolve the group: reuse an existing one with the same name, otherwise create it.

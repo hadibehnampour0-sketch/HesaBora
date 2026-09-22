@@ -15,7 +15,7 @@ return [
      * usually in the form of a reverse domain name.
      * For example: com.nativephp.app
      */
-    'app_id' => env('NATIVEPHP_APP_ID', 'ir.freeamir.app'),
+    'app_id' => env('NATIVEPHP_APP_ID', 'ir.dakhl.app'),
 
     /**
      * If your application allows deep linking, you can specify the scheme
@@ -41,12 +41,12 @@ return [
     /**
      * The description of your application.
      */
-    'description' => env('NATIVEPHP_APP_DESCRIPTION', 'Free Laravel Accounting Software'),
+    'description' => env('NATIVEPHP_APP_DESCRIPTION', 'Dakhl — Free Laravel Accounting Software'),
 
     /**
      * The Website of your application.
      */
-    'website' => env('NATIVEPHP_APP_WEBSITE', 'https://freeamir.ir'),
+    'website' => env('NATIVEPHP_APP_WEBSITE', 'https://dakhl.ir'),
 
     /**
      * The default service provider for your application. This provider
@@ -65,8 +65,10 @@ return [
         'AZURE_*',
         'GITHUB_*',
         'DO_SPACES_*',
+        'DB_*',
+        'DEPLOY_*',
+        'MAIL_PASSWORD',
         '*_SECRET',
-        'BIFROST_*',
         'NATIVEPHP_UPDATER_PATH',
         'NATIVEPHP_APPLE_ID',
         'NATIVEPHP_APPLE_ID_PASS',

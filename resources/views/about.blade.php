@@ -14,10 +14,10 @@
         <section class="card border border-base-300 bg-base-100/90 shadow-sm">
             <div class="card-body flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-5">
                 <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                    <img src="/images/logo.png" alt="FreeAmir" class="h-10 w-10 object-contain">
+                    <img src="/images/logo.svg" alt="Dakhl" class="h-10 w-10 object-contain">
                 </div>
                 <div class="text-center sm:text-start">
-                    <h2 class="text-xl font-bold">FreeAmir</h2>
+                    <h2 class="text-xl font-bold">Dakhl</h2>
                     <div class="mt-1 flex flex-wrap items-center justify-center gap-2 sm:justify-start">
                         <span class="badge badge-primary badge-sm font-mono">{{ __('about.version') }}: {{ $version }}</span>
                         <span @class([

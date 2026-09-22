@@ -72,8 +72,11 @@ class StoreProductRequest extends FormRequest
         $validatedData = $this->validated();
 
         if (empty($validatedData['code'])) {
-            $maxCode = Product::where('company_id', getActiveCompany())->whereRaw('code REGEXP "^[0-9]+$"')
-                ->selectRaw('MAX(CAST(code AS UNSIGNED)) AS max_code')->value('max_code');
+            $maxCode = Product::where('company_id', getActiveCompany())
+                ->pluck('code')
+                ->filter(fn ($code) => is_string($code) && preg_match('/^[0-9]+$/', $code) === 1)
+                ->map(fn ($code) => (int) $code)
+                ->max();
 
             $validatedData['code'] = ($maxCode ?: 0) + 1;
         }

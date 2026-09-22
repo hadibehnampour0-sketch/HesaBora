@@ -26,6 +26,25 @@ class CostOfGoodsService
      *
      * @throws \Exception May throw exceptions related to database operations during save
      */
+    /**
+     * Concurrency (Workstream S, Phase 3, Area 2): same structural
+     * inconsistency as `ProductService::addProductsQuantities()` (fixed
+     * this phase) -- `$product->average_cost` is read via the invoice
+     * item's `itemable` relation (a plain, non-locking read) and later
+     * saved with no lock, while the sibling per-warehouse stock update
+     * right next to it in the SAME approval flow is correctly locked.
+     * Defensive hardening, matching that established pattern, rather
+     * than an independently proven exploitable race: this calculation's
+     * dependency on an ordered sequence of prior invoices for the same
+     * product makes constructing a clean two-connection proof
+     * significantly more involved than the quantity case, and that
+     * case's own extensive testing showed MariaDB's REPEATABLE READ
+     * consistency checking already converts a stale-snapshot write into
+     * a retriable error rather than silent corruption in every
+     * interleaving tried. Locking here closes the same structural gap
+     * preventively, at no regression cost (existing COGSCalculationTest/
+     * ReturnInvoiceCOGSTest suites verified green).
+     */
     public static function updateProductsAverageCost(Invoice $invoice)
     {
         if ($invoice->invoice_type === InvoiceType::SELL) {
@@ -37,7 +56,10 @@ class CostOfGoodsService
                 continue;
             }
 
-            $product = $invoiceItem->itemable;
+            $product = Product::query()->lockForUpdate()->find($invoiceItem->itemable_id);
+            if (! $product) {
+                continue;
+            }
             $isReturnBuy = $invoice->invoice_type === InvoiceType::RETURN_BUY;
 
             if ($isReturnBuy && ! $invoice->status->isApprovedOrSettled()) {

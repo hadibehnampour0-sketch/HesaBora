@@ -136,6 +136,7 @@ class PersonnelRequestController extends Controller
         PersonnelRequest::create([
             'employee_id' => $request->employee_id,
             'company_id' => getActiveCompany(),
+            'created_by' => auth()->id(),
             'request_type' => PersonnelRequestType::fromName($request->request_type),
             'start_date' => $startDatetime,
             'end_date' => $endDatetime,
@@ -242,6 +243,8 @@ class PersonnelRequestController extends Controller
             return redirect()->back()
                 ->with('info', __('Personnel request is already approved.'));
         }
+
+        app(\App\Services\SegregationOfDutiesService::class)->guardAgainstSelfApproval($personnelRequest, $personnelRequest->created_by, 'personnel_request');
 
         $personnelRequest->update([
             'status' => PersonnelRequestStatus::APPROVED,

@@ -4,11 +4,13 @@ namespace App\Models;
 
 use App\Enums\AncillaryCostType;
 use App\Enums\InvoiceStatus;
+use App\Enums\TaxDeductibleStatus;
 use App\Models\Scopes\FiscalYearScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class AncillaryCost extends Model
 {
@@ -25,11 +27,14 @@ class AncillaryCost extends Model
         'company_id',
         'document_id',
         'customer_id',
+        'created_by',
+        'tax_deductible_status',
     ];
 
     protected $casts = [
         'type' => AncillaryCostType::class,
         'status' => InvoiceStatus::class,
+        'tax_deductible_status' => TaxDeductibleStatus::class,
         'date' => 'date',
         'number' => 'integer',
         'amount' => 'decimal:2',
@@ -59,5 +64,10 @@ class AncillaryCost extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function taxEvidences(): MorphMany
+    {
+        return $this->morphMany(TaxEvidence::class, 'evidenceable');
     }
 }

@@ -83,6 +83,65 @@ class ApiTokenTest extends TestCase
             ->assertSee('documents.store');
     }
 
+    public function test_user_can_create_a_token_with_an_expiration_date(): void
+    {
+        $user = User::factory()->create();
+        foreach (['api-tokens.*', 'api.access', 'documents.show'] as $permission) {
+            $user->givePermissionTo(Permission::firstOrCreate(['name' => $permission]));
+        }
+
+        $expiresAt = now()->addDays(7);
+
+        $this->actingAs($user)
+            ->post(route('api-tokens.store'), [
+                'name' => 'time-boxed',
+                'permissions' => ['documents.show'],
+                'expires_at' => $expiresAt->toDateTimeString(),
+            ])
+            ->assertRedirect(route('api-tokens.index'))
+            ->assertSessionHas('plainTextToken');
+
+        $token = $user->tokens()->where('name', 'time-boxed')->firstOrFail();
+        $this->assertNotNull($token->expires_at);
+        $this->assertSame($expiresAt->toDateTimeString(), $token->expires_at->toDateTimeString());
+    }
+
+    public function test_a_token_expiration_date_must_be_in_the_future(): void
+    {
+        $user = User::factory()->create();
+        foreach (['api-tokens.*', 'api.access', 'documents.show'] as $permission) {
+            $user->givePermissionTo(Permission::firstOrCreate(['name' => $permission]));
+        }
+
+        $this->actingAs($user)
+            ->post(route('api-tokens.store'), [
+                'name' => 'already-expired',
+                'permissions' => ['documents.show'],
+                'expires_at' => now()->subDay()->toDateTimeString(),
+            ])
+            ->assertSessionHasErrors('expires_at');
+
+        $this->assertDatabaseMissing('personal_access_tokens', ['name' => 'already-expired']);
+    }
+
+    public function test_a_token_created_without_an_expiration_never_expires(): void
+    {
+        $user = User::factory()->create();
+        foreach (['api-tokens.*', 'api.access', 'documents.show'] as $permission) {
+            $user->givePermissionTo(Permission::firstOrCreate(['name' => $permission]));
+        }
+
+        $this->actingAs($user)
+            ->post(route('api-tokens.store'), [
+                'name' => 'permanent',
+                'permissions' => ['documents.show'],
+            ])
+            ->assertRedirect(route('api-tokens.index'));
+
+        $token = $user->tokens()->where('name', 'permanent')->firstOrFail();
+        $this->assertNull($token->expires_at);
+    }
+
     public function test_super_admin_can_create_token_from_available_api_permissions_without_synced_permissions(): void
     {
         $user = User::factory()->create();

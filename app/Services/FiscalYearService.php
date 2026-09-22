@@ -13,6 +13,7 @@ use App\Enums\EmployeeGender;
 use App\Enums\EmployeeInsuranceType;
 use App\Enums\EmployeeMaritalStatus;
 use App\Enums\EmployeeNationality;
+use App\Enums\FinancialProvenance;
 use App\Enums\FiscalYearSection;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
@@ -74,12 +75,14 @@ use App\Models\WorkSiteContract;
 use Cookie;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -121,7 +124,7 @@ class FiscalYearService
     {
         $sectionsToCopy = self::filterValidSections($sectionsToCopy);
 
-        $sourceData = self::fetchSourceData($sourceYearId, $sectionsToCopy);
+        $sourceData = self::stripSyncEnvelopeColumns(self::fetchSourceData($sourceYearId, $sectionsToCopy));
 
         return self::importData($sourceData, $newFiscalYearData);
     }
@@ -133,11 +136,38 @@ class FiscalYearService
      * @param  array|null  $sectionsToExport  Specific sections to export (null for all available).
      * @return array Data structure ready for JSON encoding.
      */
+    /**
+     * D-071: sync-envelope columns (uuid/sync_version/sync_status/
+     * origin_device_id) identify a specific row for cross-device sync. A
+     * fiscal-year transfer creates genuinely new rows in a new Company, so
+     * these must never be carried over -- otherwise the new rows would
+     * collide with the source rows' UUIDs (globally unique) instead of each
+     * getting a fresh one via HasSyncEnvelope's creating() hook on import.
+     */
+    private const SYNC_ENVELOPE_COLUMNS = ['uuid', 'sync_version', 'sync_status', 'origin_device_id'];
+
+    private static function stripSyncEnvelopeColumns(array $exportData): array
+    {
+        foreach ($exportData as $section => $rows) {
+            if (! is_array($rows)) {
+                continue;
+            }
+
+            foreach ($rows as $index => $row) {
+                if (is_array($row)) {
+                    $exportData[$section][$index] = Arr::except($row, self::SYNC_ENVELOPE_COLUMNS);
+                }
+            }
+        }
+
+        return $exportData;
+    }
+
     public static function exportData(int $sourceYearId, ?array $sectionsToExport = null): array
     {
         $sectionsToExport = $sectionsToExport === null ? array_keys(self::getAvailableSections()) : self::filterValidSections($sectionsToExport);
 
-        $exportData = self::fetchSourceData($sourceYearId, $sectionsToExport);
+        $exportData = self::stripSyncEnvelopeColumns(self::fetchSourceData($sourceYearId, $sectionsToExport));
 
         $sourceCompany = Company::find($sourceYearId);
         $exportData['meta'] = [
@@ -1803,6 +1833,11 @@ class FiscalYearService
             $newCustomer->introducer_id = $oldIntroducerId ? $mapping[$oldIntroducerId] : null;
             $newCustomer->group_id = $groupMapping[$oldGroupId];
             $newCustomer->subject_id = $subjectMapping[$oldSubjectId];
+            // saveQuietly() suppresses HasSyncEnvelope's own `creating` hook
+            // (the same bare-row uuid gap D-085 found and fixed for
+            // _importInvoices()); assign it explicitly so a later update()
+            // through SyncsToOutbox doesn't crash on a NULL entity_uuid.
+            $newCustomer->uuid = (string) Str::uuid();
             $newCustomer->saveQuietly();
 
             $subject = Subject::withoutGlobalScope(FiscalYearScope::class)->find($newCustomer->subject_id);
@@ -2177,6 +2212,19 @@ class FiscalYearService
      *
      * @return array<int, int> Mapping of old document ID to new document ID.
      */
+    /**
+     * D-085: this is the single choke point for every Document a fiscal-year
+     * copy/import ever creates -- Cheques/Invoices/Payments/AncillaryCosts
+     * never create their own Document rows during import, they only
+     * reference the ids this method returns via $documentMapping. Marking
+     * every imported Document BASELINE here is therefore sufficient to
+     * classify the entire copied/imported financial history, with no other
+     * import path needing its own provenance handling. Deliberately
+     * overrides any 'provenance' value that might be present in $docData
+     * (e.g. from a JSON export of an already-BASELINE-marked document) --
+     * provenance is per-company-context, not permanently inherited across a
+     * chain of copies.
+     */
     protected static function _importDocuments(array $documentsData, int $targetYearId): array
     {
         $mapping = [];
@@ -2184,6 +2232,7 @@ class FiscalYearService
             $newDoc = new Document;
             $newDoc->fill(collect($docData)->except(['id'])->toArray());
             $newDoc->company_id = $targetYearId;
+            $newDoc->provenance = FinancialProvenance::BASELINE;
             $newDoc->save();
             $mapping[$docData['id']] = $newDoc->id;
         }
@@ -2490,6 +2539,15 @@ class FiscalYearService
                 $newInvoice->document_id = $oldDocumentId ? ($documentMapping[$oldDocumentId] ?? null) : null;
                 $newInvoice->company_id = $targetYearId;
                 $newInvoice->warehouse_id = $warehouseMapping[$invoiceData['warehouse_id'] ?? null] ?? null;
+                // saveQuietly() suppresses HasSyncEnvelope's own `creating`
+                // hook (which would otherwise assign this), so a bare row
+                // with a null uuid was silently possible -- harmless until
+                // any later `update()` fires SyncsInvoiceDraftsToOutbox's
+                // `updated` hook, which then violates sync_outbox's NOT
+                // NULL entity_uuid. `uuid` has no DB-level default (unlike
+                // sync_version/sync_status, which already do), so it must
+                // be assigned explicitly here.
+                $newInvoice->uuid = (string) Str::uuid();
                 $newInvoice->saveQuietly();
 
                 $mapping[$invoiceData['id']] = $newInvoice->id;
@@ -2530,6 +2588,7 @@ class FiscalYearService
                 $newInvoice->document_id = $oldDocumentId ? ($documentMapping[$oldDocumentId] ?? null) : null;
                 $newInvoice->company_id = $targetYearId;
                 $newInvoice->warehouse_id = $warehouseMapping[$invoiceData['warehouse_id'] ?? null] ?? null;
+                $newInvoice->uuid = (string) Str::uuid();
                 $newInvoice->saveQuietly();
 
                 $mapping[$invoiceData['id']] = $newInvoice->id;

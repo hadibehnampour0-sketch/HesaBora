@@ -34,7 +34,7 @@ class ProductImportExportTest extends TestCase
         $this->companyId = $company->id;
 
         $this->user = User::factory()->create();
-        $company->users()->attach($this->user);
+        $company->users()->syncWithoutDetaching($this->user);
 
         $this->user->givePermissionTo([
             Permission::firstOrCreate(['name' => 'products.index']),
@@ -356,5 +356,24 @@ class ProductImportExportTest extends TestCase
         $response->assertSessionHasErrors('file');
         $this->assertDatabaseMissing('products', ['name' => 'Good Product']);
         $this->assertDatabaseMissing('products', ['name' => 'Bad Product']);
+    }
+
+    /**
+     * Security (Workstream T): StoreProductRequest/UpdateProductRequest
+     * already reject `<`/`>`/`"`/`'` in a product name on the normal web
+     * form, but the CSV import path previously applied no such
+     * restriction at all (only `trim()`) -- letting an imported name
+     * carry raw HTML/script markup that later renders unescaped in
+     * invoice conflict messages (InvoiceStatusDecision::formatConflicts(),
+     * see tests/Feature/InvoiceStatusDecisionXssTest.php for the
+     * rendering-side fix). This proves the import path itself now
+     * rejects such a payload rather than silently storing it.
+     */
+    public function test_import_rejects_a_product_name_containing_html_markup(): void
+    {
+        $csv = "name,group_name\n"."<script>alert(1)</script>,{$this->productGroup->name}\n";
+        $response = $this->actingAs($this->user)->post(route('products.import.store'), ['file' => $this->upload($csv)]);
+        $response->assertSessionHasErrors('file');
+        $this->assertDatabaseCount('products', 0);
     }
 }

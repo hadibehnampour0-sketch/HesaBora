@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasSyncEnvelope;
+use App\Models\Concerns\SyncsToOutbox;
 use App\Models\Scopes\FiscalYearScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,12 +14,16 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSyncEnvelope, SyncsToOutbox;
 
     public $timestamps = false;
 
     protected $fillable = [
         'code',
+        'barcode',
+        'sync_version',
+        'sync_status',
+        'origin_device_id',
         'name',
         'sstid',
         'group',
@@ -51,6 +57,15 @@ class Product extends Model
             $product->company_id ??= getActiveCompany();
         });
 
+    }
+
+    /**
+     * P4.4: lookup by scanned barcode, scoped to the active company like
+     * every other product query (FiscalYearScope already applies).
+     */
+    public function scopeWhereBarcode($query, string $barcode)
+    {
+        return $query->where('barcode', $barcode);
     }
 
     // Relationships

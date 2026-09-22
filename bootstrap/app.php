@@ -1,13 +1,16 @@
 <?php
 
+use App\Http\Middleware\AuthenticateDevice;
 use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\ConfigLoader;
 use App\Http\Middleware\DefaultCompany;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\EnsureEmployee;
 use App\Http\Middleware\EnsureFeatureEnabled;
+use App\Http\Middleware\EnsureIdempotencyKey;
 use App\Http\Middleware\LogUserActivity;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
+use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetApiCompany;
 use App\Http\Middleware\TrimStrings;
 use App\Http\Middleware\TrustProxies;
@@ -40,6 +43,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ValidatePostSize::class,
             TrimStrings::class,
             ConvertEmptyStringsToNull::class,
+            SecurityHeaders::class,
         ]);
 
         $middleware->group('web', [
@@ -64,6 +68,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'ensure-employee' => EnsureEmployee::class,
             'api-company' => SetApiCompany::class,
             'ensure-feature-enabled' => EnsureFeatureEnabled::class,
+            'auth.device' => AuthenticateDevice::class,
+            'idempotency' => EnsureIdempotencyKey::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

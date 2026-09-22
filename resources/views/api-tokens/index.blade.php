@@ -26,6 +26,7 @@
                         <th class="px-4 py-2">{{ __('Name') }}</th>
                         <th class="px-4 py-2">{{ __('Permissions') }}</th>
                         <th class="px-4 py-2">{{ __('Last used') }}</th>
+                        <th class="px-4 py-2">{{ __('Expires at') }}</th>
                         <th class="px-4 py-2">{{ __('Action') }}</th>
                     </tr>
                 </thead>
@@ -35,6 +36,7 @@
                             <td class="px-4 py-2">{{ $token->name }}</td>
                             <td class="px-4 py-2">{{ implode(', ', $token->abilities ?? []) }}</td>
                             <td class="px-4 py-2">{{ $token->last_used_at }}</td>
+                            <td class="px-4 py-2">{{ $token->expires_at?->toDateTimeString() ?? __('Never') }}</td>
                             <td class="px-4 py-2">
                                 <form method="POST" action="{{ route('api-tokens.destroy', $token->id) }}" class="inline">
                                     @csrf
@@ -45,7 +47,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-4 py-2">{{ __('No API token found.') }}</td>
+                            <td colspan="5" class="px-4 py-2">{{ __('No API token found.') }}</td>
                         </tr>
                     @endforelse
                 </tbody>

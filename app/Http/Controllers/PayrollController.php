@@ -13,6 +13,7 @@ use App\Models\PayrollStatusHistory;
 use App\Models\PersonnelRequest;
 use App\Models\SalaryDecree;
 use App\Services\PayrollService;
+use App\Services\SegregationOfDutiesService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -235,9 +236,22 @@ class PayrollController extends Controller
      */
     public function editItem(PayrollItem $payrollItem): View
     {
+        $this->ensurePayrollItemOwnedByActiveCompany($payrollItem);
         $payrollItem->load(['element', 'payroll']);
 
         return view('payrolls.edit-item', compact('payrollItem'));
+    }
+
+    /**
+     * `payroll_items` has no `company_id`/`FiscalYearScope` of its own --
+     * company is only derivable via the parent Payroll. Found adversarially
+     * while building the permission matrix (Workstream J/U): this route is
+     * standalone (not nested under a scoped `{payroll}`), so nothing else
+     * prevented editing another company's payroll item by id.
+     */
+    private function ensurePayrollItemOwnedByActiveCompany(PayrollItem $payrollItem): void
+    {
+        abort_unless($payrollItem->payroll?->company_id === getActiveCompany(), 404);
     }
 
     /**
@@ -245,6 +259,8 @@ class PayrollController extends Controller
      */
     public function updateItem(Request $request, PayrollItem $payrollItem): RedirectResponse
     {
+        $this->ensurePayrollItemOwnedByActiveCompany($payrollItem);
+
         $validated = $request->validate([
             'calculated_amount' => ['required', 'numeric'],
             'unit_count' => ['nullable', 'numeric'],
@@ -306,20 +322,25 @@ class PayrollController extends Controller
             'note' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $fromStatus = $payroll->status;
-        $permission = $payroll->transitionPermissionTo($toStatus);
+        DB::transaction(function () use ($payroll, $toStatus, $validated, $request) {
+            $locked = Payroll::query()->lockForUpdate()->findOrFail($payroll->id);
+            $fromStatus = $locked->status;
+            $permission = $locked->transitionPermissionTo($toStatus);
 
-        if ($permission === null) {
-            abort(Response::HTTP_UNPROCESSABLE_ENTITY, __('This payroll status transition is not allowed.'));
-        }
+            if ($permission === null) {
+                abort(Response::HTTP_UNPROCESSABLE_ENTITY, __('This payroll status transition is not allowed.'));
+            }
 
-        $this->authorizeTransitionPermission($request, $permission);
+            $this->authorizeTransitionPermission($request, $permission);
 
-        DB::transaction(function () use ($payroll, $fromStatus, $toStatus, $validated, $request) {
-            $payroll->forceFill(['status' => $toStatus])->save();
+            if ($toStatus === PayrollStatus::Approved) {
+                app(SegregationOfDutiesService::class)->guardAgainstSelfApproval($locked, $locked->created_by, 'payroll');
+            }
+
+            $locked->forceFill(['status' => $toStatus])->save();
 
             PayrollStatusHistory::create([
-                'payroll_id' => $payroll->id,
+                'payroll_id' => $locked->id,
                 'from_status' => $fromStatus,
                 'to_status' => $toStatus,
                 'changed_by' => $request->user()?->id,

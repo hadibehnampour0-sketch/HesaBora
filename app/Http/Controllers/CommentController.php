@@ -36,11 +36,15 @@ class CommentController extends Controller
 
     public function edit(Customer $customer, Comment $comment)
     {
+        abort_unless($comment->customer_id === $customer->id, 404);
+
         return view('customers.comments.edit', compact('comment'));
     }
 
     public function update(StoreCommentRequest $request, Customer $customer, Comment $comment)
     {
+        abort_unless($comment->customer_id === $customer->id, 404);
+
         $validated = $request->validated();
         $this->service->update($comment, $validated);
 
@@ -49,6 +53,8 @@ class CommentController extends Controller
 
     public function destroy(Customer $customer, Comment $comment)
     {
+        abort_unless($comment->customer_id === $customer->id, 404);
+
         $this->service->delete($comment);
 
         return redirect()->route('comments.index', $customer)->with('success', __('Comment deleted successfully.'));

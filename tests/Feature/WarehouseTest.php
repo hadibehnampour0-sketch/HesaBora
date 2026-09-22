@@ -36,7 +36,7 @@ class WarehouseTest extends TestCase
         $this->companyId = $company->id;
 
         $this->user = User::factory()->create();
-        $company->users()->attach($this->user);
+        $company->users()->syncWithoutDetaching($this->user);
         $this->user->givePermissionTo([
             Permission::firstOrCreate(['name' => 'warehouses.index']),
             Permission::firstOrCreate(['name' => 'warehouses.destroy']),
@@ -328,10 +328,20 @@ class WarehouseTest extends TestCase
 
         app(WarehouseService::class)->transfer($product, $source, $destination, 4);
 
-        $lockingQuery = collect($queries)->first(fn ($sql) => str_contains($sql, 'warehouse_product_stocks') && str_contains($sql, 'for update'));
+        // SQLite has no row-level locking SQL syntax at all (Laravel's SQLite
+        // grammar compiles lockForUpdate() to an empty string — this is a
+        // platform limitation, not an application bug), so "for update" only
+        // ever appears on drivers that actually support it, e.g. MySQL.
+        $lockingQuery = collect($queries)->first(fn ($sql) => str_contains($sql, 'warehouse_product_stocks')
+            && str_contains($sql, 'order by')
+            && ! str_contains($sql, 'insert')
+            && ! str_contains($sql, 'update warehouse_product_stocks set'));
         $this->assertNotNull($lockingQuery);
         $this->assertStringContainsString('warehouse_id', $lockingQuery);
         $this->assertStringContainsString('order by', $lockingQuery);
+        if (DB::getDriverName() !== 'sqlite') {
+            $this->assertStringContainsString('for update', $lockingQuery);
+        }
 
         try {
             app(WarehouseService::class)->transfer($product, $source, $destination, 2);

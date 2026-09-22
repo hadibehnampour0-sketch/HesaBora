@@ -24,6 +24,7 @@ use App\Services\ProductService;
 use Cookie;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Validation\ValidationException;
 use Tests\Helpers\InvoiceTestHelper;
 use Tests\Helpers\SeederHelper;
 use Tests\TestCase;
@@ -249,7 +250,15 @@ class InvoicePaymentTest extends TestCase
         $this->assertCount(0, $sell->payments()->get());
     }
 
-    public function test_deleting_payment_reverses_document_and_restores_status(): void
+    /**
+     * D-084: a posted Payment is a permanent financial record -- deleting it
+     * through the service layer is rejected outright, never a silent
+     * success, and the Payment/Document/Invoice status are left untouched.
+     * (Superseded "test_deleting_payment_reverses_document_and_restores_status",
+     * which asserted the pre-D-084 behavior this Decision intentionally
+     * forbids.)
+     */
+    public function test_deleting_a_posted_payment_is_rejected_and_leaves_everything_intact(): void
     {
         $sell = $this->approvedSell(1000, 2);
 
@@ -258,22 +267,40 @@ class InvoicePaymentTest extends TestCase
 
         $this->assertTrue($this->findInvoice($sell->id)->status->isPaid());
 
-        $this->paymentService->deletePayment($payment);
+        $this->expectException(ValidationException::class);
 
-        $this->assertNull(Payment::withoutGlobalScopes()->find($payment->id));
-        $this->assertNull(Document::withoutGlobalScopes()->find($documentId));
-        $this->assertTrue($this->findInvoice($sell->id)->status->isApproved());
+        try {
+            $this->paymentService->deletePayment($payment);
+        } finally {
+            $this->assertNotNull(Payment::withoutGlobalScopes()->find($payment->id));
+            $this->assertNotNull(Document::withoutGlobalScopes()->find($documentId));
+            $this->assertTrue($this->findInvoice($sell->id)->status->isPaid());
+        }
     }
 
-    public function test_payments_are_deleted_when_their_invoice_is_deleted(): void
+    /**
+     * D-084 hardening (post-Phase-2 audit): deleting an Invoice used to
+     * silently cascade-delete its Payment, bypassing PaymentService's own
+     * immutability guard entirely. That bypass is now closed at the model
+     * level (Invoice::booted()'s `deleting` hook) -- deletion is rejected
+     * and the Payment survives intact. (Superseded
+     * "test_payments_are_deleted_when_their_invoice_is_deleted", which
+     * asserted the pre-hardening cascade-delete behavior.)
+     */
+    public function test_deleting_an_invoice_with_a_posted_payment_is_rejected_and_the_payment_survives(): void
     {
         $sell = $this->approvedSell(1000, 2);
         $payment = $this->recordPayment($sell, ['amount' => 500, 'subject_id' => $this->cashSubjectId()]);
         $this->assertNotNull(Payment::find($payment->id));
 
-        Invoice::withoutGlobalScopes()->findOrFail($sell->id)->delete();
+        $this->expectException(ValidationException::class);
 
-        $this->assertNull(Payment::find($payment->id));
+        try {
+            Invoice::withoutGlobalScopes()->findOrFail($sell->id)->delete();
+        } finally {
+            $this->assertNotNull(Payment::find($payment->id));
+            $this->assertNotNull(Invoice::withoutGlobalScopes()->find($sell->id));
+        }
     }
 
     public function test_payment_rejected_for_unapproved_invoice(): void
@@ -390,18 +417,37 @@ class InvoicePaymentTest extends TestCase
         $this->assertEqualsWithDelta(500, $productService->lastApprovedBuyInvoiceItemCOG($this->findProduct($product->id)), 0.01);
     }
 
-    public function test_partial_then_remaining_payment_walks_to_paid_and_back(): void
+    public function test_partial_then_remaining_payment_walks_to_paid(): void
     {
         $sell = $this->approvedSell(1000, 2);
 
-        $first = $this->recordPayment($sell, ['amount' => 800, 'subject_id' => $this->cashSubjectId()]);
+        $this->recordPayment($sell, ['amount' => 800, 'subject_id' => $this->cashSubjectId()]);
         $this->assertTrue($this->findInvoice($sell->id)->status->isPartiallyPaid());
 
         $this->recordPayment($this->findInvoice($sell->id), ['amount' => 1200, 'subject_id' => $this->cashSubjectId()]);
         $this->assertTrue($this->findInvoice($sell->id)->status->isPaid());
+    }
 
-        $this->paymentService->deletePayment($first);
-        $this->assertTrue($this->findInvoice($sell->id)->status->isPartiallyPaid());
+    /**
+     * D-084: the "and back" half of the payment-walk above is no longer
+     * available through deletion (posted payments are immutable) -- the
+     * invoice must stay Paid, not revert, when a delete attempt is rejected.
+     */
+    public function test_deleting_one_of_two_posted_payments_is_rejected_and_invoice_stays_paid(): void
+    {
+        $sell = $this->approvedSell(1000, 2);
+
+        $first = $this->recordPayment($sell, ['amount' => 800, 'subject_id' => $this->cashSubjectId()]);
+        $this->recordPayment($this->findInvoice($sell->id), ['amount' => 1200, 'subject_id' => $this->cashSubjectId()]);
+        $this->assertTrue($this->findInvoice($sell->id)->status->isPaid());
+
+        $this->expectException(ValidationException::class);
+
+        try {
+            $this->paymentService->deletePayment($first);
+        } finally {
+            $this->assertTrue($this->findInvoice($sell->id)->status->isPaid());
+        }
     }
 
     public function test_removing_payment_document_keeps_payment_and_reverts_status(): void

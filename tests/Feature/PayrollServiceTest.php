@@ -76,7 +76,7 @@ class PayrollServiceTest extends TestCase
         $this->companyId = $company->id;
 
         $user = User::factory()->create();
-        $company->users()->attach($user);
+        $company->users()->syncWithoutDetaching($user);
         $user->givePermissionTo(
             Permission::firstOrCreate(['name' => 'payrolls.*'])
         );

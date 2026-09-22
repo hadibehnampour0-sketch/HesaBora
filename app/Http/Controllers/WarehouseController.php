@@ -28,8 +28,12 @@ class WarehouseController extends Controller
             ->when($request->filled('name'), fn ($query) => $query->where('name', 'like', '%'.$request->input('name').'%'))
             ->when($request->filled('code'), fn ($query) => $query->where('code', 'like', '%'.$request->input('code').'%'))
             ->when(is_numeric($inventory), function ($query) use ($inventory) {
+                // A tolerance-based comparison (rather than exact `=`) avoids a
+                // SQLite/PDO quirk where binding a PHP float against an
+                // integer-typed SUM() result can fail to match even when the
+                // values are numerically equal.
                 $query->whereRaw(
-                    '(SELECT COALESCE(SUM(quantity), 0) FROM warehouse_product_stocks WHERE warehouse_product_stocks.warehouse_id = warehouses.id) = ?',
+                    'ABS((SELECT COALESCE(SUM(quantity), 0) FROM warehouse_product_stocks WHERE warehouse_product_stocks.warehouse_id = warehouses.id) - ?) < 0.005',
                     [(float) $inventory]
                 );
             });

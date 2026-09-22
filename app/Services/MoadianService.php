@@ -5,6 +5,7 @@ namespace App\Services;
 use App\DTO\InvoiceStatusDecision;
 use App\Enums\CustomerType;
 use App\Enums\InvoiceType;
+use App\Enums\MoadianStatus;
 use App\Models\Company;
 use App\Models\Invoice;
 use Illuminate\Support\Carbon;
@@ -74,11 +75,9 @@ class MoadianService
             $decision->addMessage('error', __('Moadian credentials are not fully configured. Please set the username, tax ID, certificate and private key in company settings.'));
         }
 
-        $hasMoadianSuccess = $invoice->moadianHistories->contains(function ($history) {
-            $data = $history->data;
-
-            return strtoupper($data['status'] ?? '') === 'SUCCESS';
-        });
+        $hasMoadianSuccess = $invoice->moadianHistories->contains(
+            fn ($history) => MoadianStatus::fromData($history->data['status'] ?? null)?->isSuccess() ?? false
+        );
 
         if ($hasMoadianSuccess) {
             $decision->addMessage('error', __('Cannot send an invoice to moadian that already has successful status from moadian.'));
@@ -86,11 +85,9 @@ class MoadianService
 
         if ($invoice->invoice_type === InvoiceType::VOID) {
             $originalInvoice = $invoice->voidedInvoice;
-            $originalHasMoadianSuccess = $originalInvoice?->moadianHistories->contains(function ($history) {
-                $data = $history->data;
-
-                return strtoupper($data['status'] ?? '') === 'SUCCESS';
-            }) ?? false;
+            $originalHasMoadianSuccess = $originalInvoice?->moadianHistories->contains(
+                fn ($history) => MoadianStatus::fromData($history->data['status'] ?? null)?->isSuccess() ?? false
+            ) ?? false;
 
             if (! $originalHasMoadianSuccess) {
                 $decision->addMessage('error', __('The original invoice must be sent successfully to Moadian before sending its void invoice.'));

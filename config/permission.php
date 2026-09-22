@@ -93,7 +93,7 @@ return [
          * foreign key is other than `team_id`.
          */
 
-        'team_foreign_key' => 'team_id',
+        'team_foreign_key' => 'company_id',
     ],
 
     /*
@@ -120,7 +120,16 @@ return [
      * (view the latest version of this package's migration file)
      */
 
-    'teams' => false,
+    'teams' => true,
+
+    /*
+     * Organization Authorization phase (r12): resolves the current team
+     * (company) from the SAME `getActiveCompany()` helper every other
+     * company-scoping mechanism in this app already uses, instead of
+     * requiring every code path to call setPermissionsTeamId() itself. See
+     * App\Support\CompanyPermissionsTeamResolver's docblock.
+     */
+    'team_resolver' => \App\Support\CompanyPermissionsTeamResolver::class,
 
     /*
      * Passport Client Credentials Grant
@@ -144,6 +153,17 @@ return [
      */
 
     'display_role_in_exception' => false,
+
+    /*
+     * Organization Authorization phase (r12, Workstream Q): enabled so
+     * RoleAttached/RoleDetached fire and can be audited (see
+     * AppServiceProvider::boot()'s listener) -- role/permission ASSIGNMENT
+     * changes go through raw pivot-table queries (attach/detach/sync), not
+     * Eloquent model events, so they were completely invisible to the
+     * existing generic ActivityLogService model-event listener before this.
+     */
+
+    'events_enabled' => true,
 
     /*
      * By default wildcard permission lookups are disabled.

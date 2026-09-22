@@ -1,4 +1,4 @@
-import { exec } from 'child_process';
+import { execSync } from 'child_process';
 import { join } from 'path';
 
 const appUrl = process.env.APP_URL;
@@ -78,12 +78,13 @@ export default {
         }
 
         console.log(`  • building php binary - exec php.js --${targetOs} --${arch}`);
-        exec(`node php.js --${targetOs} --${arch}`);
+        execSync(`node php.js --${targetOs} --${arch}`, { stdio: 'inherit' });
     },
     afterSign: 'build/notarize.js',
     win: {
         executableName: fileName,
         icon: '../../resources/images/icon.ico',
+        signAndEditExecutable: false,
         ...(azureEndpoint && azureCertificateProfileName && azureCodeSigningAccountName
             ? {
                 azureSignOptions: {

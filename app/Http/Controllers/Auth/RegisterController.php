@@ -30,6 +30,10 @@ class RegisterController extends Controller
             'password' => ['required', 'confirmed', Password::min(8)],
         ]);
 
+        // Normalize Farsi digits so an all-digit password set on a Persian
+        // keyboard still matches on login (same normalization applied there).
+        $validated['password'] = toEnglish($validated['password']);
+
         $user = User::create($validated);
         Auth::login($user);
 

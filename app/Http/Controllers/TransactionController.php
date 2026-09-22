@@ -169,6 +169,14 @@ class TransactionController extends Controller
 
     public function show(Transaction $transaction)
     {
+        // `transactions` has no `company_id`/`FiscalYearScope` of its own --
+        // company is only derivable via the parent Document. Found
+        // adversarially while building the permission matrix (Workstream
+        // J/U): a route-bound {transaction} here is standalone, not nested
+        // under an already-scoped {document}, so nothing else prevented
+        // viewing another company's ledger entry by id.
+        abort_unless($transaction->document?->company_id === getActiveCompany(), 404);
+
         $transaction->load(['document', 'subject', 'user']);
 
         return view('transactions.show', compact('transaction'));

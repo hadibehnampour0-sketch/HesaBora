@@ -13,10 +13,26 @@ function getActiveCompany(): int
         return (int) $configuredCompanyId;
     }
 
-    $cookieCompanyId = Cookie::get('active-company-id');
-    if ($cookieCompanyId !== null) {
-        return (int) $cookieCompanyId;
-    }
+    // Workstream U (adversarial cross-company audit): this used to fall
+    // back to Cookie::get('active-company-id') here, reading the RAW,
+    // unvalidated incoming request cookie directly -- Cookie::forget()
+    // (called by DefaultCompany when a cookie's company fails the
+    // membership check) only queues an expiring cookie on the OUTGOING
+    // response, it never clears the CURRENT request's already-parsed
+    // cookie bag. So any authenticated user could set active-company-id to
+    // an arbitrary company id they are NOT a member of, and this fallback
+    // would use it anyway the instant config('active-company-id') was
+    // explicitly null (exactly the state DefaultCompany leaves it in for a
+    // rejected cookie) -- a full cross-tenant data breach via a single
+    // cookie value, reaching every FiscalYearScope-scoped model. Every real
+    // request path already derives config('active-company-id') correctly
+    // BEFORE this helper is ever called (DefaultCompany for web,
+    // SetApiCompany for api, AuthenticateDevice for device/sync), so this
+    // fallback was never legitimately needed for a real request -- it only
+    // mattered for CLI/test contexts, where there is no HTTP cookie to read
+    // in the first place. Removed; the safe default below (first persisted
+    // company, never attacker-influenced) is used instead whenever no
+    // middleware has set an active company.
 
     // During tests/CLI execution there may be no request cookie. Use the
     // first persisted company deterministically; fresh databases still use 1

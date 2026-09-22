@@ -41,7 +41,7 @@ class CrmDashboardTest extends TestCase
         $this->companyId = $company->id;
 
         $this->user = User::factory()->create();
-        $company->users()->attach($this->user);
+        $company->users()->syncWithoutDetaching($this->user);
 
         $this->withCookies(['active-company-id' => (string) $this->companyId]);
         $_COOKIE['active-company-id'] = (string) $this->companyId;

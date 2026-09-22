@@ -60,8 +60,11 @@ class PasswordResetController extends Controller
         $status = Password::reset(
             $credentials,
             function (User $user, string $password): void {
+                // Normalize Farsi digits so an all-digit password set on a
+                // Persian keyboard still matches on login (same
+                // normalization applied there and in AccountController).
                 $user->forceFill([
-                    'password' => $password,
+                    'password' => toEnglish($password),
                     'remember_token' => Str::random(60),
                 ])->save();
 

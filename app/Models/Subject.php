@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\SubjectType;
+use App\Models\Concerns\HasSyncEnvelope;
 use App\Models\Scopes\FiscalYearScope;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subject extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSyncEnvelope;
 
     protected $fillable = [
         'code',
@@ -21,6 +22,9 @@ class Subject extends Model
         'company_id',
         'type',
         'is_permanent',
+        'sync_version',
+        'sync_status',
+        'origin_device_id',
     ];
 
     protected $attributes = [

@@ -31,8 +31,13 @@ class Cheque extends Model
 
     protected $casts = [
         'amount' => 'decimal:2',
-        'write_date' => 'date',
-        'due_date' => 'date',
+        // Explicit Y-m-d format (rather than plain 'date') so the stored
+        // value is consistently date-only across drivers: MySQL's DATE
+        // column silently strips any time component on insert, but SQLite's
+        // dynamic typing does not, so without an explicit format the raw
+        // stored string differs between the two (e.g. desktop app vs. web).
+        'write_date' => 'date:Y-m-d',
+        'due_date' => 'date:Y-m-d',
         'direction' => ChequeType::class,
         'purpose' => ChequeType::class,
         'status' => ChequeType::class,

@@ -32,6 +32,8 @@
                         <x-input name="name" id="name" placeholder="{{ __('Token name') }}" title="" :value="old('name')" required />
 
                         <x-input name="permission_search" id="permission-search" placeholder="{{ __('Search') }}" title="" x-model="permissionSearch" />
+
+                        <x-input type="datetime-local" name="expires_at" id="expires_at" title="{{ __('Expires at (optional)') }}" :value="old('expires_at')" />
                     </div>
 
                     <div class="col-span-4">

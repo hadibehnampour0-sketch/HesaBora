@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\CustomerType;
+use App\Models\Concerns\HasSyncEnvelope;
+use App\Models\Concerns\SyncsToOutbox;
 use App\Models\Scopes\FiscalYearScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,11 +12,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Customer extends Model
 {
-    use HasFactory;
+    use HasFactory, HasSyncEnvelope, SyncsToOutbox;
 
     protected $fillable = [
         'name',
         'subject_id',
+        'sync_version',
+        'sync_status',
+        'origin_device_id',
         'phone',
         'mobile',
         'fax',

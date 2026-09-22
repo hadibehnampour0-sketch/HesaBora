@@ -57,6 +57,9 @@ class ChequeController extends Controller
             'cheque' => $cheque,
             'bankAccounts' => BankAccount::with('bank')->get(),
             'accountSides' => Customer::with('group')->get(['id', 'name', 'group_id']),
+            'settlementObligation' => \App\Models\SettlementObligation::where('source_type', \App\Models\Cheque::class)
+                ->where('source_id', $cheque->id)
+                ->first(),
         ]);
     }
 

@@ -37,7 +37,7 @@
     <h3 class="label">{{ __('Roles') }}</h3>
     <div class="grid gap-3 grid-cols-5">
         @foreach ($roles as $role)
-            @continue($role->name === 'Super-Admin' && ! auth()->user()->hasRole('Super-Admin'))
+            @continue($role->name === 'Super-Admin' && ! auth()->user()->isSuperAdmin())
             <x-checkbox :title="$role->name" name="role[]" :value="$role->name" id="role-{{ $role->id }}"
                 :checked="in_array($role->name, $oldRoles)" />
         @endforeach

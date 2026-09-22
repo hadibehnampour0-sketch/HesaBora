@@ -2,7 +2,7 @@
 
 return [
     'about' => 'About',
-    'about_freeamir' => 'About FreeAmir',
+    'about_freeamir' => 'About Dakhl',
     'version' => 'Version',
     'system_information' => 'System Information',
     'environment' => 'Environment',
@@ -25,7 +25,7 @@ return [
     'license_text' => 'This software is licensed under the GNU General Public License v3.0 (GPL-3.0). You are free to use, modify, and distribute this software under the terms of the GPL v3.',
     'developed_by' => 'Developed by',
     'developer_name' => 'Jooyeshgar Paradise Eram',
-    'description' => 'FreeAmir is a free and open-source integrated accounting and human resources management system designed for Iranian businesses.',
+    'description' => 'Dakhl is a free and open-source integrated accounting and human resources management system designed for Iranian businesses.',
     'source_code' => 'Source Code',
     'report_issue' => 'Report Issue',
     'support' => 'Support & Links',

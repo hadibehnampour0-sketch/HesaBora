@@ -677,6 +677,7 @@ class PayrollService
         $payroll = Payroll::create([
             'company_id' => $companyId,
             'employee_id' => $attendance->employee_id,
+            'created_by' => auth()->id(),
             'decree_id' => $decree->id,
             'monthly_attendance_id' => $attendance->id,
             'year' => $attendance->year,

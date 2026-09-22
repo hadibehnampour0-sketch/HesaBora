@@ -12,6 +12,7 @@
         "php": "^8.2",
         "barryvdh/laravel-debugbar": "^3.13",
         "carlos-meneses/laravel-mpdf": "^2.1",
+        "dedoc/scramble": "*",
         "doctrine/dbal": "^3.10",
         "fakerphp/faker": "^1.9.1",
         "guzzlehttp/guzzle": "^7.2",

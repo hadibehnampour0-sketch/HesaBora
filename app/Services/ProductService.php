@@ -65,6 +65,28 @@ class ProductService
         $product->inventorySubject?->delete();
     }
 
+    /**
+     * Concurrency (Workstream S, Phase 3, Area 1): `adjustForInvoice()`
+     * already locks the per-warehouse `WarehouseProductStock` row, but
+     * the denormalized running total on `products.quantity` right next
+     * to it was updated via a plain, non-locking `Product::find()` read
+     * followed by `+=`/`save()`. Two DIFFERENT invoices (different
+     * customers/orders) selling/buying the SAME product concurrently --
+     * the Invoice-level lock from earlier findings only serializes two
+     * operations against the SAME invoice, not two different ones -- race
+     * on this read. Empirically, MariaDB does not silently corrupt data
+     * here: a transaction whose REPEATABLE READ snapshot predates another
+     * transaction's commit to the same row gets a real MySQL error 1020
+     * ("Record has changed since last read") on its own later UPDATE,
+     * surfacing as an unhandled `DeadlockException` -- a reliability bug
+     * (the second approval crashes) rather than silent corruption, but a
+     * real bug either way, reproduced with two real MariaDB connections
+     * (see tests/Feature/ProductQuantityRaceTest.php). Fixed by locking
+     * the product row before reading/writing its quantity, exactly like
+     * `adjustForInvoice()` already does for the warehouse stock -- this
+     * turns the conflict into an ordinary, correct blocking wait instead
+     * of a thrown error.
+     */
     public static function addProductsQuantities(array $invoiceItems, InvoiceType $invoice_type): void
     {
         foreach ($invoiceItems as $invoiceItem) {
@@ -73,7 +95,7 @@ class ProductService
             if (! in_array($invoiceItem['itemable_type'], [Product::class, 'product'], true)) {
                 continue;
             }
-            $product = Product::find($invoiceItem['itemable_id']);
+            $product = Product::query()->lockForUpdate()->find($invoiceItem['itemable_id']);
             if (! $product) {
                 continue;
             }
@@ -94,6 +116,10 @@ class ProductService
         }
     }
 
+    /**
+     * Concurrency: same fix as addProductsQuantities() above, for the
+     * reversal direction.
+     */
     public static function subProductsQuantities(array $invoiceItems, InvoiceType $invoice_type): void
     {
         foreach ($invoiceItems as $invoiceItem) {
@@ -102,7 +128,7 @@ class ProductService
                 continue;
             }
 
-            $product = Product::find($invoiceItem['itemable_id']);
+            $product = Product::query()->lockForUpdate()->find($invoiceItem['itemable_id']);
 
             if (! $product) {
                 continue;

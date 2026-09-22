@@ -85,7 +85,7 @@
                 <a href="{{ route('management.dashboard') }}" class="flex min-w-0 flex-1 items-center gap-3">
                     <span
                         class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#16a394] shadow-lg shadow-emerald-950/30">
-                        <img src="/images/logo.png" alt="" class="h-7 w-7 object-contain brightness-0 invert">
+                        <img src="/images/logo.svg" alt="" class="h-7 w-7 object-contain brightness-0 invert">
                     </span>
                     <span class="min-w-0">
                         <strong
