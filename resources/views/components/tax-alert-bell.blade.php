@@ -22,14 +22,16 @@
         async markRead(alert) {
             const url = '{{ route('tax-alerts.read', ['tax_alert' => '__ID__']) }}'.replace('__ID__', alert.id);
             try {
-                await fetch(url, { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': this.$refs.csrf.value } });
+                const res = await fetch(url, { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': this.$refs.csrf.value } });
+                if (! res.ok) return;
                 alert.is_read = true;
                 this.unreadCount = Math.max(0, this.unreadCount - 1);
             } catch (e) {}
         },
         async markAllRead() {
             try {
-                await fetch('{{ route('tax-alerts.read-all') }}', { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': this.$refs.csrf.value } });
+                const res = await fetch('{{ route('tax-alerts.read-all') }}', { method: 'POST', headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': this.$refs.csrf.value } });
+                if (! res.ok) return;
                 this.alerts.forEach(a => a.is_read = true);
                 this.unreadCount = 0;
             } catch (e) {}
