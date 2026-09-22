@@ -1,8 +1,13 @@
 # Project Overview
-FreeAmir is a Laravel 12 accounting application for Iranian businesses, focused on core bookkeeping,
-invoicing, inventory cost flows, and fiscal-year operations with Persian-first localization. The project is
-active development software (not yet production-ready), with business logic concentrated in services and
-transaction builders to protect accounting invariants such as balanced documents and company scoping.
+Dakhl (دخل) is a Laravel 12 accounting/ERP application for Iranian businesses, focused on core bookkeeping,
+invoicing, inventory cost flows, fiscal-year operations, payroll, and Iran tax compliance (including the
+Moadian e-invoicing system), with Persian-first localization. Built on FreeAmir/امیر as upstream/base
+heritage (not the product brand -- the GitHub repository is still named `FreeAmir`, hence that name still
+appearing in repo URLs and some legacy docs). The project is active development software (not yet
+production-ready), with business logic concentrated in services and transaction builders to protect
+accounting invariants such as balanced documents and company scoping.
+
+**For current product priorities and phase status**, read `docs/project-context/Dakhl_MASTER_CONTEXT_AND_ROADMAP_2026-09-20-r14.md` (always check for the LATEST "Current Verified Override"/numbered top-level section before trusting an earlier one -- see this file's own guardrail on roadmap staleness) and the corresponding tail of `docs/project-context/Dakhl_DECISION_LOG_2026-09-12-r4.md`. This file (AGENTS.md) documents durable technical conventions and guardrails, not product direction or phase sequencing.
 
 ## Repository Structure
 - `.github/`: Repository automation and AI guidance (`copilot-instructions.md`), with no CI workflows yet.

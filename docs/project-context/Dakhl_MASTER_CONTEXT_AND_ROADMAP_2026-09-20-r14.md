@@ -2296,3 +2296,91 @@ Owner bundled 4 independent Epics into one directive with a hard stack constrain
 - **P12.4** `RepCommissionEngineService` (tiered, APPROVED-settlements-only) + `RouteAnalyticsService` (visit completion / avg invoice value / cash collection ratio), one combined dashboard. A previously-documented bug class (guardrail #35's `updateOrCreate()` date-cast mismatch) recurred in a new context and was caught immediately by pattern recognition; both cross-company tests were strengthened with a positive control after realizing the negative-only assertion would have passed vacuously against the pre-fix broken query.
 
 **Full suite across all 4 Epics: 1691 → 1725 (+34 tests), zero regressions.** Git identity remains unset in this environment -- none of this mission's work has been committed yet; the owner must run `git config` themselves before any of it can be committed.
+
+**Superseded by §39 below**: git identity has since been set, the entire P0-P12 backlog has been reconstructed into 22 atomic commits plus a Release Readiness Audit pass (3 more commits, 1728 tests), and a local backup mirror exists at a separate drive. See §39 for the current state and the next execution phase.
+
+# 39. Product Strategy Execution Roadmap — 2026-09-22 (Backend Foundation Complete → Business Operating Platform)
+
+## 39.0 Framing correction — this is sequencing, not a pivot
+
+The owner's prompt for this pass described this as a "strategic pivot" discovered via fresh competitor research. Before writing anything else: **it is not a pivot.** Every element of it — Simple/Advanced Mode as two experiences over one Domain Layer, an AI/Copilot layer that "must act through the same services, permissions and audit trail as human users," a Provider/Adapter abstraction for external data (already specified for Industry Intelligence and directly reusable for e-commerce integrations), and a full Modular Licensing/Entitlement model naming Accounting/Sales/Inventory/Cheque/Tax/Moadian/CRM/HR-Payroll/Market-Intelligence/AI as independently-activatable modules — is **already written into this Decision Log's foundational "Product Identity" section**, dated to the very start of this mission, long before P0 ever began.
+
+What actually changed this pass is not the direction but two real things:
+1. **The backend is now mature enough to build the UX/AI/Integration layers on top of** (1725→1728 tests, financial integrity/concurrency/security hardening closed, multi-tenancy real, sync foundation real) — so this work is now sequenced first, not deferred behind more backend phases.
+2. **Fresh 2026 external research** (below) validates the existing decisions with concrete evidence from real products and gives specific, current architectural patterns to implement them with — not permission to change direction, but data to execute the existing direction well instead of by guesswork.
+
+This distinction matters for how future agents should read this section: do not treat §39 as authorization to revisit or "improve on" the Decision Log's Product Identity, AI/Copilot, or Modular Licensing sections. Treat it as their execution plan.
+
+## 39.1 Research findings (external, 2026-09-22)
+
+Three research passes, summarized; full findings available in this session's transcript if deeper detail is needed later.
+
+**Open-source ERP/accounting architecture** (ERPNext, Odoo, Akaunting, Invoice Ninja):
+- ERPNext's DocType system (define once, get schema+API+UI+permissions) is the single biggest reason it scaled as a project -- but the same generic power is exactly what reviewers cite as "overwhelming," "steep learning curve." **Lesson: exposing raw configurability by default is the failure mode, not power itself.**
+- Odoo proves a paid/advanced tier doesn't need a forked codebase -- Enterprise is just more modules on the same Community core. Its most common complaint is module sprawl/"overkill for small business," reviewers explicitly telling sub-$1M businesses to look elsewhere.
+- Akaunting (Laravel, directly comparable to Dakhl) scopes itself small deliberately: core app + an app-store-style module package. Its complaint pattern is the opposite of Odoo's -- gating too much of the *free* tier's reporting/integration depth erodes the "simple but complete" promise.
+- Invoice Ninja shows narrow scoping (invoicing-only, not full accounting) works but only when the user's actual need stays narrow -- a caution against under-scoping Simple Mode if real users need more than the narrowest flows.
+- **Cross-cutting rule for §39.3 (User Simplicity Layer): Simple Mode must be a thinner UI/workflow surface over the exact same Domain/Service Layer, never a second, parallel data model or a second set of business logic** -- this is already this codebase's own established pattern (P8.2's wizard, guardrail #51: "zero field names/routes/backend validation changed, never fork the underlying business logic per UI mode") and research confirms it is the only pattern that has actually worked elsewhere.
+
+**AI-native accounting products** (QuickBooks Intuit Assist, Xero JAX, Zoho Books Zia, ERPClaw):
+- All three mature incumbents embed AI output (anomaly flags, forecasts) **directly inside existing screens** (reports, bill-approval, reconciliation) -- none of them ships AI primarily as a standalone chat panel. A standalone chatbot is the weakest-value pattern found across all research.
+- The highest-confidence AI value today is **anomaly detection + forecasting over existing transaction data**, and *proactive* alerts surfaced before a problem compounds (Xero screens every bill for unusual amounts/changed bank details *before* payment) -- not autonomous, unsupervised transaction posting. No mature product does the latter.
+- ERPClaw (github.com/avansaber/erpclaw) was specifically investigated as a possible architecture reference. Verdict: **an interesting pattern, not a maturity benchmark** -- ~7 months old, 94 of ~97 commits from one account, no evidence of production deployment, a GPL-vs-MIT license inconsistency between its repo and its own promotional material. Its one genuinely reusable idea: the AI layer submits structured arguments through the *same validated API/service path* a human would use, never writing directly to the ledger. This is not a new idea for Dakhl -- it is exactly what the Decision Log's AI/Copilot section already requires ("AI must act through the same services, permissions and audit trail as human users") and exactly the pattern this codebase's protected-core review process already enforces for `InvoiceTransactionBuilder`/`SettlementService`/etc.
+
+**Integration architecture & licensing**:
+- The recommended pattern -- a thin platform adapter (Shopify, WooCommerce, a local marketplace) translating each platform's webhooks into canonical domain events (`OrderCreated`, `InventoryChanged`, `CustomerUpsert`, `PaymentReceived`) consumed by one shared sync engine, webhook-driven with polling reconciliation as a safety net, idempotency via a dedup key on every inbound event -- **is not a new design for this codebase to invent.** It is, almost field-for-field, the existing D-076 through D-080 offline-sync architecture already built and tested (`SyncOutboxService`/`SyncInboxService`/`SyncConflictService`, financial-event-identity idempotency, explicit conflict surfacing instead of silent overwrite). §39.4 should be scoped as *extending* that existing infrastructure to external platforms, not designing a parallel one.
+- Tiering research (ERPNext GPL "always free" core, Odoo's Enterprise-is-more-modules pattern, Frappe Cloud's usage-based hosting) supports gating **scale/operations** (multi-company consolidation, additional integration connectors beyond the first, advanced reporting, API rate limits, hosted convenience) while keeping **core bookkeeping, single-company use, and data export free** -- this already matches the Decision Log's Modular Licensing section almost exactly; no change needed there, just confirmation.
+- **Real, severe risk surfaced by research and worth recording explicitly**: HashiCorp, Redis, and MongoDB all triggered community forks (OpenTofu, Valkey) after gating previously-free functionality; Redis and Elastic reversed their relicensing, HashiCorp did not and the company itself no longer exists independently. **Rule for §39.5: never regate a capability that free/open-source users already had.** Decide the free/paid boundary once, before the Integration Hub or any module ships, not after.
+
+## 39.2 Phase R — Release Hardening (near-complete)
+
+- **R-01 First-login security**: default admin (`admin@dakhl.local` / `1234`) ships on every install by deliberate owner decision (2026-09-14), documented as a known, intentional simplification -- but the same decision explicitly requires a forced-password-change-on-first-login flow before any public release (this was already tracked as "P0-02," status: not started). Scope: a `users.must_change_password` flag (defaulted true for the seeded admin only), a middleware that redirects to a change-password form until cleared, tests proving the redirect fires/clears correctly and that it does not affect normal users. Small, correctly deferred until now since it blocks nothing else.
+- **R-02 Desktop production error handling**: **DONE** this pass -- `NativeAppServiceProvider::phpIni()` now ties `display_errors` to `config('app.debug')` instead of hardcoding it on; `log_errors` stays on unconditionally. See AGENTS.md-adjacent commit `640b7f75`. 3 tests added.
+- Also closed this pass: `7zip-bin` Electron packaging dependency (previously found, explicitly left unfixed pending investigation -- now fixed and verified), git hygiene (`.gitignore` for `.claude/`/`build/`, scratch files removed), a local Git mirror backup (`D:\Backups\Dakhl.git`, verified byte-for-byte via a real recovery clone).
+- **Remaining in Phase R**: only R-01.
+
+## 39.3 Phase U — User Simplicity Layer (next priority)
+
+The most important open phase per the owner's own framing: "someone with zero accounting knowledge must be able to use Dakhl." P8 built the *mechanism* (per-user `ui_mode`, one wizard) but only applied it to one screen.
+
+- **U-01 Home Dashboard Redesign**: replace (for Simple-mode users only -- Advanced mode keeps the current dashboard unchanged) the current accounts/ledger-oriented home with a "Today" view (today's sales/expenses/stock/due dates) plus a small, fixed set of quick actions (New Sale, Receive Payment, Pay Expense, New Customer). Architecture: this is a presentation-layer change reading the exact same aggregates `ReportingDashboardController`/`HomeController` already compute -- no new domain queries, no new tables.
+- **U-02 Simple Mode, extended for real**: currently one wizard (Sell Invoice). Extend the exact same pattern (guardrail #51: pure Alpine `x-show`/`step` wrapper, zero field/route/validation changes) to Buy Invoice, Payment receipt, Expense entry, New Customer -- the highest-frequency flows for a non-accountant user. Each is its own small, bounded pass, not one large rewrite.
+- Explicitly **not** in scope for U: any new business logic, any new database column beyond what a wizard might already need, any change to Advanced mode's behavior.
+- **Risk**: scope creep into "redesign everything" -- the research lesson from Odoo/ERPNext is precise here: the failure mode is exposing raw power by default, not simplifying too little. Ship one flow at a time, verify with a human clicking through it in a real browser (this codebase's own established gap -- P8.2's wizard was never manually browser-tested, only HTTP-assertion-tested, per its own roadmap note), then move to the next.
+
+## 39.4 Phase AI — Financial Copilot (architecture only this phase; no implementation yet)
+
+Per the Decision Log's existing AI/Copilot section, extended with the concrete architecture research now supports:
+
+- **AI-01 Financial Q&A**: a service that answers questions like "why did my profit drop?" by composing *existing* report services (`CashFlowReportService`, `ProfitabilityByDimensionService`, `TaxReadinessService`, etc.) -- never a raw LLM-over-database query. The LLM's job is natural-language framing of results these services already compute correctly, not independent computation.
+- **AI-02 Proactive alerts**: extends the exact mechanism P12.2 already built (`TaxAlertEngineService`/`TaxAlert`/the bell widget) with new rule types (e.g. "customer hasn't ordered in N days," "expense category spiked vs. historical average") -- this is additive rule authoring on an already-shipped, already-tested alert engine, not a new subsystem.
+- **AI-03 Assisted workflows** (e.g. "create an invoice for Ahmad for 20 million"): explicitly the *last* AI increment, not the first -- and per both the Decision Log and this pass's research (ERPClaw's one defensible pattern), the AI must submit structured arguments through the exact same `InvoiceService::createInvoice()`/validation path a human filling the form would use, with the same confirmation step before anything posts. Never a direct-to-ledger write path.
+- **Explicitly not in scope for this phase**: any implementation. This phase is architecture-and-interface design only, to be scoped as its own future execution pass once Phase U ships and the AI provider/credential-handling pattern (mirrors the Decision Log's Market Data "Managed Provider vs. Bring Your Own API" split, encrypted credentials, never leaked into logs/UI) is worked out in detail.
+
+## 39.5 Phase Integration — Integration Hub (architecture only this phase; no implementation yet)
+
+- **Decision**: build as a generic Provider/Adapter layer (per-platform adapters translating to canonical domain events: `OrderCreated`, `InventoryChanged`, `CustomerUpsert`, `PaymentReceived`), consumed by **the existing sync infrastructure** (`SyncOutboxService`/`SyncInboxService`/`SyncConflictService`, the financial-event-identity idempotency pattern from D-077/D-078, explicit conflict surfacing from D-080) -- not a new parallel sync mechanism. This is the single most load-bearing architecture decision from this pass's research: Dakhl has already built and hardened exactly the infrastructure an e-commerce integration needs, for a different reason (offline desktop sync). Reuse it.
+- **INT-01 through INT-04** (Order/Inventory/Customer/Payment Sync): each is one adapter + canonical-event mapping, not one bespoke integration per platform. First target platform to be decided later (owner has not yet specified Shopify vs. WooCommerce vs. a local Iranian marketplace as the first real connector).
+- Webhook-driven with polling reconciliation as a fallback (webhooks are "at-least-once, tells you what changed not the new value" -- unreliable alone per research).
+- **Explicitly not in scope for this phase**: any implementation, any specific platform choice, any credential/OAuth flow design.
+
+## 39.6 Phase Monetization/Licensing (documentation-only; matches existing Decision Log section, no changes needed)
+
+Research confirms the Decision Log's existing Modular Licensing/Subscription section (module-level entitlements, Subscription/Entitlement/License as three separate concepts, expired-module-becomes-read-only not deleted) already matches the pattern real open-source-rooted products use successfully. The one concrete addition from research, recorded here as a hard rule:
+
+- **Never gate a capability that a free/open-source user already had.** HashiCorp, Redis, and MongoDB all triggered forks and, in HashiCorp's case, did not survive as an independent company, after regating previously-free functionality. Whatever the free/paid boundary ends up being (Phase Monetization has not yet been scoped in detail -- deliberately deferred, matching the priority order below), it must be decided and communicated once, before any module ships, never tightened retroactively.
+
+## 39.7 Explicit non-goals for this pass
+
+- **Android / Field Operations Mobile is postponed**, not cancelled. Reason, recorded precisely per the owner's own framing: offline strategy, device ownership, printer/hardware abstraction, sync-conflict UX, and field-worker permission model are all still-open product decisions that mobile work would otherwise have to guess at. The existing standalone design document (`Dakhl_FieldOperations_Mobile_Hardware_Spec.md`) remains valid reference material for whenever this phase is picked back up -- it is not being discarded, just sequenced after Phases R/U/AI/Integration architecture settle enough to inform those open decisions.
+- **No generic AI chatbot.** Research was unambiguous and unanimous across every product studied: a standalone chat panel is the weakest-value AI pattern in the entire market. Not building one.
+- **No new large features** in this pass. This entire §39 was a research-and-documentation pass; the only code changes made alongside it were the two small, already-tracked Phase R items (R-01 pending, R-02 done) and the Release Readiness Audit fixes (7zip-bin, git hygiene) -- see the Decision Log's own entry for this pass for full detail.
+
+## 39.8 Priority order (explicit)
+
+1. **R-01** (first-login forced password change) -- small, closes the one real remaining pre-public-release blocker.
+2. **Phase U** (User Simplicity Layer) -- the highest product-value work available right now on a backend that's already ready for it.
+3. **Phase AI architecture design** (not implementation) -- do this once Phase U's patterns (what a "simple" surface looks like) are proven out on a couple of real screens, so the AI layer's own simple-mode surface follows the same proven pattern rather than inventing a third one.
+4. **Phase Integration architecture design** (not implementation) -- can happen in parallel with AI architecture design since it depends on the existing sync infrastructure, not on Phase U/AI being done first.
+5. **Phase Monetization detailed scoping** -- deliberately last; premature to gate specific capabilities before Phases U/AI/Integration exist to be gated.
+6. **Android/Field Operations Mobile** -- resumes only after enough of Phases U/AI/Integration exist to make the open mobile-specific decisions (§39.7) with real product context instead of guesswork.

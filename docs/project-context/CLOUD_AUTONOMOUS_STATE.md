@@ -48,6 +48,14 @@ Remaining open items: the longer-standing J written-matrix artifact, N's policy 
 
 ## 0. BLOCKING ISSUE — READ THIS FIRST
 
+**RESOLVED 2026-09-22, READ THIS BEFORE ANYTHING BELOW IN THIS SECTION.** Git identity was set that day (`Dakhl Developer <dev@dakhl.local>` -- a generic placeholder identity, not the owner's own name/email as this section originally anticipated below). The entire P0-P12 backlog described throughout this document as "ready to commit" or "NOT yet staged" **has since been committed** -- 22 atomic commits reconstructing the full history, followed by a Release Readiness Audit (3 more commits: git hygiene, a missing `7zip-bin` Electron dependency, desktop production error-display handling), for 25 total and 1728 passing tests. A local Git mirror backup exists at `D:\Backups\Dakhl.git` (verified via a real recovery clone). **No remote push has occurred and none is planned** -- this stays local/private by explicit owner instruction. See the Decision Log's "Product Strategy Execution Sequencing — 2026-09-22" entry and roadmap §39 for the current priority order (Phase R -> User Simplicity -> AI architecture -> Integration architecture -> Monetization -> Android, in that order; Android/Field Operations Mobile is explicitly postponed, not cancelled).
+
+The rest of this section (and the "Ready-to-commit work" staging plan in Section 2 below) is preserved as historical record of how the git-identity blocker was diagnosed and what the ORIGINAL staging plan looked like -- it does not reflect what was actually committed (the actual 25 commits used a different, more accurate grouping derived from the real repository content; see the Decision Log for that). Do not re-execute anything in Section 2 below.
+
+---
+
+**Original entry, preserved for history:**
+
 **No git commit can be made in this environment.** `git config --list --show-origin` confirms there is no `user.name`/`user.email` set at system, global (`~/.gitconfig` does not exist), or repo (`.git/config`) level. The acting agent (Claude) operates under an absolute rule that forbids ever modifying git config (`NEVER update the git config`), and this rule takes precedence over the autonomous-mission brief's request for continuous commits. This is not a judgment call — it is a hard operating constraint.
 
 **Required owner action (one time, ~10 seconds):**
@@ -2722,3 +2730,18 @@ Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
 EOF
 )"
 ```
+
+---
+
+## 12. Session 2026-09-22 — git-identity blocker resolved, full backlog committed, Release Readiness Audit, Product Strategy Sequencing (supersedes all "ready to commit"/"NOT yet staged" sections above)
+
+Summary (full detail in the Decision Log and roadmap §39, not duplicated here):
+
+1. **Git identity set** by the owner (`Dakhl Developer <dev@dakhl.local>`). **22 atomic commits** created reconstructing the entire P0-P12 backlog this document spent Sections 1-11 tracking as uncommitted -- grouped by real phase/workstream (verified against the Decision Log's own narrative, not the original staging plan in Section 2 above, which is preserved only as historical record).
+2. **Release Readiness Audit** performed (git hygiene, security, product completeness, deployment readiness, documentation consistency). Found and fixed: a missing `7zip-bin` Electron packaging dependency (previously known, explicitly left unfixed), unconditional PHP error display in the packaged desktop build (`NativeAppServiceProvider::phpIni()`), and general git hygiene (`.gitignore` gaps, scratch files). 3 more commits, 1728 tests total.
+3. **Local Git mirror backup created**: `D:\Backups\Dakhl.git` (bare mirror), verified branch/tag/commit-hash-identical to the working repo via `git fetch`, and via a real recovery clone (checked out, files present, history intact, then deleted). Re-synced after every subsequent commit batch. **No GitHub remote created, no push performed, none planned** -- explicit owner instruction to stay fully local/private.
+4. **Product Strategy Execution Sequencing** decided and recorded (Decision Log + roadmap §39): NOT a new direction -- a research-validated sequencing of the Product Identity/AI-Copilot/Modular-Licensing sections already present in this Decision Log since the start of the mission. New priority order: R-01 (forced password change on first login) -> Phase U (User Simplicity Layer, extending P8's wizard pattern) -> Phase AI architecture design -> Phase Integration architecture design (extending the existing D-076-080 sync infrastructure, not a new mechanism) -> Phase Monetization detailed scoping -> Android/Field Operations Mobile (explicitly postponed pending open mobile-specific decisions, not cancelled).
+
+**No code was written for the Product Strategy Sequencing itself** -- documentation/architecture-decision output only, per explicit owner scope. The only code changes this session were the Release Readiness Audit's 3 fixes (item 2 above).
+
+**Current git state**: 25 commits on `dakhl-foundation`, working tree clean, 1728/1728 tests green, backup mirror current. Next exact action per roadmap §39.8: R-01 (first-login forced password change), then Phase U.
