@@ -3450,5 +3450,6 @@
     "Average Invoice Value": "Average Invoice Value",
     "Cash Collection Ratio": "Cash Collection Ratio",
     "No route metrics calculated for this period yet.": "No route metrics calculated for this period yet.",
-    "Commissions and route metrics recalculated successfully.": "Commissions and route metrics recalculated successfully."
+    "Commissions and route metrics recalculated successfully.": "Commissions and route metrics recalculated successfully.",
+    "Field Operations": "Field Operations"
 }

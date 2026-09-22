@@ -3450,5 +3450,6 @@
     "Average Invoice Value": "میانگین ارزش فاکتور",
     "Cash Collection Ratio": "نسبت وصول نقدی",
     "No route metrics calculated for this period yet.": "هنوز شاخصی برای این مسیر در این بازه محاسبه نشده است.",
-    "Commissions and route metrics recalculated successfully.": "کمیسیون‌ها و شاخص‌های مسیر با موفقیت محاسبه مجدد شدند."
+    "Commissions and route metrics recalculated successfully.": "کمیسیون‌ها و شاخص‌های مسیر با موفقیت محاسبه مجدد شدند.",
+    "Field Operations": "عملیات میدانی"
 }

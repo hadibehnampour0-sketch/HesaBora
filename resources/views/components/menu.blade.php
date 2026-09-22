@@ -119,6 +119,9 @@
                 @can('reports.cost-income')
                     <li><a href="{{ route('reports.cost-income') }}">{{ __('Cost and Income Dashboard') }}</a></li>
                 @endcan
+                @can('seasonal-tax.index')
+                    <li><a href="{{ route('seasonal-tax.index') }}">{{ __('Seasonal Tax Report') }}</a></li>
+                @endcan
                 @can('budgets.index')
                     <li><a href="{{ route('budgets.index') }}">{{ __('Monthly Income and Expense Workbench') }}</a></li>
                 @endcan
@@ -223,6 +226,17 @@
         </details>
     </li>
 @endcanany
+
+@can('field-operations-analytics.index')
+    <li>
+        <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
+            <summary>{{ __('Field Operations') }}</summary>
+            <ul class="{{ $topDropdownContentClass }}">
+                <li><a href="{{ route('field-operations-analytics.index') }}">{{ __('Field Operations Analytics') }}</a></li>
+            </ul>
+        </details>
+    </li>
+@endcan
 
 @canany(['crm.dashboard', 'customers.index', 'customer-groups.index'])
     <li>
