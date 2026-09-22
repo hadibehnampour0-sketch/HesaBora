@@ -17,7 +17,9 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/.claude
 /.playwright-cli/
+/build
 script/*.sql*
 script/*/*.sql*
 storage/*.sqlite*
