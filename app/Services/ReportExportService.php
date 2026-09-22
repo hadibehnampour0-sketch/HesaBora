@@ -38,12 +38,20 @@ class ReportExportService
         'trial_balance_csv' => ['permission' => 'reports.trial-balance.export-csv'],
         'accounting_report_csv' => ['permission' => 'reports.result'],
         'invoice_pdf' => ['permission' => 'invoices.print'],
+
+        // P12.3 (Seasonal Tax & VAT Reporting Engine). Permission strings
+        // here must match the ROUTE NAME exactly (CheckPermission
+        // middleware's own convention, confirmed against every other
+        // entry in this array) -- not a shared 'seasonal-tax.export'.
+        'seasonal_tax_csv' => ['permission' => 'seasonal-tax.export-csv'],
+        'seasonal_tax_pdf' => ['permission' => 'seasonal-tax.export-pdf'],
     ];
 
     public function __construct(
         private readonly WarehouseDashboardService $warehouseDashboardService,
         private readonly DocumentImportExportService $documentExportService,
         private readonly TrialBalanceService $trialBalanceService,
+        private readonly SeasonalTaxReportService $seasonalTaxReportService,
     ) {}
 
     public function generate(string $export, array $filters): array
@@ -63,6 +71,8 @@ class ReportExportService
             'trial_balance_csv' => $this->captureResponse($this->trialBalanceService->exportCsv($this->filterRequest($filters))),
             'accounting_report_csv' => $this->accountingReportCsv($filters),
             'invoice_pdf' => $this->invoicePdf($filters),
+            'seasonal_tax_csv' => $this->seasonalTaxCsv($filters),
+            'seasonal_tax_pdf' => $this->seasonalTaxPdf($filters),
         };
     }
 
@@ -321,6 +331,45 @@ class ReportExportService
             'filename' => 'invoice-'.formatDocumentNumber($invoice->number ?? $invoice->id).'.pdf', 'mime' => 'application/pdf'];
     }
 
+    private function seasonalTaxReport(array $filters): array
+    {
+        $validated = Validator::make($filters, [
+            'jalali_year' => ['required', 'integer', 'min:1300', 'max:1500'],
+            'quarter' => ['required', 'integer', 'between:1,4'],
+        ])->validate();
+
+        return $this->seasonalTaxReportService->report(getActiveCompany(), (int) $validated['jalali_year'], (int) $validated['quarter']);
+    }
+
+    private function seasonalTaxCsv(array $filters): array
+    {
+        $report = $this->seasonalTaxReport($filters);
+        $headers = [__('Fiscal Year'), __('Quarter'), __('Date Range'), __('Taxable Sales'), __('Exempt Sales'),
+            __('VAT Collected'), __('Taxable Purchases'), __('Creditable Input VAT'), __('Net VAT Payable')];
+
+        return $this->csv(
+            "seasonal-tax-{$report['jalali_year']}-q{$report['quarter']}.csv",
+            $headers,
+            function ($file) use ($report): void {
+                fputcsv($file, [
+                    $report['jalali_year'], $report['quarter_label'], $report['start_date'].' - '.$report['end_date'],
+                    $report['taxable_sales'], $report['exempt_sales'], $report['vat_collected'],
+                    $report['taxable_purchases'], $report['creditable_input_vat'], $report['net_vat_payable'],
+                ]);
+            }
+        );
+    }
+
+    private function seasonalTaxPdf(array $filters): array
+    {
+        $report = $this->seasonalTaxReport($filters);
+        $config = ['format' => 'A4', 'orientation' => 'P', 'directionality' => 'rtl',
+            'margin_top' => 28, 'margin_bottom' => 18, 'margin_header' => 6, 'margin_footer' => 6, 'defaultPageNumStyle' => 'persian'];
+
+        return ['content' => PDF::loadView('tax.seasonal.report-pdf', compact('report'), [], $config)->output(),
+            'filename' => "seasonal-tax-{$report['jalali_year']}-q{$report['quarter']}.pdf", 'mime' => 'application/pdf'];
+    }
+
     private function csv(string $filename, array $headers, callable $writeRows): array
     {
         $file = fopen('php://temp', 'w+');
@@ -422,8 +471,8 @@ class ReportExportService
     {
         $serviceBuy = in_array($type, [InvoiceType::BUY, InvoiceType::RETURN_BUY], true) && $request->boolean('service_buy');
         $query->when($type, fn ($q) => $q->where('invoice_type', $type))->when($request->filled('number'), fn ($q) => $q->where('number', $request->number));
-        $query->when($request->filled('start_date'), fn ($q) => $q->where('date', '>=', convertToGregorian($request->start_date)));
-        $query->when($request->filled('end_date'), fn ($q) => $q->where('date', '<=', convertToGregorian($request->end_date)));
+        $query->when($request->filled('start_date'), fn ($q) => $q->where('date', '>=', str_replace('/', '-', convertToGregorian($request->start_date))));
+        $query->when($request->filled('end_date'), fn ($q) => $q->where('date', '<=', str_replace('/', '-', convertToGregorian($request->end_date))));
         $query->when($request->filled('text'), fn ($q) => $q->where(fn ($invoice) => $invoice
             ->whereHas('items', fn ($items) => $items->where('description', 'like', "%{$request->text}%"))
             ->orWhereHas('customer', fn ($customer) => $customer->where('name', 'like', "%{$request->text}%"))));
