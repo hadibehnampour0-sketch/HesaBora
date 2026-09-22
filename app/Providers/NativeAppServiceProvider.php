@@ -63,12 +63,22 @@ class NativeAppServiceProvider implements ProvidesPhpIni
 
     /**
      * Return an array of php.ini directives to be set.
+     *
+     * display_errors is tied to config('app.debug') -- the same flag the
+     * web path already relies on, and which .env.example already defaults
+     * to false -- so a packaged production desktop build never renders a
+     * raw PHP error (file paths, SQL, stack traces) to an end user.
+     * error_reporting/log_errors stay on unconditionally so nothing is
+     * silently lost; it just goes to the log instead of the screen.
      */
     public function phpIni(): array
     {
+        $debug = (bool) config('app.debug');
+
         return [
               'memory_limit' => '512M',
-            'display_errors' => '1',
+            'display_errors' => $debug ? '1' : '0',
+            'log_errors' => '1',
             'error_reporting' => 'E_ALL',
             'max_execution_time' => '0',
             'max_input_time' => '0',
