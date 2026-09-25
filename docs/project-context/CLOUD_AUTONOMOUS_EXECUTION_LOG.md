@@ -1643,3 +1643,6 @@ Wrote `Dakhl_TRADE_ENGINE_ARCHITECTURE_AND_GOLD_PILOT_SPEC_2026-09-25.md` (aggre
 
 ## Entry 73 — 2026-09-25 — Owner review notes folded into Trade spec (§9)
 Recorded owner positions on Q1–Q5 (Q2/Q5 amend the assistant's recommendations), Lifecycle + DISPUTED addition, gold pilot = discovery only, D-099..D-102 sequence. Docs only; no D-099 text drafted.
+
+## Entry 74 — 2026-09-25 — Proposed ADR structure for D-099 recorded (spec §10)
+Recorded owner's round-2 review: ADR sections, boundary list, lifecycle-vs-status axes, Ownership Layer naming, no domain tables in gold pilot, Party as future option. Docs only. D-099 text still to be authored by owner.

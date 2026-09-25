@@ -94,3 +94,17 @@ Positions expressed, recorded faithfully so D-099 can be authored from them:
 - **Proposed decision sequence:** D-099 Trade Engine is a new business capability, not an accounting document type → D-100 Gold Pilot Domain Findings → D-101 Trade Data Model Proposal → D-102 Architecture Impact Review. (Numbers are the owner's suggestion; text authored by owner.)
 
 Spec changes implied: §3 Q2 and Q5 rows superseded by the above; §4 pilot is research/paper-simulation only; status set gains DISPUTED pending D-099 wording.
+
+## 10. Owner review notes, round 2 — proposed ADR structure for D-099 (INPUT ONLY; D-099 text not drafted here)
+
+Relayed proposal: D-099 should be a formal ADR ("Trade Engine as a Business Capability Architecture"; Proposed → Accepted after owner approval) with these sections and points:
+1. **Problem Statement** — not "manage gold trades" but: Dakhl must model multi-party trade relationships, non-Rial exchanges, open obligations, ownership separate from custody, and multi-form settlement, while current Accounting centers on Rial values and financial documents. (Prevents Trade becoming a "gold module".)
+2. **Decision** — Trade Engine is an independent business capability that models exchange relationships and produces accounting artifacts when required (owns its logic; generates accounting documents; is not itself one).
+3. **Boundary** — inside: Exchange, Leg, Quantity, Unit, Valuation, Ownership State, Position, Settlement Relationship. Outside: Ledger, Invoice rules, Tax calculation, Payment execution, Inventory rewrite.
+4. **Relation to D-074** — refines, does not replace; shared vocabulary allowed only when validated against concrete Trade requirements and without premature generic abstractions.
+5. **Two separate state axes** (supersedes §9's merged list): *Business Lifecycle* INTENT → AGREEMENT → EXCHANGED → OPEN_POSITION → SETTLEMENT → CLOSED; *Operational Status* OPEN / PARTIALLY_SETTLED / SETTLED / CANCELLED / DISPUTED (e.g. lifecycle=SETTLEMENT with status=DISPUTED is valid). Assistant note: this resolves the §9 concern only partially — D-074 locked the Status list; adding DISPUTED (and the lifecycle axis) is still an extension of D-074 and should be stated as such in the ADR.
+6. **Trade Ownership Layer** — exact name; scoped to Trade's own needs, not a general ownership system; separate from Stock for now.
+7. **Gold/Silver pilot constraint** — MUST NOT introduce domain-specific tables (GoldTrade, GoldPurity, GoldWage, CoinType) into core architecture unless later proven a genuine independent Domain Capability.
+8. **Party** — now: Customer(subject_id) + Trade metadata; "Party abstraction remains a future architectural option" (not rejected).
+9. **Follow-ups** — D-100 Gold/Silver Domain Discovery Report → D-101 Trade Data Model Proposal → D-102 Architecture Impact Review → Implementation Decision.
+Ripple areas to name in the ADR's consequences: Customer, Stock, Settlement, Tax, Sync, AI.
