@@ -2427,3 +2427,6 @@ Order: Product Identity doc (done) → Trade Engine Architecture decision (owner
 
 ### 40.8 D-099 registered as PROPOSED (2026-09-25)
 Text in Decision Log ("D-099 — Trade Engine as a Business Capability Architecture"), owner-authored, status PROPOSED, no implementation authorized. Next: D-100 Gold/Silver Domain Discovery (interviews + paper simulation) → D-101 Data Model Proposal → D-102 Architecture Impact Review → Implementation Decision. Guardrail #5 unchanged until acceptance.
+
+### 40.9 D-100 Gold/Silver Domain Discovery — protocol prepared (2026-09-25)
+`Dakhl_D100_GOLD_SILVER_DOMAIN_DISCOVERY_PROTOCOL_2026-09-25.md`: research only, 5 interviews (3 retail gold, 1 آبشده, 1 wholesale coin), 5 paper simulations, outputs Confirmed/Missing/Rejected + D-101 yes/no questions. **D-099 remains PROPOSED until D-100 completes** (owner instruction). D-100 decision text authored by the owner after findings.

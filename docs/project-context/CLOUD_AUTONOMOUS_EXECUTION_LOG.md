@@ -1649,3 +1649,6 @@ Recorded owner's round-2 review: ADR sections, boundary list, lifecycle-vs-statu
 
 ## Entry 75 — 2026-09-25 — D-099 recorded as PROPOSED
 Owner-authored ADR transcribed into Decision Log verbatim in substance (status PROPOSED, owner approval required). Roadmap §40.8 added. No code/schema; no push.
+
+## Entry 76 — 2026-09-25 — D-100 discovery protocol prepared
+Research protocol document written from owner's structure; roadmap §40.9. D-099 stays PROPOSED. Docs only; no push.
