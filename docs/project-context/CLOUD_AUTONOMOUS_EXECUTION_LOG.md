@@ -1691,3 +1691,6 @@ Pure presentation layer; 10 new/updated tests; suite 1782/1782. Local commit onl
 
 ## Entry 89 — 2026-09-25 — AI and Integration architecture design doc
 Documentation only; owner questions listed; no D-0XX text drafted; no push.
+
+## Entry 90 — 2026-09-25 — Phase AI tier 1 deterministic insights
+4 detectors + Today integration; 8 tests; suite 1790/1790. Lang files edited by minimal append (a JSON re-serialisation had rewritten escaping and was reverted). Local commit only; no push.

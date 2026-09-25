@@ -21,6 +21,7 @@ class TodayDashboardService
     public function __construct(
         private readonly AgeingService $ageing,
         private readonly ChequeRiskDashboardService $cheques,
+        private readonly InsightDetectorService $insights,
     ) {}
 
     public function build(User $user, ?Carbon $today = null): array
@@ -42,6 +43,12 @@ class TodayDashboardService
 
         if ($user->can('cheques.index')) {
             $data['blocks']['cheques'] = $this->chequeBlock();
+        }
+
+        $insights = $this->insights->detect($user, $today);
+
+        if ($insights !== []) {
+            $data['blocks']['insights'] = $insights;
         }
 
         return $data;

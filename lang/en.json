@@ -3533,5 +3533,14 @@
     "Supplier & cost info": "Supplier & cost info",
     "Items & submit": "Items & submit",
     "Tax Readiness": "Tax Readiness",
-    "Workflow Governance": "Workflow Governance"
+    "Workflow Governance": "Workflow Governance",
+    "Needs attention": "Needs attention",
+    "Possible duplicate invoice": "Possible duplicate invoice",
+    "Invoices :a and :b have the same customer, type and amount within :days day(s).": "Invoices :a and :b have the same customer, type and amount within :days day(s).",
+    "Purchase price increase": "Purchase price increase",
+    ":product was bought :percent% above its recent average price.": ":product was bought :percent% above its recent average price.",
+    "Receivables are concentrated": "Receivables are concentrated",
+    ":name holds :percent% of all open receivables.": ":name holds :percent% of all open receivables.",
+    "Bounced cheques need follow-up": "Bounced cheques need follow-up",
+    ":count bounced receivable cheque(s) are still outstanding.": ":count bounced receivable cheque(s) are still outstanding."
 }

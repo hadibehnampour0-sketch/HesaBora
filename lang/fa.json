@@ -3533,5 +3533,14 @@
     "Supplier & cost info": "تأمین‌کننده و اطلاعات هزینه",
     "Items & submit": "اقلام و ثبت",
     "Tax Readiness": "آمادگی مالیاتی",
-    "Workflow Governance": "حاکمیت گردش‌کار"
+    "Workflow Governance": "حاکمیت گردش‌کار",
+    "Needs attention": "نیازمند توجه",
+    "Possible duplicate invoice": "احتمال فاکتور تکراری",
+    "Invoices :a and :b have the same customer, type and amount within :days day(s).": "فاکتورهای :a و :b مشتری، نوع و مبلغ یکسان دارند و حداکثر :days روز فاصله دارند.",
+    "Purchase price increase": "افزایش قیمت خرید",
+    ":product was bought :percent% above its recent average price.": ":product ‏:percent% بالاتر از میانگین قیمت اخیر خریداری شد.",
+    "Receivables are concentrated": "تمرکز مطالبات",
+    ":name holds :percent% of all open receivables.": ":name ‏:percent% از کل مطالبات باز را دارد.",
+    "Bounced cheques need follow-up": "چک‌های برگشتی نیاز به پیگیری دارند",
+    ":count bounced receivable cheque(s) are still outstanding.": ":count چک دریافتی برگشتی هنوز باز است."
 }

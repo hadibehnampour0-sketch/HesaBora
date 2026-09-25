@@ -29,6 +29,24 @@
     </template>
 
     <div x-show="data" style="display: none" class="space-y-4">
+        {{-- Deterministic insights (Phase AI tier 1) --}}
+        <div x-show="(block('insights') || []).length" class="today-panel">
+            <div class="today-panel-title">{{ __('Needs attention') }}</div>
+            <ul class="mt-3 space-y-2 text-sm">
+                <template x-for="(item, idx) in (block('insights') || [])" :key="idx">
+                    <li>
+                        <a :href="item.url" class="today-row hover:bg-base-200">
+                            <span class="flex items-center gap-2">
+                                <span class="badge badge-xs" :class="item.severity === 'error' ? 'badge-error' : (item.severity === 'warning' ? 'badge-warning' : 'badge-info')"></span>
+                                <b x-text="item.title"></b>
+                            </span>
+                            <span class="text-xs text-base-content/70" x-text="item.detail"></span>
+                        </a>
+                    </li>
+                </template>
+            </ul>
+        </div>
+
         {{-- KPI cards --}}
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <a href="{{ route('invoices.index', ['invoice_type' => 'sell']) }}" x-show="block('sales')" class="today-kpi group">
