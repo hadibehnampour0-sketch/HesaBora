@@ -1688,3 +1688,6 @@ Service + endpoint + Alpine/Chart.js view; per-block permission gating; 7 tests;
 
 ## Entry 88 — 2026-09-25 — Simple-mode wizards (Buy invoice, New Customer, Ancillary cost) + menu links
 Pure presentation layer; 10 new/updated tests; suite 1782/1782. Local commit only; no push.
+
+## Entry 89 — 2026-09-25 — AI and Integration architecture design doc
+Documentation only; owner questions listed; no D-0XX text drafted; no push.
