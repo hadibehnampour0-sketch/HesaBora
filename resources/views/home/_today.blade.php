@@ -29,6 +29,42 @@
     </template>
 
     <div x-show="data" style="display: none" class="space-y-4">
+        {{-- Quick actions: plain-language shortcuts over existing screens (permission-gated) --}}
+        <div class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+            @can('invoices.create')
+                <a href="{{ route('invoices.create', ['invoice_type' => 'sell']) }}" class="today-action"><x-menu-icon name="sales" class="h-5 w-5" />{{ __('New sale') }}</a>
+                <a href="{{ route('invoices.create', ['invoice_type' => 'buy']) }}" class="today-action"><x-menu-icon name="buy" class="h-5 w-5" />{{ __('New purchase') }}</a>
+            @endcan
+            @can('customers.create')
+                <a href="{{ route('customers.create') }}" class="today-action"><x-menu-icon name="customers" class="h-5 w-5" />{{ __('New customer') }}</a>
+            @endcan
+            @can('ageing.receivables')
+                <a href="{{ route('ageing.receivables') }}" class="today-action"><x-menu-icon name="money" class="h-5 w-5" />{{ __('Collect money') }}</a>
+            @endcan
+            @can('ageing.payables')
+                <a href="{{ route('ageing.payables') }}" class="today-action"><x-menu-icon name="money" class="h-5 w-5" />{{ __('Pay suppliers') }}</a>
+            @endcan
+        </div>
+
+        {{-- First steps for a new company --}}
+        <div x-show="block('quick_start')" class="today-panel border-primary/30 bg-primary/5">
+            <div class="today-panel-title">{{ __('Getting started') }}</div>
+            <p class="mt-1 text-xs text-base-content/60">{{ __('Three quick steps to get your first invoice out.') }}</p>
+            <ul class="mt-3 space-y-2 text-sm">
+                <template x-for="step in (block('quick_start') || [])" :key="step.key">
+                    <li>
+                        <a :href="step.url" class="today-row hover:bg-base-200">
+                            <span class="flex items-center gap-2">
+                                <span class="badge badge-sm" :class="step.done ? 'badge-success' : 'badge-outline'" x-text="step.done ? '✓' : ''"></span>
+                                <span :class="step.done ? 'line-through opacity-60' : 'font-medium'" x-text="stepLabels[step.key]"></span>
+                            </span>
+                            <span class="text-xs text-primary" x-show="! step.done">{{ __('Start') }}</span>
+                        </a>
+                    </li>
+                </template>
+            </ul>
+        </div>
+
         {{-- Deterministic insights (Phase AI tier 1) --}}
         <div x-show="(block('insights') || []).length" class="today-panel">
             <div class="today-panel-title">{{ __('Needs attention') }}</div>
@@ -142,6 +178,11 @@
                 charts: {},
                 lang: document.documentElement.lang || 'fa',
                 unit: @js(__('Rial')),
+                stepLabels: {
+                    customer: @js(__('Add your first customer')),
+                    product: @js(__('Add your first product')),
+                    sale: @js(__('Create your first sale')),
+                },
 
                 block(name) { return this.data?.blocks?.[name] ?? null; },
                 num(v) { return new Intl.NumberFormat(this.lang).format(v ?? 0); },

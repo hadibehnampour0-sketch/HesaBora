@@ -5,9 +5,24 @@
     </a>
 
     <nav class="app-sidebar-scroll min-h-0 flex-1 overflow-y-auto px-3 pb-4">
-        <ul class="menu menu-md w-full gap-0.5 p-0" data-sidebar-menu>
-            <x-menu :sidebar="true" />
-        </ul>
+        @if (auth()->user()->isSimpleMode())
+            <div x-data="{ all: false }">
+                <ul class="menu menu-md w-full gap-0.5 p-0" data-sidebar-menu>
+                    <x-menu-simple />
+                </ul>
+                <button type="button" class="btn btn-ghost btn-xs mt-3 w-full text-base-content/60" @click="all = ! all">
+                    <span x-show="! all">{{ __('Show all features') }}</span>
+                    <span x-show="all" style="display: none">{{ __('Hide extra features') }}</span>
+                </button>
+                <ul x-show="all" style="display: none" class="menu menu-md mt-2 w-full gap-0.5 border-t border-[var(--sidebar-border)] p-0 pt-2" data-sidebar-menu>
+                    <x-menu :sidebar="true" />
+                </ul>
+            </div>
+        @else
+            <ul class="menu menu-md w-full gap-0.5 p-0" data-sidebar-menu>
+                <x-menu :sidebar="true" />
+            </ul>
+        @endif
     </nav>
 
     <div class="border-t border-[var(--sidebar-border)] px-5 py-3 text-xs text-base-content/50">
@@ -18,8 +33,7 @@
 <script>
     // Highlight the current page and open the group that contains it.
     document.addEventListener('DOMContentLoaded', () => {
-        const menu = document.querySelector('[data-sidebar-menu]');
-        if (!menu) return;
+        document.querySelectorAll('[data-sidebar-menu]').forEach((menu) => {
         const here = location.pathname.replace(/\/+$/, '') || '/';
         let best = null;
         menu.querySelectorAll('a[href]').forEach((a) => {
@@ -37,5 +51,6 @@
                 node = node.parentElement;
             }
         }
+        });
     });
 </script>

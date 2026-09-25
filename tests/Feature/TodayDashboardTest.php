@@ -166,4 +166,31 @@ class TodayDashboardTest extends TestCase
         config(['active-company-id' => $this->companyId]);
         $this->assertSame(1, app(TodayDashboardService::class)->build($this->user)['blocks']['sales']['today_sell']['count']);
     }
+
+    public function test_quick_start_lists_only_steps_the_user_may_perform_and_disappears_when_all_are_done(): void
+    {
+        $this->grant('home.today', 'customers.create', 'products.create', 'invoices.create');
+
+        $steps = $this->getJson(route('home.today'))->assertOk()->json('blocks.quick_start');
+        $byKey = collect($steps)->keyBy('key');
+
+        // The setUp customer already exists; no product and no sale yet.
+        $this->assertTrue($byKey['customer']['done']);
+        $this->assertFalse($byKey['product']['done']);
+        $this->assertFalse($byKey['sale']['done']);
+
+        $product = $this->createProduct();
+        $this->buy([$this->productItem($product, 10, 100)], true, ++$this->nextInvoiceNumber);
+        $this->sell([$this->productItem($product, 1, 500)], true, ++$this->nextInvoiceNumber);
+
+        $blocks = $this->getJson(route('home.today'))->json('blocks');
+        $this->assertArrayNotHasKey('quick_start', $blocks);
+    }
+
+    public function test_quick_start_is_hidden_from_users_who_can_create_nothing(): void
+    {
+        $this->grant('home.today');
+
+        $this->getJson(route('home.today'))->assertOk()->assertJsonPath('blocks', []);
+    }
 }

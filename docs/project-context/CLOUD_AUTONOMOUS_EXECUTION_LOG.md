@@ -1697,3 +1697,6 @@ Documentation only; owner questions listed; no D-0XX text drafted; no push.
 
 ## Entry 91 — 2026-09-25 — Insight thresholds as company settings; configs route fix
 business_insights profile + service wiring + 2 tests; ConfigController resource restricted to implemented actions. Suite 1792/1792. Local commit only; no push.
+
+## Entry 92 — 2026-09-25 — Simple sidebar, quick actions, getting-started checklist
+Presentation + read-only additions; 5 new tests; suite 1797/1797. Local commit only; no push.

@@ -486,3 +486,9 @@ main {
         @apply flex items-center justify-between gap-3 rounded-field bg-base-200/60 px-3 py-2;
     }
 }
+
+@layer components {
+    .today-action {
+        @apply flex items-center gap-2 rounded-box border border-base-300 bg-base-100 px-3 py-3 text-sm font-medium text-base-content shadow-xs transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary;
+    }
+}

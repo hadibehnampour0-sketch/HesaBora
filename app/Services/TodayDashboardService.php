@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
+use App\Models\Customer;
 use App\Models\Invoice;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -45,6 +47,12 @@ class TodayDashboardService
             $data['blocks']['cheques'] = $this->chequeBlock();
         }
 
+        $quickStart = $this->quickStartBlock($user);
+
+        if ($quickStart !== []) {
+            $data['blocks']['quick_start'] = $quickStart;
+        }
+
         $insights = $this->insights->detect($user, $today);
 
         if ($insights !== []) {
@@ -52,6 +60,31 @@ class TodayDashboardService
         }
 
         return $data;
+    }
+
+    /**
+     * First-steps checklist for a brand-new company: shown only while a step the user is
+     * allowed to perform is still undone. Read-only (three existence checks).
+     *
+     * @return list<array{key: string, done: bool, url: string}>
+     */
+    private function quickStartBlock(User $user): array
+    {
+        $steps = [];
+
+        if ($user->can('customers.create')) {
+            $steps[] = ['key' => 'customer', 'done' => Customer::query()->exists(), 'url' => route('customers.create')];
+        }
+
+        if ($user->can('products.create')) {
+            $steps[] = ['key' => 'product', 'done' => Product::query()->exists(), 'url' => route('products.create')];
+        }
+
+        if ($user->can('invoices.create')) {
+            $steps[] = ['key' => 'sale', 'done' => Invoice::query()->where('invoice_type', InvoiceType::SELL)->exists(), 'url' => route('invoices.create', ['invoice_type' => 'sell'])];
+        }
+
+        return collect($steps)->contains(fn ($step) => ! $step['done']) ? $steps : [];
     }
 
     /** Today's sell/buy totals plus a 7-day sell-vs-buy series. */
