@@ -1635,3 +1635,8 @@ No further schema changes required.
 ## Entry 71 — 2026-09-25 — Product Vision integration (documentation only)
 
 Read owner instruction file; searched project docs and confirmed the "forgotten" items are D-074 and Industry Intelligence (LOCKED, unimplemented). Ran 4 parallel research passes (party/consignment/weight ledgers; Iranian market-data sources; global competitors/B2B; Iranian accounting software/migration). Wrote `Dakhl_PRODUCT_VISION_AND_STRATEGY_2026-09-25.md`, roadmap §40, Decision Log narrative (no D-0XX text; numbering collision noted, next free D-099). No code/schema changes; no push.
+
+---
+
+## Entry 72 — 2026-09-25 — Trade phase opened for specification only
+Wrote `Dakhl_TRADE_ENGINE_ARCHITECTURE_AND_GOLD_PILOT_SPEC_2026-09-25.md` (aggregate model, 5 open questions with options, gold scenarios S1–S3, generality check, impact-review checklist) and roadmap §40.7. No D-099 text drafted (owner authors). No code/schema changes; no push.
