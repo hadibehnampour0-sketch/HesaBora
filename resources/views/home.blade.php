@@ -4,6 +4,10 @@
     <div class="home-dashboard pb-6">
         @include('home._header', compact('homeVariant'))
 
+        @if ($hasBusinessPerms)
+            @include('home._today')
+        @endif
+
         @include('home._financial-values')
 
         @include('home._access-sections')

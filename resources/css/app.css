@@ -461,3 +461,28 @@ main {
 
 .app-sidebar-scroll::-webkit-scrollbar { width: 5px; }
 .app-sidebar-scroll::-webkit-scrollbar-thumb { border-radius: 10px; background: var(--sidebar-border); }
+
+/* ---- Today dashboard ---- */
+@layer components {
+    .today-kpi {
+        @apply flex flex-col gap-1 rounded-box border border-base-300 bg-base-100 p-4 shadow-xs transition hover:border-primary/40 hover:shadow-md;
+    }
+    .today-kpi-label {
+        @apply text-xs font-medium text-base-content/60;
+    }
+    .today-kpi-value {
+        @apply text-xl font-bold text-base-content;
+    }
+    .today-kpi-sub {
+        @apply text-xs text-base-content/60;
+    }
+    .today-panel {
+        @apply rounded-box border border-base-300 bg-base-100 p-4 shadow-xs;
+    }
+    .today-panel-title {
+        @apply text-sm font-semibold text-base-content;
+    }
+    .today-row {
+        @apply flex items-center justify-between gap-3 rounded-field bg-base-200/60 px-3 py-2;
+    }
+}

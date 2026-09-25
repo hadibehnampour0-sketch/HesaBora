@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\HomeService;
+use App\Services\TodayDashboardService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class HomeController extends Controller
         'reports.ledger',
     ];
 
-    public function __construct(private readonly HomeService $service) {}
+    public function __construct(private readonly HomeService $service, private readonly TodayDashboardService $today) {}
 
     public function managementDashboard(Request $request): View
     {
@@ -97,6 +98,14 @@ class HomeController extends Controller
         }
 
         return view('home', $data);
+    }
+
+    /**
+     * Phase U "Today" dashboard payload. Each block is permission-gated inside the service.
+     */
+    public function today(Request $request): JsonResponse
+    {
+        return response()->json($this->today->build($request->user()));
     }
 
     /**

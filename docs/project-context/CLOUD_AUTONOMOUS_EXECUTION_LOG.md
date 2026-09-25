@@ -1682,3 +1682,6 @@ Middleware + migration backfill + controller rules + 8 tests; suite 1766/1766. L
 
 ## Entry 86 — 2026-09-25 — Unified design system (theme + sidebar shell), light/dark, RTL
 CSS theme tokens, new shell components (sidebar, menu-icon, topbar), login/super-admin/home alignment. Suite 1766/1766. Local commit only; no push.
+
+## Entry 87 — 2026-09-25 — "Today" dashboard on Home
+Service + endpoint + Alpine/Chart.js view; per-block permission gating; 7 tests; suite 1773/1773. Whole-app GET probe (168 routes, real DB) showed one pre-existing failure: /management/configs/create (ConfigController::create missing). Local commit only; no push.

@@ -221,7 +221,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'api-tokens' => ['index', 'create', 'store', 'destroy'],
 
             // Home
-            'home' => ['summary'],
+            'home' => ['summary', 'today'],
 
             // Employee portal
             'employee-portal' => [
@@ -313,7 +313,7 @@ class RolesAndPermissionsSeeder extends Seeder
                     ->orWhere('name', 'LIKE', 'customers.%')
                     ->orWhere('name', 'LIKE', 'customer-groups.%')
                     ->orWhere('name', 'LIKE', 'crm.%')
-                    ->orWhereIn('name', ['home', 'home.summary']))
+                    ->orWhereIn('name', ['home', 'home.summary', 'home.today']))
                 ->whereNotIn('name', [
                     'invoices.approve',
                     'invoices.final-approve',
@@ -342,7 +342,7 @@ class RolesAndPermissionsSeeder extends Seeder
             Permission::query()
                 ->where('name', 'LIKE', 'employee-portal.%')
                 ->orWhere('name', '=', 'change-company')
-                ->orWhereIn('name', ['home', 'home.summary'])
+                ->orWhereIn('name', ['home', 'home.summary', 'home.today'])
                 ->orWhere('name', '=', 'attendance.attendance-logs.show')
                 ->pluck('name')
                 ->toArray()

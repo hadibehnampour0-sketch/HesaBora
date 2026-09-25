@@ -85,6 +85,7 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::post('/import', [Controllers\BackupController::class, 'import'])->name('import');
     });
     Route::get('/', [Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/home/today', [Controllers\HomeController::class, 'today'])->name('home.today');
     Route::get('/home/summary/{metric}', [Controllers\HomeController::class, 'summaryMetric'])->name('home.summary');
     Route::post('/report', [Controllers\ReportEmailController::class, 'store'])->name('report');
     Route::get('subjects/search', [Controllers\SubjectController::class, 'search'])->name('subjects.search');
