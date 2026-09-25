@@ -21,6 +21,21 @@
                 @can('tax-alerts.index')
                     <x-tax-alert-bell />
                 @endcan
+                @auth
+                    <li>
+                        {{-- Always-visible display-mode indicator: checked = Simple mode, unchecked = Advanced. --}}
+                        <form method="POST" action="{{ route('account.update-ui-mode') }}" class="m-0 p-0">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="return" value="back">
+                            <input type="hidden" name="ui_mode" value="{{ auth()->user()->isSimpleMode() ? 'advanced' : 'simple' }}">
+                            <label class="flex cursor-pointer items-center gap-2 rounded-full border border-base-300 bg-base-100 px-3 py-1 text-xs font-medium" data-ui-mode-toggle title="{{ __('Switch between Simple and Advanced mode') }}">
+                                <input type="checkbox" class="checkbox checkbox-primary checkbox-xs" @checked(auth()->user()->isSimpleMode()) onchange="this.form.submit()" aria-label="{{ __('Simple mode') }}">
+                                <span>{{ auth()->user()->isSimpleMode() ? __('Simple mode') : __('Advanced mode') }}</span>
+                            </label>
+                        </form>
+                    </li>
+                @endauth
                 <li>
                     <label class="swap swap-rotate btn btn-ghost btn-square btn-sm" aria-label="{{ __('Dark mode') }}">
                         <input type="checkbox" value="dark" class="theme-controller" />

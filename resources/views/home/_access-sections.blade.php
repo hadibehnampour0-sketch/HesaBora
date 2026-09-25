@@ -1,44 +1,3 @@
-@php
-    $availableQuickLinks = collect([
-        ['permission' => 'invoices.index', 'area' => 'sell-invoices-link', 'label' => __('Sell Invoices'), 'href' => route('invoices.index', ['invoice_type' => 'sell']), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'invoices.index', 'area' => 'buy-invoices-link', 'label' => __('Buy Invoices'), 'href' => route('invoices.index', ['invoice_type' => 'buy']), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'invoices.create', 'area' => 'create-sell-invoice-link', 'label' => __('Create Sell Invoice'), 'href' => route('invoices.create', ['invoice_type' => 'sell']), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'customers.create', 'area' => 'create-customer-link', 'label' => __('Create Customer'), 'href' => route('customers.create'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'crm.dashboard', 'area' => 'crm-dashboard', 'label' => __('CRM Dashboard'), 'href' => route('crm.dashboard'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'ancillary-costs.index', 'area' => 'ancillary-costs', 'label' => __('Ancillary Costs'), 'href' => route('ancillary-costs.index'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'services.create', 'area' => 'create-service-link', 'label' => __('Add Service'), 'href' => route('services.create'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'products.create', 'area' => 'create-product-link', 'label' => __('Create Product'), 'href' => route('products.create'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'warehouse.dashboard', 'area' => 'warehouse-dashboard', 'label' => __('Warehouse Dashboard'), 'href' => route('warehouse.dashboard'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'products.report', 'area' => 'inventory-report', 'label' => __('Warehouse Report'), 'href' => route('products.report'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'products.import', 'area' => 'import-products-link', 'label' => __('Import Products'), 'href' => route('products.import'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'products.export', 'area' => 'export-products-link', 'label' => __('Receive Products Report'), 'href' => route('products.export'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'employee-portal.dashboard', 'area' => 'employee-overview', 'label' => __('My Portal'), 'href' => route('employee-portal.dashboard'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'employee-portal.employee.show', 'area' => 'employee-profile', 'label' => __('Employment Profile'), 'href' => route('employee-portal.employee.show'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'employee-portal.attendance-logs', 'area' => 'employee-attendance', 'label' => __('Attendance'), 'href' => route('employee-portal.attendance-logs'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'employee-portal.monthly-attendances', 'area' => 'employee-monthly-attendance', 'label' => __('Monthly Attendance'), 'href' => route('employee-portal.monthly-attendances'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'employee-portal.payrolls', 'area' => 'employee-payroll', 'label' => __('Payroll'), 'href' => route('employee-portal.payrolls'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-        ['permission' => 'employee-portal.personnel-requests.index', 'area' => 'employee-requests', 'label' => __('Personnel Requests'), 'href' => route('employee-portal.personnel-requests.index'), 'style' => 'border-base-300 bg-base-100 text-base-content hover:border-primary/40 hover:bg-primary/5'],
-    ])->filter(fn (array $link) => auth()->user()->can($link['permission']))->values();
-
-    $quickLinks = $availableQuickLinks->take(12);
-    $standaloneLinks = collect([
-        'create-product-link',
-        'warehouse-dashboard',
-        'create-service-link',
-        'ancillary-costs',
-        'create-customer-link',
-        'crm-dashboard',
-    ])->map(fn (string $area) => $availableQuickLinks->firstWhere('area', $area))->filter();
-
-    $businessGridClass = match (true) {
-        $canSales && $standaloneLinks->isNotEmpty() => 'md:grid-cols-2 xl:grid-cols-5',
-        $canSales => 'md:grid-cols-2 xl:grid-cols-4',
-        $standaloneLinks->isNotEmpty() => 'xl:grid-cols-3',
-        default => 'lg:max-w-2xl',
-    };
-    $businessCardClass = ($canSales || $standaloneLinks->isNotEmpty()) ? 'xl:col-span-2' : '';
-@endphp
-
 @if (! $canFinancial && $quickLinks->isNotEmpty())
     <nav aria-label="{{ __('Quick Access') }}">
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
@@ -124,14 +83,6 @@
                         @endcan
                     </div>
                 </article>
-            @endif
-
-            @if ($standaloneLinks->isNotEmpty())
-                <aside class="grid gap-2 xl:auto-rows-fr" aria-label="{{ __('Quick Access') }}">
-                    @foreach ($standaloneLinks as $link)
-                        @include('home._quick-access-link', compact('link'))
-                    @endforeach
-                </aside>
             @endif
         </div>
     </section>

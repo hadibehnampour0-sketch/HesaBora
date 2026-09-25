@@ -11,6 +11,10 @@
         </button>
     </div>
 
+    @include('home._standalone-links')
+
+    @include('home._financial-values')
+
     <template x-if="loading">
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <template x-for="i in 4" :key="i"><div class="skeleton h-28 w-full rounded-box"></div></template>

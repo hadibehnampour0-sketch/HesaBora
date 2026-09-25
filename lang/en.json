@@ -3596,5 +3596,8 @@
     "More details": "More details",
     "Settle the oldest invoices first (automatic)": "Settle the oldest invoices first (automatic)",
     "The amount is more than the open balance.": "The amount is more than the open balance.",
-    ":count invoice settled.|:count invoices settled.": ":count invoice settled.|:count invoices settled."
+    ":count invoice settled.|:count invoices settled.": ":count invoice settled.|:count invoices settled.",
+    "Simple mode": "Simple mode",
+    "Advanced mode": "Advanced mode",
+    "Switch between Simple and Advanced mode": "Switch between Simple and Advanced mode"
 }

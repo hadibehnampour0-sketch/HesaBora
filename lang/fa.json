@@ -3596,5 +3596,8 @@
     "More details": "جزئیات بیشتر",
     "Settle the oldest invoices first (automatic)": "تسویه‌ی قدیمی‌ترین فاکتورها به‌ترتیب (خودکار)",
     "The amount is more than the open balance.": "مبلغ از مانده‌ی باز بیشتر است.",
-    ":count invoice settled.|:count invoices settled.": ":count فاکتور تسویه شد.|:count فاکتور تسویه شد."
+    ":count invoice settled.|:count invoices settled.": ":count فاکتور تسویه شد.|:count فاکتور تسویه شد.",
+    "Simple mode": "حالت ساده",
+    "Advanced mode": "حالت پیشرفته",
+    "Switch between Simple and Advanced mode": "جابه‌جایی بین حالت ساده و پیشرفته"
 }

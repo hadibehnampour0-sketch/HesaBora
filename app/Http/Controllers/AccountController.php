@@ -96,6 +96,9 @@ class AccountController extends Controller
         $user->update(['ui_mode' => $validated['ui_mode']]);
         Auth::setUser($user->fresh());
 
-        return redirect()->route('account.edit')->with('success', __('Display mode updated successfully.'));
+        // The header toggle asks to stay on the current page; the account page form keeps its own redirect.
+        $target = $request->input('return') === 'back' ? redirect()->back(fallback: route('home')) : redirect()->route('account.edit');
+
+        return $target->with('success', __('Display mode updated successfully.'));
     }
 }

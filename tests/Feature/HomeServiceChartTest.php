@@ -246,6 +246,37 @@ class HomeServiceChartTest extends TestCase
             ->assertDontSee('data-home-area="employee"', false);
     }
 
+    public function test_home_order_is_today_title_then_action_links_then_financial_boxes_then_today_content(): void
+    {
+        $this->signInWith(['home.summary', 'home.today', 'documents.show', 'invoices.index', 'invoices.create', 'products.create', 'customers.create', 'crm.dashboard']);
+
+        $html = $this->get(route('home'))->assertOk()->getContent();
+
+        $positions = array_map(fn (string $needle) => strpos($html, $needle), [
+            'id="today-title"',
+            'data-home-area="create-product-link"',
+            'data-home-area="crm-dashboard"',
+            'id="private-summary-title"',
+            'class="today-kpi',
+        ]);
+
+        $this->assertNotContains(false, $positions);
+        $sorted = $positions;
+        sort($sorted);
+        $this->assertSame($sorted, $positions);
+        $this->assertSame(1, substr_count($html, 'data-home-area="create-product-link"'));
+    }
+
+    public function test_the_header_shows_the_current_display_mode_as_a_checkbox(): void
+    {
+        $user = $this->signInWith(['home.summary', 'invoices.index']);
+
+        $this->get(route('home'))->assertSee('data-ui-mode-toggle', false)->assertSee(__('Advanced mode'));
+
+        $user->update(['ui_mode' => 'simple']);
+        $this->get(route('home'))->assertSee(__('Simple mode'))->assertSee('checked', false);
+    }
+
     public function test_warehousekeeper_does_not_receive_sales_content_from_product_access(): void
     {
         $this->signInWith(['home.summary', 'products.index', 'products.create', 'products.report', 'products.import', 'products.export', 'warehouse.dashboard']);

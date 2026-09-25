@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\UiMode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -131,7 +132,7 @@ class AccountSettingsTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->assertSame(\App\Enums\UiMode::ADVANCED, $user->ui_mode);
+        $this->assertSame(UiMode::ADVANCED, $user->ui_mode);
         $this->assertFalse($user->isSimpleMode());
     }
 
@@ -144,6 +145,15 @@ class AccountSettingsTest extends TestCase
         ]);
 
         $response->assertRedirect(route('account.edit'));
+        $this->assertTrue($user->fresh()->isSimpleMode());
+    }
+
+    public function test_the_header_toggle_returns_to_the_page_it_was_used_on(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)->from('/somewhere')->patch(route('account.update-ui-mode'), ['ui_mode' => 'simple', 'return' => 'back'])
+            ->assertRedirect('/somewhere');
         $this->assertTrue($user->fresh()->isSimpleMode());
     }
 
@@ -165,7 +175,7 @@ class AccountSettingsTest extends TestCase
         ]);
 
         $response->assertSessionHasErrors('ui_mode');
-        $this->assertTrue($user->fresh()->ui_mode === \App\Enums\UiMode::ADVANCED);
+        $this->assertTrue($user->fresh()->ui_mode === UiMode::ADVANCED);
     }
 
     public function test_user_can_log_in_with_the_username_they_set_for_themselves(): void
