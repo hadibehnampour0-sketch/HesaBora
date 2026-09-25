@@ -3599,5 +3599,16 @@
     ":count invoice settled.|:count invoices settled.": ":count invoice settled.|:count invoices settled.",
     "Simple mode": "Simple mode",
     "Advanced mode": "Advanced mode",
-    "Switch between Simple and Advanced mode": "Switch between Simple and Advanced mode"
+    "Switch between Simple and Advanced mode": "Switch between Simple and Advanced mode",
+    "Tax Center": "Tax Center",
+    "Everything you need for the tax office in one place: invoices, VAT, Moadian, evidence and audit readiness.": "Everything you need for the tax office in one place: invoices, VAT, Moadian, evidence and audit readiness.",
+    "A score that shows how ready your books and Moadian setup are for the tax office, with a list of what to fix.": "A score that shows how ready your books and Moadian setup are for the tax office, with a list of what to fix.",
+    "Quarterly VAT and tax figures, ready to check and export as CSV or PDF for your filing.": "Quarterly VAT and tax figures, ready to check and export as CSV or PDF for your filing.",
+    "Which sales invoices were sent to the Moadian system, their status, and any rejections.": "Which sales invoices were sent to the Moadian system, their status, and any rejections.",
+    "Tax alerts": "Tax alerts",
+    "Reminders and warnings about deadlines and problems that could cause trouble with the tax office.": "Reminders and warnings about deadlines and problems that could cause trouble with the tax office.",
+    "Expense evidence": "Expense evidence",
+    "Attach supporting documents to costs so they can be defended as tax-deductible in an audit.": "Attach supporting documents to costs so they can be defended as tax-deductible in an audit.",
+    "Company tax profile": "Company tax profile",
+    "Economic code, national ID and Moadian credentials used when sending invoices.": "Economic code, national ID and Moadian credentials used when sending invoices."
 }

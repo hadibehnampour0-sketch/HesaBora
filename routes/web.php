@@ -207,6 +207,7 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::resource('configs', Controllers\ConfigController::class)->only(['index', 'edit', 'update']);
         Route::get('workflow-governance', [Controllers\WorkflowGovernanceController::class, 'edit'])->name('workflow-governance.edit');
         Route::put('workflow-governance', [Controllers\WorkflowGovernanceController::class, 'update'])->name('workflow-governance.update');
+        Route::get('tax-center', [Controllers\TaxCenterController::class, 'index'])->name('tax-center.index');
         Route::get('tax-readiness', [Controllers\TaxReadinessController::class, 'index'])->name('tax-readiness.index');
         Route::post('tax-readiness/recalculate', [Controllers\TaxReadinessController::class, 'recalculate'])->name('tax-readiness.recalculate');
 

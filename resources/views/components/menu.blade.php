@@ -111,7 +111,7 @@
     </li>
 @endcanany
 @canany(['reports.documents', 'reports.journal', 'reports.ledger', 'reports.sub-ledger', 'reports.trial-balance',
-    'reports.cost-income', 'budgets.index', 'reports.company-overview', 'ageing.receivables', 'ageing.payables', 'seasonal-tax.index', 'tax-readiness.index'])
+    'reports.cost-income', 'budgets.index', 'reports.company-overview', 'ageing.receivables', 'ageing.payables', 'seasonal-tax.index', 'tax-readiness.index', 'tax-center.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="reports" />{{ __('Reports') }}</summary>
@@ -121,6 +121,9 @@
                 @endcan
                 @can('reports.cost-income')
                     <li><a href="{{ route('reports.cost-income') }}">{{ __('Cost and Income Dashboard') }}</a></li>
+                @endcan
+                @can('tax-center.index')
+                    <li><a href="{{ route('tax-center.index') }}">{{ __('Tax Center') }}</a></li>
                 @endcan
                 @can('seasonal-tax.index')
                     <li><a href="{{ route('seasonal-tax.index') }}">{{ __('Seasonal Tax Report') }}</a></li>
