@@ -7,7 +7,7 @@
 @else
     <a href="{{ $link['href'] }}" data-home-area="{{ $link['area'] }}" class="{{ $classes }}">
         <span class="inline-flex items-center gap-2">
-            <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-base-100/70">
+            <span class="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <svg xmlns="http://www.w3.org/2000/svg" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 12h14m-5-5 5 5-5 5" />
                 </svg>

@@ -1679,3 +1679,6 @@ Data-driven JSON definitions, evidence-status badges, history, activation, 8 tra
 
 ## Entry 85 — 2026-09-25 — R-01 forced password change implemented
 Middleware + migration backfill + controller rules + 8 tests; suite 1766/1766. Local commit only; no push.
+
+## Entry 86 — 2026-09-25 — Unified design system (theme + sidebar shell), light/dark, RTL
+CSS theme tokens, new shell components (sidebar, menu-icon, topbar), login/super-admin/home alignment. Suite 1766/1766. Local commit only; no push.

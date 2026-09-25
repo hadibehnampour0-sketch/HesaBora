@@ -1,10 +1,10 @@
-<section data-home-variant="{{ $homeVariant }}" class="relative isolate overflow-hidden rounded-3xl border p-3 shadow-sm sm:p-4 border-info/25 bg-gradient-to-l from-info/10 via-base-100 to-base-100">
-    <div aria-hidden="true" class="absolute -end-20 -top-24 size-64 rounded-full blur-3xl bg-info/20"></div>
+<section data-home-variant="{{ $homeVariant }}" class="relative isolate overflow-hidden rounded-box border p-3 shadow-sm sm:p-4 border-primary/20 bg-gradient-to-l from-primary/10 via-base-100 to-base-100">
+    <div aria-hidden="true" class="absolute -end-20 -top-24 size-64 rounded-full blur-3xl bg-primary/15"></div>
     <div aria-hidden="true" class="absolute -bottom-24 start-1/3 size-48 rounded-full bg-base-200/50 blur-3xl"></div>
 
     <div class="relative grid gap-3 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-center">
         <div class="flex min-w-0 items-center gap-3">
-            <span class="inline-flex size-12 shrink-0 items-center justify-center rounded-2xl shadow-sm ring-1 ring-current/10 sm:size-14 bg-info/15 text-info">
+            <span class="inline-flex size-12 shrink-0 items-center justify-center rounded-2xl shadow-sm ring-1 ring-current/10 sm:size-14 bg-primary/10 text-primary">
                 @switch($homeVariant)
                     @case('platform')
                     @case('admin')

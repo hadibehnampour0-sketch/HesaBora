@@ -1,13 +1,13 @@
-<header class="sticky top-0 z-30 w-full border-b border-base-content/8 bg-base-100/90 backdrop-blur-md">
-    <div class="navbar min-h-14 items-center justify-between gap-3 px-3 min-[1430px]:w-[1430px] min-[1430px]:mx-auto">
-        <nav class="flex min-w-0 flex-1 items-center gap-1" aria-label="{{ __('Main navigation') }}">
-            <a href="/" class="flex shrink-0 items-center rounded-lg p-1.5 transition-colors hover:bg-base-200" aria-label="{{ config('app.name') }}">
-                <img src="/images/logo.svg" alt="Logo" class="h-9 w-9 object-contain">
+<header class="sticky top-0 z-30 w-full border-b border-base-300 bg-base-100/90 backdrop-blur-md">
+    <div class="flex min-h-14 items-center justify-between gap-3 px-4 lg:px-6">
+        <div class="flex min-w-0 items-center gap-2">
+            <label for="app-drawer" class="btn btn-ghost btn-square btn-sm lg:hidden" aria-label="{{ __('Main navigation') }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+            </label>
+            <a href="/" class="flex items-center gap-2 lg:hidden" aria-label="{{ config('app.name') }}">
+                <img src="/images/logo.svg" alt="" class="h-8 w-8 object-contain">
             </a>
-            <ul class="app-main-menu menu px-1 lg:menu-horizontal lg:flex-nowrap" data-main-menu>
-                <x-menu />
-            </ul>
-        </nav>
+        </div>
 
         <nav aria-label="{{ __('User menu') }}">
             <ul class="app-main-menu flex shrink-0 items-center menu menu-horizontal px-1" data-main-menu>

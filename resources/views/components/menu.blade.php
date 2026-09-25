@@ -1,17 +1,20 @@
+@props(['sidebar' => false])
+
 @php
-    $topDropdownClass = 'app-main-menu-dropdown';
-    $topDropdownContentClass = 'app-main-menu-panel z-50 w-max min-w-56 max-w-[calc(100vw-2rem)] overflow-x-auto';
-    $scrollingTopDropdownContentClass = $topDropdownContentClass . ' max-h-[calc(100vh-6rem)] overflow-y-auto';
+    // Sidebar mode: plain nested collapsible groups (no floating panels, no auto-close JS).
+    $topDropdownClass = $sidebar ? '' : 'app-main-menu-dropdown';
+    $topDropdownContentClass = $sidebar ? '' : 'app-main-menu-panel z-50 w-max min-w-56 max-w-[calc(100vw-2rem)] overflow-x-auto';
+    $scrollingTopDropdownContentClass = $sidebar ? '' : $topDropdownContentClass . ' max-h-[calc(100vh-6rem)] overflow-y-auto';
 @endphp
 
 @can('home.*')
-    <li><a href="/">{{ __('Home') }}</a></li>
+    <li><a href="/"><x-menu-icon name="home" />{{ __('Home') }}</a></li>
 @endcan
 
 @can('employee-portal.dashboard')
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary>{{ __('My Portal') }}</summary>
+            <summary><x-menu-icon name="portal" />{{ __('My Portal') }}</summary>
             <ul class="{{ $topDropdownContentClass }}">
                 <li><a href="{{ route('employee-portal.dashboard') }}">{{ __('Dashboard') }}</a></li>
                 <li><a href="{{ route('employee-portal.attendance-logs') }}">{{ __('My Attendance') }}</a></li>
@@ -27,7 +30,7 @@
     'invoices.moadian-histories.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary>{{ __('Invoices') }}</summary>
+            <summary><x-menu-icon name="invoices" />{{ __('Invoices') }}</summary>
             <ul class="{{ $topDropdownContentClass }}">
                 @can('invoices.dashboard')
                     <li><a href="{{ route('invoices.dashboard') }}">{{ __('Invoice Dashboard') }}</a></li>
@@ -92,7 +95,7 @@
 @canany(['documents.index', 'documents.create'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary>{{ __('Accounting') }}</summary>
+            <summary><x-menu-icon name="accounting" />{{ __('Accounting') }}</summary>
             <ul class="{{ $topDropdownContentClass }}">
                 @can('documents.create')
                     <li><a href="{{ route('documents.create') }}">{{ __('Create Document') }}</a></li>
@@ -111,7 +114,7 @@
     'reports.cost-income', 'budgets.index', 'reports.company-overview', 'ageing.receivables', 'ageing.payables'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary>{{ __('Reports') }}</summary>
+            <summary><x-menu-icon name="reports" />{{ __('Reports') }}</summary>
             <ul class="{{ $topDropdownContentClass }}">
                 @can('reports.company-overview')
                     <li><a href="{{ route('reports.company-overview') }}">{{ __('Company overview') }}</a></li>
@@ -173,7 +176,7 @@
 @canany(['warehouse.dashboard', 'warehouses.index', 'products.index', 'product-groups.index', 'services.index', 'service-groups.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary>{{ __('Warehouse') }}</summary>
+            <summary><x-menu-icon name="warehouse" />{{ __('Warehouse') }}</summary>
             <ul class="{{ $topDropdownContentClass }}">
                 @can('warehouse.dashboard')
                     <li><a href="{{ route('warehouse.dashboard') }}">{{ __('Warehouse Dashboard') }}</a></li>
@@ -202,7 +205,7 @@
     'attendance.attendance-logs.index', 'attendance.monthly-attendances.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary>{{ __('HR') }}</summary>
+            <summary><x-menu-icon name="hr" />{{ __('HR') }}</summary>
             <ul class="{{ $topDropdownContentClass }}">
                 @can('salary.payrolls.dashboard')
                     <li><a href="{{ route('salary.payrolls.dashboard') }}">{{ __('Payroll Dashboard') }}</a></li>
@@ -230,7 +233,7 @@
 @can('field-operations-analytics.index')
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary>{{ __('Field Operations') }}</summary>
+            <summary><x-menu-icon name="field" />{{ __('Field Operations') }}</summary>
             <ul class="{{ $topDropdownContentClass }}">
                 <li><a href="{{ route('field-operations-analytics.index') }}">{{ __('Field Operations Analytics') }}</a></li>
             </ul>
@@ -239,13 +242,13 @@
 @endcan
 
 @can('industry-profiles.index')
-    <li><a href="{{ route('industry-profiles.index') }}">{{ __('Industry Profiles') }}</a></li>
+    <li><a href="{{ route('industry-profiles.index') }}"><x-menu-icon name="industry" />{{ __('Industry Profiles') }}</a></li>
 @endcan
 
 @canany(['crm.dashboard', 'customers.index', 'customer-groups.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary>{{ __('CRM') }}</summary>
+            <summary><x-menu-icon name="crm" />{{ __('CRM') }}</summary>
             <ul class="{{ $topDropdownContentClass }}">
                 @can('crm.dashboard')
                     <li><a href="{{ route('crm.dashboard') }}">{{ __('CRM Dashboard') }}</a></li>
@@ -263,7 +266,7 @@
 
 <li>
     <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-        <summary>{{ __('Management') }}</summary>
+        <summary><x-menu-icon name="management" />{{ __('Management') }}</summary>
         <ul class="{{ $scrollingTopDropdownContentClass }}">
 
             {{-- HR, Attendance & Salary --}}

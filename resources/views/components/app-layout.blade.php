@@ -21,17 +21,28 @@
 
 </head>
 
-<body class="relative min-h-screen overflow-x-hidden bg-base-200 text-base-content">
+<body class="min-h-screen overflow-x-hidden bg-base-200 text-base-content">
 
-    <x-header />
+    <div class="drawer lg:drawer-open">
+        <input id="app-drawer" type="checkbox" class="drawer-toggle" />
 
-    <main class="min-[1430px]:w-[1430px] mx-auto mt-5">
-        {{ $slot }}
-    </main>
+        <div class="drawer-content flex min-h-screen min-w-0 flex-col">
+            <x-header />
 
-    <footer class="mt-8 text-center text-xs opacity-60 pb-4">
-        {{ __('Integrated Accounting and Human Resources System') }} {{ __('Version :version', ['version' => config('app.version')]) }}
-    </footer>
+            <main class="mx-auto mt-5 w-full max-w-[1430px] flex-1 px-4 lg:px-6">
+                {{ $slot }}
+            </main>
+
+            <footer class="mt-8 pb-4 text-center text-xs opacity-60">
+                {{ __('Integrated Accounting and Human Resources System') }} {{ __('Version :version', ['version' => config('app.version')]) }}
+            </footer>
+        </div>
+
+        <div class="drawer-side z-40">
+            <label for="app-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
+            <x-sidebar />
+        </div>
+    </div>
 
     @stack('scripts')
 

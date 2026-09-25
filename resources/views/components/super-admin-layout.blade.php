@@ -71,7 +71,7 @@
 </head>
 
 <body
-    class="admin-shell min-h-screen overflow-x-hidden bg-[#f5f7f6] text-[#172033] antialiased dark:bg-slate-950 dark:text-slate-100"
+    class="admin-shell min-h-screen overflow-x-hidden bg-base-200 text-base-content antialiased"
     dir="{{ app()->getLocale() === 'fa' ? 'rtl' : 'ltr' }}">
     <div x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false">
         <div x-cloak x-show="sidebarOpen" x-transition.opacity
@@ -79,22 +79,21 @@
 
         <aside id="management-sidebar"
             :class="sidebarOpen ? 'translate-x-0' : '{{ $isRtl ? 'translate-x-full' : '-translate-x-full' }}'"
-            class="fixed inset-y-0 {{ $isRtl ? 'right-0' : 'left-0' }} z-50 flex w-72 flex-col overflow-y-auto bg-[#15263b] text-slate-300 shadow-2xl transition-transform duration-300 lg:translate-x-0">
-            <div class="grid-paper pointer-events-none absolute inset-0 opacity-70"></div>
-            <div class="relative flex h-20 items-center gap-3 border-b border-white/10 px-6">
+            class="fixed inset-y-0 {{ $isRtl ? 'right-0' : 'left-0' }} z-50 flex w-72 flex-col overflow-y-auto app-sidebar text-base-content shadow-xl transition-transform duration-300 lg:translate-x-0">
+            <div class="relative flex h-20 items-center gap-3 border-b border-[var(--sidebar-border)] px-6">
                 <a href="{{ route('management.dashboard') }}" class="flex min-w-0 flex-1 items-center gap-3">
                     <span
-                        class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#16a394] shadow-lg shadow-emerald-950/30">
+                        class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-primary">
                         <img src="/images/logo.svg" alt="" class="h-7 w-7 object-contain brightness-0 invert">
                     </span>
                     <span class="min-w-0">
                         <strong
-                            class="block truncate text-xl font-extrabold text-white">{{ __(config('app.name')) }}</strong>
-                        <span class="mt-0.5 block text-[11px] text-slate-400">{{ __('Super-Admin Panel') }}</span>
+                            class="block truncate text-xl font-extrabold text-primary">{{ __(config('app.name')) }}</strong>
+                        <span class="mt-0.5 block text-[11px] text-base-content/60">{{ __('Super-Admin Panel') }}</span>
                     </span>
                 </a>
                 <button type="button"
-                    class="grid h-9 w-9 place-items-center rounded-lg text-slate-400 hover:bg-white/10 lg:hidden"
+                    class="grid h-9 w-9 place-items-center rounded-lg text-base-content/60 hover:bg-primary/10 lg:hidden"
                     @click="sidebarOpen=false" aria-label="{{ __('Close') }}"><svg class="h-5 w-5" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" d="m6 6 12 12M18 6 6 18" />
@@ -105,8 +104,8 @@
                     @foreach ($navigation as [$label, $url, $active, $icon])
                         <li><a href="{{ $url }}" @click="sidebarOpen=false" @class([
                             'relative mb-1 flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-medium transition before:absolute before:-start-4 before:h-7 before:w-1 before:rounded-e-full',
-                            'bg-white/10 text-white before:bg-[#16a394]' => $active,
-                            'text-slate-400 before:bg-transparent hover:bg-white/5 hover:text-white' => !$active,
+                            'bg-primary text-primary-content before:bg-primary' => $active,
+                            'text-base-content/80 before:bg-transparent hover:bg-primary/10 hover:text-primary' => !$active,
                         ])
                                 @if ($active) aria-current="page" @endif>
                                 <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -117,19 +116,19 @@
                     @endforeach
                 </ul>
             </nav>
-            <div class="relative m-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div class="relative m-4 rounded-2xl border border-[var(--sidebar-border)] bg-base-100 p-4">
                 <div class="mb-3 flex items-center justify-between text-xs"><span
-                        class="text-slate-400">{{ __('Service health') }}</span><span
+                        class="text-base-content/60">{{ __('Service health') }}</span><span
                         class="flex items-center gap-1.5 text-emerald-300"><i
                             class="h-2 w-2 rounded-full bg-emerald-400"></i>{{ __('Stable') }}</span></div>
                 <a href="{{ $hasCurrentWorkspace ? route('home') : route('management.dashboard') }}"
-                    class="flex items-center gap-3 border-t border-white/10 pt-3 transition">
+                    class="flex items-center gap-3 border-t border-[var(--sidebar-border)] pt-3 transition">
                     <span
-                        class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10 text-sm font-bold text-white">{{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}</span>
+                        class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary/10 text-sm font-bold text-primary">{{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}</span>
                     <span class="min-w-0 flex-1"><strong
-                            class="block truncate text-xs text-white">{{ $user->name }}</strong><span
-                            class="mt-1 block text-[10px] text-slate-500">{{ __('Go to workspace') }}</span></span>
-                    <svg class="h-4 w-4 text-slate-500 rtl:rotate-180" fill="none" stroke="currentColor"
+                            class="block truncate text-xs text-base-content">{{ $user->name }}</strong><span
+                            class="mt-1 block text-[10px] text-base-content/60">{{ __('Go to workspace') }}</span></span>
+                    <svg class="h-4 w-4 text-base-content/50 rtl:rotate-180" fill="none" stroke="currentColor"
                         viewBox="0 0 24 24">
                         <path stroke-linecap="round" d="m9 18 6-6-6-6" />
                     </svg>
@@ -139,7 +138,7 @@
 
         <div class="min-h-screen {{ $isRtl ? 'lg:pr-72' : 'lg:pl-72' }}">
             <header
-                class="sticky top-0 z-30 border-b border-slate-200/80 bg-[#f5f7f6]/90 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/90">
+                class="sticky top-0 z-30 border-b border-base-300 bg-base-100/90 backdrop-blur-xl">
                 <div class="flex h-20 items-center gap-3 px-4 sm:px-6 xl:px-8">
                     <button type="button"
                         class="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-600 lg:hidden dark:border-slate-700"

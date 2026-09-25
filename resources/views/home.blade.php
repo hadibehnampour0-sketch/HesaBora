@@ -1,13 +1,13 @@
 <x-app-layout :title="__('Home')">
     <x-show-message-bags />
 
-    <main class="home-dashboard pb-6">
+    <div class="home-dashboard pb-6">
         @include('home._header', compact('homeVariant'))
 
         @include('home._financial-values')
 
         @include('home._access-sections')
-    </main>
+    </div>
 
     @push('scripts')
         <script>

@@ -1,9 +1,9 @@
 <x-login-layout>
     @include('auth.partials.header')
 
-    <div class="login-bg flex-1 overflow-hidden rounded-t-3xl border-8 border-gray-200 border-opacity-85 bg-cover bg-center px-4">
+    <div class="login-bg flex-1 overflow-hidden px-4">
         <div class="flex items-center justify-center rounded-3xl">
-            <div class="card mt-12 w-full max-w-md bg-white p-7 shadow-xl">
+            <div class="card mt-12 w-full max-w-md border border-base-300 bg-base-100 shadow-xl p-7 shadow-xl">
                 <div>
                     <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-2xl text-blue-600">✉</div>
                     <h1 class="font-bold text-center">{{ __('Check your email') }}</h1>
