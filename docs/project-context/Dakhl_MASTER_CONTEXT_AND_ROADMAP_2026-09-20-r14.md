@@ -2436,3 +2436,6 @@ Text in Decision Log ("D-099 — Trade Engine as a Business Capability Architect
 
 ### 40.11 D-102 Trade architecture impact review (2026-09-25)
 `Dakhl_D102_TRADE_ARCHITECTURE_IMPACT_REVIEW_2026-09-25.md`: code-grounded review; hard mismatches (no UoM, 2-dp quantity/money, float products.quantity, invoice-only stock writer); 8 owner decision points; pre-implementation gates. Docs only; D-099 stays PROPOSED.
+
+### 40.12 Industry Profiles built (2026-09-25) — first code from §40, NOT a Trade Engine
+Owner-approved scope: per-trade settings dashboard + informational calculators; defaults pre-filled with evidence badges (verified / assumed / needs_confirmation); Trade-related settings deliberately excluded ("Not active yet" cards only). Implementation: JSON definitions in `resources/industry-profiles/` (gold, iron, general full; building_materials, mobile, auto_parts, apparel, food starter), `IndustryProfileRegistry`/`IndustrySettingsService`/`IndustryCalculatorService`, `IndustryProfileController`, 3 tables (values, history, activations), permission group `industry-profiles`, menu link, 30 tests (suite 1758/1758). Adding a trade/setting needs no code (test proves it). D-099 stays PROPOSED; Guardrail #5 untouched. AGENTS.md guardrails #58–#59 added.

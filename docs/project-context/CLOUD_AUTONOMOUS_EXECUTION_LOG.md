@@ -1673,3 +1673,6 @@ Docs only; D-099 stays PROPOSED; no push.
 
 ## Entry 83 — 2026-09-25 — D-102 impact review written from real code facts
 Incidental Moadian discount-field candidate bug spun off as separate task. Docs only; no push.
+
+## Entry 84 — 2026-09-25 — Industry Profiles built (per-trade settings dashboards + calculators)
+Data-driven JSON definitions, evidence-status badges, history, activation, 8 trades. Not Trade code. 30 new tests; full suite 1758/1758. Not visually verified in a browser (login credentials must not be entered by the assistant). Local commit only; no push.

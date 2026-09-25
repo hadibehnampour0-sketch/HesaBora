@@ -2750,3 +2750,6 @@ Summary (full detail in the Decision Log and roadmap §39, not duplicated here):
 
 ## §13 — 2026-09-25 Product Vision pass
 Docs only: vision doc + roadmap §40 + Decision Log narrative + Entry 71. D-074 remains future-only; Android last; next decision number D-099 (owner authors text). Open questions: vision doc ch. 12.
+
+## §14 — 2026-09-25 Industry Profiles
+Built per owner request; see roadmap §40.12. Suite 1758/1758. Open: browser visual check by owner, wiring of profile settings to invoicing is intentionally NOT done.
