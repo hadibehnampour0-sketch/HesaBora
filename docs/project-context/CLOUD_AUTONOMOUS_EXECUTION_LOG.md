@@ -1646,3 +1646,6 @@ Recorded owner positions on Q1–Q5 (Q2/Q5 amend the assistant's recommendations
 
 ## Entry 74 — 2026-09-25 — Proposed ADR structure for D-099 recorded (spec §10)
 Recorded owner's round-2 review: ADR sections, boundary list, lifecycle-vs-status axes, Ownership Layer naming, no domain tables in gold pilot, Party as future option. Docs only. D-099 text still to be authored by owner.
+
+## Entry 75 — 2026-09-25 — D-099 recorded as PROPOSED
+Owner-authored ADR transcribed into Decision Log verbatim in substance (status PROPOSED, owner approval required). Roadmap §40.8 added. No code/schema; no push.

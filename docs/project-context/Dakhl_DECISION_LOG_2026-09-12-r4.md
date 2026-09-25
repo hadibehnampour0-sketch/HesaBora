@@ -2373,3 +2373,53 @@ No code was written in this pass beyond what the Release Readiness Audit already
 ## Product Vision Integration Pass — 2026-09-25 (narrative only; NO decision contract text)
 
 Per owner rule, no D-0XX contract is drafted here. This entry records that: (1) the two "forgotten" topics were located (D-074 and Industry Intelligence/Market Data) and remain LOCKED as future architecture; (2) Android is last; (3) the proposed D-092..D-096 in the owner's file collide with the existing D-091..D-098 roles decisions, so any new decisions start at D-099; (4) candidate topics awaiting the owner's own wording: opening the Trade phase, Party-as-metadata-over-Customer, same-kind in-kind offset key, price-fixed-later positions, Provider licensing stance (BYO first), Migration prerequisites. Details: roadmap §40 and `Dakhl_PRODUCT_VISION_AND_STRATEGY_2026-09-25.md`.
+
+---
+
+## D-099 — Trade Engine as a Business Capability Architecture — 2026-09-25 — PROPOSED
+
+> Transcribed from the owner-supplied text (authored by the owner; assistant only formatted it). **Status: PROPOSED — owner approval required — no implementation authorized.** Flip to ACCEPTED only by the owner's explicit word.
+
+### 1. Problem Statement
+Dakhl, in moving from a traditional accounting system toward an operational business platform, must model trade relationships that are not merely Invoice and Payment: goods-for-goods exchange; multi-unit trades; open obligations between businesses; ownership separate from custody; valuation at different points in time; gradual settlement. The current financial model is designed to record Rial value and financial documents and must not become responsible for holding these trade relationships. Therefore Trade is defined as an independent Business Capability.
+
+### 2. Decision
+The Trade Engine is an independent Aggregate in the business domain that models an Exchange Relationship and, when needed, produces Accounting Artifacts.
+Trade **owns:** Exchange, Position, Valuation Context, Ownership Context, Settlement Relationship.
+Trade **is not:** Ledger, Invoice, Payment Record.
+
+### 3. Architectural Boundary
+Inside: `TradeExchange` → Parties; Legs (Direction OUT/IN, Item, Quantity, Unit); Valuations; Ownership State; Derived Position; Settlement Relationship.
+Outside (Trade is not directly responsible for): Accounting Ledger; Invoice Generation Rules; Tax Calculation; Payment Execution; Inventory Accounting Rewrite; Market Data Ownership.
+
+### 4. Relation to D-074
+D-099 is an architectural extension and refinement of D-074's Trade decisions. D-074 continues to hold: Trade is a concept independent of Document; Trade must not become a Generic abstraction without real need; design must be driven by real scenarios.
+D-099 extends: **Status Model Extension** — D-074's OPEN, PARTIALLY_SETTLED, SETTLED, CANCELLED gains DISPUTED (dispute conditions, not merged with Settlement state). **Lifecycle Model Introduction** — an independent axis Business Lifecycle INTENT → AGREEMENT → EXCHANGE → OPEN_POSITION → SETTLEMENT → CLOSURE; it does not replace Status.
+
+### 5. State Model (two independent axes)
+Business Lifecycle: INTENT, AGREEMENT, EXCHANGE, OPEN_POSITION, SETTLEMENT, CLOSED.
+Operational Status: OPEN, PARTIALLY_SETTLED, SETTLED, CANCELLED, DISPUTED.
+Example: Lifecycle = SETTLEMENT with Status = DISPUTED means settlement is in progress but disputed.
+
+### 6. Ownership Decision
+Principle `Owner ≠ Holder ≠ Location` is confirmed. The Ownership Dimension does **not** enter the Stock Core. Instead a **Trade Ownership Layer** is defined, to manage ownership arising from Trade, not to redesign Inventory.
+
+### 7. Valuation Decision
+Trade holds value only as Context. Three official modes: AGREED (value agreed by the parties); MARKET_SNAPSHOT (market value recorded at a specific time); DEFERRED (value determined in future). Principle: `Quantity != Value`, and `Trade Quantity + Valuation Context = Accounting Input`.
+
+### 8. Native Quantity Decision
+Trade is not Rial-denominated. Primary values are Quantity, Unit, Item (e.g. gold 100 gram 18K; iron 10 ton; mobile 5 unit). Rial is only one Valuation/Settlement axis.
+
+### 9. Party Decision
+Current version: `Customer(subject_id)` + Trade Metadata. A Party abstraction is deferred to the future (remains a future architectural option, not rejected).
+
+### 10. Gold/Silver Pilot Constraint
+Gold and coin are Domain Discovery only, to validate the Trade Engine — not to build `GoldTrade`, `GoldPurity`, `GoldWage`, `CoinType` in Core. Steps: Interview → Paper Simulation → Impact Review → Implementation Decision.
+
+### 11. Consequences
+Positive: real trade can be modeled; Accounting Core is not contaminated; ready for varied goods; enables a future Marketplace. Cost: Trade is a new complex Domain. Impact review required before Implementation of: Customer, Stock, Settlement, Tax, Sync, AI, Reporting.
+
+### 12. Implementation Constraint
+This Decision grants no permission for Migration, Schema Change, Model Creation, API Route, or Service Implementation. Implementation only after D-100, D-101, D-102 and owner approval.
+
+*Assistant notes (not part of the decision text):* the owner's relayed remark keeps the word "Generic" deliberately, warning against an "all-purpose engine on paper" that solves no deep domain; D-100 (Gold/Silver Domain Discovery) is considered more important than the data model because interviews may change current assumptions. Guardrail #5 in AGENTS.md remains in force and should be updated only when the owner accepts D-099.

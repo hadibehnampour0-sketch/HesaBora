@@ -2424,3 +2424,6 @@ Listed in vision doc ch. 12 (open Trade phase? Party model? offset key? valuatio
 
 ### 40.7 Trade phase opened for SPECIFICATION ONLY (2026-09-25, owner direction)
 Order: Product Identity doc (done) → Trade Engine Architecture decision (owner authors D-099) → Gold/Silver pilot research (interviews) → Data model proposal → impact review → only then code. Spec: `Dakhl_TRADE_ENGINE_ARCHITECTURE_AND_GOLD_PILOT_SPEC_2026-09-25.md`. Gold/silver is the pilot *lab* for a general engine, not a gold module. Still forbidden until the owner authorizes implementation: any migration/model/service/route/sync code (Guardrail #5). Reading of D-074's "no premature generalization" as compatible with scenario-validated design is flagged for owner confirmation.
+
+### 40.8 D-099 registered as PROPOSED (2026-09-25)
+Text in Decision Log ("D-099 — Trade Engine as a Business Capability Architecture"), owner-authored, status PROPOSED, no implementation authorized. Next: D-100 Gold/Silver Domain Discovery (interviews + paper simulation) → D-101 Data Model Proposal → D-102 Architecture Impact Review → Implementation Decision. Guardrail #5 unchanged until acceptance.
