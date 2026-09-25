@@ -1706,3 +1706,10 @@ All three built as presentation/read layers over existing services; verified qui
 
 ## Entry 94 — 2026-09-25 — Integration Hub skeleton and consolidated progress report
 Local commit only; no push.
+
+## Entry 95 — 2026-09-25 — Quick payments: one amount over several invoices
+
+- `POST /quick-payment/{direction}` (`quick-payment.store`, new seeder permission) spreads one amount over a party's open invoices oldest-first (ageing order). Each slice goes through `PaymentService::createPayment` unchanged; all slices commit together or roll back. Amount above the party's open balance is a validation error; unknown party is 404; also requires `invoices.payments.store`.
+- UI: "Settle the oldest invoices first (automatic)" is the default choice on the page; picking a single invoice keeps the previous per-invoice route.
+- Tests: 3 new in `QuickPaymentTest` (spread, over-balance rejected with nothing recorded, permission/404). Full suite 1828 passed. One unreproducible flaky failure was seen once in a bulk-store test on the first full run; the two reruns were green.
+- New installs/roles: re-run the permissions seeder so `quick-payment.store` reaches existing Admin/Accountant roles.

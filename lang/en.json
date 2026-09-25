@@ -3593,5 +3593,8 @@
     "This is taken from posted accounting documents for the whole fiscal year, not the period selected above.": "This is taken from posted accounting documents for the whole fiscal year, not the period selected above.",
     "Name & group": "Name & group",
     "Price & stock": "Price & stock",
-    "More details": "More details"
+    "More details": "More details",
+    "Settle the oldest invoices first (automatic)": "Settle the oldest invoices first (automatic)",
+    "The amount is more than the open balance.": "The amount is more than the open balance.",
+    ":count invoice settled.|:count invoices settled.": ":count invoice settled.|:count invoices settled."
 }

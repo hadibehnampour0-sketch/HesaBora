@@ -5,7 +5,7 @@
 <x-app-layout :title="$title">
     <x-show-message-bags />
 
-    <div class="mx-auto max-w-3xl space-y-4" x-data="quickPayment(@js($parties), @js($accounts), '{{ route('invoices.payments.store', ['invoice' => '__ID__']) }}')">
+    <div class="mx-auto max-w-3xl space-y-4" x-data="quickPayment(@js($parties), @js($accounts), '{{ route('invoices.payments.store', ['invoice' => '__ID__']) }}', '{{ route('quick-payment.store', $direction) }}')">
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
                 <h1 class="text-xl font-bold">{{ $title }}</h1>
@@ -41,9 +41,19 @@
             {{-- 2. which invoice + details --}}
             <form method="POST" :action="action" class="space-y-4" x-show="party" style="display: none">
                 @csrf
+                <input type="hidden" name="party_id" :value="partyId" :disabled="invoiceId">
                 <div class="today-panel">
                     <div class="today-panel-title">2. {{ __('Which invoice?') }}</div>
                     <ul class="mt-3 space-y-1">
+                        <li>
+                            <label class="today-row cursor-pointer" :class="!invoiceId ? 'ring-2 ring-primary' : ''">
+                                <span class="flex items-center gap-2">
+                                    <input type="radio" class="radio radio-sm radio-primary" name="_invoice" value="" :checked="!invoiceId" @change="pick(null)">
+                                    <span>{{ __('Settle the oldest invoices first (automatic)') }}</span>
+                                </span>
+                                <b x-text="fmt(party?.total)"></b>
+                            </label>
+                        </li>
                         <template x-for="inv in (party?.invoices || [])" :key="inv.id">
                             <li>
                                 <label class="today-row cursor-pointer" :class="invoiceId === inv.id ? 'ring-2 ring-primary' : ''">
@@ -58,13 +68,13 @@
                     </ul>
                 </div>
 
-                <div class="today-panel" x-show="invoice" style="display: none">
+                <div class="today-panel">
                     <div class="today-panel-title">3. {{ __('Details') }}</div>
                     <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <label class="form-control">
                             <span class="label-text mb-1 text-xs">{{ __('Amount') }}</span>
                             <input type="number" step="any" min="0" name="amount" x-model="amount" class="input input-bordered" required>
-                            <span class="mt-1 text-xs text-base-content/60">{{ __('Remaining Amount') }}: <b x-text="fmt(invoice?.remaining)"></b></span>
+                            <span class="mt-1 text-xs text-base-content/60">{{ __('Remaining Amount') }}: <b x-text="fmt(invoice ? invoice.remaining : party?.total)"></b></span>
                         </label>
                         <label class="form-control">
                             <span class="label-text mb-1 text-xs">{{ __('Settlement Account') }}</span>
@@ -106,16 +116,16 @@
         </script>
         <script>
             document.addEventListener('alpine:init', () => {
-                Alpine.data('quickPayment', (parties, accounts, template) => ({
+                Alpine.data('quickPayment', (parties, accounts, template, storeUrl) => ({
                     parties, accounts, search: '', partyId: null, party: null, invoiceId: null, invoice: null, amount: '',
                     get filtered() {
                         const q = this.search.trim().toLowerCase();
                         return q ? this.parties.filter((p) => p.name.toLowerCase().includes(q)) : this.parties;
                     },
-                    get action() { return this.invoiceId ? template.replace('__ID__', this.invoiceId) : '#'; },
+                    get action() { return this.invoiceId ? template.replace('__ID__', this.invoiceId) : storeUrl; },
                     fmt(v) { return new Intl.NumberFormat(document.documentElement.lang || 'fa', { maximumFractionDigits: 0 }).format(v ?? 0); },
-                    choose(p) { this.partyId = p.id; this.party = p; this.invoiceId = null; this.invoice = null; this.amount = ''; },
-                    pick(inv) { this.invoiceId = inv.id; this.invoice = inv; this.amount = inv.remaining; },
+                    choose(p) { this.partyId = p.id; this.party = p; this.invoiceId = null; this.invoice = null; this.amount = p.total; },
+                    pick(inv) { this.invoiceId = inv ? inv.id : null; this.invoice = inv; this.amount = inv ? inv.remaining : this.party.total; },
                 }));
             });
         </script>

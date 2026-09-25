@@ -88,6 +88,7 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
     Route::get('/home/today', [Controllers\HomeController::class, 'today'])->name('home.today');
     // Phase U: guided "Collect money" / "Pay suppliers" (submits to the existing invoices.payments.store).
     Route::get('/quick-payment/{direction}', [Controllers\QuickPaymentController::class, 'create'])->where('direction', 'receive|pay')->name('quick-payment.create');
+    Route::post('/quick-payment/{direction}', [Controllers\QuickPaymentController::class, 'store'])->where('direction', 'receive|pay')->name('quick-payment.store');
     Route::get('/home/summary/{metric}', [Controllers\HomeController::class, 'summaryMetric'])->name('home.summary');
     Route::post('/report', [Controllers\ReportEmailController::class, 'store'])->name('report');
     Route::get('subjects/search', [Controllers\SubjectController::class, 'search'])->name('subjects.search');

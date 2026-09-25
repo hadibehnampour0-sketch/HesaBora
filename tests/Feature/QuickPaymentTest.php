@@ -127,6 +127,61 @@ class QuickPaymentTest extends TestCase
             ->assertSee(__('No customer owes you anything right now.'));
     }
 
+    private function twoOpenSells(): array
+    {
+        $product = $this->createProduct();
+        $this->buy([$this->productItem($product, 50, 100)], true, ++$this->nextInvoiceNumber, Carbon::today()->subDays(9)->toDateString());
+        $old = $this->sell([$this->productItem($product, 1, 700)], true, ++$this->nextInvoiceNumber, Carbon::today()->subDays(5)->toDateString())['invoice'];
+        $new = $this->sell([$this->productItem($product, 1, 300)], true, ++$this->nextInvoiceNumber, Carbon::today()->toDateString())['invoice'];
+
+        return [$old, $new];
+    }
+
+    private function storePayload(array $override = []): array
+    {
+        return array_replace([
+            'party_id' => $this->customer->id,
+            'amount' => '900',
+            'subject_id' => $this->cashSubjectId(),
+            'date' => convertToJalali(now()->toDateString(), true),
+        ], $override);
+    }
+
+    public function test_one_amount_is_spread_over_the_oldest_invoices_first(): void
+    {
+        $this->grant('quick-payment.create', 'quick-payment.store', 'invoices.payments.store');
+        [$old, $new] = $this->twoOpenSells();
+        $payments = app(PaymentService::class);
+
+        $this->post(route('quick-payment.store', 'receive'), $this->storePayload())->assertSessionHasNoErrors();
+
+        $this->assertSame(0.0, $payments->remainingAmount($old->fresh()));
+        $this->assertSame(100.0, $payments->remainingAmount($new->fresh()));
+    }
+
+    public function test_an_amount_above_the_open_balance_is_rejected_and_nothing_is_recorded(): void
+    {
+        $this->grant('quick-payment.create', 'quick-payment.store', 'invoices.payments.store');
+        [$old, $new] = $this->twoOpenSells();
+        $payments = app(PaymentService::class);
+
+        $this->post(route('quick-payment.store', 'receive'), $this->storePayload(['amount' => '1001']))
+            ->assertSessionHasErrors('amount');
+
+        $this->assertSame(700.0, $payments->remainingAmount($old->fresh()));
+        $this->assertSame(300.0, $payments->remainingAmount($new->fresh()));
+    }
+
+    public function test_a_party_with_nothing_open_is_a_404_and_the_payment_permission_is_required(): void
+    {
+        $this->grant('quick-payment.create', 'quick-payment.store');
+        $this->twoOpenSells();
+        $this->post(route('quick-payment.store', 'receive'), $this->storePayload())->assertForbidden();
+
+        $this->grant('invoices.payments.store');
+        $this->post(route('quick-payment.store', 'receive'), $this->storePayload(['party_id' => 999999]))->assertNotFound();
+    }
+
     public function test_another_companys_open_invoices_never_appear(): void
     {
         $this->grant('quick-payment.create', 'invoices.payments.store');

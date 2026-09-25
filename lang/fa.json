@@ -3593,5 +3593,8 @@
     "This is taken from posted accounting documents for the whole fiscal year, not the period selected above.": "این عدد از اسناد حسابداری ثبت‌شده‌ی کل سال مالی گرفته شده، نه بازه‌ی انتخاب‌شده در بالا.",
     "Name & group": "نام و گروه",
     "Price & stock": "قیمت و موجودی",
-    "More details": "جزئیات بیشتر"
+    "More details": "جزئیات بیشتر",
+    "Settle the oldest invoices first (automatic)": "تسویه‌ی قدیمی‌ترین فاکتورها به‌ترتیب (خودکار)",
+    "The amount is more than the open balance.": "مبلغ از مانده‌ی باز بیشتر است.",
+    ":count invoice settled.|:count invoices settled.": ":count فاکتور تسویه شد.|:count فاکتور تسویه شد."
 }

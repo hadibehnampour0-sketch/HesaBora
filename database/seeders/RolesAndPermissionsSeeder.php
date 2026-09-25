@@ -224,7 +224,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'home' => ['summary', 'today'],
 
             // Phase U: guided collect/pay page (also needs invoices.payments.store to open).
-            'quick-payment' => ['create'],
+            'quick-payment' => ['create', 'store'],
 
             // Employee portal
             'employee-portal' => [
