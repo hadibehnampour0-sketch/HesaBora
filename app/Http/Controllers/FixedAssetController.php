@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FixedAsset;
+use App\Models\Subject;
 use App\Services\FixedAssetService;
 use Illuminate\Http\Request;
 
@@ -10,13 +11,25 @@ class FixedAssetController extends Controller
 {
     public function __construct(private readonly FixedAssetService $service) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(['assets' => FixedAsset::orderBy('code')->get()]);
+        $assets = FixedAsset::orderBy('code')->get();
+
+        if ($request->expectsJson()) {
+            return response()->json(['assets' => $assets]);
+        }
+
+        return view('fixed-assets.index', [
+            'assets' => $assets,
+            'service' => $this->service,
+            'subjects' => Subject::orderBy('code')->get(['id', 'name', 'code']),
+        ]);
     }
 
     public function store(Request $request)
     {
+        $this->convertJalali($request, ['acquisition_date']);
+
         $validated = $request->validate([
             'code' => ['required', 'string', 'max:50'],
             'name' => ['required', 'string', 'max:150'],
@@ -34,8 +47,20 @@ class FixedAssetController extends Controller
         return redirect()->back()->with('success', __('Fixed asset registered successfully.'))->with('asset_id', $asset->id);
     }
 
+    /** Form dates arrive as Jalali in the Persian UI; API callers send Gregorian (passed through outside `fa`). */
+    private function convertJalali(Request $request, array $fields): void
+    {
+        foreach ($fields as $field) {
+            if ($request->filled($field)) {
+                $request->merge([$field => jalaliInputToGregorian($request->input($field), $field)]);
+            }
+        }
+    }
+
     public function postDepreciation(Request $request, FixedAsset $fixedAsset)
     {
+        $this->convertJalali($request, ['period_date']);
+
         $validated = $request->validate([
             'period_date' => ['required', 'date'],
         ]);
@@ -47,6 +72,8 @@ class FixedAssetController extends Controller
 
     public function dispose(Request $request, FixedAsset $fixedAsset)
     {
+        $this->convertJalali($request, ['disposed_at']);
+
         $validated = $request->validate([
             'disposed_at' => ['required', 'date'],
         ]);

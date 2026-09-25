@@ -10,9 +10,15 @@ class CurrencyController extends Controller
 {
     public function __construct(private readonly CurrencyService $service) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(['currencies' => Currency::with('exchangeRates')->orderBy('code')->get()]);
+        $currencies = Currency::with('exchangeRates')->orderBy('code')->get();
+
+        if ($request->expectsJson()) {
+            return response()->json(['currencies' => $currencies]);
+        }
+
+        return view('currencies.index', compact('currencies'));
     }
 
     public function store(Request $request)
@@ -32,6 +38,10 @@ class CurrencyController extends Controller
 
     public function storeRate(Request $request, Currency $currency)
     {
+        if ($request->filled('effective_date')) {
+            $request->merge(['effective_date' => jalaliInputToGregorian($request->input('effective_date'), 'effective_date')]);
+        }
+
         $validated = $request->validate([
             'rate' => ['required', 'numeric', 'gt:0'],
             'effective_date' => ['required', 'date'],

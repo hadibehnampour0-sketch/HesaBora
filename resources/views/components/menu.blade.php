@@ -92,7 +92,7 @@
         </details>
     </li>
 @endcanany
-@canany(['documents.index', 'documents.create'])
+@canany(['documents.index', 'documents.create', 'fixed-assets.index', 'currencies.index', 'payment-terms.index', 'recurring-invoice-templates.index', 'analytic-dimensions.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="accounting" />{{ __('Accounting') }}</summary>
@@ -105,6 +105,21 @@
                 @endcan
                 @can('cheques.index')
                     <li><a href="{{ route('cheques.index') }}">{{ __('Cheque Management') }}</a></li>
+                @endcan
+                @can('fixed-assets.index')
+                    <li><a href="{{ route('fixed-assets.index') }}">{{ __('Fixed assets') }}</a></li>
+                @endcan
+                @can('recurring-invoice-templates.index')
+                    <li><a href="{{ route('recurring-invoice-templates.index') }}">{{ __('Recurring invoices') }}</a></li>
+                @endcan
+                @can('payment-terms.index')
+                    <li><a href="{{ route('payment-terms.index') }}">{{ __('Payment terms') }}</a></li>
+                @endcan
+                @can('currencies.index')
+                    <li><a href="{{ route('currencies.index') }}">{{ __('Currencies') }}</a></li>
+                @endcan
+                @can('analytic-dimensions.index')
+                    <li><a href="{{ route('analytic-dimensions.index') }}">{{ __('Analytic dimensions') }}</a></li>
                 @endcan
             </ul>
         </details>
@@ -136,7 +151,7 @@
     </li>
 @endcanany
 @canany(['reports.documents', 'reports.journal', 'reports.ledger', 'reports.sub-ledger', 'reports.trial-balance',
-    'reports.cost-income', 'budgets.index', 'reports.company-overview', 'ageing.receivables', 'ageing.payables'])
+    'reports.cost-income', 'budgets.index', 'reports.company-overview', 'ageing.receivables', 'ageing.payables', 'dashboards.cash-flow', 'dashboards.cheque-risk', 'dashboards.profitability-by-dimension', 'inventory-reports.valuation', 'inventory-reports.slow-moving'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="reports" />{{ __('Reports') }}</summary>
@@ -146,6 +161,21 @@
                 @endcan
                 @can('reports.cost-income')
                     <li><a href="{{ route('reports.cost-income') }}">{{ __('Cost and Income Dashboard') }}</a></li>
+                @endcan
+                @can('dashboards.cash-flow')
+                    <li><a href="{{ route('dashboards.cash-flow') }}">{{ __('Cash flow') }}</a></li>
+                @endcan
+                @can('dashboards.cheque-risk')
+                    <li><a href="{{ route('dashboards.cheque-risk') }}">{{ __('Cheque risk') }}</a></li>
+                @endcan
+                @can('dashboards.profitability-by-dimension')
+                    <li><a href="{{ route('dashboards.profitability-by-dimension') }}">{{ __('Profitability by dimension') }}</a></li>
+                @endcan
+                @can('inventory-reports.valuation')
+                    <li><a href="{{ route('inventory-reports.valuation') }}">{{ __('Inventory valuation') }}</a></li>
+                @endcan
+                @can('inventory-reports.slow-moving')
+                    <li><a href="{{ route('inventory-reports.slow-moving') }}">{{ __('Slow-moving stock') }}</a></li>
                 @endcan
                 @can('budgets.index')
                     <li><a href="{{ route('budgets.index') }}">{{ __('Monthly Income and Expense Workbench') }}</a></li>

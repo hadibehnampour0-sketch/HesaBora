@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\Document;
 use App\Models\Transaction;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * P5.1 (Cash Flow Dashboard). Deliberately scoped as a net cash-movement
@@ -33,10 +33,12 @@ class CashFlowReportService
             return ['periods' => collect(), 'total_inflow' => 0.0, 'total_outflow' => 0.0, 'net' => 0.0];
         }
 
+        // strftime() exists only in SQLite (tests); MySQL needs DATE_FORMAT(). Week = Monday-first week of year in both.
+        $sqlite = DB::connection()->getDriverName() === 'sqlite';
         $periodExpression = match ($groupBy) {
-            'day' => "strftime('%Y-%m-%d', documents.date)",
-            'week' => "strftime('%Y-%W', documents.date)",
-            default => "strftime('%Y-%m', documents.date)",
+            'day' => $sqlite ? "strftime('%Y-%m-%d', documents.date)" : "DATE_FORMAT(documents.date, '%Y-%m-%d')",
+            'week' => $sqlite ? "strftime('%Y-%W', documents.date)" : "DATE_FORMAT(documents.date, '%Y-%u')",
+            default => $sqlite ? "strftime('%Y-%m', documents.date)" : "DATE_FORMAT(documents.date, '%Y-%m')",
         };
 
         // Transaction has no FiscalYearScope of its own, and a plain

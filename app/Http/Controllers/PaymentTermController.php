@@ -11,13 +11,24 @@ class PaymentTermController extends Controller
 {
     public function __construct(private readonly PaymentTermService $service) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(['payment_terms' => PaymentTerm::with('lines')->orderBy('code')->get()]);
+        $terms = PaymentTerm::with('lines')->orderBy('code')->get();
+
+        if ($request->expectsJson()) {
+            return response()->json(['payment_terms' => $terms]);
+        }
+
+        return view('payment-terms.index', ['terms' => $terms]);
     }
 
     public function store(Request $request)
     {
+        // The form always shows four instalment rows; blank ones are ignored.
+        $request->merge(['lines' => collect($request->input('lines', []))
+            ->filter(fn ($line) => filled($line['days_offset'] ?? null) || filled($line['percentage'] ?? null))
+            ->values()->all()]);
+
         $validated = $request->validate([
             'code' => ['required', 'string', 'max:50'],
             'name' => ['required', 'string', 'max:150'],

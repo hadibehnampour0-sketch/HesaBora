@@ -120,6 +120,16 @@ class RolesAndPermissionsSeeder extends Seeder
             'promotions' => [...self::CRUD_NO_SHOW, 'evaluate'],
             'daily-settlements' => ['index', 'store', 'submit', 'approve'],
 
+            // Accounting tools that previously had no screens (permission == route name).
+            'fixed-assets' => ['index', 'store', 'depreciation.store', 'dispose'],
+            'currencies' => ['index', 'store', 'rates.store'],
+            'payment-terms' => ['index', 'store', 'update', 'apply'],
+            'recurring-invoice-templates' => ['index', 'store', 'generate'],
+            'analytic-dimensions' => ['index', 'store', 'update', 'destroy', 'report', 'transactions.sync'],
+            'inventory-reports' => ['valuation', 'slow-moving'],
+            'dashboards' => ['cash-flow', 'cash-flow.drill-down', 'cheque-risk', 'profitability-by-dimension'],
+            'stock-reservations' => ['store', 'release', 'availability'],
+
             // Capillary distribution screens (permission == route name).
             'distribution' => ['index'],
             'distribution.routes' => ['index', 'store', 'update', 'destroy', 'customers.store', 'customers.destroy'],

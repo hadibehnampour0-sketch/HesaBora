@@ -23,7 +23,11 @@ class AnalyticDimensionController extends Controller
             ? $this->service->listByType(AnalyticDimensionType::from((int) $validated['type']))
             : AnalyticDimension::orderBy('type')->orderBy('code')->get();
 
-        return response()->json(['dimensions' => $dimensions]);
+        if ($request->expectsJson()) {
+            return response()->json(['dimensions' => $dimensions]);
+        }
+
+        return view('analytic-dimensions.index', ['dimensions' => $dimensions->groupBy(fn ($dimension) => $dimension->type->value)]);
     }
 
     public function store(Request $request)
@@ -74,11 +78,14 @@ class AnalyticDimensionController extends Controller
         return redirect()->back()->with('success', __('Analytic dimensions updated successfully.'));
     }
 
-    public function report(AnalyticDimension $analyticDimension)
+    public function report(Request $request, AnalyticDimension $analyticDimension)
     {
-        return response()->json([
-            'dimension' => $analyticDimension,
-            'breakdown' => $this->service->subjectBreakdown($analyticDimension),
-        ]);
+        $breakdown = $this->service->subjectBreakdown($analyticDimension);
+
+        if ($request->expectsJson()) {
+            return response()->json(['dimension' => $analyticDimension, 'breakdown' => $breakdown]);
+        }
+
+        return view('analytic-dimensions.report', ['dimension' => $analyticDimension, 'breakdown' => $breakdown]);
     }
 }

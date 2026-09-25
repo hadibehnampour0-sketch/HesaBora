@@ -17,8 +17,17 @@ class InventoryReportController extends Controller
         ]);
 
         $warehouse = isset($validated['warehouse_id']) ? Warehouse::findOrFail($validated['warehouse_id']) : null;
+        $report = $this->service->valuationReport($warehouse);
 
-        return response()->json($this->service->valuationReport($warehouse));
+        if ($request->expectsJson()) {
+            return response()->json($report);
+        }
+
+        return view('inventory-reports.valuation', [
+            'report' => $report,
+            'warehouses' => Warehouse::orderBy('name')->get(['id', 'name']),
+            'warehouse' => $warehouse,
+        ]);
     }
 
     public function slowMoving(Request $request)
@@ -27,8 +36,13 @@ class InventoryReportController extends Controller
             'days' => ['nullable', 'integer', 'min:1'],
         ]);
 
-        return response()->json([
-            'products' => $this->service->slowMovingReport((int) ($validated['days'] ?? 90)),
-        ]);
+        $days = (int) ($validated['days'] ?? 90);
+        $products = $this->service->slowMovingReport($days);
+
+        if ($request->expectsJson()) {
+            return response()->json(['products' => $products]);
+        }
+
+        return view('inventory-reports.slow-moving', ['products' => $products, 'days' => $days]);
     }
 }

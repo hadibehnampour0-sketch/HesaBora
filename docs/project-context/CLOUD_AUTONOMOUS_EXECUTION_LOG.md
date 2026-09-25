@@ -1729,3 +1729,14 @@ Owner observation: the P11 backend (routes, visit plans, settlements, van sales 
 - **Load the van** shortcut on each visitor opens the existing warehouse-transfer screen with the destination pre-selected (`to_warehouse_id`); no new stock code.
 - **Invoice form**: a user who is an active visitor with a van warehouse gets that warehouse pre-selected on new invoices (still changeable; edits and non-visitors unchanged).
 - Tests: `DistributionScreensTest` now 14. Still not built: per-visitor commission tiers UI (tiers remain a class constant per guardrail #49), calendar view of routes, applying promotions automatically inside the invoice form, mobile (Android last).
+
+## Entry 98 — 2026-09-25 — Backend-only accounting tools get screens (audit of JSON-only routes)
+
+An audit of GET routes whose controllers only return JSON found built-and-tested features with **no page, no menu entry and no seeded permission** (reachable only via wildcard grants). Screens + menu + seeded permissions were added; every JSON response is unchanged for API callers (`Accept: application/json`), browsers get the page.
+- Accounting menu: Fixed assets (register / post depreciation / dispose), Recurring invoices (create / issue now), Payment terms (instalment schedules), Currencies (+ dated exchange rates), Analytic dimensions (+ per-dimension report).
+- Reports menu: Cash flow, Cheque risk, Profitability by dimension, Inventory valuation, Slow-moving stock.
+- **Latent production bug fixed**: `CashFlowReportService` grouped with SQLite-only `strftime()`; on MySQL the endpoint would have 500'd. Now driver-aware (`DATE_FORMAT`), verified against the local MySQL database.
+- Recurring template store: the form's single item picker is split into `itemable_type`/`itemable_id`; `unit_discount`/`vat` now default to 0 (the controller previously dropped them, which the invoice service expects).
+- Payment-term form ignores blank instalment rows. Persian date inputs are converted with `jalaliInputToGregorian` on these routes.
+- Tests: `AccountingToolsScreensTest` (8). Not done: stock-reservation screen (no list endpoint exists yet), applying a payment term from the invoice page, tagging accounting lines with dimensions from the document form (`analytic-dimensions.transactions.sync` has no UI), per-visitor commission tiers.
+- Install note: re-run the permissions seeder (new permission groups) and grant the roles that should see these screens (Admin/Accountant receive them automatically from the seeder).
