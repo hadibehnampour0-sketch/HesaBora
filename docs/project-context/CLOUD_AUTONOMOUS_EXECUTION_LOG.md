@@ -1655,3 +1655,6 @@ Research protocol document written from owner's structure; roadmap §40.9. D-099
 
 ## Entry 77 — 2026-09-25 — D-100 protocol amended (axis F, physical-vs-obligation question, output format, decision matrix)
 Docs only; no push.
+
+## Entry 78 — 2026-09-25 — D-100: question bank adopted; two AI-simulated interviews recorded as hypotheses only
+Protocol §10: 43-question bank, H-01..H-11 hypothesis table, explicit "not evidence" status, manufacturer group added. D-099 stays PROPOSED; matrix untouched. Docs only; no push.
