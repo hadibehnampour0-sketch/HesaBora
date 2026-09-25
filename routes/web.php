@@ -281,6 +281,11 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::patch('plans/{visit_plan}/status', [Controllers\DistributionPlanController::class, 'updateStatus'])->name('distribution.plans.update-status');
             Route::delete('plans/{visit_plan}', [Controllers\DistributionPlanController::class, 'destroy'])->name('distribution.plans.destroy');
 
+            Route::get('promotions', [Controllers\DistributionPromotionController::class, 'index'])->name('distribution.promotions.index');
+            Route::post('promotions', [Controllers\DistributionPromotionController::class, 'store'])->name('distribution.promotions.store');
+            Route::put('promotions/{promotion}', [Controllers\DistributionPromotionController::class, 'update'])->name('distribution.promotions.update');
+            Route::delete('promotions/{promotion}', [Controllers\DistributionPromotionController::class, 'destroy'])->name('distribution.promotions.destroy');
+
             Route::get('settlements', [Controllers\DistributionSettlementController::class, 'index'])->name('distribution.settlements.index');
             Route::post('settlements', [Controllers\DistributionSettlementController::class, 'store'])->name('distribution.settlements.store');
             Route::post('settlements/{daily_settlement}/submit', [Controllers\DistributionSettlementController::class, 'submit'])->name('distribution.settlements.submit');

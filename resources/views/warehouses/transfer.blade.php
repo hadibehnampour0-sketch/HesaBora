@@ -36,7 +36,7 @@
                         <select class="select select-bordered w-full" name="to_warehouse_id">
                             <option value="">{{ __('Target Warehouse') }}</option>
                             @foreach ($warehouses as $warehouse)
-                                <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
+                                <option value="{{ $warehouse->id }}" @selected((string) old('to_warehouse_id', request('to_warehouse_id')) === (string) $warehouse->id)>{{ $warehouse->name }}</option>
                             @endforeach
                         </select>
                     </div>

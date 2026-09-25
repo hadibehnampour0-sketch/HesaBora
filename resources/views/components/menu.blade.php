@@ -253,7 +253,7 @@
 @endcanany
 
 {{-- Capillary distribution (پخش مویرگی) is its own top-level area: routes, visitors + van warehouses, visit plans, daily settlement, analytics. --}}
-@canany(['distribution.index', 'distribution.routes.index', 'distribution.visitors.index', 'distribution.plans.index', 'distribution.settlements.index', 'field-operations-analytics.index'])
+@canany(['distribution.index', 'distribution.routes.index', 'distribution.visitors.index', 'distribution.plans.index', 'distribution.promotions.index', 'distribution.settlements.index', 'field-operations-analytics.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="field" />{{ __('Capillary distribution') }}</summary>
@@ -269,6 +269,9 @@
                 @endcan
                 @can('distribution.plans.index')
                     <li><a href="{{ route('distribution.plans.index') }}">{{ __('Visit plans') }}</a></li>
+                @endcan
+                @can('distribution.promotions.index')
+                    <li><a href="{{ route('distribution.promotions.index') }}">{{ __('Promotions') }}</a></li>
                 @endcan
                 @can('distribution.settlements.index')
                     <li><a href="{{ route('distribution.settlements.index') }}">{{ __('Daily settlements') }}</a></li>

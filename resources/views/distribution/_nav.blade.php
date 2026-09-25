@@ -4,6 +4,7 @@
         ['can' => 'distribution.routes.index', 'route' => 'distribution.routes.index', 'label' => __('Distribution routes')],
         ['can' => 'distribution.visitors.index', 'route' => 'distribution.visitors.index', 'label' => __('Visitors')],
         ['can' => 'distribution.plans.index', 'route' => 'distribution.plans.index', 'label' => __('Visit plans')],
+        ['can' => 'distribution.promotions.index', 'route' => 'distribution.promotions.index', 'label' => __('Promotions')],
         ['can' => 'distribution.settlements.index', 'route' => 'distribution.settlements.index', 'label' => __('Daily settlements')],
         ['can' => 'warehouses.index', 'route' => 'warehouses.index', 'label' => __('Warehouses')],
         ['can' => 'field-operations-analytics.index', 'route' => 'field-operations-analytics.index', 'label' => __('Field Operations Analytics')],

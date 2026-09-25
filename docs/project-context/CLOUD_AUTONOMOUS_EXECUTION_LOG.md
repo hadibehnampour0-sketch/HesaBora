@@ -1722,3 +1722,10 @@ Owner observation: the P11 backend (routes, visit plans, settlements, van sales 
 - Removing a visitor keeps their warehouse and history. Visitors must belong to the active company (`company_user`) and be unique per company.
 - Tests: `DistributionScreensTest` (10). Not built yet: promotions UI (JSON only), van loading shortcut (stock transfer screen exists), visitor commission setup UI, sales-from-van invoice defaulting to the visitor warehouse, route-day calendar view, mobile (Android last).
 - Install note: `php artisan migrate` + re-run the permissions seeder.
+
+## Entry 97 — 2026-09-25 — Capillary distribution completed (promotions screen, van loading, van default on invoices)
+
+- **Promotions screen** (`distribution.promotions.*`): tiered-discount and bonus-goods rules built from plain fields (no JSON), stored in exactly the `rules` shape `PromotionEngineService` reads; activate/deactivate/delete. Promotions still never touch an invoice (pure calculator, guardrail #51).
+- **Load the van** shortcut on each visitor opens the existing warehouse-transfer screen with the destination pre-selected (`to_warehouse_id`); no new stock code.
+- **Invoice form**: a user who is an active visitor with a van warehouse gets that warehouse pre-selected on new invoices (still changeable; edits and non-visitors unchanged).
+- Tests: `DistributionScreensTest` now 14. Still not built: per-visitor commission tiers UI (tiers remain a class constant per guardrail #49), calendar view of routes, applying promotions automatically inside the invoice form, mobile (Android last).

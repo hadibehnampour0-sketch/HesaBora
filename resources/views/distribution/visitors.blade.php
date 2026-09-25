@@ -42,6 +42,11 @@
                             @endif
                         </div>
                     </div>
+                    @if ($visitor->warehouse)
+                        @can('warehouses.transfer')
+                            <a class="btn btn-xs btn-outline" href="{{ route('warehouses.transfer', ['to_warehouse_id' => $visitor->warehouse_id]) }}">{{ __('Load the van') }}</a>
+                        @endcan
+                    @endif
                     @can('distribution.visitors.destroy')
                         <form method="POST" action="{{ route('distribution.visitors.destroy', $visitor) }}" onsubmit="return confirm('{{ __('Remove this visitor?') }}')">
                             @csrf @method('DELETE')

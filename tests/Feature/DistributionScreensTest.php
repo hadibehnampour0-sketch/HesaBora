@@ -8,10 +8,12 @@ use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\DailySettlement;
 use App\Models\DistributionVisitor;
+use App\Models\Promotion;
 use App\Models\SalesRoute;
 use App\Models\User;
 use App\Models\VisitPlan;
 use App\Models\Warehouse;
+use App\Services\PromotionEngineService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
 use Tests\Helpers\SeederHelper;
@@ -55,6 +57,7 @@ class DistributionScreensTest extends TestCase
             'distribution.routes.customers.store', 'distribution.routes.customers.destroy',
             'distribution.visitors.index', 'distribution.visitors.store', 'distribution.visitors.update', 'distribution.visitors.destroy',
             'distribution.plans.index', 'distribution.plans.store', 'distribution.plans.update-status', 'distribution.plans.destroy',
+            'distribution.promotions.index', 'distribution.promotions.store', 'distribution.promotions.update', 'distribution.promotions.destroy',
             'distribution.settlements.index', 'distribution.settlements.store', 'distribution.settlements.submit', 'distribution.settlements.approve',
         ];
         foreach ($names as $name) {
@@ -74,7 +77,7 @@ class DistributionScreensTest extends TestCase
 
     public function test_every_screen_needs_its_own_permission(): void
     {
-        foreach (['index', 'routes.index', 'visitors.index', 'plans.index', 'settlements.index'] as $suffix) {
+        foreach (['index', 'routes.index', 'visitors.index', 'plans.index', 'promotions.index', 'settlements.index'] as $suffix) {
             $name = $suffix === 'index' ? 'distribution.index' : 'distribution.'.$suffix;
             $this->get(route($name))->assertForbidden();
         }
@@ -84,7 +87,7 @@ class DistributionScreensTest extends TestCase
     {
         $this->grantAll();
 
-        foreach (['distribution.index', 'distribution.routes.index', 'distribution.visitors.index', 'distribution.plans.index', 'distribution.settlements.index'] as $name) {
+        foreach (['distribution.index', 'distribution.routes.index', 'distribution.visitors.index', 'distribution.plans.index', 'distribution.promotions.index', 'distribution.settlements.index'] as $name) {
             $this->get(route($name))->assertOk()->assertSee(__('Capillary distribution'));
         }
     }
@@ -211,5 +214,58 @@ class DistributionScreensTest extends TestCase
         $this->user->givePermissionTo(Permission::firstOrCreate(['name' => 'invoices.index']));
 
         $this->get(route('home'))->assertOk()->assertSee(route('distribution.visitors.index'), false);
+    }
+
+    public function test_a_tiered_promotion_is_stored_in_the_shape_the_engine_reads(): void
+    {
+        $this->grantAll();
+
+        $this->post(route('distribution.promotions.store'), [
+            'title' => 'Bulk',
+            'type' => 'tiered_discount',
+            'tiers' => [['min_qty' => '50', 'discount_percent' => '10'], ['min_qty' => '10', 'discount_percent' => '5'], ['min_qty' => '', 'discount_percent' => '']],
+        ])->assertSessionHasNoErrors();
+
+        $promotion = Promotion::firstOrFail();
+        $this->assertTrue($promotion->is_active);
+        $this->assertEquals([['min_qty' => 10.0, 'discount_percent' => 5.0], ['min_qty' => 50.0, 'discount_percent' => 10.0]], $promotion->rules['tiers']);
+
+        $result = app(PromotionEngineService::class)->evaluate(null, [['product_id' => 1, 'quantity' => 60]], now());
+        $this->assertSame(10.0, (float) $result['discounts'][0]['discount_percent']);
+    }
+
+    public function test_a_tiered_promotion_needs_at_least_one_complete_tier(): void
+    {
+        $this->grantAll();
+
+        $this->post(route('distribution.promotions.store'), ['title' => 'Empty', 'type' => 'tiered_discount', 'tiers' => [['min_qty' => '', 'discount_percent' => '']]])
+            ->assertSessionHasErrors('tiers');
+        $this->assertSame(0, Promotion::count());
+    }
+
+    public function test_a_promotion_can_be_toggled_and_deleted_and_bad_type_is_rejected(): void
+    {
+        $this->grantAll();
+        $promotion = Promotion::create(['title' => 'X', 'type' => 'tiered_discount', 'rules' => ['tiers' => [['min_qty' => 1, 'discount_percent' => 1]]], 'is_active' => true]);
+
+        $this->put(route('distribution.promotions.update', $promotion))->assertSessionHasNoErrors();
+        $this->assertFalse($promotion->fresh()->is_active);
+
+        $this->post(route('distribution.promotions.store'), ['title' => 'Bad', 'type' => 'nope'])->assertSessionHasErrors('type');
+
+        $this->delete(route('distribution.promotions.destroy', $promotion))->assertSessionHasNoErrors();
+        $this->assertSame(0, Promotion::count());
+    }
+
+    public function test_the_sell_invoice_form_defaults_to_the_visitors_van_warehouse(): void
+    {
+        $this->grantAll();
+        Warehouse::create(['name' => 'Main']);
+        $this->user->givePermissionTo(Permission::firstOrCreate(['name' => 'invoices.create']));
+        $visitor = DistributionVisitor::create(['user_id' => $this->user->id, 'warehouse_id' => Warehouse::create(['name' => 'Van A'])->id]);
+
+        $html = $this->get(route('invoices.create', ['invoice_type' => 'sell']))->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression('#<option value="'.$visitor->warehouse_id.'"\s+selected#', $html);
     }
 }

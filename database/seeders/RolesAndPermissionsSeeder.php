@@ -125,6 +125,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'distribution.routes' => ['index', 'store', 'update', 'destroy', 'customers.store', 'customers.destroy'],
             'distribution.visitors' => ['index', 'store', 'update', 'destroy'],
             'distribution.plans' => ['index', 'store', 'update-status', 'destroy'],
+            'distribution.promotions' => ['index', 'store', 'update', 'destroy'],
             'distribution.settlements' => ['index', 'store', 'submit', 'approve'],
 
             // Backups

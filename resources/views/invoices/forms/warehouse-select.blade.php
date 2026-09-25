@@ -1,5 +1,7 @@
 @php
-    $selectedWarehouseId = old('warehouse_id', $invoice->warehouse_id ?? $warehouses->first()?->id);
+    // A capillary-distribution visitor sells from their own van warehouse by default (still changeable).
+    $visitorWarehouseId = isset($invoice->warehouse_id) ? null : \App\Models\DistributionVisitor::where('user_id', auth()->id())->where('is_active', true)->value('warehouse_id');
+    $selectedWarehouseId = old('warehouse_id', $invoice->warehouse_id ?? $visitorWarehouseId ?? $warehouses->first()?->id);
 @endphp
 
 <div class="flex w-1/6 flex-wrap">
