@@ -1,3 +1,7 @@
+@php
+    $wizardMode = $wizardMode ?? false;
+@endphp
+<div @if ($wizardMode) x-show="step === 1" @endif>
 <x-card class="rounded-2xl w-full" class_body="p-4">
     <div class="flex gap-2 items-center justify-start">
         <div class="flex w-1/4">
@@ -75,6 +79,13 @@
             label_text_class="text-gray-500 text-nowrap" input_class="datePicker"></x-text-input>
     </div>
 </x-card>
+@if ($wizardMode)
+    <div class="mt-4 flex justify-end">
+        <button type="button" class="btn btn-primary rounded-md" @click="step = 2">{{ __('Next') }}</button>
+    </div>
+@endif
+</div>
+<div @if ($wizardMode) x-show="step === 2" @endif>
 <x-card class="mt-4 rounded-2xl w-full" class_body="p-0 pt-0 mt-4" x-data="transactionForm">
     <div class="flex flex-wrap overflow-x-auto overflow-y-hidden gap-2 items-center px-4">
         <div class="text-sm flex-1 max-w-8 text-center text-gray-500 pt-3">*</div>
@@ -242,7 +253,14 @@
     </div>
 
 </x-card>
-
+@if ($wizardMode)
+    <div class="mt-4 flex justify-between">
+        <button type="button" class="btn rounded-md" @click="step = 1">{{ __('Back') }}</button>
+        <button type="button" class="btn btn-primary rounded-md" @click="step = 3">{{ __('Next') }}</button>
+    </div>
+@endif
+</div>
+<div @if ($wizardMode) x-show="step === 3" @endif>
 <x-card class="rounded-2xl w-full" class_body="p-4">
     <div class="flex justify-center gap-2 mt-2">
         <x-textarea name="description" id="description" title="{{ __('description') }}" :value="old('description', $invoice->description ?? '')" />
@@ -250,6 +268,9 @@
 </x-card>
 
 <div class="mt-4 flex gap-2 justify-end">
+    @if ($wizardMode)
+        <button type="button" class="btn rounded-md me-auto" @click="step = 2">{{ __('Back') }}</button>
+    @endif
     <a href="{{ route('invoices.index', ['invoice_type' => 'buy']) }}" type="submit"
         class="btn btn-default rounded-md dark:bg-slate-700 dark:text-slate-100 dark:border-slate-600 dark:hover:bg-slate-600">{{ __('cancel') }}</a>
     <button id="submitForm" type="submit" class="btn text-white btn-primary rounded-md">{{ __('save') }}
@@ -259,6 +280,7 @@
         <button id="submitFormAndApprove" type="submit" name="approve" value="1"
             class="btn text-white btn-primary rounded-md">{{ __('save and approve') }}</button>
     @endcan
+</div>
 </div>
 
 @pushOnce('scripts')

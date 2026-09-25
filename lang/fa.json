@@ -3527,5 +3527,11 @@
     "Payable cheques overdue": "چک‌های پرداختی گذشته",
     "Customers with overdue balances": "مشتریان دارای مانده‌ی معوق",
     "No overdue receivables. 🎉": "مطالبه‌ی معوقی وجود ندارد. 🎉",
-    "days": "روز"
+    "days": "روز",
+    "Supplier & invoice info": "تأمین‌کننده و اطلاعات فاکتور",
+    "Financial & other information": "اطلاعات مالی و سایر",
+    "Supplier & cost info": "تأمین‌کننده و اطلاعات هزینه",
+    "Items & submit": "اقلام و ثبت",
+    "Tax Readiness": "آمادگی مالیاتی",
+    "Workflow Governance": "حاکمیت گردش‌کار"
 }

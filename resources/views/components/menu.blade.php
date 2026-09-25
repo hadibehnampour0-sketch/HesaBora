@@ -111,7 +111,7 @@
     </li>
 @endcanany
 @canany(['reports.documents', 'reports.journal', 'reports.ledger', 'reports.sub-ledger', 'reports.trial-balance',
-    'reports.cost-income', 'budgets.index', 'reports.company-overview', 'ageing.receivables', 'ageing.payables'])
+    'reports.cost-income', 'budgets.index', 'reports.company-overview', 'ageing.receivables', 'ageing.payables', 'seasonal-tax.index', 'tax-readiness.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="reports" />{{ __('Reports') }}</summary>
@@ -124,6 +124,9 @@
                 @endcan
                 @can('seasonal-tax.index')
                     <li><a href="{{ route('seasonal-tax.index') }}">{{ __('Seasonal Tax Report') }}</a></li>
+                @endcan
+                @can('tax-readiness.index')
+                    <li><a href="{{ route('tax-readiness.index') }}">{{ __('Tax Readiness') }}</a></li>
                 @endcan
                 @can('budgets.index')
                     <li><a href="{{ route('budgets.index') }}">{{ __('Monthly Income and Expense Workbench') }}</a></li>
@@ -347,7 +350,7 @@
             @endcanany
 
             {{-- System --}}
-            @canany(['companies.index', 'users.index', 'configs.index', 'backups.create'])
+            @canany(['companies.index', 'users.index', 'configs.index', 'backups.create', 'workflow-governance.edit'])
                 <li>
                     <details>
                         <summary>{{ __('System') }}</summary>
@@ -360,6 +363,9 @@
                             @endcan
                             @can('configs.index')
                                 <li><a href="{{ route('configs.index') }}">{{ __('Configs') }}</a></li>
+                            @endcan
+                            @can('workflow-governance.edit')
+                                <li><a href="{{ route('workflow-governance.edit') }}">{{ __('Workflow Governance') }}</a></li>
                             @endcan
                             @can('backups.create')
                                 <li><a href="{{ route('backups.create') }}">{{ __('Backup') }}</a></li>

@@ -1,4 +1,8 @@
+@php
+    $wizardMode = $wizardMode ?? false;
+@endphp
 <div x-data="ancillaryCostForm">
+    <div @if ($wizardMode) x-show="step === 1" @endif>
     <x-card class="rounded-2xl w-full" class_body="p-4">
         <div class="flex gap-2 items-center justify-start">
             <div class="flex w-1/4">
@@ -75,7 +79,14 @@
                     label_text_class="text-gray-500 text-nowrap" input_class="datePicker w-full"></x-text-input>
             </div>
     </x-card>
+    @if ($wizardMode)
+        <div class="mt-4 flex justify-end">
+            <button type="button" class="btn btn-primary rounded-md" @click="step = 2">{{ __('Next') }}</button>
+        </div>
+    @endif
+    </div>
 
+    <div @if ($wizardMode) x-show="step === 2" @endif>
     <x-card class="mt-4 rounded-2xl w-full" class_body="p-4">
         <div class="flex overflow-x-auto overflow-y-hidden gap-2 items-center px-4 pb-2">
             <div class="text-sm flex-1 max-w-8 text-center text-gray-500">
@@ -160,9 +171,13 @@
             </div>
         </div>
     </x-card>
+    </div>
 </div>
 
-<div class="mt-4 flex gap-2 justify-end">
+<div class="mt-4 flex gap-2 justify-end" @if ($wizardMode) x-show="step === 2" @endif>
+    @if ($wizardMode)
+        <button type="button" class="btn rounded-md me-auto" @click="step = 1">{{ __('Back') }}</button>
+    @endif
     <a href="{{ isset($invoice) && $invoice ? route('invoices.show', $invoice) : route('ancillary-costs.index') }}" type="submit" class="btn btn-default rounded-md">
         {{ __('cancel') }}
     </a>

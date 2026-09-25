@@ -81,14 +81,46 @@ class SellInvoiceWizardTest extends TestCase
         $response->assertSee(__('Description & submit'));
     }
 
-    public function test_simple_mode_does_not_affect_other_invoice_types(): void
+    public function test_simple_mode_does_not_affect_return_invoices(): void
+    {
+        $this->user->update(['ui_mode' => 'simple']);
+
+        foreach (['return_sell', 'return_buy'] as $type) {
+            $this->get(route('invoices.create', ['invoice_type' => $type]))
+                ->assertOk()
+                ->assertDontSee('wizardMode: true', false);
+        }
+    }
+
+    public function test_simple_mode_users_see_the_guided_wizard_for_a_new_goods_buy_invoice(): void
     {
         $this->user->update(['ui_mode' => 'simple']);
 
         $response = $this->get(route('invoices.create', ['invoice_type' => 'buy']));
 
         $response->assertOk();
+        $response->assertSee('wizardMode: true', false);
+        $response->assertSee(__('Supplier & invoice info'));
+        $response->assertSee(__('Items & discounts'));
+        $response->assertSee(__('Description & submit'));
+    }
+
+    public function test_advanced_mode_users_see_the_unchanged_buy_form(): void
+    {
+        $response = $this->get(route('invoices.create', ['invoice_type' => 'buy']));
+
+        $response->assertOk();
         $response->assertDontSee('wizardMode: true', false);
+        $response->assertDontSee(__('Supplier & invoice info'));
+    }
+
+    public function test_simple_mode_does_not_affect_the_service_buy_form(): void
+    {
+        $this->user->update(['ui_mode' => 'simple']);
+
+        $this->get(route('invoices.create', ['invoice_type' => 'buy', 'service_buy' => '1']))
+            ->assertOk()
+            ->assertDontSee('wizardMode: true', false);
     }
 
     public function test_simple_mode_does_not_affect_editing_an_existing_invoice(): void

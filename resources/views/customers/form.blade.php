@@ -1,10 +1,11 @@
 @php
     $customer = $customer ?? null;
+    $wizardMode = $wizardMode ?? false;
     $groupHint = '<a class="link text-blue-500" href="' . route('customer-groups.create') . '">' . __('Create new group') . '</a>';
 @endphp
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="p-4">
+<div class="grid grid-cols-1 {{ $wizardMode ? '' : 'lg:grid-cols-2' }} gap-6">
+    <div class="p-4" @if ($wizardMode) x-show="step === 1" @endif>
         <div>
             <div class="text-sm font-semibold text-gray-600 mb-3">{{ __('Identity Information') }}</div>
             <div class="grid grid-cols-2 gap-1 ">
@@ -47,6 +48,7 @@
 
     </div>
     <div class="p-4" x-data="{ activeTab: 'contact' }">
+        @unless ($wizardMode)
         <div class="flex flex-wrap gap-2 mb-4 bg-base-200 rounded-box p-2">
             <button type="button"
                 class="btn btn-sm rounded-full"
@@ -70,7 +72,8 @@
                 {{ __('Other Information') }}
             </button>
         </div>
-        <div x-show="activeTab === 'contact'" x-cloak>
+        @endunless
+        <div @if ($wizardMode) x-show="step === 2" @else x-show="activeTab === 'contact'" @endif x-cloak>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <x-input title="{{ __('Mobile') }}" name="mobile" placeholder="{{ __('Mobile') }}" :value="old('mobile', $customer->mobile ?? '')" />
@@ -99,7 +102,7 @@
                 </div>
             </div>
         </div>
-        <div x-show="activeTab === 'financial'" x-cloak>
+        <div @if ($wizardMode) x-show="step === 3" @else x-show="activeTab === 'financial'" @endif x-cloak>
             <div class="text-sm font-semibold text-gray-600 mb-3">{{ __('Account 1') }}</div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b pb-4">
                 <div>
@@ -131,7 +134,7 @@
                 </div>
             </div>
         </div>
-        <div x-show="activeTab === 'other'" x-cloak>
+        <div @if ($wizardMode) x-show="step === 3" @else x-show="activeTab === 'other'" @endif x-cloak>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <x-input title="{{ __('connector') }}" name="connector" placeholder="{{ __('connector') }}"

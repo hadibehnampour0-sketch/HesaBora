@@ -3527,5 +3527,11 @@
     "Payable cheques overdue": "Payable cheques overdue",
     "Customers with overdue balances": "Customers with overdue balances",
     "No overdue receivables. 🎉": "No overdue receivables. 🎉",
-    "days": "days"
+    "days": "days",
+    "Supplier & invoice info": "Supplier & invoice info",
+    "Financial & other information": "Financial & other information",
+    "Supplier & cost info": "Supplier & cost info",
+    "Items & submit": "Items & submit",
+    "Tax Readiness": "Tax Readiness",
+    "Workflow Governance": "Workflow Governance"
 }

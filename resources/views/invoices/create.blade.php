@@ -6,8 +6,11 @@
         // always uses the full form regardless of mode, and every other
         // invoice type/edit flow is completely untouched.
         $isSellWizard = $invoice_type === 'sell' && ! $invoice->exists && auth()->user()->isSimpleMode();
+        // Same guided flow for a plain (goods) Buy invoice; service-buy and return forms stay untouched.
+        $isBuyWizard = $invoice_type === 'buy' && ! $isServiceBuy && ! $invoice->exists && auth()->user()->isSimpleMode();
+        $isWizard = $isSellWizard || $isBuyWizard;
     @endphp
-    <div @if ($isSellWizard) x-data="{ step: 1, wizardMode: true }" @endif>
+    <div @if ($isWizard) x-data="{ step: 1, wizardMode: true }" @endif>
         <form action="{{ route('invoices.store') }}" method="POST">
             @csrf
             <div class="card-body">
@@ -20,9 +23,9 @@
                 </h2>
                 <x-show-message-bags />
 
-                @if ($isSellWizard)
+                @if ($isWizard)
                     <ul class="steps w-full mb-4">
-                        <li class="step" :class="{ 'step-primary': step >= 1 }">{{ __('Buyer & invoice info') }}</li>
+                        <li class="step" :class="{ 'step-primary': step >= 1 }">{{ $isBuyWizard ? __('Supplier & invoice info') : __('Buyer & invoice info') }}</li>
                         <li class="step" :class="{ 'step-primary': step >= 2 }">{{ __('Items & discounts') }}</li>
                         <li class="step" :class="{ 'step-primary': step >= 3 }">{{ __('Description & submit') }}</li>
                     </ul>
@@ -37,7 +40,7 @@
                         @if ($isServiceBuy)
                             @include('invoices.forms.buy_service')
                         @else
-                            @include('invoices.forms.buy')
+                            @include('invoices.forms.buy', ['wizardMode' => $isBuyWizard])
                         @endif
                     @break
 

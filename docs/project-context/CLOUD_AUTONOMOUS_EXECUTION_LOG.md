@@ -1685,3 +1685,6 @@ CSS theme tokens, new shell components (sidebar, menu-icon, topbar), login/super
 
 ## Entry 87 — 2026-09-25 — "Today" dashboard on Home
 Service + endpoint + Alpine/Chart.js view; per-block permission gating; 7 tests; suite 1773/1773. Whole-app GET probe (168 routes, real DB) showed one pre-existing failure: /management/configs/create (ConfigController::create missing). Local commit only; no push.
+
+## Entry 88 — 2026-09-25 — Simple-mode wizards (Buy invoice, New Customer, Ancillary cost) + menu links
+Pure presentation layer; 10 new/updated tests; suite 1782/1782. Local commit only; no push.
