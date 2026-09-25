@@ -1,0 +1,214 @@
+{
+  "key": "gold",
+  "version": 1,
+  "icon": "gold",
+  "title": {"fa": "طلا و جواهر", "en": "Gold & Jewelry"},
+  "description": {
+    "fa": "تنظیمات و ماشین‌حساب‌های مخصوص طلافروشی خرد و عمده. مقادیر پیش‌فرض بر اساس تحقیق مکتبی‌اند و با برچسب وضعیت مشخص شده‌اند؛ هر کدام را می‌توانید بر اساس عرف صنف خود تغییر دهید.",
+    "en": "Settings and calculators for retail and wholesale gold trade. Defaults come from desk research and carry an evidence-status badge; change any of them to match your trade's practice."
+  },
+  "sections": [
+    {
+      "key": "purity_weight",
+      "title": {"fa": "عیار و وزن", "en": "Purity & weight"},
+      "fields": [
+        {
+          "key": "standard_purity", "type": "integer", "default": 750, "min": 1, "max": 1000, "unit": "‰",
+          "status": "verified",
+          "title": {"fa": "عیار مبنای بازار", "en": "Market reference purity"},
+          "help": {"fa": "همه وزن‌ها برای مقایسه به این عیار تبدیل می‌شوند (۷۵۰ = ۱۸ عیار).", "en": "All weights are converted to this purity for comparison (750 = 18k)."},
+          "source": "Multiple vendor/educational sources (no primary regulator text)"
+        },
+        {
+          "key": "weight_decimals", "type": "integer", "default": 3, "min": 0, "max": 6, "unit": "",
+          "status": "assumed",
+          "title": {"fa": "تعداد رقم اعشار وزن (گرم)", "en": "Weight decimal places (grams)"},
+          "help": {"fa": "معمولاً ترازوها تا سه رقم اعشار وزن می‌دهند.", "en": "Scales typically report up to three decimals."}
+        },
+        {
+          "key": "rounding_mode", "type": "select", "default": "half_up", "unit": "",
+          "options": [
+            {"value": "half_up", "label": {"fa": "گرد کردن ریاضی", "en": "Round half up"}},
+            {"value": "half_even", "label": {"fa": "گرد کردن بانکی", "en": "Round half even"}},
+            {"value": "down", "label": {"fa": "همیشه به پایین", "en": "Always down"}},
+            {"value": "up", "label": {"fa": "همیشه به بالا", "en": "Always up"}}
+          ],
+          "status": "assumed",
+          "title": {"fa": "روش گرد کردن وزن معادل", "en": "Rounding rule for equivalent weight"}
+        },
+        {
+          "key": "mesghal_grams", "type": "decimal", "default": 4.6083, "min": 0.1, "max": 100, "unit": "g",
+          "status": "verified",
+          "title": {"fa": "وزن یک مثقال (گرم)", "en": "Weight of one mesghal (grams)"},
+          "source": "Two market-glossary pages (non-official)"
+        },
+        {
+          "key": "mazaneh_purity", "type": "integer", "default": 705, "min": 1, "max": 1000, "unit": "‰",
+          "status": "verified",
+          "title": {"fa": "عیار مظنه (طلای ۱۷ عیار)", "en": "Mazaneh purity (17k)"},
+          "source": "Two market-glossary pages (non-official)"
+        },
+        {
+          "key": "soot_definition", "type": "select", "default": "unset", "unit": "",
+          "options": [
+            {"value": "unset", "label": {"fa": "هنوز مشخص نشده", "en": "Not yet defined"}},
+            {"value": "weight_thousandth_gram", "label": {"fa": "یک‌هزارم گرم (وزن)", "en": "One thousandth of a gram (weight)"}},
+            {"value": "purity_point", "label": {"fa": "یک واحد عیار (از ۱۰۰۰)", "en": "One purity point (out of 1000)"}},
+            {"value": "both", "label": {"fa": "هر دو، بسته به موقعیت", "en": "Both, depending on context"}}
+          ],
+          "status": "needs_confirmation",
+          "title": {"fa": "معنی «سوت» در صنف شما", "en": "Meaning of “soot” in your trade"},
+          "help": {"fa": "منابع با هم اختلاف دارند؛ این مقدار فقط اطلاعاتی است و در محاسبه‌ها استفاده نمی‌شود.", "en": "Sources disagree; informational only and not used in any calculation."}
+        }
+      ]
+    },
+    {
+      "key": "retail_pricing",
+      "title": {"fa": "قیمت‌گذاری خرده‌فروشی", "en": "Retail pricing"},
+      "fields": [
+        {
+          "key": "default_wage_percent", "type": "percent", "default": 10, "unit": "%",
+          "status": "assumed",
+          "title": {"fa": "اجرت ساخت پیش‌فرض (درصد قیمت طلای خام)", "en": "Default wage (percent of raw gold value)"},
+          "help": {"fa": "اجرت در عمل درصدی، گرمی یا ثابت است؛ اینجا فقط برای ماشین‌حساب.", "en": "In practice wage is percent, per-gram or fixed; used here only by the calculator."}
+        },
+        {
+          "key": "retail_profit_percent", "type": "percent", "default": 7, "unit": "%",
+          "status": "assumed",
+          "title": {"fa": "سود فروشنده (درصد)", "en": "Seller profit (percent)"},
+          "help": {"fa": "عدد ۷٪ در منابع متعدد آمده ولی متن قانونی آن دیده نشد.", "en": "7% appears in several secondary sources; the legal text was not reached."}
+        },
+        {
+          "key": "profit_base", "type": "select", "default": "raw_plus_wage", "unit": "",
+          "options": [
+            {"value": "raw_plus_wage", "label": {"fa": "طلای خام + اجرت", "en": "Raw gold + wage"}},
+            {"value": "raw_only", "label": {"fa": "فقط طلای خام", "en": "Raw gold only"}}
+          ],
+          "status": "assumed",
+          "title": {"fa": "مبنای محاسبه سود", "en": "Profit calculation base"}
+        },
+        {
+          "key": "vat_on_wage_and_profit_only", "type": "boolean", "default": true, "unit": "",
+          "status": "verified",
+          "title": {"fa": "ارزش افزوده فقط روی اجرت و سود", "en": "VAT on wage and profit only"},
+          "help": {"fa": "طبق قانون، خود طلای خام از ارزش افزوده معاف است.", "en": "Under the law raw gold itself is VAT-exempt."},
+          "source": "Several independent news/tax sources (since 1400/10/13)"
+        },
+        {
+          "key": "vat_percent", "type": "percent", "default": 10, "unit": "%",
+          "status": "needs_confirmation",
+          "title": {"fa": "نرخ ارزش افزوده (ماشین‌حساب)", "en": "VAT rate (calculator)"},
+          "help": {"fa": "۱۰٪ برای ۱۴۰۴ تأیید شد؛ نرخ ۱۴۰۵ تأیید نشد. فاکتورهای واقعی از تنظیمات محصول/مالیات می‌آیند، نه از اینجا.", "en": "10% verified for 1404; the 1405 rate is unconfirmed. Real invoices take VAT from product/tax settings, not from here."}
+        }
+      ]
+    },
+    {
+      "key": "trade_in",
+      "title": {"fa": "تعویض طلا", "en": "Gold trade-in"},
+      "fields": [
+        {
+          "key": "tradein_purity_haircut_points", "type": "integer", "default": 10, "min": 0, "max": 200, "unit": "‰",
+          "status": "assumed",
+          "title": {"fa": "کسر عیار طلای کهنه در تعویض", "en": "Purity haircut on old gold at trade-in"},
+          "help": {"fa": "مثلاً ۷۵۰ به ۷۴۰؛ فقط یک منبع این را گزارش کرده است.", "en": "E.g. 750 treated as 740; reported by a single source."}
+        },
+        {
+          "key": "tradein_wage_refund_percent", "type": "percent", "default": 0, "unit": "%",
+          "status": "assumed",
+          "title": {"fa": "درصد بازگشت اجرت طلای کهنه", "en": "Wage refunded on old gold (percent)"}
+        },
+        {
+          "key": "same_kind_swap_rule", "type": "select", "default": "warn", "unit": "",
+          "options": [
+            {"value": "off", "label": {"fa": "خاموش", "en": "Off"}},
+            {"value": "warn", "label": {"fa": "هشدار", "en": "Warn"}},
+            {"value": "enforce", "label": {"fa": "اجبار", "en": "Enforce"}}
+          ],
+          "status": "needs_confirmation",
+          "title": {"fa": "قاعده‌ی تعویض هم‌جنس (وزن برابر)", "en": "Same-kind swap rule (equal weight)"},
+          "help": {"fa": "برخی فتاوا وزن برابر و تحویل هم‌زمان را لازم می‌دانند؛ فعلاً فقط تنظیم اطلاعاتی است.", "en": "Some rulings require equal weight and simultaneous handover; informational setting for now."}
+        }
+      ]
+    },
+    {
+      "key": "quality_workshop",
+      "title": {"fa": "کیفیت و کارگاه", "en": "Quality & workshop"},
+      "fields": [
+        {
+          "key": "purity_tolerance_points", "type": "integer", "default": 2, "min": 0, "max": 50, "unit": "‰",
+          "status": "assumed",
+          "title": {"fa": "تلرانس قابل‌قبول اختلاف عیار", "en": "Acceptable purity tolerance"},
+          "help": {"fa": "اختلاف بیشتر از این معمولاً موجب اعتراض و اصلاحیه می‌شود.", "en": "Larger differences typically trigger a dispute and correction."}
+        },
+        {
+          "key": "melt_loss_percent", "type": "percent", "default": 0.5, "unit": "%",
+          "status": "needs_confirmation",
+          "title": {"fa": "افت ذوب معمول (درصد وزن)", "en": "Typical melt loss (percent of weight)"}
+        }
+      ]
+    }
+  ],
+  "calculators": [
+    {
+      "key": "purity_normalize", "type": "purity_normalize",
+      "title": {"fa": "تبدیل وزن به عیار مبنا", "en": "Convert weight to reference purity"},
+      "inputs": [
+        {"key": "weight", "type": "decimal", "min": 0, "title": {"fa": "وزن (گرم)", "en": "Weight (g)"}},
+        {"key": "purity", "type": "decimal", "min": 1, "max": 1000, "title": {"fa": "عیار", "en": "Purity"}}
+      ],
+      "params": {"base_setting": "standard_purity", "decimals_setting": "weight_decimals", "rounding_setting": "rounding_mode"}
+    },
+    {
+      "key": "retail_price", "type": "layered_price",
+      "title": {"fa": "قیمت فروش خرده‌فروشی", "en": "Retail sale price"},
+      "inputs": [
+        {"key": "weight", "type": "decimal", "min": 0, "title": {"fa": "وزن (گرم)", "en": "Weight (g)"}},
+        {"key": "purity", "type": "decimal", "min": 1, "max": 1000, "title": {"fa": "عیار", "en": "Purity"}},
+        {"key": "price_per_gram", "type": "decimal", "min": 0, "title": {"fa": "قیمت هر گرم عیار مبنا (ریال)", "en": "Price per gram at reference purity (Rial)"}},
+        {"key": "wage_percent", "type": "decimal", "min": 0, "max": 100, "optional": true, "title": {"fa": "درصد اجرت (اختیاری)", "en": "Wage % (optional)"}}
+      ],
+      "components": [
+        {"key": "raw", "type": "product", "factors": ["weight", "purity", "price_per_gram"], "divide_by_setting": "standard_purity", "title": {"fa": "ارزش طلای خام", "en": "Raw gold value"}},
+        {"key": "wage", "type": "percent_of", "of": ["raw"], "setting": "default_wage_percent", "input": "wage_percent", "title": {"fa": "اجرت ساخت", "en": "Manufacturing wage"}},
+        {"key": "profit", "type": "percent_of", "of_by_setting": {"setting": "profit_base", "map": {"raw_plus_wage": ["raw", "wage"], "raw_only": ["raw"]}}, "setting": "retail_profit_percent", "title": {"fa": "سود فروشنده", "en": "Seller profit"}},
+        {"key": "vat", "type": "percent_of", "of_by_setting": {"setting": "vat_on_wage_and_profit_only", "map": {"1": ["wage", "profit"], "0": ["raw", "wage", "profit"]}}, "setting": "vat_percent", "title": {"fa": "ارزش افزوده", "en": "VAT"}}
+      ],
+      "params": {"money_decimals": 0}
+    },
+    {
+      "key": "tradein_value", "type": "layered_price",
+      "title": {"fa": "برآورد ارزش طلای کهنه در تعویض", "en": "Old-gold trade-in estimate"},
+      "inputs": [
+        {"key": "weight", "type": "decimal", "min": 0, "title": {"fa": "وزن (گرم)", "en": "Weight (g)"}},
+        {"key": "purity", "type": "decimal", "min": 1, "max": 1000, "title": {"fa": "عیار", "en": "Purity"}},
+        {"key": "price_per_gram", "type": "decimal", "min": 0, "title": {"fa": "قیمت هر گرم عیار مبنا (ریال)", "en": "Price per gram at reference purity (Rial)"}}
+      ],
+      "components": [
+        {"key": "old_gold", "type": "product", "factors": ["weight", "purity", "price_per_gram"], "subtract": {"purity": "tradein_purity_haircut_points"}, "divide_by_setting": "standard_purity", "title": {"fa": "ارزش طلای کهنه پس از کسر عیار", "en": "Old-gold value after purity haircut"}}
+      ],
+      "params": {"money_decimals": 0}
+    },
+    {
+      "key": "mazaneh_to_gram", "type": "divide_by_factor",
+      "title": {"fa": "تبدیل مظنه به قیمت هر گرم عیار مبنا", "en": "Convert mazaneh to price per reference gram"},
+      "inputs": [
+        {"key": "value", "type": "decimal", "min": 0, "title": {"fa": "مظنه (ریال)", "en": "Mazaneh (Rial)"}}
+      ],
+      "params": {"factor": {"multiply": ["mesghal_grams", "mazaneh_purity"], "divide": ["standard_purity"]}, "decimals": 0}
+    }
+  ],
+  "future": [
+    {
+      "title": {"fa": "بن‌کردن (تثبیت قیمت روی مانده وزنی)", "en": "Price fixing (بن) against a weight balance"},
+      "note": {"fa": "به تصویب D-099 و پروتکل D-100 وابسته است؛ هنوز فعال نیست و هیچ مقداری ذخیره نمی‌شود.", "en": "Depends on D-099 acceptance and the D-100 discovery; not active and nothing is stored."}
+    },
+    {
+      "title": {"fa": "امانی و حساب باز وزنی", "en": "Consignment & open weight accounts"},
+      "note": {"fa": "بخشی از موتور Trade است که تا اطلاع بعدی ساخته نمی‌شود.", "en": "Part of the Trade engine, which is not built until explicitly opened."}
+    },
+    {
+      "title": {"fa": "قیمت لحظه‌ای بازار", "en": "Live market price"},
+      "note": {"fa": "با اتصال Industry Intelligence و کلید API خودتان (BYO) در آینده.", "en": "Coming with Industry Intelligence and your own API key (BYO)."}
+    }
+  ]
+}

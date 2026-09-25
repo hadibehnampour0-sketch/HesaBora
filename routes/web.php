@@ -219,6 +219,14 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::get('field-operations-analytics', [Controllers\FieldOperationsAnalyticsController::class, 'index'])->name('field-operations-analytics.index');
         Route::post('field-operations-analytics/recalculate', [Controllers\FieldOperationsAnalyticsController::class, 'recalculate'])->name('field-operations-analytics.recalculate');
 
+        // Industry Profiles (per-trade settings + calculators; definitions are data files).
+        Route::get('industry-profiles', [Controllers\IndustryProfileController::class, 'index'])->name('industry-profiles.index');
+        Route::get('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'show'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.show');
+        Route::put('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'update'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.update');
+        Route::post('industry-profiles/{profile}/toggle', [Controllers\IndustryProfileController::class, 'toggle'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.toggle');
+        Route::post('industry-profiles/{profile}/settings/{setting}/confirm', [Controllers\IndustryProfileController::class, 'confirm'])->where(['profile' => '[a-z][a-z0-9_]*', 'setting' => '[a-z][a-z0-9_]*'])->name('industry-profiles.confirm');
+        Route::post('industry-profiles/{profile}/calculators/{calculator}', [Controllers\IndustryProfileController::class, 'calculate'])->where(['profile' => '[a-z][a-z0-9_]*', 'calculator' => '[a-z][a-z0-9_]*'])->name('industry-profiles.calculate');
+
         // P11 (Field Sales & Distribution -- "FieldOperations"). Backend
         // only for this pass -- JSON endpoints matching the same style
         // P3's Currency/PaymentTerm controllers established (no dedicated

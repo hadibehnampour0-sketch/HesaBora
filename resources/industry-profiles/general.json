@@ -1,0 +1,71 @@
+{
+  "key": "general",
+  "version": 1,
+  "icon": "store",
+  "title": {"fa": "عمومی (سایر اصناف)", "en": "General trade"},
+  "description": {
+    "fa": "تنظیمات پایه‌ی هر کسب‌وکار خرید و فروش که صنف اختصاصی ندارد.",
+    "en": "Baseline settings for any buy-and-sell business without a dedicated trade profile."
+  },
+  "sections": [
+    {
+      "key": "basics",
+      "title": {"fa": "پایه", "en": "Basics"},
+      "fields": [
+        {
+          "key": "display_currency", "type": "select", "default": "rial", "unit": "",
+          "options": [
+            {"value": "rial", "label": {"fa": "ریال", "en": "Rial"}},
+            {"value": "toman", "label": {"fa": "تومان", "en": "Toman"}}
+          ],
+          "status": "assumed",
+          "title": {"fa": "واحد پولی نمایش قیمت‌ها", "en": "Currency shown for prices"},
+          "help": {"fa": "فقط برای ماشین‌حساب‌ها؛ دفتر کل همیشه ریالی است.", "en": "Calculators only; the ledger is always in Rial."}
+        },
+        {
+          "key": "quantity_decimals", "type": "integer", "default": 2, "min": 0, "max": 6, "unit": "",
+          "status": "assumed",
+          "title": {"fa": "رقم اعشار مقدار کالا", "en": "Quantity decimal places"}
+        },
+        {
+          "key": "margin_percent", "type": "percent", "default": 10, "unit": "%",
+          "status": "assumed",
+          "title": {"fa": "حاشیه سود پیش‌فرض", "en": "Default margin"}
+        },
+        {
+          "key": "vat_percent", "type": "percent", "default": 10, "unit": "%",
+          "status": "needs_confirmation",
+          "title": {"fa": "نرخ ارزش افزوده (ماشین‌حساب)", "en": "VAT rate (calculator)"},
+          "help": {"fa": "فاکتورهای واقعی از تنظیمات محصول/مالیات می‌آیند، نه از اینجا.", "en": "Real invoices take VAT from product/tax settings, not from here."}
+        },
+        {
+          "key": "low_stock_alert_days", "type": "integer", "default": 7, "min": 1, "max": 365, "unit": "d",
+          "status": "assumed",
+          "title": {"fa": "هشدار کمبود موجودی (روز فروش باقی‌مانده)", "en": "Low-stock alert (days of sales left)"}
+        }
+      ]
+    }
+  ],
+  "calculators": [
+    {
+      "key": "sale_price", "type": "layered_price",
+      "title": {"fa": "قیمت فروش", "en": "Sale price"},
+      "inputs": [
+        {"key": "quantity", "type": "decimal", "min": 0, "title": {"fa": "مقدار", "en": "Quantity"}},
+        {"key": "unit_cost", "type": "decimal", "min": 0, "title": {"fa": "بهای تمام‌شده هر واحد (ریال)", "en": "Unit cost (Rial)"}}
+      ],
+      "components": [
+        {"key": "cost", "type": "product", "factors": ["quantity", "unit_cost"], "title": {"fa": "بهای کالا", "en": "Goods cost"}},
+        {"key": "margin", "type": "percent_of", "of": ["cost"], "setting": "margin_percent", "title": {"fa": "حاشیه سود", "en": "Margin"}},
+        {"key": "vat", "type": "percent_of", "of": ["cost", "margin"], "setting": "vat_percent", "title": {"fa": "ارزش افزوده", "en": "VAT"}}
+      ],
+      "params": {"money_decimals": 0}
+    }
+  ],
+  "future": [
+    {
+      "title": {"fa": "قیمت لحظه‌ای و هشدار حاشیه سود", "en": "Live prices and margin alerts"},
+      "note": {"fa": "با Industry Intelligence در آینده.", "en": "Coming with Industry Intelligence."}
+    }
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "key": "iron",
+  "version": 1,
+  "icon": "iron",
+  "title": {"fa": "آهن و فولاد", "en": "Iron & Steel"},
+  "description": {
+    "fa": "تنظیمات و ماشین‌حساب‌های آهن‌فروشی (میلگرد، تیرآهن، ورق). مقادیر فیزیکی تأییدشده‌اند؛ حاشیه سود و مالیات نیازمند تأیید صنف‌اند.",
+    "en": "Settings and calculators for iron/steel dealers (rebar, beams, sheet). Physical constants are verified; margin and tax values need trade confirmation."
+  },
+  "sections": [
+    {
+      "key": "units_weight",
+      "title": {"fa": "واحد و وزن", "en": "Units & weight"},
+      "fields": [
+        {
+          "key": "primary_unit", "type": "select", "default": "ton", "unit": "",
+          "options": [
+            {"value": "ton", "label": {"fa": "تن", "en": "Ton"}},
+            {"value": "kg", "label": {"fa": "کیلوگرم", "en": "Kilogram"}}
+          ],
+          "status": "assumed",
+          "title": {"fa": "واحد اصلی معامله", "en": "Primary trading unit"}
+        },
+        {
+          "key": "kg_per_ton", "type": "integer", "default": 1000, "min": 1, "max": 100000, "unit": "kg",
+          "status": "verified",
+          "title": {"fa": "کیلوگرم در هر تن", "en": "Kilograms per ton"}
+        },
+        {
+          "key": "steel_density_kg_m3", "type": "integer", "default": 7850, "min": 1000, "max": 20000, "unit": "kg/m³",
+          "status": "verified",
+          "title": {"fa": "چگالی فولاد", "en": "Steel density"},
+          "help": {"fa": "مقدار استاندارد فیزیکی فولاد؛ برای محاسبه وزن میلگرد.", "en": "Standard physical value for steel; used for rebar weight."}
+        },
+        {
+          "key": "standard_bar_length_m", "type": "decimal", "default": 12, "min": 0.1, "max": 100, "unit": "m",
+          "status": "assumed",
+          "title": {"fa": "طول استاندارد شاخه میلگرد", "en": "Standard bar length"}
+        },
+        {
+          "key": "weight_decimals", "type": "integer", "default": 3, "min": 0, "max": 6, "unit": "",
+          "status": "assumed",
+          "title": {"fa": "تعداد رقم اعشار وزن", "en": "Weight decimal places"}
+        }
+      ]
+    },
+    {
+      "key": "pricing",
+      "title": {"fa": "قیمت‌گذاری", "en": "Pricing"},
+      "fields": [
+        {
+          "key": "margin_percent", "type": "percent", "default": 3, "unit": "%",
+          "status": "needs_confirmation",
+          "title": {"fa": "حاشیه سود پیش‌فرض", "en": "Default margin"}
+        },
+        {
+          "key": "vat_percent", "type": "percent", "default": 10, "unit": "%",
+          "status": "needs_confirmation",
+          "title": {"fa": "نرخ ارزش افزوده (ماشین‌حساب)", "en": "VAT rate (calculator)"},
+          "help": {"fa": "فاکتورهای واقعی از تنظیمات محصول/مالیات می‌آیند، نه از اینجا.", "en": "Real invoices take VAT from product/tax settings, not from here."}
+        },
+        {
+          "key": "price_quote_validity_hours", "type": "integer", "default": 24, "min": 1, "max": 720, "unit": "h",
+          "status": "assumed",
+          "title": {"fa": "اعتبار قیمت اعلامی (ساعت)", "en": "Quote validity (hours)"},
+          "help": {"fa": "قیمت آهن نوسان دارد؛ فقط اطلاعاتی.", "en": "Steel prices move; informational only."}
+        }
+      ]
+    }
+  ],
+  "calculators": [
+    {
+      "key": "unit_convert", "type": "unit_convert",
+      "title": {"fa": "تبدیل تن و کیلوگرم", "en": "Ton / kilogram conversion"},
+      "inputs": [
+        {"key": "value", "type": "decimal", "min": 0, "title": {"fa": "مقدار", "en": "Value"}},
+        {"key": "from", "options": ["ton", "kg"], "title": {"fa": "از", "en": "From"}},
+        {"key": "to", "options": ["ton", "kg"], "title": {"fa": "به", "en": "To"}}
+      ],
+      "params": {"units": {"ton": {"setting": "kg_per_ton"}, "kg": 1}, "decimals": 4}
+    },
+    {
+      "key": "rebar_weight", "type": "cylinder_weight",
+      "title": {"fa": "وزن میلگرد", "en": "Rebar weight"},
+      "inputs": [
+        {"key": "diameter_mm", "type": "decimal", "min": 1, "max": 100, "title": {"fa": "قطر (میلی‌متر)", "en": "Diameter (mm)"}},
+        {"key": "length_m", "type": "decimal", "min": 0.1, "max": 100, "title": {"fa": "طول هر شاخه (متر)", "en": "Length per bar (m)"}},
+        {"key": "count", "type": "decimal", "min": 1, "max": 100000, "title": {"fa": "تعداد شاخه", "en": "Number of bars"}}
+      ],
+      "params": {"density_setting": "steel_density_kg_m3"}
+    },
+    {
+      "key": "sale_price", "type": "layered_price",
+      "title": {"fa": "قیمت فروش", "en": "Sale price"},
+      "inputs": [
+        {"key": "weight", "type": "decimal", "min": 0, "title": {"fa": "وزن (تن)", "en": "Weight (ton)"}},
+        {"key": "price_per_ton", "type": "decimal", "min": 0, "title": {"fa": "قیمت هر تن (ریال)", "en": "Price per ton (Rial)"}}
+      ],
+      "components": [
+        {"key": "base", "type": "product", "factors": ["weight", "price_per_ton"], "title": {"fa": "بهای کالا", "en": "Goods value"}},
+        {"key": "margin", "type": "percent_of", "of": ["base"], "setting": "margin_percent", "title": {"fa": "حاشیه سود", "en": "Margin"}},
+        {"key": "vat", "type": "percent_of", "of": ["base", "margin"], "setting": "vat_percent", "title": {"fa": "ارزش افزوده", "en": "VAT"}}
+      ],
+      "params": {"money_decimals": 0}
+    }
+  ],
+  "future": [
+    {
+      "title": {"fa": "تحویل بدون قیمت نهایی (قیمت بعداً)", "en": "Delivery with price fixed later"},
+      "note": {"fa": "به موتور Trade وابسته است (D-099)؛ هنوز فعال نیست.", "en": "Depends on the Trade engine (D-099); not active."}
+    },
+    {
+      "title": {"fa": "قیمت لحظه‌ای بورس کالا / بازار", "en": "Live commodity-exchange / market price"},
+      "note": {"fa": "با Industry Intelligence و کلید API خودتان در آینده.", "en": "Coming with Industry Intelligence and your own API key."}
+    }
+  ]
+}

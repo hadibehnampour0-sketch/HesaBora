@@ -1,0 +1,39 @@
+{
+  "key": "building_materials",
+  "version": 1,
+  "icon": "bricks",
+  "title": {"fa": "مصالح ساختمانی", "en": "Building materials"},
+  "description": {
+    "fa": "تعریف اولیه‌ی صنف مصالح ساختمانی (سیمان، آجر، ماسه و …). مقادیر پیش‌فرض فرضی‌اند و باید توسط اهل صنف تأیید شوند.",
+    "en": "Starter profile for building-materials dealers (cement, brick, sand…). Defaults are assumptions to be confirmed by the trade."
+  },
+  "sections": [
+    {
+      "key": "units",
+      "title": {"fa": "واحدها", "en": "Units"},
+      "fields": [
+        {"key": "bag_weight_kg", "type": "decimal", "default": 50, "min": 0.1, "max": 1000, "unit": "kg", "status": "assumed",
+         "title": {"fa": "وزن هر کیسه سیمان (کیلوگرم)", "en": "Weight of a cement bag (kg)"}},
+        {"key": "kg_per_ton", "type": "integer", "default": 1000, "min": 1, "max": 100000, "unit": "kg", "status": "verified",
+         "title": {"fa": "کیلوگرم در هر تن", "en": "Kilograms per ton"}},
+        {"key": "margin_percent", "type": "percent", "default": 8, "unit": "%", "status": "needs_confirmation",
+         "title": {"fa": "حاشیه سود پیش‌فرض", "en": "Default margin"}},
+        {"key": "vat_percent", "type": "percent", "default": 10, "unit": "%", "status": "needs_confirmation",
+         "title": {"fa": "نرخ ارزش افزوده (ماشین‌حساب)", "en": "VAT rate (calculator)"}}
+      ]
+    }
+  ],
+  "calculators": [
+    {
+      "key": "unit_convert", "type": "unit_convert",
+      "title": {"fa": "تبدیل کیسه، کیلوگرم و تن", "en": "Bag / kg / ton conversion"},
+      "inputs": [
+        {"key": "value", "type": "decimal", "min": 0, "title": {"fa": "مقدار", "en": "Value"}},
+        {"key": "from", "options": ["bag", "kg", "ton"], "title": {"fa": "از", "en": "From"}},
+        {"key": "to", "options": ["bag", "kg", "ton"], "title": {"fa": "به", "en": "To"}}
+      ],
+      "params": {"units": {"bag": {"setting": "bag_weight_kg"}, "kg": 1, "ton": {"setting": "kg_per_ton"}}, "decimals": 4}
+    }
+  ],
+  "future": []
+}

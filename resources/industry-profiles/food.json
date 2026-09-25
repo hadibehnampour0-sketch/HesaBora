@@ -1,0 +1,23 @@
+{
+  "key": "food",
+  "version": 1,
+  "icon": "food",
+  "title": {"fa": "مواد غذایی", "en": "Food & grocery"},
+  "description": {"fa": "تعریف اولیه‌ی صنف مواد غذایی؛ مقادیر فرضی‌اند.", "en": "Starter profile for food/grocery dealers; values are assumptions."},
+  "sections": [
+    {
+      "key": "shelf_life",
+      "title": {"fa": "تاریخ مصرف", "en": "Shelf life"},
+      "fields": [
+        {"key": "expiry_tracking", "type": "boolean", "default": true, "unit": "", "status": "assumed",
+         "title": {"fa": "ثبت تاریخ انقضا", "en": "Track expiry dates"}},
+        {"key": "expiry_alert_days", "type": "integer", "default": 14, "min": 1, "max": 365, "unit": "d", "status": "assumed",
+         "title": {"fa": "هشدار نزدیک شدن انقضا (روز)", "en": "Near-expiry alert (days)"}},
+        {"key": "margin_percent", "type": "percent", "default": 12, "unit": "%", "status": "needs_confirmation",
+         "title": {"fa": "حاشیه سود پیش‌فرض", "en": "Default margin"}}
+      ]
+    }
+  ],
+  "calculators": [],
+  "future": []
+}

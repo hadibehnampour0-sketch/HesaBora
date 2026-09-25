@@ -1,0 +1,32 @@
+{
+  "key": "mobile",
+  "version": 1,
+  "icon": "phone",
+  "title": {"fa": "موبایل و لوازم جانبی", "en": "Mobile phones & accessories"},
+  "description": {
+    "fa": "تعریف اولیه‌ی صنف موبایل. قیمت لحظه‌ای این صنف امروز منبع رسمی قابل‌استفاده ندارد و فقط ورود دستی پشتیبانی می‌شود.",
+    "en": "Starter profile for mobile dealers. There is no legally usable live-price source for this trade today; manual entry only."
+  },
+  "sections": [
+    {
+      "key": "tracking",
+      "title": {"fa": "ردیابی و گارانتی", "en": "Tracking & warranty"},
+      "fields": [
+        {"key": "imei_tracking", "type": "boolean", "default": true, "unit": "", "status": "assumed",
+         "title": {"fa": "ثبت IMEI برای هر دستگاه", "en": "Track IMEI per device"}},
+        {"key": "warranty_days", "type": "integer", "default": 365, "min": 0, "max": 3650, "unit": "d", "status": "assumed",
+         "title": {"fa": "مدت گارانتی پیش‌فرض (روز)", "en": "Default warranty (days)"}},
+        {"key": "margin_percent", "type": "percent", "default": 4, "unit": "%", "status": "needs_confirmation",
+         "title": {"fa": "حاشیه سود پیش‌فرض", "en": "Default margin"}},
+        {"key": "price_source", "type": "select", "default": "manual", "unit": "",
+         "options": [
+           {"value": "manual", "label": {"fa": "ورود دستی", "en": "Manual entry"}},
+           {"value": "byo_api", "label": {"fa": "API شخصی (آینده)", "en": "Own API (future)"}}
+         ],
+         "status": "needs_confirmation", "title": {"fa": "منبع قیمت بازار", "en": "Market price source"}}
+      ]
+    }
+  ],
+  "calculators": [],
+  "future": []
+}

@@ -1,0 +1,27 @@
+{
+  "key": "apparel",
+  "version": 1,
+  "icon": "shirt",
+  "title": {"fa": "پوشاک", "en": "Apparel"},
+  "description": {"fa": "تعریف اولیه‌ی صنف پوشاک؛ مقادیر فرضی‌اند.", "en": "Starter profile for apparel dealers; values are assumptions."},
+  "sections": [
+    {
+      "key": "catalog",
+      "title": {"fa": "کاتالوگ", "en": "Catalog"},
+      "fields": [
+        {"key": "size_scheme", "type": "select", "default": "letters", "unit": "",
+         "options": [
+           {"value": "letters", "label": {"fa": "حروفی (S, M, L)", "en": "Letters (S, M, L)"}},
+           {"value": "numeric", "label": {"fa": "عددی (۳۸، ۴۰ …)", "en": "Numeric (38, 40…)"}}
+         ],
+         "status": "assumed", "title": {"fa": "نظام سایز", "en": "Size scheme"}},
+        {"key": "season_tracking", "type": "boolean", "default": true, "unit": "", "status": "assumed",
+         "title": {"fa": "ثبت فصل کالا", "en": "Track season per item"}},
+        {"key": "margin_percent", "type": "percent", "default": 30, "unit": "%", "status": "needs_confirmation",
+         "title": {"fa": "حاشیه سود پیش‌فرض", "en": "Default margin"}}
+      ]
+    }
+  ],
+  "calculators": [],
+  "future": []
+}

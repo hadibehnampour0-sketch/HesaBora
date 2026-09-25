@@ -110,6 +110,9 @@ class RolesAndPermissionsSeeder extends Seeder
             // P12.4 (Field Operations Commission & Route Analytics Engine).
             'field-operations-analytics' => ['index', 'recalculate'],
 
+            // Industry Profiles (per-trade settings + calculators).
+            'industry-profiles' => ['index', 'show', 'update', 'toggle', 'confirm', 'calculate'],
+
             // P11 (Field Sales & Distribution -- "FieldOperations").
             'sales-routes' => [...self::CRUD_NO_SHOW, 'assign-customer', 'remove-customer'],
             'visit-plans' => ['index', 'store', 'update-status', 'destroy'],

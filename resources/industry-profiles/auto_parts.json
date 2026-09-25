@@ -1,0 +1,23 @@
+{
+  "key": "auto_parts",
+  "version": 1,
+  "icon": "car",
+  "title": {"fa": "لوازم یدکی خودرو", "en": "Auto parts"},
+  "description": {"fa": "تعریف اولیه‌ی صنف لوازم یدکی؛ مقادیر فرضی‌اند.", "en": "Starter profile for auto-parts dealers; values are assumptions."},
+  "sections": [
+    {
+      "key": "catalog",
+      "title": {"fa": "کاتالوگ", "en": "Catalog"},
+      "fields": [
+        {"key": "oem_code_required", "type": "boolean", "default": false, "unit": "", "status": "assumed",
+         "title": {"fa": "کد فنی (OEM) اجباری باشد", "en": "Require OEM code"}},
+        {"key": "genuine_vs_aftermarket_flag", "type": "boolean", "default": true, "unit": "", "status": "assumed",
+         "title": {"fa": "تفکیک اصلی/غیراصلی", "en": "Flag genuine vs aftermarket"}},
+        {"key": "margin_percent", "type": "percent", "default": 15, "unit": "%", "status": "needs_confirmation",
+         "title": {"fa": "حاشیه سود پیش‌فرض", "en": "Default margin"}}
+      ]
+    }
+  ],
+  "calculators": [],
+  "future": []
+}

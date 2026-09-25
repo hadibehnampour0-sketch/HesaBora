@@ -238,6 +238,10 @@
     </li>
 @endcan
 
+@can('industry-profiles.index')
+    <li><a href="{{ route('industry-profiles.index') }}">{{ __('Industry Profiles') }}</a></li>
+@endcan
+
 @canany(['crm.dashboard', 'customers.index', 'customer-groups.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
