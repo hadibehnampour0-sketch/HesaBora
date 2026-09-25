@@ -1661,3 +1661,6 @@ Protocol §10: 43-question bank, H-01..H-11 hypothesis table, explicit "not evid
 
 ## Entry 79 — 2026-09-25 — D-100 Desk Discovery Report
 Evidence-graded gold-trade facts, H-table status, provisional D-101 direction, 8 human-only topics. Docs only; D-099 stays PROPOSED; no push.
+
+## Entry 80 — 2026-09-25 — D-100 field kit (8 topics) written for real interviews
+Docs only; no push.
