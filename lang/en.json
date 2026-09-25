@@ -3504,5 +3504,8 @@
     "Conversion factor": "Conversion factor",
     "Weight per piece (kg)": "Weight per piece (kg)",
     "Total weight (kg)": "Total weight (kg)",
-    "Total weight (ton)": "Total weight (ton)"
+    "Total weight (ton)": "Total weight (ton)",
+    "You must change the default password before continuing.": "You must change the default password before continuing.",
+    "You must set a new password.": "You must set a new password.",
+    "The new password must be different from the default password.": "The new password must be different from the default password."
 }

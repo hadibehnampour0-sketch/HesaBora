@@ -7,6 +7,7 @@ use App\Http\Middleware\DefaultCompany;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\EnsureEmployee;
 use App\Http\Middleware\EnsureFeatureEnabled;
+use App\Http\Middleware\EnsurePasswordChanged;
 use App\Http\Middleware\EnsureIdempotencyKey;
 use App\Http\Middleware\LogUserActivity;
 use App\Http\Middleware\PreventRequestsDuringMaintenance;
@@ -56,6 +57,7 @@ return Application::configure(basePath: dirname(__DIR__))
             SubstituteBindings::class,
             DefaultCompany::class,
             LogUserActivity::class,
+            EnsurePasswordChanged::class,
         ]);
 
         $middleware->appendToGroup('api', LogUserActivity::class);

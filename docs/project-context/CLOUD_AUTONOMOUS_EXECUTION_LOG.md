@@ -1676,3 +1676,6 @@ Incidental Moadian discount-field candidate bug spun off as separate task. Docs 
 
 ## Entry 84 — 2026-09-25 — Industry Profiles built (per-trade settings dashboards + calculators)
 Data-driven JSON definitions, evidence-status badges, history, activation, 8 trades. Not Trade code. 30 new tests; full suite 1758/1758. Not visually verified in a browser (login credentials must not be entered by the assistant). Local commit only; no push.
+
+## Entry 85 — 2026-09-25 — R-01 forced password change implemented
+Middleware + migration backfill + controller rules + 8 tests; suite 1766/1766. Local commit only; no push.

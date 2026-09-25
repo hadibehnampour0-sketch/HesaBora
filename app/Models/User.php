@@ -31,6 +31,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'ui_mode',
+        'must_change_password',
     ];
 
     /**
@@ -54,6 +55,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password' => 'hashed',
         'email_verification_otp_expires_at' => 'datetime',
         'ui_mode' => \App\Enums\UiMode::class,
+        'must_change_password' => 'boolean',
     ];
 
     /**

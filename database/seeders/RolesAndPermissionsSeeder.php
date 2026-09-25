@@ -404,6 +404,8 @@ class RolesAndPermissionsSeeder extends Seeder
                     'name' => __($name),
                     'username' => $username,
                     'password' => bcrypt($password),
+                    // R-01: the default password is public; force a change on first login.
+                    'must_change_password' => true,
                 ]
             );
 

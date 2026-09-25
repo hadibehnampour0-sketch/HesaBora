@@ -3504,5 +3504,8 @@
     "Conversion factor": "ضریب تبدیل",
     "Weight per piece (kg)": "وزن هر شاخه (کیلوگرم)",
     "Total weight (kg)": "وزن کل (کیلوگرم)",
-    "Total weight (ton)": "وزن کل (تن)"
+    "Total weight (ton)": "وزن کل (تن)",
+    "You must change the default password before continuing.": "پیش از ادامه باید رمز عبور پیش‌فرض را تغییر دهید.",
+    "You must set a new password.": "باید یک رمز عبور جدید تعیین کنید.",
+    "The new password must be different from the default password.": "رمز جدید باید با رمز پیش‌فرض/فعلی متفاوت باشد."
 }

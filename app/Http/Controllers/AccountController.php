@@ -52,10 +52,25 @@ class AccountController extends Controller
             ])->onlyInput('username');
         }
 
+        // R-01: a user flagged with the public default password must pick a
+        // genuinely new one -- not blank, not the same, not the default again.
+        if ($user->must_change_password) {
+            $newPassword = toEnglish((string) ($validated['password'] ?? ''));
+
+            if ($newPassword === '') {
+                return back()->withErrors(['password' => __('You must set a new password.')])->onlyInput('username');
+            }
+
+            if ($newPassword === $currentPassword || $newPassword === '1234' || Hash::check($newPassword, $user->password)) {
+                return back()->withErrors(['password' => __('The new password must be different from the default password.')])->onlyInput('username');
+            }
+        }
+
         $user->username = toEnglish(trim($validated['username']));
 
         if (filled($validated['password'] ?? null)) {
             $user->password = bcrypt(toEnglish($validated['password']));
+            $user->must_change_password = false;
         }
 
         $user->save();
