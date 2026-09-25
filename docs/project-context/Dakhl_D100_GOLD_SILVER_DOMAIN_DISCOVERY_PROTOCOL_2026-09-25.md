@@ -128,3 +128,26 @@ Working reading (analyst, unproven): three settlement kinds may exist — cash, 
 1. Conduct **real** interviews: 3 retail, 1 آبشده, 1 wholesale coin, **+1 gold manufacturer/workshop** (melt loss, production scrap, wage creation, relation of product to input gold, customer-supplied gold "کار مزدی") — added because manufacturers sit between the retail and melt worlds.
 2. Verify the H-table items; separately verify legal/tax claims with an accountant familiar with gold-trade tax rules.
 3. Fill the Decision Matrix only from real evidence.
+
+## 11. Field-kit answers received 2026-09-25 (batch #03) — SIMULATED, NOT EVIDENCE
+
+The 39 answers to the 8-topic field kit were written by an AI answering "as the interviewee" (the message says it answered "based on experience and operational reality of the market"). Same status as §10.2: **hypotheses only; do not count as interviews; Decision Matrix Field column stays empty; D-099 stays PROPOSED.** All answers carry self-declared "High" confidence — meaningless for AI-generated text.
+
+Internal issues found (further reasons not to trust it as data):
+- **"سوت" is used in two senses:** answer 17 defines it as 0.001 g (weight), while answers 7/8/11 use "5 soot" / "2 soot" for *purity* differences (740→735, tolerance). The desk report already found conflicting definitions; this batch reproduces the ambiguity. → Field question: is "سوت" a weight unit, a purity point, or both, and in which contexts?
+- Arithmetic inconsistencies: purity example uses 2000 g but computes "10 g / 5 soot on 200 g" (2000 g × 5/750 ≈ 13.3 g); position example computes (500+300)−700 as "+10" then says 100 g.
+- Claims stated as certain but already UNVERIFIED in the desk report: 1405 VAT = 10%; 7% "legal, union + consumer-protection mandate"; Moadian mandatory-field list; a "2–5 soot" melt loss (elsewhere "2–5%" was unsourced); "trade-in purity haircut to 735–740".
+- Places where the AI simply repeated our own kit/hypotheses back (e.g. position formula, بن = weight→Rial) — circular, no new information.
+
+What the batch is useful for: a **candidate answer set to check quickly with a real dealer** (each item is a yes/no/correct-me question), e.g.:
+| Candidate | Claimed | Check with real dealer |
+|---|---|---|
+| بن | weight balance → Rial at the rate stated at the verbal/SMS agreement moment; partial بن common; SMS/WhatsApp message is the working evidence | is that right? who holds proof? |
+| Open account settlement | ~90% closed in gold, not Rial | true share? |
+| Purity dispute | tolerance ~2 points; ≥3 points → deduction; correction = separate document, never edit; re-assay at agreed neutral lab | true numbers/roles? |
+| Consignment | risk on holder; loss compensated at weight + wage (or day price); sale recognized when holder tells owner; separate "امانی" store/ledger; receipt now, invoice at sale | correct? |
+| Trade-in | old gold priced at 735–740, wage lost; one invoice with purchase+sale lines | correct? |
+| Position formula | physical + receivable − payable (in weight), reviewed nightly; physical reconciliation daily | correct? |
+| Same-kind swap | equal weight → no cash; only purity difference settled | correct? |
+
+Recommended fastest real-world path: send the field kit (or only the table above) to **two real dealers** as a voice-message/phone call; even a 10-minute "is this right?" pass is worth more than the 39 answers.

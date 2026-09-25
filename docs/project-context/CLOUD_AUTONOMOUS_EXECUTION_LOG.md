@@ -1664,3 +1664,6 @@ Evidence-graded gold-trade facts, H-table status, provisional D-101 direction, 8
 
 ## Entry 80 — 2026-09-25 — D-100 field kit (8 topics) written for real interviews
 Docs only; no push.
+
+## Entry 81 — 2026-09-25 — D-100 field-kit answers received: AI-authored, recorded as simulated hypotheses
+Protocol §11: inconsistencies flagged ("سوت" dual use, arithmetic errors), candidate answer table for quick real-dealer verification. Matrix untouched; D-099 stays PROPOSED. Docs only; no push.
