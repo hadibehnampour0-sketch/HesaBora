@@ -2430,3 +2430,6 @@ Text in Decision Log ("D-099 — Trade Engine as a Business Capability Architect
 
 ### 40.9 D-100 Gold/Silver Domain Discovery — protocol prepared (2026-09-25)
 `Dakhl_D100_GOLD_SILVER_DOMAIN_DISCOVERY_PROTOCOL_2026-09-25.md`: research only, 5 interviews (3 retail gold, 1 آبشده, 1 wholesale coin), 5 paper simulations, outputs Confirmed/Missing/Rejected + D-101 yes/no questions. **D-099 remains PROPOSED until D-100 completes** (owner instruction). D-100 decision text authored by the owner after findings.
+
+### 40.10 D-101 provisional Trade data-model proposal (2026-09-25)
+`Dakhl_D101_TRADE_DATA_MODEL_PROPOSAL_PROVISIONAL_2026-09-25.md`: conceptual entities, evidence-tagged ([V]/[H]/[D]/[?]); no schema, no code. D-099 stays PROPOSED. Next: real-dealer verification, D-102 impact review.
