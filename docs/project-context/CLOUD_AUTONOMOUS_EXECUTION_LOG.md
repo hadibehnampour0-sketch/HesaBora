@@ -1658,3 +1658,6 @@ Docs only; no push.
 
 ## Entry 78 — 2026-09-25 — D-100: question bank adopted; two AI-simulated interviews recorded as hypotheses only
 Protocol §10: 43-question bank, H-01..H-11 hypothesis table, explicit "not evidence" status, manufacturer group added. D-099 stays PROPOSED; matrix untouched. Docs only; no push.
+
+## Entry 79 — 2026-09-25 — D-100 Desk Discovery Report
+Evidence-graded gold-trade facts, H-table status, provisional D-101 direction, 8 human-only topics. Docs only; D-099 stays PROPOSED; no push.
