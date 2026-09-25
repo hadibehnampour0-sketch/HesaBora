@@ -2367,3 +2367,9 @@ What is genuinely new this pass: (1) the backend is now mature enough (financial
 6. Android/Field Operations Mobile -- explicitly postponed, not cancelled, until enough of phases 2-4 exist to inform the still-open mobile-specific decisions (offline strategy, device ownership, printer abstraction, sync-conflict UX, field-worker permissions) with real product context.
 
 No code was written in this pass beyond what the Release Readiness Audit already covered above. This entry and roadmap §39 are documentation/architecture-decision output only, per explicit owner scope ("do not implement features yet").
+
+---
+
+## Product Vision Integration Pass — 2026-09-25 (narrative only; NO decision contract text)
+
+Per owner rule, no D-0XX contract is drafted here. This entry records that: (1) the two "forgotten" topics were located (D-074 and Industry Intelligence/Market Data) and remain LOCKED as future architecture; (2) Android is last; (3) the proposed D-092..D-096 in the owner's file collide with the existing D-091..D-098 roles decisions, so any new decisions start at D-099; (4) candidate topics awaiting the owner's own wording: opening the Trade phase, Party-as-metadata-over-Customer, same-kind in-kind offset key, price-fixed-later positions, Provider licensing stance (BYO first), Migration prerequisites. Details: roadmap §40 and `Dakhl_PRODUCT_VISION_AND_STRATEGY_2026-09-25.md`.

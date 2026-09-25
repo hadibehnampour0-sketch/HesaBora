@@ -1629,3 +1629,9 @@ No application code was written for the Product Strategy Sequencing itself -- do
 **Full suite: 1725 -> 1728 passed** (+3 from the phpIni fix), 0 failed, across the entire session.
 
 No further schema changes required.
+
+---
+
+## Entry 71 — 2026-09-25 — Product Vision integration (documentation only)
+
+Read owner instruction file; searched project docs and confirmed the "forgotten" items are D-074 and Industry Intelligence (LOCKED, unimplemented). Ran 4 parallel research passes (party/consignment/weight ledgers; Iranian market-data sources; global competitors/B2B; Iranian accounting software/migration). Wrote `Dakhl_PRODUCT_VISION_AND_STRATEGY_2026-09-25.md`, roadmap §40, Decision Log narrative (no D-0XX text; numbering collision noted, next free D-099). No code/schema changes; no push.

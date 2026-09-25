@@ -2384,3 +2384,40 @@ Research confirms the Decision Log's existing Modular Licensing/Subscription sec
 4. **Phase Integration architecture design** (not implementation) -- can happen in parallel with AI architecture design since it depends on the existing sync infrastructure, not on Phase U/AI being done first.
 5. **Phase Monetization detailed scoping** -- deliberately last; premature to gate specific capabilities before Phases U/AI/Integration exist to be gated.
 6. **Android/Field Operations Mobile** -- resumes only after enough of Phases U/AI/Integration exist to make the open mobile-specific decisions (§39.7) with real product context instead of guesswork.
+
+---
+
+## 40. Product Vision Integration Pass (2026-09-25) — documentation only
+
+Source: owner instruction file (Desktop\1.txt) + 4-axis parallel research. Full narrative: `Dakhl_PRODUCT_VISION_AND_STRATEGY_2026-09-25.md`. **No code, no schema change, no D-0XX text authored by the assistant.**
+
+### 40.1 "Forgotten decisions" audit result
+Both owner concerns were already recorded: inter-shop exchange/consignment = **D-074** (LOCKED as future architecture only; Guardrail #5), industry price intelligence = Decision Log "Industry Intelligence / Market Data" (LOCKED principle, unimplemented). They were not lost, only not linked into the roadmap. §40.3 links them.
+
+### 40.2 Epic mapping (reconciles the file's colliding P13–P18 names; numbers are labels, not committed timelines)
+| Working name | Meaning | Relation to existing work |
+|---|---|---|
+| Phase U | Simple Mode / zero-accounting UX | §39.2, unchanged, next after R-01 |
+| Phase AI | Financial Copilot / "Business Brain" | §39.4, design only |
+| Phase Integration | Integration Hub / Marketplace | §39.5, extends D-076–D-080 sync |
+| Phase Migration (was "P13 Universal Migration") | Import platform | New; validate demand via interviews first (§40.5) |
+| Phase Relationship (was "P13 Business Relationship Engine") | Party metadata over existing Customer | New; additive layer only |
+| Phase Trade (was P16/P18) | D-074 build | **Gated: owner must explicitly open** |
+| Phase Market (was P14) | Industry Intelligence providers | Gated by data-licensing; pilot gold/coin/FX via BYO key |
+| Phase Monetization | Entitlements/licensing | §39.6, last |
+| Android/Field Mobile | postponed | **Last, after all of the above** |
+
+### 40.3 Constraints carried forward
+- D-074 non-goals stand: no Trade/Deal/Consignment/OpenExchange/Position code and no Generic*/Universal* abstractions until the owner opens a Trade phase.
+- "Business Event Engine replaces Invoice/Customer" is **not adopted**: conflicts with "preserve Subject→Document→Transaction spine". Any event layer must be additive.
+- `Customer` already serves buy+sell and nets on one `subject_id`; Party = metadata over it (open question, owner decides).
+- Decision numbering: D-091…D-098 are taken (roles/company). Next free = **D-099**. The file's proposed D-092..D-096 must not be used.
+
+### 40.4 Research-driven design inputs (details in vision doc ch. 4–9)
+Exchange as own entity with legs (not money-only offset JE); owner dimension separate from warehouse; quantity positions + price-fix event, ledger touched only at fix/settlement; provider adapters with explicit `unit`, `source_ts`, freshness states, circuit-breaker; clearing-account + unique (source, external_id, event_type) for integrations; migration schema triple `source_system/source_id/import_batch_id`, staging, opening-balance document type, reconciliation report.
+
+### 40.5 Risks / caveats
+Gold-weight and bazaar-practice details are **unverified** (marketing pages only) → validate with 3–5 real shop owners. Migration demand is **unvalidated** (advice says most firms skip history) → 5–10 interviews before connectors. Mobile price feeds have no legal source today. Competitor AI accuracy figures are vendor-reported.
+
+### 40.6 Open questions for the owner
+Listed in vision doc ch. 12 (open Trade phase? Party model? offset key? valuation rule? managed vs BYO feed? migration priority? D-099 authorship).

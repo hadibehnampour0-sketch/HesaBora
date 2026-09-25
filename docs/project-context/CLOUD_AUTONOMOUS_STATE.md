@@ -2745,3 +2745,8 @@ Summary (full detail in the Decision Log and roadmap §39, not duplicated here):
 **No code was written for the Product Strategy Sequencing itself** -- documentation/architecture-decision output only, per explicit owner scope. The only code changes this session were the Release Readiness Audit's 3 fixes (item 2 above).
 
 **Current git state**: 25 commits on `dakhl-foundation`, working tree clean, 1728/1728 tests green, backup mirror current. Next exact action per roadmap §39.8: R-01 (first-login forced password change), then Phase U.
+
+---
+
+## §13 — 2026-09-25 Product Vision pass
+Docs only: vision doc + roadmap §40 + Decision Log narrative + Entry 71. D-074 remains future-only; Android last; next decision number D-099 (owner authors text). Open questions: vision doc ch. 12.
