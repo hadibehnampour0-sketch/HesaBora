@@ -1670,3 +1670,6 @@ Protocol §11: inconsistencies flagged ("سوت" dual use, arithmetic errors), c
 
 ## Entry 82 — 2026-09-25 — D-101 provisional data-model proposal written (conceptual only)
 Docs only; D-099 stays PROPOSED; no push.
+
+## Entry 83 — 2026-09-25 — D-102 impact review written from real code facts
+Incidental Moadian discount-field candidate bug spun off as separate task. Docs only; no push.

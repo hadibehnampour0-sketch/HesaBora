@@ -2433,3 +2433,6 @@ Text in Decision Log ("D-099 — Trade Engine as a Business Capability Architect
 
 ### 40.10 D-101 provisional Trade data-model proposal (2026-09-25)
 `Dakhl_D101_TRADE_DATA_MODEL_PROPOSAL_PROVISIONAL_2026-09-25.md`: conceptual entities, evidence-tagged ([V]/[H]/[D]/[?]); no schema, no code. D-099 stays PROPOSED. Next: real-dealer verification, D-102 impact review.
+
+### 40.11 D-102 Trade architecture impact review (2026-09-25)
+`Dakhl_D102_TRADE_ARCHITECTURE_IMPACT_REVIEW_2026-09-25.md`: code-grounded review; hard mismatches (no UoM, 2-dp quantity/money, float products.quantity, invoice-only stock writer); 8 owner decision points; pre-implementation gates. Docs only; D-099 stays PROPOSED.
