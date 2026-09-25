@@ -1640,3 +1640,6 @@ Read owner instruction file; searched project docs and confirmed the "forgotten"
 
 ## Entry 72 — 2026-09-25 — Trade phase opened for specification only
 Wrote `Dakhl_TRADE_ENGINE_ARCHITECTURE_AND_GOLD_PILOT_SPEC_2026-09-25.md` (aggregate model, 5 open questions with options, gold scenarios S1–S3, generality check, impact-review checklist) and roadmap §40.7. No D-099 text drafted (owner authors). No code/schema changes; no push.
+
+## Entry 73 — 2026-09-25 — Owner review notes folded into Trade spec (§9)
+Recorded owner positions on Q1–Q5 (Q2/Q5 amend the assistant's recommendations), Lifecycle + DISPUTED addition, gold pilot = discovery only, D-099..D-102 sequence. Docs only; no D-099 text drafted.

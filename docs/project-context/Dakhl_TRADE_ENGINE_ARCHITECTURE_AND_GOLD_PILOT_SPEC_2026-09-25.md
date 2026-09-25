@@ -78,3 +78,19 @@ If the same aggregate expresses all three without domain tables, the model passe
 ## 8. What this spec does NOT authorize
 
 Any migration/model/service/route; any change to Customer/Invoice/Settlement; any sync work; market-feed integration; a "gold module". Next step for the owner: author D-099 (Trade Engine Architecture) and, if desired, follow-on decisions; then request the data-model proposal.
+
+## 9. Owner review notes (2026-09-25, relayed review of this spec) — INPUT for D-099, not a locked decision
+
+Positions expressed, recorded faithfully so D-099 can be authored from them:
+- **D-074 reading confirmed:** no `GenericTradeEntity/GenericPosition/GenericValuation/UniversalSettlement`; a shared *design vocabulary* (Trade, Party, Leg, Item, Quantity, Unit, Valuation, Settlement, Position) is fine if each element originates from a real need.
+- **Q1:** Trade = independent aggregate; accounting Documents are its output (not the reverse). Rationale: open dealer accounts are an ongoing relationship (day 1 A→B 100 g; day 2 B→A 40 g; day 3 B→A 20 g + cash), not an invoice.
+- **Q2 (amends my recommendation):** ownership principle `Owner ≠ Holder ≠ Location` accepted, but **do not add an owner dimension to the current Stock now** (Product/Warehouse/Lot/Serial/Reservation is sensitive; risk of drifting into heavy ERP). Instead a **Trade Ownership Layer** kept separate from Stock (Trade → Ownership State → Stock only if needed).
+- **Q3:** AGREED / MARKET_SNAPSHOT (price+timestamp frozen at trade) / DEFERRED (quantity exists, value pending — e.g. iron).
+- **Q4:** Trade holds **native quantities**; Accounting holds **money**; the two stay separate.
+- **Q5 (amends my recommendation):** now = `Customer(subject_id)` + Trade metadata; future = a Party abstraction (Person/Company/Supplier/Customer/Dealer/Partner/Agent) — deferred as premature.
+- **Addition — Trade Lifecycle:** Intent → Agreement → Exchange → Open Position → Settlement → Closure.
+- **Addition — statuses:** OPEN, PARTIALLY_SETTLED, SETTLED, CANCELLED, **DISPUTED**. *Note: D-074 locked OPEN→PARTIALLY_SETTLED→SETTLED(+CANCELLED); DISPUTED (and Intent/Agreement stages) would extend that locked shape and must be explicitly stated in D-099.*
+- **Gold pilot = Domain Discovery, not development:** (1) interviews — ≥3 gold dealers, 1 آبشده seller, 1 wholesale coin dealer (open-account practice, ledger books, in-kind offset recording, wage calculation, when ownership transfers); (2) paper simulation without code (e.g. Ali 100 g raw vs Hasan 80 g finished + wage + cash); (3) impact review; only then schema/model/service/migration.
+- **Proposed decision sequence:** D-099 Trade Engine is a new business capability, not an accounting document type → D-100 Gold Pilot Domain Findings → D-101 Trade Data Model Proposal → D-102 Architecture Impact Review. (Numbers are the owner's suggestion; text authored by owner.)
+
+Spec changes implied: §3 Q2 and Q5 rows superseded by the above; §4 pilot is research/paper-simulation only; status set gains DISPUTED pending D-099 wording.
