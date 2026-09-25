@@ -1,5 +1,8 @@
+@php
+    $wizardMode = $wizardMode ?? false;
+@endphp
 <div class="grid grid-cols-2 gap-6">
-    <div class="col-span-2 md:col-span-1">
+    <div class="col-span-2 md:col-span-1" @if ($wizardMode) x-show="step === 1" @endif>
         @php
             $initialGroupId = old('group', $product->group ?? null);
             $initialSelectedValue = $initialGroupId ? "group-$initialGroupId" : null;
@@ -16,17 +19,17 @@
         </div>
     </div>
 
-    <div class="col-span-2 md:col-span-1">
+    <div class="col-span-2 md:col-span-1" @if ($wizardMode) x-show="step === 1" @endif>
         <x-input name="code" id="code" title="{{ __('Code') }}" :value="old('code', $product->code ?? '')"
             placeholder="{{ __('Please insert the code') }}" />
     </div>
 
-    <div class="col-span-2 md:col-span-1">
+    <div class="col-span-2 md:col-span-1" @if ($wizardMode) x-show="step === 1" @endif>
         <x-input name="name" id="name" title="{{ __('Product name') }}" :value="old('name', $product->name ?? '')"
             placeholder="{{ __('Please enter the product name') }}" />
     </div>
 
-    <div class="col-span-2 md:col-span-1">
+    <div class="col-span-2 md:col-span-1" @if ($wizardMode) x-show="step === 3" @endif>
         <x-input name="sstid" id="sstid" title="{{ __('Product SSTID') }}" :value="old(
             'sstid',
             isset($product) ? ($product->sstid ?: $groups->find($product->group)->sstid ?? '') : '',
@@ -34,34 +37,34 @@
             placeholder="{{ __('Please enter the product SSTID') }}" />
     </div>
 
-    <div class="col-span-2 md:col-span-1">
+    <div class="col-span-2 md:col-span-1" @if ($wizardMode) x-show="step === 2" @endif>
         <x-input @input="$event.target.value = $store.utils.formatNumber($event.target.value)" name="selling_price"
             id="selling_price" title="{{ __('Selling price') }}" :value="old('selling_price', $product->selling_price ?? '')"
             placeholder="{{ __('Please insert Selling price') }}" />
     </div>
 
-    <div class="col-span-2 md:col-span-1">
+    <div class="col-span-2 md:col-span-1" @if ($wizardMode) x-show="step === 2" @endif>
         <x-input name="vat" id="vat" title="{{ __('VAT') }}" :value="old('vat', $product->vat ?? '')" placeholder="0" />
     </div>
 
-    <div class="col-span-2">
+    <div class="col-span-2" @if ($wizardMode) x-show="step === 3" @endif>
         <x-textarea name="notes" id="notes" title="{{ __('Description') }}" :value="old('description', $product->description ?? '')"
             placeholder="{{ __('Please insert description') }}" />
     </div>
 
-    <div class="col-span-2 md:col-span-1">
+    <div class="col-span-2 md:col-span-1" @if ($wizardMode) x-show="step === 3" @endif>
         <x-input name="location" id="location" title="{{ __('Location in warehouse') }}" :value="old('location', $product->location ?? '')"
             placeholder="{{ __('Please insert the location in warehouse') }}" />
     </div>
 
-    <div class="col-span-2 md:col-span-1">
+    <div class="col-span-2 md:col-span-1" @if ($wizardMode) x-show="step === 3" @endif>
         <x-input name="discount_formula" id="discount_formula" title="{{ __('Discount formula') }}" :value="old('discount_formula', $product->discount_formula ?? '')"
             placeholder="{{ __('Please enter the discount formula') }}"
             hint="{{ __('(From amount) - (To amount) : Discount amount') }}"
             hint2="{{ __('For example:') . ' 1-30:400, 30-100:360.7' }}" />
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" @if ($wizardMode) x-show="step === 2" @endif>
         <div>
             <input type="hidden" name="oversell" value="0">
             <x-checkbox title="{{ __('Oversell') }}" name="oversell" id="oversell" value="1" :checked="(bool) old('oversell', $product->oversell ?? false)" />
@@ -73,12 +76,14 @@
         </div>
     </div>
 
-    <div class="col-span-2 md:col-span-1">
+    <div class="col-span-2 md:col-span-1" @if ($wizardMode) x-show="step === 2" @endif>
         <x-input @input="$event.target.value = $store.utils.formatNumber($event.target.value)" name="quantity"
             id="quantity" title="{{ __('Quantity') }}" :value="old('quantity', $product->quantity ?? '')"
             placeholder="{{ __('Please insert quantity') }}" />
     </div>
 
+    <div class="col-span-2 contents" @if ($wizardMode) x-show="step === 3" @endif>
     @include('products.websites.form', ['websites' => isset($product) ? $product->productWebsites : []])
+    </div>
 
 </div>

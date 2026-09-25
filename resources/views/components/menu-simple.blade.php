@@ -38,11 +38,15 @@
     </li>
 @endcanany
 
-@canany(['ageing.receivables', 'ageing.payables', 'cheques.index'])
+@canany(['quick-payment.create', 'ageing.receivables', 'ageing.payables', 'cheques.index'])
     <li>
         <details>
             <summary><x-menu-icon name="money" />{{ __('Money in and out') }}</summary>
             <ul>
+                @can('quick-payment.create')
+                    <li><a href="{{ route('quick-payment.create', 'receive') }}">{{ __('Collect money') }}</a></li>
+                    <li><a href="{{ route('quick-payment.create', 'pay') }}">{{ __('Pay suppliers') }}</a></li>
+                @endcan
                 @can('ageing.receivables')
                     <li><a href="{{ route('ageing.receivables') }}">{{ __('Who owes me') }}</a></li>
                 @endcan
@@ -92,11 +96,14 @@
     </li>
 @endcanany
 
-@canany(['reports.company-overview', 'reports.cost-income'])
+@canany(['reports.plain', 'reports.company-overview', 'reports.cost-income'])
     <li>
         <details>
             <summary><x-menu-icon name="reports" />{{ __('Reports') }}</summary>
             <ul>
+                @can('reports.plain')
+                    <li><a href="{{ route('reports.plain') }}">{{ __('How is my business doing?') }}</a></li>
+                @endcan
                 @can('reports.company-overview')
                     <li><a href="{{ route('reports.company-overview') }}">{{ __('Business overview') }}</a></li>
                 @endcan

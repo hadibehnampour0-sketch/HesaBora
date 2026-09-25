@@ -86,6 +86,8 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
     });
     Route::get('/', [Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/home/today', [Controllers\HomeController::class, 'today'])->name('home.today');
+    // Phase U: guided "Collect money" / "Pay suppliers" (submits to the existing invoices.payments.store).
+    Route::get('/quick-payment/{direction}', [Controllers\QuickPaymentController::class, 'create'])->where('direction', 'receive|pay')->name('quick-payment.create');
     Route::get('/home/summary/{metric}', [Controllers\HomeController::class, 'summaryMetric'])->name('home.summary');
     Route::post('/report', [Controllers\ReportEmailController::class, 'store'])->name('report');
     Route::get('subjects/search', [Controllers\SubjectController::class, 'search'])->name('subjects.search');
@@ -405,6 +407,8 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::post('documents/export', [Controllers\DocumentController::class, 'export'])->name('documents.export');
         Route::get('cost-income', [Controllers\CostIncomeController::class, 'index'])->name('cost-income');
         Route::get('/company-overview', [Controllers\ReportsController::class, 'companyOverview'])->name('company-overview');
+        // Phase U: plain-language business summary.
+        Route::get('/plain', [Controllers\PlainReportController::class, 'index'])->name('plain');
         Route::group(['prefix' => 'company-overview', 'as' => 'company-overview.'], function () {
             Route::get('/cash-banks', [Controllers\ReportsController::class, 'cashAndBanksBalances'])->name('cash-banks');
             Route::get('/bank-account', [Controllers\ReportsController::class, 'bankAccount'])->name('bank-account');

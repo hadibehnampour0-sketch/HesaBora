@@ -198,7 +198,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'comments' => self::CRUD_NO_SHOW,
 
             // Reports
-            'reports' => ['ledger', 'journal', 'sub-ledger', 'trial-balance', 'trial-balance.print', 'trial-balance.export-csv', 'documents', 'result', 'cost-income', 'company-overview', 'company-overview.cash-banks', 'company-overview.bank-account', 'company-overview.seed-demo-data', 'company-overview.refresh-database'],
+            'reports' => ['ledger', 'journal', 'sub-ledger', 'trial-balance', 'trial-balance.print', 'trial-balance.export-csv', 'documents', 'result', 'cost-income', 'company-overview', 'plain', 'company-overview.cash-banks', 'company-overview.bank-account', 'company-overview.seed-demo-data', 'company-overview.refresh-database'],
 
             // AR/AP ageing
             'ageing' => ['receivables', 'payables', 'statement'],
@@ -222,6 +222,9 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // Home
             'home' => ['summary', 'today'],
+
+            // Phase U: guided collect/pay page (also needs invoices.payments.store to open).
+            'quick-payment' => ['create'],
 
             // Employee portal
             'employee-portal' => [

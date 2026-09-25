@@ -35,14 +35,22 @@
                 <a href="{{ route('invoices.create', ['invoice_type' => 'sell']) }}" class="today-action"><x-menu-icon name="sales" class="h-5 w-5" />{{ __('New sale') }}</a>
                 <a href="{{ route('invoices.create', ['invoice_type' => 'buy']) }}" class="today-action"><x-menu-icon name="buy" class="h-5 w-5" />{{ __('New purchase') }}</a>
             @endcan
+            @can('reports.plain')
+                <a href="{{ route('reports.plain') }}" class="today-action"><x-menu-icon name="reports" class="h-5 w-5" />{{ __('How is my business doing?') }}</a>
+            @endcan
             @can('customers.create')
                 <a href="{{ route('customers.create') }}" class="today-action"><x-menu-icon name="customers" class="h-5 w-5" />{{ __('New customer') }}</a>
             @endcan
-            @can('ageing.receivables')
-                <a href="{{ route('ageing.receivables') }}" class="today-action"><x-menu-icon name="money" class="h-5 w-5" />{{ __('Collect money') }}</a>
-            @endcan
-            @can('ageing.payables')
-                <a href="{{ route('ageing.payables') }}" class="today-action"><x-menu-icon name="money" class="h-5 w-5" />{{ __('Pay suppliers') }}</a>
+            @can('quick-payment.create')
+                <a href="{{ route('quick-payment.create', 'receive') }}" class="today-action"><x-menu-icon name="money" class="h-5 w-5" />{{ __('Collect money') }}</a>
+                <a href="{{ route('quick-payment.create', 'pay') }}" class="today-action"><x-menu-icon name="money" class="h-5 w-5" />{{ __('Pay suppliers') }}</a>
+            @else
+                @can('ageing.receivables')
+                    <a href="{{ route('ageing.receivables') }}" class="today-action"><x-menu-icon name="money" class="h-5 w-5" />{{ __('Who owes me') }}</a>
+                @endcan
+                @can('ageing.payables')
+                    <a href="{{ route('ageing.payables') }}" class="today-action"><x-menu-icon name="money" class="h-5 w-5" />{{ __('Whom I owe') }}</a>
+                @endcan
             @endcan
         </div>
 

@@ -1700,3 +1700,6 @@ business_insights profile + service wiring + 2 tests; ConfigController resource 
 
 ## Entry 92 — 2026-09-25 — Simple sidebar, quick actions, getting-started checklist
 Presentation + read-only additions; 5 new tests; suite 1797/1797. Local commit only; no push.
+
+## Entry 93 — 2026-09-25 — Quick payments, plain report, product wizard
+All three built as presentation/read layers over existing services; verified quick-payment flow and plain report render in a browser via static render + stubbed interaction. Local commit only; no push.
