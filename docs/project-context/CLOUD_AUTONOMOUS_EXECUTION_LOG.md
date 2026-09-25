@@ -1713,3 +1713,12 @@ Local commit only; no push.
 - UI: "Settle the oldest invoices first (automatic)" is the default choice on the page; picking a single invoice keeps the previous per-invoice route.
 - Tests: 3 new in `QuickPaymentTest` (spread, over-balance rejected with nothing recorded, permission/404). Full suite 1828 passed. One unreproducible flaky failure was seen once in a bulk-store test on the first full run; the two reruns were green.
 - New installs/roles: re-run the permissions seeder so `quick-payment.store` reaches existing Admin/Accountant roles.
+
+## Entry 96 — 2026-09-25 — Capillary distribution (پخش مویرگی) as its own top-level area
+
+Owner observation: the P11 backend (routes, visit plans, settlements, van sales via ordinary warehouses, analytics) had **no screens and no menu heading** — only "Field Operations Analytics" was reachable, so a distributor could not define warehouse/visitor/route independently.
+- New top-level menu **Capillary distribution** (replaces the old one-item "Field Operations" menu): Overview, Routes, Visitors, Visit plans, Daily settlements, Analytics.
+- New screens (`distribution.*`, permission == route name, seeder groups added) over the *unchanged* P11 JSON API: routes + customer assignment; **visitors** (new additive table `distribution_visitors`: company user + optional van warehouse, one-tick creation of a dedicated warehouse, guardrail #53 kept — the van warehouse is an ordinary `Warehouse`); visit plans (one per visitor/day); daily settlement draft→submit→approve via `DailySettlementService`.
+- Removing a visitor keeps their warehouse and history. Visitors must belong to the active company (`company_user`) and be unique per company.
+- Tests: `DistributionScreensTest` (10). Not built yet: promotions UI (JSON only), van loading shortcut (stock transfer screen exists), visitor commission setup UI, sales-from-van invoice defaulting to the visitor warehouse, route-day calendar view, mobile (Android last).
+- Install note: `php artisan migrate` + re-run the permissions seeder.

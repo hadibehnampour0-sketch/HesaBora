@@ -259,6 +259,33 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::post('daily-settlements', [Controllers\DailySettlementController::class, 'store'])->name('daily-settlements.store');
         Route::post('daily-settlements/{daily_settlement}/submit', [Controllers\DailySettlementController::class, 'submit'])->name('daily-settlements.submit');
         Route::post('daily-settlements/{daily_settlement}/approve', [Controllers\DailySettlementController::class, 'approve'])->name('daily-settlements.approve');
+
+        // Capillary distribution (پخش مویرگی): screens over the P11 backend above (their JSON API is unchanged).
+        Route::prefix('distribution')->group(function () {
+            Route::get('/', [Controllers\DistributionHubController::class, 'index'])->name('distribution.index');
+
+            Route::get('routes', [Controllers\DistributionRouteController::class, 'index'])->name('distribution.routes.index');
+            Route::post('routes', [Controllers\DistributionRouteController::class, 'store'])->name('distribution.routes.store');
+            Route::put('routes/{sales_route}', [Controllers\DistributionRouteController::class, 'update'])->name('distribution.routes.update');
+            Route::delete('routes/{sales_route}', [Controllers\DistributionRouteController::class, 'destroy'])->name('distribution.routes.destroy');
+            Route::post('routes/{sales_route}/customers', [Controllers\DistributionRouteController::class, 'assignCustomer'])->name('distribution.routes.customers.store');
+            Route::delete('routes/{sales_route}/customers/{customer}', [Controllers\DistributionRouteController::class, 'removeCustomer'])->name('distribution.routes.customers.destroy');
+
+            Route::get('visitors', [Controllers\DistributionVisitorController::class, 'index'])->name('distribution.visitors.index');
+            Route::post('visitors', [Controllers\DistributionVisitorController::class, 'store'])->name('distribution.visitors.store');
+            Route::put('visitors/{visitor}', [Controllers\DistributionVisitorController::class, 'update'])->name('distribution.visitors.update');
+            Route::delete('visitors/{visitor}', [Controllers\DistributionVisitorController::class, 'destroy'])->name('distribution.visitors.destroy');
+
+            Route::get('plans', [Controllers\DistributionPlanController::class, 'index'])->name('distribution.plans.index');
+            Route::post('plans', [Controllers\DistributionPlanController::class, 'store'])->name('distribution.plans.store');
+            Route::patch('plans/{visit_plan}/status', [Controllers\DistributionPlanController::class, 'updateStatus'])->name('distribution.plans.update-status');
+            Route::delete('plans/{visit_plan}', [Controllers\DistributionPlanController::class, 'destroy'])->name('distribution.plans.destroy');
+
+            Route::get('settlements', [Controllers\DistributionSettlementController::class, 'index'])->name('distribution.settlements.index');
+            Route::post('settlements', [Controllers\DistributionSettlementController::class, 'store'])->name('distribution.settlements.store');
+            Route::post('settlements/{daily_settlement}/submit', [Controllers\DistributionSettlementController::class, 'submit'])->name('distribution.settlements.submit');
+            Route::post('settlements/{daily_settlement}/approve', [Controllers\DistributionSettlementController::class, 'approve'])->name('distribution.settlements.approve');
+        });
     });
 
     Route::group(['prefix' => 'hr', 'as' => 'hr.'], function () {

@@ -120,6 +120,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'promotions' => [...self::CRUD_NO_SHOW, 'evaluate'],
             'daily-settlements' => ['index', 'store', 'submit', 'approve'],
 
+            // Capillary distribution screens (permission == route name).
+            'distribution' => ['index'],
+            'distribution.routes' => ['index', 'store', 'update', 'destroy', 'customers.store', 'customers.destroy'],
+            'distribution.visitors' => ['index', 'store', 'update', 'destroy'],
+            'distribution.plans' => ['index', 'store', 'update-status', 'destroy'],
+            'distribution.settlements' => ['index', 'store', 'submit', 'approve'],
+
             // Backups
             'backups' => ['create', 'export', 'import', 'upload', 'document-files-size'],
 

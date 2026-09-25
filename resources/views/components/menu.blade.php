@@ -252,16 +252,34 @@
     </li>
 @endcanany
 
-@can('field-operations-analytics.index')
+{{-- Capillary distribution (پخش مویرگی) is its own top-level area: routes, visitors + van warehouses, visit plans, daily settlement, analytics. --}}
+@canany(['distribution.index', 'distribution.routes.index', 'distribution.visitors.index', 'distribution.plans.index', 'distribution.settlements.index', 'field-operations-analytics.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary><x-menu-icon name="field" />{{ __('Field Operations') }}</summary>
+            <summary><x-menu-icon name="field" />{{ __('Capillary distribution') }}</summary>
             <ul class="{{ $topDropdownContentClass }}">
-                <li><a href="{{ route('field-operations-analytics.index') }}">{{ __('Field Operations Analytics') }}</a></li>
+                @can('distribution.index')
+                    <li><a href="{{ route('distribution.index') }}">{{ __('Overview') }}</a></li>
+                @endcan
+                @can('distribution.routes.index')
+                    <li><a href="{{ route('distribution.routes.index') }}">{{ __('Distribution routes') }}</a></li>
+                @endcan
+                @can('distribution.visitors.index')
+                    <li><a href="{{ route('distribution.visitors.index') }}">{{ __('Visitors') }}</a></li>
+                @endcan
+                @can('distribution.plans.index')
+                    <li><a href="{{ route('distribution.plans.index') }}">{{ __('Visit plans') }}</a></li>
+                @endcan
+                @can('distribution.settlements.index')
+                    <li><a href="{{ route('distribution.settlements.index') }}">{{ __('Daily settlements') }}</a></li>
+                @endcan
+                @can('field-operations-analytics.index')
+                    <li><a href="{{ route('field-operations-analytics.index') }}">{{ __('Field Operations Analytics') }}</a></li>
+                @endcan
             </ul>
         </details>
     </li>
-@endcan
+@endcanany
 
 @can('industry-profiles.index')
     <li><a href="{{ route('industry-profiles.index') }}"><x-menu-icon name="industry" />{{ __('Industry Profiles') }}</a></li>
