@@ -57,3 +57,44 @@ Confirmed / Missing / Rejected:
 
 ## 8. Guardrails
 No code/schema/migrations; no gold-specific tables (D-099 §10); Guardrail #5 remains; no interviewee-identifying data or photographed ledgers in git.
+
+## 9. Amendments (owner review round 2, 2026-09-25)
+
+**Roles.** Interviews are conducted by the owner or a trusted real-world person; the assistant acts as Domain Analyst + Architecture Reviewer (question design, answer review, conceptual-model extraction, contradiction hunting, final D-100 preparation, D-101 impact).
+
+**Interview header (identical for all; no name, phone, address, ledger photos, or sensitive data):**
+```
+Interview ID:
+Role:
+Business Type:
+Years Active:
+Approximate Scale:
+```
+
+**Per-interview output format (replaces free-form notes):**
+```
+Interview #NN — <Role>
+Observations
+  <Topic, e.g. Transaction>: "<observation>"   Confidence: High | Medium | Low
+Architecture Impact
+  Supports: <e.g. Quantity + Unit model>
+  Challenges: <e.g. Purity normalization>
+```
+
+**New axis F — Exception Handling** (software fails in exceptions, not normal flow): customer says next day the weight was wrong; agreed price changed; part of the trade returned; account dispute; counterparty refuses. Maps to DISPUTED, Cancellation, Adjustment, Audit.
+
+**New key architectural question (ask every gold interviewee):** "When you say 100 g of gold, is it a specific physical stock, or only an accounting obligation?" Case A: 100 g = real physical stock → Stock matters more. Case B: 100 g = an obligation between two people → Trade Position matters more. The answer may affect the whole Ownership Layer; record per interviewee and per scenario (may differ between open accounts, consignment, and cash sales).
+
+**Final D-100 must include a Decision Matrix:**
+| Concept | Confirmed | Evidence | Action |
+|---|---|---|---|
+| Native Quantity | ? (e.g. Yes) | e.g. n/5 interviews | Keep / Review / D-101 decision |
+| Purity | ? | | |
+| Ownership Layer | ? | | |
+| Deferred Valuation | ? | | |
+| Party Model | ? | | |
+| Physical stock vs obligation | ? | | |
+| Exception handling (DISPUTED etc.) | ? | | |
+Rows are filled from evidence only; "?" until then.
+
+**Sequence after D-100:** D-100 findings → D-099 ACCEPTED (only if validated; otherwise amended) → D-101 Data Model Proposal → D-102 Impact Review → Implementation Decision.

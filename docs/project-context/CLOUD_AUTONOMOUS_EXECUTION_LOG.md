@@ -1652,3 +1652,6 @@ Owner-authored ADR transcribed into Decision Log verbatim in substance (status P
 
 ## Entry 76 — 2026-09-25 — D-100 discovery protocol prepared
 Research protocol document written from owner's structure; roadmap §40.9. D-099 stays PROPOSED. Docs only; no push.
+
+## Entry 77 — 2026-09-25 — D-100 protocol amended (axis F, physical-vs-obligation question, output format, decision matrix)
+Docs only; no push.
