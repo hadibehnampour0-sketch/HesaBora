@@ -2457,3 +2457,6 @@ Guardrail #51 pattern (pure presentation over the same fields/route/validation) 
 
 ### 40.18 Phase AI tier 1 — deterministic insights shipped (2026-09-25)
 `InsightDetectorService` (read-only, no provider, no persistence) feeds a "Needs attention" list on the Today dashboard: possible duplicate invoices (same customer/type/amount ≤1 day apart), buy-price spikes (≥25% above the 90-day baseline, ≥2 baseline purchases), receivable concentration (one customer ≥40% with 3+ debtors), bounced receivable cheques. Each detector is gated by the permission of the report it derives from; insight text carries no absolute amounts (respects the amounts-hidden default). Thresholds are class constants; per-company tunable settings are the planned follow-up. 8 tests; suite 1790/1790. Accept/reject logging and any LLM tier remain gated on the owner's answers in the AI design doc §A7.
+
+### 40.19 Insight thresholds are now per-company settings (2026-09-25)
+The tier-1 detectors read their on/off switches and thresholds from a new data-driven Industry Profile `business_insights` ("Smart insights" in the Industry Profiles dashboard) — tunable per company with evidence badges and history, no code change. Also fixed the pre-existing 500 on `/management/configs/create` (the configs resource now exposes only index/edit/update, the methods that exist). Suite 1792/1792.

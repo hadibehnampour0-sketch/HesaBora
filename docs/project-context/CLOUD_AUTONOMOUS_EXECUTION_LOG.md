@@ -1694,3 +1694,6 @@ Documentation only; owner questions listed; no D-0XX text drafted; no push.
 
 ## Entry 90 — 2026-09-25 — Phase AI tier 1 deterministic insights
 4 detectors + Today integration; 8 tests; suite 1790/1790. Lang files edited by minimal append (a JSON re-serialisation had rewritten escaping and was reverted). Local commit only; no push.
+
+## Entry 91 — 2026-09-25 — Insight thresholds as company settings; configs route fix
+business_insights profile + service wiring + 2 tests; ConfigController resource restricted to implemented actions. Suite 1792/1792. Local commit only; no push.

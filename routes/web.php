@@ -200,7 +200,8 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::post('users/{user}/impersonate', [Controllers\Management\UserController::class, 'impersonate'])
             ->name('users.impersonate');
         Route::resource('users', Controllers\Management\UserController::class)->except(['show']);
-        Route::resource('configs', Controllers\ConfigController::class);
+        // ConfigController only implements index/edit/update; the other resource routes 500'd (missing methods).
+        Route::resource('configs', Controllers\ConfigController::class)->only(['index', 'edit', 'update']);
         Route::get('workflow-governance', [Controllers\WorkflowGovernanceController::class, 'edit'])->name('workflow-governance.edit');
         Route::put('workflow-governance', [Controllers\WorkflowGovernanceController::class, 'update'])->name('workflow-governance.update');
         Route::get('tax-readiness', [Controllers\TaxReadinessController::class, 'index'])->name('tax-readiness.index');

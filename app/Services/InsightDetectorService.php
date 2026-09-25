@@ -7,6 +7,7 @@ use App\Enums\InvoiceType;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\User;
+use App\Services\Industry\IndustrySettingsService;
 use Illuminate\Support\Carbon;
 
 /**
@@ -22,27 +23,19 @@ use Illuminate\Support\Carbon;
  */
 class InsightDetectorService
 {
-    /** Two same-customer, same-type, same-amount invoices this many days apart or closer are "possible duplicates". */
-    public const DUPLICATE_WINDOW_DAYS = 1;
-
-    public const DUPLICATE_LOOKBACK_DAYS = 30;
-
-    /** A recent buy price this many times the trailing average is flagged. */
-    public const PRICE_SPIKE_RATIO = 1.25;
-
-    public const PRICE_RECENT_DAYS = 30;
-
-    public const PRICE_BASELINE_DAYS = 90;
-
-    /** One customer holding at least this share of open receivables (with 3+ debtors) is a concentration risk. */
-    public const CONCENTRATION_SHARE = 0.40;
-
-    public const CONCENTRATION_MIN_PARTIES = 3;
+    /** Settings live in the data-driven `business_insights` industry profile (per company, no code change to tune). */
+    private const PROFILE = 'business_insights';
 
     public function __construct(
         private readonly AgeingService $ageing,
         private readonly ChequeRiskDashboardService $cheques,
+        private readonly IndustrySettingsService $settings,
     ) {}
+
+    private function setting(string $key): mixed
+    {
+        return $this->settings->value(self::PROFILE, $key);
+    }
 
     /** @return list<array{type: string, severity: string, title: string, detail: string, url: string}> */
     public function detect(User $user, ?Carbon $today = null): array
@@ -51,14 +44,20 @@ class InsightDetectorService
         $insights = [];
 
         if ($user->can('invoices.index')) {
-            array_push($insights, ...$this->possibleDuplicateInvoices($today), ...$this->buyPriceSpikes($today));
+            if ($this->setting('detect_duplicates')) {
+                array_push($insights, ...$this->possibleDuplicateInvoices($today));
+            }
+
+            if ($this->setting('detect_price_spikes')) {
+                array_push($insights, ...$this->buyPriceSpikes($today));
+            }
         }
 
-        if ($user->can('ageing.receivables')) {
+        if ($user->can('ageing.receivables') && $this->setting('detect_concentration')) {
             array_push($insights, ...$this->receivableConcentration());
         }
 
-        if ($user->can('cheques.index')) {
+        if ($user->can('cheques.index') && $this->setting('detect_bounced_cheques')) {
             array_push($insights, ...$this->bouncedCheques());
         }
 
@@ -73,7 +72,7 @@ class InsightDetectorService
     {
         $invoices = Invoice::query()
             ->whereIn('invoice_type', [InvoiceType::SELL, InvoiceType::BUY])
-            ->whereDate('date', '>=', $today->copy()->subDays(self::DUPLICATE_LOOKBACK_DAYS))
+            ->whereDate('date', '>=', $today->copy()->subDays((int) $this->setting('duplicate_lookback_days')))
             ->orderBy('date')
             ->get(['id', 'number', 'customer_id', 'invoice_type', 'date', 'amount']);
 
@@ -90,7 +89,7 @@ class InsightDetectorService
                 $previous = $sorted[$i - 1];
                 $current = $sorted[$i];
 
-                if ($previous->date->diffInDays($current->date) <= self::DUPLICATE_WINDOW_DAYS) {
+                if ($previous->date->diffInDays($current->date) <= (int) $this->setting('duplicate_window_days')) {
                     $out[] = [
                         'type' => 'possible_duplicate_invoice',
                         'severity' => 'warning',
@@ -98,7 +97,7 @@ class InsightDetectorService
                         'detail' => __('Invoices :a and :b have the same customer, type and amount within :days day(s).', [
                             'a' => localizeNumber($previous->number),
                             'b' => localizeNumber($current->number),
-                            'days' => localizeNumber(self::DUPLICATE_WINDOW_DAYS),
+                            'days' => localizeNumber((int) $this->setting('duplicate_window_days')),
                         ]),
                         'url' => route('invoices.show', $current),
                     ];
@@ -112,8 +111,8 @@ class InsightDetectorService
     /** @return list<array> */
     private function buyPriceSpikes(Carbon $today): array
     {
-        $recentFrom = $today->copy()->subDays(self::PRICE_RECENT_DAYS)->startOfDay();
-        $baselineFrom = $today->copy()->subDays(self::PRICE_RECENT_DAYS + self::PRICE_BASELINE_DAYS)->startOfDay();
+        $recentFrom = $today->copy()->subDays((int) $this->setting('price_recent_days'))->startOfDay();
+        $baselineFrom = $today->copy()->subDays((int) $this->setting('price_recent_days') + (int) $this->setting('price_baseline_days'))->startOfDay();
 
         $invoices = Invoice::query()
             ->where('invoice_type', InvoiceType::BUY)
@@ -151,7 +150,7 @@ class InsightDetectorService
             $average = array_sum($history) / count($history);
             $latest = end($entries);
 
-            if ($latest['price'] >= $average * self::PRICE_SPIKE_RATIO) {
+            if ($latest['price'] >= $average * (1 + (float) $this->setting('price_spike_percent') / 100)) {
                 $name = Product::withoutGlobalScopes()->whereKey($productId)->value('name') ?? '#'.$productId;
 
                 $out[] = [
@@ -175,14 +174,14 @@ class InsightDetectorService
     {
         $report = $this->ageing->report(InvoiceType::SELL);
 
-        if ($report['total'] <= 0 || count($report['parties']) < self::CONCENTRATION_MIN_PARTIES) {
+        if ($report['total'] <= 0 || count($report['parties']) < (int) $this->setting('concentration_min_parties')) {
             return [];
         }
 
         $top = $report['parties'][0];
         $share = $top['total'] / $report['total'];
 
-        if ($share < self::CONCENTRATION_SHARE) {
+        if ($share < (float) $this->setting('concentration_share_percent') / 100) {
             return [];
         }
 

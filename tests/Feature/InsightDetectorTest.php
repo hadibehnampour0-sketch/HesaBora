@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\ProductGroup;
 use App\Models\User;
+use App\Services\Industry\IndustrySettingsService;
 use App\Services\InsightDetectorService;
 use Cookie;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -172,5 +173,34 @@ class InsightDetectorTest extends TestCase
         config(['active-company-id' => $other->id]);
 
         $this->assertSame([], $this->types());
+    }
+
+    public function test_a_detector_can_be_switched_off_per_company_without_code(): void
+    {
+        $this->grant('invoices.index');
+        $product = $this->createProduct();
+        $this->buy([$this->productItem($product, 50, 100)], true, ++$this->nextInvoiceNumber, Carbon::today()->subDays(10)->toDateString());
+        $this->sell([$this->productItem($product, 1, 500)], true, ++$this->nextInvoiceNumber, Carbon::today()->subDay()->toDateString());
+        $this->sell([$this->productItem($product, 1, 500)], true, ++$this->nextInvoiceNumber, Carbon::today()->toDateString());
+        $this->assertContains('possible_duplicate_invoice', $this->types());
+
+        app(IndustrySettingsService::class)->update('business_insights', ['detect_duplicates' => '0'], $this->user->id);
+
+        $this->assertNotContains('possible_duplicate_invoice', $this->types());
+    }
+
+    public function test_thresholds_come_from_company_settings(): void
+    {
+        $this->grant('invoices.index');
+        $product = $this->createProduct();
+        $this->buy([$this->productItem($product, 10, 100)], true, ++$this->nextInvoiceNumber, Carbon::today()->subDays(80)->toDateString());
+        $this->buy([$this->productItem($product, 10, 100)], true, ++$this->nextInvoiceNumber, Carbon::today()->subDays(60)->toDateString());
+        $this->buy([$this->productItem($product, 10, 130)], true, ++$this->nextInvoiceNumber, Carbon::today()->subDays(2)->toDateString());
+
+        $this->assertContains('buy_price_spike', $this->types()); // 30% >= default 25%
+
+        app(IndustrySettingsService::class)->update('business_insights', ['price_spike_percent' => '50'], $this->user->id);
+
+        $this->assertNotContains('buy_price_spike', $this->types());
     }
 }
