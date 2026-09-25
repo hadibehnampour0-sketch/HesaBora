@@ -110,8 +110,33 @@
         </details>
     </li>
 @endcanany
+{{-- Tax is its own top-level area (not a Reports sub-item): a differentiator that must stay complete and easy to find. --}}
+@canany(['tax-center.index', 'tax-readiness.index', 'seasonal-tax.index', 'invoices.moadian-histories.index', 'tax-alerts.index'])
+    <li>
+        <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
+            <summary><x-menu-icon name="tax" />{{ __('Tax') }}</summary>
+            <ul class="{{ $topDropdownContentClass }}">
+                @can('tax-center.index')
+                    <li><a href="{{ route('tax-center.index') }}">{{ __('Tax Center') }}</a></li>
+                @endcan
+                @can('tax-readiness.index')
+                    <li><a href="{{ route('tax-readiness.index') }}">{{ __('Tax Readiness') }}</a></li>
+                @endcan
+                @can('seasonal-tax.index')
+                    <li><a href="{{ route('seasonal-tax.index') }}">{{ __('Seasonal Tax Report') }}</a></li>
+                @endcan
+                @can('invoices.moadian-histories.index')
+                    <li><a href="{{ route('invoices.moadian-histories.index') }}">{{ __('Moadian Histories') }}</a></li>
+                @endcan
+                @can('tax-alerts.index')
+                    <li><a href="{{ route('tax-alerts.index') }}">{{ __('Tax alerts') }}</a></li>
+                @endcan
+            </ul>
+        </details>
+    </li>
+@endcanany
 @canany(['reports.documents', 'reports.journal', 'reports.ledger', 'reports.sub-ledger', 'reports.trial-balance',
-    'reports.cost-income', 'budgets.index', 'reports.company-overview', 'ageing.receivables', 'ageing.payables', 'seasonal-tax.index', 'tax-readiness.index', 'tax-center.index'])
+    'reports.cost-income', 'budgets.index', 'reports.company-overview', 'ageing.receivables', 'ageing.payables'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="reports" />{{ __('Reports') }}</summary>
@@ -121,15 +146,6 @@
                 @endcan
                 @can('reports.cost-income')
                     <li><a href="{{ route('reports.cost-income') }}">{{ __('Cost and Income Dashboard') }}</a></li>
-                @endcan
-                @can('tax-center.index')
-                    <li><a href="{{ route('tax-center.index') }}">{{ __('Tax Center') }}</a></li>
-                @endcan
-                @can('seasonal-tax.index')
-                    <li><a href="{{ route('seasonal-tax.index') }}">{{ __('Seasonal Tax Report') }}</a></li>
-                @endcan
-                @can('tax-readiness.index')
-                    <li><a href="{{ route('tax-readiness.index') }}">{{ __('Tax Readiness') }}</a></li>
                 @endcan
                 @can('budgets.index')
                     <li><a href="{{ route('budgets.index') }}">{{ __('Monthly Income and Expense Workbench') }}</a></li>

@@ -51,4 +51,15 @@ class TaxCenterTest extends TestCase
             ->assertDontSee(route('tax-alerts.index'), false)
             ->assertDontSee(route('invoices.moadian-histories.index'), false);
     }
+
+    public function test_tax_is_a_top_level_menu_entry_separate_from_reports(): void
+    {
+        $this->grant('home', 'home.summary', 'invoices.index', 'tax-center.index', 'seasonal-tax.index');
+
+        $html = $this->get(route('home'))->assertOk()->getContent();
+
+        $this->assertMatchesRegularExpression('#<summary[^>]*>\s*<svg[^>]*>.*?</svg>\s*'.preg_quote(__('Tax'), '#').'\s*</summary>#s', $html);
+        // No Reports permission is held, so no Reports dropdown may exist just because tax items are.
+        $this->assertDoesNotMatchRegularExpression('#<summary[^>]*>\s*<svg[^>]*>.*?</svg>\s*'.preg_quote(__('Reports'), '#').'\s*</summary>#s', $html);
+    }
 }
