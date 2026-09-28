@@ -3830,5 +3830,10 @@
     "View instalment plan": "مشاهده‌ی برنامه‌ی اقساط",
     "Apply a payment term...": "اعمال یک شرط پرداخت...",
     "Dimensions": "ابعاد تحلیلی",
-    "Tag": "برچسب"
+    "Tag": "برچسب",
+    "General": "عمومی",
+    "Raw material": "ماده اولیه",
+    "Semi-finished": "نیمه‌ساخته",
+    "Finished good": "محصول نهایی",
+    "Waste": "ضایعات"
 }

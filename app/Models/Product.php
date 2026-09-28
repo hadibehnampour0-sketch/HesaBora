@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ProductType;
 use App\Models\Concerns\HasSyncEnvelope;
 use App\Models\Concerns\SyncsToOutbox;
 use App\Models\Scopes\FiscalYearScope;
@@ -27,6 +28,7 @@ class Product extends Model
         'name',
         'sstid',
         'group',
+        'type',
         'location',
         'quantity',
         'quantity_warning',
@@ -47,6 +49,7 @@ class Product extends Model
         'average_cost' => 'decimal:2',
         'selling_price' => 'decimal:2',
         'vat' => 'decimal:2',
+        'type' => ProductType::class,
     ];
 
     protected static function booted(): void

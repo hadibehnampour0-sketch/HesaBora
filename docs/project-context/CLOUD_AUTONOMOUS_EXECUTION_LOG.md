@@ -1761,3 +1761,13 @@ Tests: `InvoicePaymentTermTest` (2): apply-then-picker-disappears, and the picke
 Tests: `DocumentDimensionTaggingTest` (3). Full suite: 1864 passed.
 
 This closes the "remaining gaps" list from Entries 98-100 (stock reservations screen, apply payment term from invoice, tag transactions with a dimension). Everything backend-only found in that audit now has a screen.
+
+## Entry 102 — 2026-09-28 — Manufacturing/BOM research verdict + Phase 0 readiness only
+
+Owner supplied external research proposing a Manufacturing/BOM ("فرمول ساخت") module and asked for an independent verdict before building anything. Full writeup: `Dakhl_MANUFACTURING_BOM_RESEARCH_AND_PLAN_2026-09-28.md`.
+- Verified against live sources (Sepidar, Holoo, ERPNext docs) rather than trusting the pasted research at face value; confirmed the general BOM → Production Order → stock/cost model, and found one real nuance the pasted research missed: Holoo consumes materials at the moment the finished product is *sold*, not at a separate production event -- flagged as the wrong default for Dakhl (couples two independent business events).
+- Corrected the pasted research against Dakhl's actual code: no `Product`→`Item` rename (breaking, ~1800 tests depend on `Product`; the existing `itemable_type` polymorphism already gives the needed generality) and no new generic `stock_movements` ledger (every existing subsystem -- Invoice, WarehouseTransfer, StockReservation -- already keeps its own tested history; a `ProductionOrder` can do the same, per guardrail #53).
+- **Only Phase 0 (schema readiness) was executed today, nothing user-facing**: nullable `products.type` column (`ProductType` enum: general/raw_material/semi_finished/finished_good/waste), defaulting every existing product to `general`. Nothing reads this column yet.
+- Phase 1 (an actual "Production Lite" module: recipes, production orders, a produce action) is scoped in the document but explicitly **not started** -- held alongside Trade/Tax/Integration pending the owner's go-ahead, per the owner's own instruction this session to hold those three and only unblock work he's asked for.
+- A draft (unlocked) D-103 decision text is proposed in the document for the owner to review/author.
+- Tests: `ProductTypeReadinessTest` (2). Full suite: 1866 passed.
