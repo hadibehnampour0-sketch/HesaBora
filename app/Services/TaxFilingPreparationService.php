@@ -44,7 +44,7 @@ class TaxFilingPreparationService
                 'key' => 'profile',
                 'label' => __('Company tax profile and Moadian credentials are complete'),
                 'done' => $readiness !== null && ($readiness->metrics_breakdown['profile_readiness']['score'] ?? 0) >= ($readiness->metrics_breakdown['profile_readiness']['max'] ?? 1),
-                'detail' => $readiness === null ? __('Calculate the readiness score first.') : ($readiness->metrics_breakdown['profile_readiness']['score'] < $readiness->metrics_breakdown['profile_readiness']['max'] ? __('Your company tax profile or Moadian credentials need attention.') : null),
+                'detail' => $readiness === null ? __('Calculate the readiness score first.') : ((($readiness->metrics_breakdown['profile_readiness']['score'] ?? 0) < ($readiness->metrics_breakdown['profile_readiness']['max'] ?? 1)) ? __('Your company tax profile or Moadian credentials need attention.') : null),
                 'fix_route' => 'companies.index',
             ],
             [
@@ -65,7 +65,7 @@ class TaxFilingPreparationService
                 'key' => 'evidence',
                 'label' => __('High-value costs have supporting evidence attached'),
                 'done' => $readiness !== null && ($readiness->metrics_breakdown['evidence_vault_coverage']['score'] ?? 0) >= ($readiness->metrics_breakdown['evidence_vault_coverage']['max'] ?? 1),
-                'detail' => $readiness !== null && $readiness->metrics_breakdown['evidence_vault_coverage']['score'] < $readiness->metrics_breakdown['evidence_vault_coverage']['max'] ? __('One or more high-value costs are missing supporting evidence.') : null,
+                'detail' => ($readiness !== null && (($readiness->metrics_breakdown['evidence_vault_coverage']['score'] ?? 0) < ($readiness->metrics_breakdown['evidence_vault_coverage']['max'] ?? 1))) ? __('One or more high-value costs are missing supporting evidence.') : null,
                 'fix_route' => 'ancillary-costs.index',
             ],
         ];

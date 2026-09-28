@@ -3881,5 +3881,14 @@
     "Tax evidence": "مدرک مالیاتی",
     "Supporting documents you can show a tax auditor for this record.": "مدارک پشتیبانی که می‌توانید برای این رکورد به ممیز مالیاتی نشان دهید.",
     "Delete this evidence?": "این مدرک حذف شود؟",
-    "Attach evidence": "پیوست مدرک"
+    "Attach evidence": "پیوست مدرک",
+    "Filing calendar": "تقویم اظهارنامه",
+    "Filed": "تحویل‌شده",
+    "Ready to file": "آماده‌ی تحویل",
+    "One row per quarter: when it is due, and whether you have filed it.": "یک ردیف برای هر فصل: سررسید و اینکه تحویل داده‌ای یا نه.",
+    "Prepare": "آماده‌سازی",
+    "Mark as filed": "علامت‌گذاری به‌عنوان تحویل‌شده",
+    "The due date shown is a common convention (15 days after the quarter ends), not a confirmed legal deadline. Verify with an accountant.": "تاریخ سررسید نمایش‌داده‌شده یک قرارداد رایج است (۱۵ روز بعد از پایان فصل)، نه یک مهلت قانونی تأییدشده. با یک حسابدار بررسی کنید.",
+    "Due dates for each quarter and whether you have filed it yet.": "سررسید هر فصل و اینکه هنوز تحویل داده‌ای یا نه.",
+    "Marked as filed.": "با موفقیت به‌عنوان تحویل‌شده علامت‌گذاری شد."
 }

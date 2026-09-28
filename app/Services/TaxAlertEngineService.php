@@ -28,6 +28,8 @@ class TaxAlertEngineService
 {
     private const DEDUP_WINDOW_HOURS = 24;
 
+    public function __construct(private readonly TaxFilingCalendarService $filingCalendarService) {}
+
     public function evaluateCompanyRules(int $companyId): int
     {
         $company = Company::withoutGlobalScopes()->findOrFail($companyId);
@@ -36,6 +38,43 @@ class TaxAlertEngineService
         $raised += $this->evaluateReadinessScore($company);
         $raised += $this->evaluateRejectedMoadianInvoices($company);
         $raised += $this->evaluateMissingEvidence($company);
+        $raised += $this->evaluateOverdueFiling($company);
+
+        return $raised;
+    }
+
+    /**
+     * T-3: a quarter past its due date with nothing marked filed.
+     *
+     * Unlike the other rules above, `TaxFilingCalendarService` (and the `TaxReadinessLog`/
+     * `TaxFilingRecord` lookups it calls into) resolve their company via the ambient active-company
+     * scope (`FiscalYearScope`), not an explicit company_id parameter -- so, uniquely among this
+     * job's rules, this one needs the same active-company config swap
+     * SyncMoadianStatusJob/GenerateRecurringInvoicesCommand already use for that reason. Safe here
+     * because a queue worker processes one job at a time per process.
+     */
+    private function evaluateOverdueFiling(Company $company): int
+    {
+        $previousActiveCompany = config('active-company-id');
+        config(['active-company-id' => $company->id]);
+
+        try {
+            $overdue = $this->filingCalendarService->overdueUnfiledQuarters($company->id);
+        } finally {
+            config(['active-company-id' => $previousActiveCompany]);
+        }
+
+        $raised = 0;
+        foreach ($overdue as $row) {
+            $raised += $this->raise(
+                company: $company,
+                type: 'overdue_filing',
+                severity: TaxAlert::SEVERITY_WARNING,
+                title: __('A tax filing is overdue'),
+                message: __(':quarter :year is past its due date and has not been marked as filed.', ['quarter' => $row['quarter_label'], 'year' => $row['jalali_year']]),
+                dedupKey: "overdue_filing:{$row['jalali_year']}:{$row['quarter']}",
+            );
+        }
 
         return $raised;
     }
@@ -94,7 +133,7 @@ class TaxAlertEngineService
     {
         $costs = AncillaryCost::withoutGlobalScopes()
             ->where('company_id', $company->id)
-            ->where('amount', '>=', \App\Services\TaxReadinessService::MATERIAL_EXPENSE_THRESHOLD)
+            ->where('amount', '>=', TaxReadinessService::MATERIAL_EXPENSE_THRESHOLD)
             ->whereDoesntHave('taxEvidences')
             ->get();
 

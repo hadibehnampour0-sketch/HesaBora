@@ -3857,5 +3857,14 @@
     "Tax evidence": "Tax evidence",
     "Supporting documents you can show a tax auditor for this record.": "Supporting documents you can show a tax auditor for this record.",
     "Delete this evidence?": "Delete this evidence?",
-    "Attach evidence": "Attach evidence"
+    "Attach evidence": "Attach evidence",
+    "Filing calendar": "Filing calendar",
+    "Filed": "Filed",
+    "Ready to file": "Ready to file",
+    "One row per quarter: when it is due, and whether you have filed it.": "One row per quarter: when it is due, and whether you have filed it.",
+    "Prepare": "Prepare",
+    "Mark as filed": "Mark as filed",
+    "The due date shown is a common convention (15 days after the quarter ends), not a confirmed legal deadline. Verify with an accountant.": "The due date shown is a common convention (15 days after the quarter ends), not a confirmed legal deadline. Verify with an accountant.",
+    "Due dates for each quarter and whether you have filed it yet.": "Due dates for each quarter and whether you have filed it yet.",
+    "Marked as filed.": "Marked as filed."
 }

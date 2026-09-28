@@ -1806,3 +1806,14 @@ Audit found the Evidence Vault (P9.6) had **no upload/list UI anywhere** -- only
 - Full suite: 1885 passed.
 
 Tax completeness plan (Dakhl_TAX_MODULE_COMPLETENESS_PLAN_2026-09-25.md): T-5, T-1, T-7, T-8/T-9, T-2 done. Remaining: T-3 (filing calendar) and rule-pack versioning (owner decisions in §7.2 still open) -- T-3 is next.
+
+## Entry 107 — 2026-09-28 — Tax module: T-3 filing calendar (last item from the completeness plan)
+
+- New `tax_filing_records` table (company_id, jalali_year, quarter, filed_at, filed_by) — records only that a period was marked filed; every other figure (period boundaries, due date, "prepared" status) is derived at read time from data that already exists, nothing duplicated.
+- `TaxFilingCalendarService::calendar()`: one row per quarter of a fiscal year with status PENDING → PREPARED (reuses T-8/T-9's `TaxFilingPreparationService::prepare()->is_ready`) → OVERDUE (past due date, nothing filed) → FILED. Due date = quarter end + 15 days, a documented, UI-disclaimed convention, not asserted as confirmed law (matches the Seasonal Tax Report's own existing disclaimer precedent).
+- New screen `tax-center.calendar` (+ `tax-center.calendar.mark-filed`), linked from the Tax menu and Tax Center hub.
+- **New Tax Alert rule** (`overdue_filing`) added to the existing `TaxAlertEngineService`: fires when the current or previous quarter is overdue and unfiled. This rule uniquely needs an active-company config swap (documented in code) because the services it composes resolve their company via ambient `FiscalYearScope`, not an explicit id — the only one of the engine's 4 rules with that shape.
+- **Bug found and fixed while wiring the alert**: `TaxFilingPreparationService::prepare()` indexed `metrics_breakdown['profile_readiness']`/`['evidence_vault_coverage']` without a `??` fallback, so any `TaxReadinessLog` row without those exact keys (e.g. a test fixture, or a future schema change) would 500. Fixed with null-coalescing defaults on every access.
+- Tests: `TaxFilingCalendarTest` (5) + `TaxAlertEngineTest` gained the new rule's coverage. Full suite: 1890 passed.
+
+**Tax completeness plan (Dakhl_TAX_MODULE_COMPLETENESS_PLAN_2026-09-25.md) is now fully done except rule-pack versioning**, which stays blocked on the owner's decisions in §7.2 (who reviews/publishes daily rule changes, delivery mechanism, liability wording) -- not started, and should not be guessed at.

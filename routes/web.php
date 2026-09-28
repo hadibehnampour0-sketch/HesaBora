@@ -212,6 +212,8 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::get('tax-center', [Controllers\TaxCenterController::class, 'index'])->name('tax-center.index');
         Route::get('tax-center/audit-pack', [Controllers\TaxAuditPackController::class, 'download'])->name('tax-center.audit-pack');
         Route::get('tax-center/prepare', [Controllers\TaxFilingPreparationController::class, 'index'])->name('tax-center.prepare');
+        Route::get('tax-center/calendar', [Controllers\TaxFilingCalendarController::class, 'index'])->name('tax-center.calendar');
+        Route::post('tax-center/calendar/mark-filed', [Controllers\TaxFilingCalendarController::class, 'markFiled'])->name('tax-center.calendar.mark-filed');
         Route::get('tax-readiness', [Controllers\TaxReadinessController::class, 'index'])->name('tax-readiness.index');
         Route::post('tax-readiness/recalculate', [Controllers\TaxReadinessController::class, 'recalculate'])->name('tax-readiness.recalculate');
 
