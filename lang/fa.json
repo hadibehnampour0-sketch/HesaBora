@@ -3851,5 +3851,12 @@
     "supporting documents on file": "مدارک پشتیبان ثبت‌شده",
     "Does not match the ledger -- see seasonal-vat-report.csv": "با دفتر همخوانی ندارد -- فایل seasonal-vat-report.csv را ببینید",
     "Metric": "شاخص",
-    "Invoice Count": "تعداد فاکتور"
+    "Invoice Count": "تعداد فاکتور",
+    "Moadian work queue": "صف کار مودیان",
+    "Every approved sales invoice that has never successfully reached Moadian: never sent, or rejected on its last attempt. Fix and resend from here.": "هر فاکتور فروش تأییدشده که هنوز با موفقیت به مودیان نرسیده: یا هرگز ارسال نشده، یا آخرین تلاش ردشده. از همین‌جا اصلاح و دوباره ارسال کنید.",
+    "Nothing waiting -- every approved sales invoice has reached Moadian successfully.": "چیزی در انتظار نیست؛ همه‌ی فاکتورهای فروش تأییدشده با موفقیت به مودیان رسیده‌اند.",
+    "Retry": "تلاش دوباره",
+    "Send": "ارسال",
+    "If resending keeps failing, check the company tax profile (economic code, national ID and Moadian credentials).": "اگر ارسال دوباره باز هم ناموفق بود، پروفایل مالیاتی شرکت (کد اقتصادی، شناسه‌ی ملی و اطلاعات مودیان) را بررسی کنید.",
+    "Every invoice that has not yet successfully reached Moadian, with a resend button.": "هر فاکتوری که هنوز با موفقیت به مودیان نرسیده، با دکمه‌ی ارسال دوباره."
 }

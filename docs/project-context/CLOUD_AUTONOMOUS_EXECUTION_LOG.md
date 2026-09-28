@@ -1779,3 +1779,11 @@ Owner asked to complete the Tax module, item by item, per docs/project-context/D
 - **T-1**: `TaxAuditPackService::build()` bundles, for one fiscal quarter, a manifest, the seasonal VAT report + its reconciliation, the period's invoices, a Moadian status-count summary, and every tax-evidence file on record into one ZIP (`ZipArchive`, same mechanism `BackupController` already uses). New route/permission `tax-center.audit-pack`, a "Download audit pack" form on the Tax Center page. Tests: `TaxAuditPackTest` (3): permission gate, ZIP contents + period data, cross-company isolation (evidence file never leaks).
 - Ran the full Tax/Moadian/Seasonal test slice (89 passed) as a fast check; the full 1866-test suite was not re-run this entry due to a session usage-limit cutoff -- **run it before the next commit lands on top of this one**.
 - Remaining from the plan, not started: T-7 (Moadian rejected/failed work queue), T-3 (filing calendar), T-2 (evidence beyond ancillary costs), T-8/T-9 (guided "prepare my filing" flow — the owner's non-expert requirement), rule-pack versioning (owner decisions in §7.2 still open).
+
+## Entry 104 — 2026-09-28 — Tax module: T-7 Moadian work queue
+
+- New screen `invoices.moadian-queue.index` ("Moadian work queue"): every approved sales invoice (`SELL`/`RETURN_SELL`/`VOID`) that has never successfully reached Moadian -- never sent, or its last attempt failed -- with the latest attempt's status/reason and a resend button that posts to the existing, unchanged `invoices.send-moadian` route (no new send logic). Query reuses the same `whereDoesntHave('moadianHistories', ... SUCCESS)` shape `TaxReadinessService`'s own "unsent" metric already uses. Linked from the Tax menu and the Tax Center hub.
+- Tests: `MoadianWorkQueueTest` (4): permission gate, never-sent/failed listed and successful excluded (+ reason text shown), retry button wired to the real route, cross-company isolation.
+- Full suite: 1876 passed. Permissions seeder re-run for the new `invoices.moadian-queue.index` permission.
+
+Tax plan progress: T-5, T-1, T-7 done. Remaining: T-3 (filing calendar), T-2 (evidence vault beyond ancillary costs), T-8/T-9 (guided "prepare my filing" flow), rule-pack versioning (owner decisions still open, §7.2).

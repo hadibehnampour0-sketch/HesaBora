@@ -126,7 +126,7 @@
     </li>
 @endcanany
 {{-- Tax is its own top-level area (not a Reports sub-item): a differentiator that must stay complete and easy to find. --}}
-@canany(['tax-center.index', 'tax-readiness.index', 'seasonal-tax.index', 'invoices.moadian-histories.index', 'tax-alerts.index'])
+@canany(['tax-center.index', 'tax-readiness.index', 'seasonal-tax.index', 'invoices.moadian-histories.index', 'invoices.moadian-queue.index', 'tax-alerts.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="tax" />{{ __('Tax') }}</summary>
@@ -142,6 +142,9 @@
                 @endcan
                 @can('invoices.moadian-histories.index')
                     <li><a href="{{ route('invoices.moadian-histories.index') }}">{{ __('Moadian Histories') }}</a></li>
+                @endcan
+                @can('invoices.moadian-queue.index')
+                    <li><a href="{{ route('invoices.moadian-queue.index') }}">{{ __('Moadian work queue') }}</a></li>
                 @endcan
                 @can('tax-alerts.index')
                     <li><a href="{{ route('tax-alerts.index') }}">{{ __('Tax alerts') }}</a></li>

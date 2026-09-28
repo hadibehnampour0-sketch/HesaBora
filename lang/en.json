@@ -3827,5 +3827,12 @@
     "supporting documents on file": "supporting documents on file",
     "Does not match the ledger -- see seasonal-vat-report.csv": "Does not match the ledger -- see seasonal-vat-report.csv",
     "Metric": "Metric",
-    "Invoice Count": "Invoice Count"
+    "Invoice Count": "Invoice Count",
+    "Moadian work queue": "Moadian work queue",
+    "Every approved sales invoice that has never successfully reached Moadian: never sent, or rejected on its last attempt. Fix and resend from here.": "Every approved sales invoice that has never successfully reached Moadian: never sent, or rejected on its last attempt. Fix and resend from here.",
+    "Nothing waiting -- every approved sales invoice has reached Moadian successfully.": "Nothing waiting -- every approved sales invoice has reached Moadian successfully.",
+    "Retry": "Retry",
+    "Send": "Send",
+    "If resending keeps failing, check the company tax profile (economic code, national ID and Moadian credentials).": "If resending keeps failing, check the company tax profile (economic code, national ID and Moadian credentials).",
+    "Every invoice that has not yet successfully reached Moadian, with a resend button.": "Every invoice that has not yet successfully reached Moadian, with a resend button."
 }
