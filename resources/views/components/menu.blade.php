@@ -225,7 +225,7 @@
     </li>
 @endcanany
 
-@canany(['warehouse.dashboard', 'warehouses.index', 'products.index', 'product-groups.index', 'services.index', 'service-groups.index'])
+@canany(['warehouse.dashboard', 'warehouses.index', 'products.index', 'product-groups.index', 'services.index', 'service-groups.index', 'stock-reservations.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="warehouse" />{{ __('Warehouse') }}</summary>
@@ -235,6 +235,9 @@
                 @endcan
                 @can('warehouses.index')
                     <li><a href="{{ route('warehouses.index') }}">{{ __('Warehouses') }}</a></li>
+                @endcan
+                @can('stock-reservations.index')
+                    <li><a href="{{ route('stock-reservations.index') }}">{{ __('Stock reservations') }}</a></li>
                 @endcan
                 @can('products.index')
                     <li><a href="{{ route('products.index') }}">{{ __('Products') }}</a></li>

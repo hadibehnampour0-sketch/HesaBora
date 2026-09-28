@@ -3792,5 +3792,14 @@
     "Total stock value": "Total stock value",
     "Useful life (months)": "Useful life (months)",
     "Week": "Week",
-    "What your stock is worth at average cost, per product and warehouse.": "What your stock is worth at average cost, per product and warehouse."
+    "What your stock is worth at average cost, per product and warehouse.": "What your stock is worth at average cost, per product and warehouse.",
+    "Stock reservations": "Stock reservations",
+    "Hold stock aside for a customer or order so it cannot be sold to someone else, without moving it out of the warehouse yet.": "Hold stock aside for a customer or order so it cannot be sold to someone else, without moving it out of the warehouse yet.",
+    "Reserve stock": "Reserve stock",
+    "Reserve": "Reserve",
+    "Reserved by": "Reserved by",
+    "Reserved at": "Reserved at",
+    "Release this reservation?": "Release this reservation?",
+    "Release": "Release",
+    "No active reservations.": "No active reservations."
 }

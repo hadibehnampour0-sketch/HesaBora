@@ -128,7 +128,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'analytic-dimensions' => ['index', 'store', 'update', 'destroy', 'report', 'transactions.sync'],
             'inventory-reports' => ['valuation', 'slow-moving'],
             'dashboards' => ['cash-flow', 'cash-flow.drill-down', 'cheque-risk', 'profitability-by-dimension'],
-            'stock-reservations' => ['store', 'release', 'availability'],
+            'stock-reservations' => ['index', 'store', 'release', 'availability'],
 
             // Capillary distribution screens (permission == route name).
             'distribution' => ['index'],

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\StockReservationStatus;
 use App\Models\Product;
 use App\Models\StockReservation;
 use App\Models\Warehouse;
@@ -11,6 +12,26 @@ use Illuminate\Http\Request;
 class StockReservationController extends Controller
 {
     public function __construct(private readonly StockReservationService $service) {}
+
+    /**
+     * Active reservations across every product/warehouse. `StockReservation` has no direct
+     * "list all active" helper on the service (it is deliberately keyed by product+warehouse),
+     * so this reads the model directly -- the same FiscalYearScope every other index does.
+     */
+    public function index()
+    {
+        $reservations = StockReservation::with(['product:id,name', 'warehouse:id,name', 'creator:id,name'])
+            ->where('status', StockReservationStatus::ACTIVE->value)
+            ->orderByDesc('created_at')
+            ->limit(200)
+            ->get();
+
+        return view('stock-reservations.index', [
+            'reservations' => $reservations,
+            'products' => Product::orderBy('name')->limit(1000)->get(['id', 'name']),
+            'warehouses' => Warehouse::orderBy('name')->get(['id', 'name']),
+        ]);
+    }
 
     public function store(Request $request)
     {

@@ -404,6 +404,7 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::post('{fixedAsset}/dispose', [Controllers\FixedAssetController::class, 'dispose'])->name('dispose');
     });
     Route::group(['prefix' => 'stock-reservations', 'as' => 'stock-reservations.'], function () {
+        Route::get('/', [Controllers\StockReservationController::class, 'index'])->name('index');
         Route::post('/', [Controllers\StockReservationController::class, 'store'])->name('store');
         Route::post('{stockReservation}/release', [Controllers\StockReservationController::class, 'release'])->name('release');
         Route::get('availability', [Controllers\StockReservationController::class, 'availability'])->name('availability');

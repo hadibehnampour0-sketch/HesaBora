@@ -1740,3 +1740,12 @@ An audit of GET routes whose controllers only return JSON found built-and-tested
 - Payment-term form ignores blank instalment rows. Persian date inputs are converted with `jalaliInputToGregorian` on these routes.
 - Tests: `AccountingToolsScreensTest` (8). Not done: stock-reservation screen (no list endpoint exists yet), applying a payment term from the invoice page, tagging accounting lines with dimensions from the document form (`analytic-dimensions.transactions.sync` has no UI), per-visitor commission tiers.
 - Install note: re-run the permissions seeder (new permission groups) and grant the roles that should see these screens (Admin/Accountant receive them automatically from the seeder).
+
+## Entry 99 — 2026-09-28 — Stock reservations screen (last JSON-only gap from Entry 98's audit)
+
+`StockReservationController` had `store`/`release`/`availability` but no `index`, so the "hold stock for a customer" feature (P4.1-P4.3) had no page at all -- not even the wildcard-only access Entry 98's other gaps had. Added:
+- `GET stock-reservations` (`stock-reservations.index`, new seeded permission) listing active reservations with product/warehouse/quantity/reserved-by/reserved-at, a create form, and release; menu entry under Warehouse.
+- `StockReservation::creator()` relation (belongsTo User via created_by) -- matches the existing pattern (PaymentAllocation, SettlementObligation, Webhook) and was simply missing.
+- Tests: `StockReservationScreenTest` (3): permission gate, reserve+release round trip through the screen (asserts the RELEASED status and the empty-state text, not `assertDontSee($product->name)` -- the product legitimately still appears in the "new reservation" picker after release), menu visibility.
+- Full suite: 1859 passed. Existing `StockReservationTest` (service/API-level, unchanged) still green.
+- Install note: re-run the permissions seeder for `stock-reservations.index` to reach existing roles.

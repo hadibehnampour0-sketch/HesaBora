@@ -3816,5 +3816,14 @@
     "Total stock value": "ارزش کل موجودی",
     "Useful life (months)": "عمر مفید (ماه)",
     "Week": "هفته",
-    "What your stock is worth at average cost, per product and warehouse.": "ارزش موجودی شما به میانگین بهای تمام‌شده، به‌تفکیک کالا و انبار."
+    "What your stock is worth at average cost, per product and warehouse.": "ارزش موجودی شما به میانگین بهای تمام‌شده، به‌تفکیک کالا و انبار.",
+    "Stock reservations": "رزرو کالا",
+    "Hold stock aside for a customer or order so it cannot be sold to someone else, without moving it out of the warehouse yet.": "بخشی از موجودی را برای یک مشتری یا سفارش کنار بگذارید تا به کس دیگری فروخته نشود، بدون اینکه هنوز از انبار خارج شود.",
+    "Reserve stock": "رزرو کالا",
+    "Reserve": "رزرو",
+    "Reserved by": "رزروکننده",
+    "Reserved at": "زمان رزرو",
+    "Release this reservation?": "این رزرو آزاد شود؟",
+    "Release": "آزادسازی",
+    "No active reservations.": "رزرو فعالی وجود ندارد."
 }
