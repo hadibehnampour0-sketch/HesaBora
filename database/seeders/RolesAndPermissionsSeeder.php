@@ -135,6 +135,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'dashboards' => ['cash-flow', 'cash-flow.drill-down', 'cheque-risk', 'profitability-by-dimension'],
             'stock-reservations' => ['index', 'store', 'release', 'availability'],
 
+            // Manufacturing Phase 1 ("Production Lite").
+            'production.recipes' => ['index', 'store', 'update', 'destroy'],
+            'production.orders' => ['index', 'store'],
+
             // Capillary distribution screens (permission == route name).
             'distribution' => ['index'],
             'distribution.routes' => ['index', 'store', 'update', 'destroy', 'customers.store', 'customers.destroy'],

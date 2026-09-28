@@ -128,6 +128,17 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
     Route::post('warehouses/transfer', [Controllers\WarehouseController::class, 'transfer'])->name('warehouses.transfer.store');
     Route::get('warehouses/transfer-history', [Controllers\WarehouseController::class, 'transferHistory'])->name('warehouses.transfer-history');
     Route::resource('warehouses', Controllers\WarehouseController::class);
+
+    // Manufacturing Phase 1 ("Production Lite" / تولید و بهای تمام‌شده).
+    Route::prefix('production')->name('production.')->group(function () {
+        Route::get('recipes', [Controllers\ProductionRecipeController::class, 'index'])->name('recipes.index');
+        Route::post('recipes', [Controllers\ProductionRecipeController::class, 'store'])->name('recipes.store');
+        Route::put('recipes/{recipe}', [Controllers\ProductionRecipeController::class, 'update'])->name('recipes.update');
+        Route::delete('recipes/{recipe}', [Controllers\ProductionRecipeController::class, 'destroy'])->name('recipes.destroy');
+
+        Route::get('orders', [Controllers\ProductionOrderController::class, 'index'])->name('orders.index');
+        Route::post('orders', [Controllers\ProductionOrderController::class, 'store'])->name('orders.store');
+    });
     Route::resource('product-groups', Controllers\ProductGroupController::class);
     Route::get('services/search-service-group', [Controllers\ServiceController::class, 'searchServiceGroup'])->name('services.search-service-group');
     Route::get('services/export', [Controllers\ServiceController::class, 'export'])->name('services.export');
