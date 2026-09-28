@@ -14,10 +14,12 @@ use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\Document;
 use App\Models\Invoice;
+use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\ProductGroup;
 use App\Models\Service;
 use App\Models\ServiceGroup;
+use App\Models\SettlementObligation;
 use App\Models\Warehouse;
 use App\Services\AncillaryCostService;
 use App\Services\ChequeService;
@@ -331,7 +333,13 @@ class InvoiceController extends Controller
             $q->where('users.id', auth()->id());
         })->where('id', '!=', getActiveCompany())->get();
 
-        return view('invoices.show', compact('invoice', 'changeStatusValidation', 'isServiceBuy', 'isReturnServiceBuy', 'isMoadianSendable', 'paymentDecision', 'settlementSubjects', 'paidAmount', 'remainingAmount', 'chequeDirection', 'chequeBanks', 'chequeBankAccounts', 'chequebooks', 'fiscalYears', 'canCreateAncillaryCost'));
+        // Optional instalment plan (P-payment-terms): at most one obligation per invoice.
+        $settlementObligation = SettlementObligation::where('source_type', $invoice->getMorphClass())
+            ->where('source_id', $invoice->id)
+            ->first();
+        $paymentTerms = $settlementObligation ? collect() : PaymentTerm::where('is_active', true)->orderBy('code')->get();
+
+        return view('invoices.show', compact('invoice', 'changeStatusValidation', 'isServiceBuy', 'isReturnServiceBuy', 'isMoadianSendable', 'paymentDecision', 'settlementSubjects', 'paidAmount', 'remainingAmount', 'chequeDirection', 'chequeBanks', 'chequeBankAccounts', 'chequebooks', 'fiscalYears', 'canCreateAncillaryCost', 'settlementObligation', 'paymentTerms'));
     }
 
     public function print(Invoice $invoice, ReportExportService $reportExportService)

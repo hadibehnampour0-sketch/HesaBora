@@ -798,6 +798,32 @@
                     </div>
                 @endif
 
+                @if ($settlementObligation)
+                    @can('payment-terms.apply')
+                        <div class="alert bg-base-200 shadow-sm mt-4">
+                            <span>{{ __('An instalment plan exists for this invoice.') }}</span>
+                            @can('settlements.show')
+                                <a href="{{ route('settlements.show', $settlementObligation) }}" class="btn btn-xs btn-outline">{{ __('View instalment plan') }}</a>
+                            @endcan
+                        </div>
+                    @endcan
+                @elseif ($remainingAmount > 0)
+                    @can('payment-terms.apply')
+                        @if ($paymentTerms->isNotEmpty())
+                            <form method="POST" action="{{ route('payment-terms.apply', $invoice) }}" class="mt-4 flex flex-wrap items-center gap-2">
+                                @csrf
+                                <select name="payment_term_id" class="select select-bordered select-sm" required>
+                                    <option value="">{{ __('Apply a payment term...') }}</option>
+                                    @foreach ($paymentTerms as $term)
+                                        <option value="{{ $term->id }}">{{ $term->code }} — {{ $term->name }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="submit" class="btn btn-sm btn-outline">{{ __('Apply') }}</button>
+                            </form>
+                        @endif
+                    @endcan
+                @endif
+
                 @can('invoices.payments.store')
                     <div class="flex flex-wrap gap-2 mt-4">
                         @if ($paymentDecision->hasErrors())

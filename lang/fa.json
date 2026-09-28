@@ -3825,5 +3825,8 @@
     "Reserved at": "زمان رزرو",
     "Release this reservation?": "این رزرو آزاد شود؟",
     "Release": "آزادسازی",
-    "No active reservations.": "رزرو فعالی وجود ندارد."
+    "No active reservations.": "رزرو فعالی وجود ندارد.",
+    "An instalment plan exists for this invoice.": "برای این فاکتور یک برنامه‌ی اقساط وجود دارد.",
+    "View instalment plan": "مشاهده‌ی برنامه‌ی اقساط",
+    "Apply a payment term...": "اعمال یک شرط پرداخت..."
 }

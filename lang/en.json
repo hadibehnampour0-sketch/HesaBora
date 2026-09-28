@@ -3801,5 +3801,8 @@
     "Reserved at": "Reserved at",
     "Release this reservation?": "Release this reservation?",
     "Release": "Release",
-    "No active reservations.": "No active reservations."
+    "No active reservations.": "No active reservations.",
+    "An instalment plan exists for this invoice.": "An instalment plan exists for this invoice.",
+    "View instalment plan": "View instalment plan",
+    "Apply a payment term...": "Apply a payment term..."
 }

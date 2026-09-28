@@ -1749,3 +1749,8 @@ An audit of GET routes whose controllers only return JSON found built-and-tested
 - Tests: `StockReservationScreenTest` (3): permission gate, reserve+release round trip through the screen (asserts the RELEASED status and the empty-state text, not `assertDontSee($product->name)` -- the product legitimately still appears in the "new reservation" picker after release), menu visibility.
 - Full suite: 1859 passed. Existing `StockReservationTest` (service/API-level, unchanged) still green.
 - Install note: re-run the permissions seeder for `stock-reservations.index` to reach existing roles.
+
+## Entry 100 — 2026-09-28 — Apply a payment term from the invoice page
+
+`payment-terms.apply` (creates a `SettlementObligation` + instalment plan for an invoice) had no caller anywhere in the UI -- reachable only by hand-building the POST. `InvoiceController::show` now loads any existing obligation for the invoice and, if none exists and the invoice still has a remaining balance, the open payment terms; `invoices/show.blade.php` shows either a link to the existing instalment plan (`settlements.show`) or a picker to apply one, gated by `payment-terms.apply`/`settlements.show`.
+Tests: `InvoicePaymentTermTest` (2): apply-then-picker-disappears, and the picker stays hidden both without the permission and once the invoice is fully paid. Full suite: 1861 passed.
