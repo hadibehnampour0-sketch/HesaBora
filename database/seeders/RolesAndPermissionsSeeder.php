@@ -99,7 +99,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'tax-evidences' => ['store', 'download', 'destroy'],
 
             // P9.7 (Tax Readiness Score).
-            'tax-center' => ['index', 'audit-pack'],
+            'tax-center' => ['index', 'audit-pack', 'prepare'],
             'tax-readiness' => ['index', 'recalculate'],
 
             // P12.2 (Tax Alert & Smart Notification Engine).

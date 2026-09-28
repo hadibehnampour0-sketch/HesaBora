@@ -1787,3 +1787,11 @@ Owner asked to complete the Tax module, item by item, per docs/project-context/D
 - Full suite: 1876 passed. Permissions seeder re-run for the new `invoices.moadian-queue.index` permission.
 
 Tax plan progress: T-5, T-1, T-7 done. Remaining: T-3 (filing calendar), T-2 (evidence vault beyond ancillary costs), T-8/T-9 (guided "prepare my filing" flow), rule-pack versioning (owner decisions still open, §7.2).
+
+## Entry 105 — 2026-09-28 — Tax module: T-8/T-9 guided "Prepare my tax filing" flow
+
+The owner's core Tax requirement (§7 owner requirement #1 of the completeness plan): a non-expert must be able to complete and hand off the tax package. `TaxFilingPreparationController`/`TaxFilingPreparationService` compose the already-existing, already-tested pieces (readiness score, T-5 ledger reconciliation, period Moadian pending count) into one plain-language checklist per period -- no new financial calculation, just presentation. Each unmet item links straight to the screen that fixes it (company profile, Moadian work queue, seasonal report, ancillary costs); once everything passes, "Download audit pack" is one click away. A short, honest "Filing steps" list makes clear Dakhl prepares the figures/pack but does not submit the filing itself. Linked from the Tax menu (first item) and as the lead card on the Tax Center hub.
+Tests: `TaxFilingPreparationTest` (5): permission gate, no-score-yet prompt, an unsent invoice blocks readiness with a working fix link, a fully-configured/clean period reads "ready", cross-company isolation.
+Full suite: 1881 passed.
+
+Tax plan progress: T-5, T-1, T-7, T-8/T-9 done -- this was the owner's stated top priority within Tax. Remaining, lower priority: T-3 (filing calendar), T-2 (evidence vault beyond ancillary costs), rule-pack versioning (owner decisions still open, §7.2).

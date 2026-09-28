@@ -134,6 +134,9 @@
                 @can('tax-center.index')
                     <li><a href="{{ route('tax-center.index') }}">{{ __('Tax Center') }}</a></li>
                 @endcan
+                @can('tax-center.prepare')
+                    <li><a href="{{ route('tax-center.prepare') }}">{{ __('Prepare my tax filing') }}</a></li>
+                @endcan
                 @can('tax-readiness.index')
                     <li><a href="{{ route('tax-readiness.index') }}">{{ __('Tax Readiness') }}</a></li>
                 @endcan

@@ -19,6 +19,16 @@
             <p class="text-sm text-base-content/60">{{ __('Everything you need for the tax office in one place: invoices, VAT, Moadian, evidence and audit readiness.') }}</p>
         </div>
 
+        @can('tax-center.prepare')
+            <a href="{{ route('tax-center.prepare') }}" class="today-panel flex items-center justify-between gap-3 border-primary/40 bg-primary/5">
+                <span>
+                    <span class="today-panel-title">{{ __('Prepare my tax filing') }}</span>
+                    <span class="block text-xs text-base-content/60">{{ __('No accounting knowledge needed: a guided checklist for one period.') }}</span>
+                </span>
+                <span class="btn btn-sm btn-primary">{{ __('Start') }}</span>
+            </a>
+        @endcan
+
         @if ($latest)
             <a href="{{ route('tax-readiness.index') }}" class="today-panel flex items-center justify-between gap-3">
                 <span>
