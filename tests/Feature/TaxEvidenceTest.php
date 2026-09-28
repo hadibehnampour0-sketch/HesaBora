@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\TaxEvidenceType;
+use App\Models\AncillaryCost;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
@@ -59,7 +60,7 @@ class TaxEvidenceTest extends TestCase
         $this->actingAs($this->user);
     }
 
-    private function ancillaryCost(): \App\Models\AncillaryCost
+    private function ancillaryCost(): AncillaryCost
     {
         $product = $this->createProduct();
         $invoice = $this->findInvoice(
@@ -175,5 +176,75 @@ class TaxEvidenceTest extends TestCase
         $response->assertRedirect();
         $this->assertDatabaseMissing('tax_evidences', ['id' => $evidence->id]);
         Storage::disk('local')->assertMissing($path);
+    }
+
+    // --- T-2: the vault extended to Invoice, and the show-page widget ------------------
+
+    public function test_evidence_can_be_attached_to_an_invoice(): void
+    {
+        $this->user->givePermissionTo(Permission::firstOrCreate(['name' => 'invoices.tax-evidences.store']));
+        $product = $this->createProduct();
+        $invoice = $this->findInvoice(
+            $this->buy([$this->productItem($product, 5, 100)], true, ++$this->nextInvoiceNumber)['invoice']->id
+        );
+
+        $response = $this->post(route('invoices.tax-evidences.store', $invoice), [
+            'title' => 'Supplier contract',
+            'document_type' => TaxEvidenceType::CONTRACT->value,
+            'file' => UploadedFile::fake()->create('contract.pdf', 10),
+        ]);
+
+        $response->assertRedirect();
+        $evidence = TaxEvidence::where('evidenceable_id', $invoice->id)->where('evidenceable_type', $invoice->getMorphClass())->firstOrFail();
+        $this->assertSame($this->companyId, $evidence->company_id);
+        Storage::disk('local')->assertExists($evidence->file_path);
+    }
+
+    public function test_attaching_invoice_evidence_needs_its_own_permission_separate_from_ancillary_cost(): void
+    {
+        // tax-evidences.store (ancillary cost) is granted in setUp, but the invoice route needs
+        // its own permission name (permission == route name), and must not be satisfied by it.
+        $product = $this->createProduct();
+        $invoice = $this->findInvoice(
+            $this->buy([$this->productItem($product, 5, 100)], true, ++$this->nextInvoiceNumber)['invoice']->id
+        );
+
+        $this->post(route('invoices.tax-evidences.store', $invoice), [
+            'title' => 'X', 'document_type' => TaxEvidenceType::OTHER->value, 'file' => UploadedFile::fake()->create('x.pdf', 1),
+        ])->assertForbidden();
+    }
+
+    public function test_the_invoice_page_shows_and_uploads_evidence(): void
+    {
+        $this->user->givePermissionTo(
+            Permission::firstOrCreate(['name' => 'invoices.show']),
+            Permission::firstOrCreate(['name' => 'invoices.tax-evidences.store']),
+        );
+        $product = $this->createProduct();
+        $invoice = $this->findInvoice(
+            $this->buy([$this->productItem($product, 5, 100)], true, ++$this->nextInvoiceNumber)['invoice']->id
+        );
+        $this->post(route('invoices.tax-evidences.store', $invoice), [
+            'title' => 'Customs form', 'document_type' => TaxEvidenceType::OTHER->value, 'file' => UploadedFile::fake()->create('form.pdf', 5),
+        ]);
+
+        $this->get(route('invoices.show', $invoice))
+            ->assertOk()
+            ->assertSee(__('Tax evidence'))
+            ->assertSee('Customs form');
+    }
+
+    public function test_the_ancillary_cost_page_shows_its_own_evidence(): void
+    {
+        $ancillaryCost = $this->ancillaryCost();
+        $this->post(route('tax-evidences.store', $ancillaryCost), [
+            'title' => 'Freight invoice', 'document_type' => TaxEvidenceType::INVOICE_COPY->value, 'file' => UploadedFile::fake()->create('freight.pdf', 5),
+        ]);
+        $this->user->givePermissionTo(Permission::firstOrCreate(['name' => 'invoices.ancillary-costs.show']));
+
+        $this->get(route('invoices.ancillary-costs.show', [$ancillaryCost->invoice_id, $ancillaryCost]))
+            ->assertOk()
+            ->assertSee(__('Tax evidence'))
+            ->assertSee('Freight invoice');
     }
 }

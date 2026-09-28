@@ -3877,5 +3877,9 @@
     "All of this period's sales invoices reached Moadian": "همه‌ی فاکتورهای فروش این دوره به مودیان رسیده‌اند",
     "This period's VAT matches the accounting ledger": "ارزش افزوده‌ی این دوره با دفتر حسابداری همخوانی دارد",
     "High-value costs have supporting evidence attached": "هزینه‌های بالا مدرک پشتیبان دارند",
-    "One or more high-value costs are missing supporting evidence.": "یک یا چند هزینه‌ی بالا مدرک پشتیبان ندارند."
+    "One or more high-value costs are missing supporting evidence.": "یک یا چند هزینه‌ی بالا مدرک پشتیبان ندارند.",
+    "Tax evidence": "مدرک مالیاتی",
+    "Supporting documents you can show a tax auditor for this record.": "مدارک پشتیبانی که می‌توانید برای این رکورد به ممیز مالیاتی نشان دهید.",
+    "Delete this evidence?": "این مدرک حذف شود؟",
+    "Attach evidence": "پیوست مدرک"
 }

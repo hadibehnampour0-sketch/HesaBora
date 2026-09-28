@@ -4,23 +4,36 @@ namespace App\Http\Controllers;
 
 use App\Enums\TaxEvidenceType;
 use App\Models\AncillaryCost;
+use App\Models\Invoice;
 use App\Models\TaxEvidence;
 use App\Services\TaxEvidenceService;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 /**
- * P9.6 (Evidence Vault). Scoped to AncillaryCost for this pass (this
- * app's closest existing concept to a standalone "expense" record) --
- * the underlying model/service are polymorphic and can attach to other
- * financial records later without changes here.
+ * T-2 (docs/project-context/Dakhl_TAX_MODULE_COMPLETENESS_PLAN_2026-09-25.md): the Evidence
+ * Vault (P9.6) started scoped to AncillaryCost, and had no UI on ANY record -- only the
+ * route/controller/service existed. Extended to Invoice (the other record an auditor asks
+ * about) and given a reusable upload/list widget (`x-tax-evidence-vault`) used on both show
+ * pages. The underlying model/service were already polymorphic; nothing there changed.
  */
 class TaxEvidenceController extends Controller
 {
     public function __construct(private readonly TaxEvidenceService $evidenceService) {}
 
     public function storeForAncillaryCost(Request $request, AncillaryCost $ancillaryCost): RedirectResponse
+    {
+        return $this->store($request, $ancillaryCost);
+    }
+
+    public function storeForInvoice(Request $request, Invoice $invoice): RedirectResponse
+    {
+        return $this->store($request, $invoice);
+    }
+
+    private function store(Request $request, Model $evidenceable): RedirectResponse
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
@@ -29,7 +42,7 @@ class TaxEvidenceController extends Controller
         ]);
 
         $this->evidenceService->store(
-            $ancillaryCost,
+            $evidenceable,
             $validated['file'],
             $validated['document_type'],
             $validated['title'],

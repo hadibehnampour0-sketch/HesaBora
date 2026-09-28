@@ -133,6 +133,12 @@ class Invoice extends Model
         return $this->morphMany(PaymentAllocation::class, 'allocatable');
     }
 
+    /** T-2 (Evidence Vault, docs/project-context/Dakhl_TAX_MODULE_COMPLETENESS_PLAN_2026-09-25.md). */
+    public function taxEvidences()
+    {
+        return $this->morphMany(TaxEvidence::class, 'evidenceable');
+    }
+
     public function latestMoadianHistory()
     {
         // P12.1 hardening: latestOfMany() defaults to ordering by

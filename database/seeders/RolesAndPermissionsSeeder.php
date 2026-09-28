@@ -152,6 +152,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 ...self::CRUD,
                 'dashboard', 'print', 'export', 'change-status', 'search', 'approve', 'final-approve', 'get-items',
                 'moadian-form', 'moadian-histories.index', 'moadian-histories.show', 'moadian-queue.index', 'send-moadian', 'moadian-check-status',
+                'tax-evidences.store',
                 'search-customer', 'search-product-service',
                 'inactive', 'inactive.approve',
                 'conflicts', 'conflicts.more',

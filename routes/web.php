@@ -161,6 +161,7 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::post('ancillary-costs/{ancillary_cost}/change-status/{status}', [Controllers\AncillaryCostController::class, 'changeStatus'])->name('ancillary-costs.change-status');
         Route::patch('ancillary-costs/{ancillary_cost}/tax-deductible-status', [Controllers\AncillaryCostController::class, 'setTaxDeductibleStatus'])->name('ancillary-costs.set-tax-deductible-status');
         Route::post('ancillary-costs/{ancillary_cost}/tax-evidences', [Controllers\TaxEvidenceController::class, 'storeForAncillaryCost'])->name('tax-evidences.store');
+        Route::post('{invoice}/tax-evidences', [Controllers\TaxEvidenceController::class, 'storeForInvoice'])->name('invoices.tax-evidences.store');
         Route::get('tax-evidences/{tax_evidence}/download', [Controllers\TaxEvidenceController::class, 'download'])->name('tax-evidences.download');
         Route::delete('tax-evidences/{tax_evidence}', [Controllers\TaxEvidenceController::class, 'destroy'])->name('tax-evidences.destroy');
         Route::get('ancillary-costs/', [Controllers\AncillaryCostController::class, 'index'])->name('ancillary-costs.index');

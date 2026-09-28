@@ -1795,3 +1795,14 @@ Tests: `TaxFilingPreparationTest` (5): permission gate, no-score-yet prompt, an 
 Full suite: 1881 passed.
 
 Tax plan progress: T-5, T-1, T-7, T-8/T-9 done -- this was the owner's stated top priority within Tax. Remaining, lower priority: T-3 (filing calendar), T-2 (evidence vault beyond ancillary costs), rule-pack versioning (owner decisions still open, §7.2).
+
+## Entry 106 — 2026-09-28 — Tax module: T-2 evidence vault extended to invoices + given a UI
+
+Audit found the Evidence Vault (P9.6) had **no upload/list UI anywhere** -- only the AncillaryCost route/controller/service existed; nobody could actually attach evidence from the app. Fixed and extended per T-2:
+- `Invoice::taxEvidences()` (morphMany, same pattern as `AncillaryCost::taxEvidences()`).
+- `TaxEvidenceController::store()` deduplicated into one private method; `storeForAncillaryCost`/`storeForInvoice` are thin wrappers. New route/permission `invoices.tax-evidences.store` (kept separate from `tax-evidences.store`, matching this app's permission == route name convention).
+- New reusable `<x-tax-evidence-vault>` component (list + upload form), used on both `ancillaryCosts/show.blade.php` and `invoices/show.blade.php`.
+- Tests: 4 added to `TaxEvidenceTest` (now 9 total): invoice attach, invoice permission is separate from ancillary-cost permission, invoice show page renders the widget, ancillary cost show page renders the widget.
+- Full suite: 1885 passed.
+
+Tax completeness plan (Dakhl_TAX_MODULE_COMPLETENESS_PLAN_2026-09-25.md): T-5, T-1, T-7, T-8/T-9, T-2 done. Remaining: T-3 (filing calendar) and rule-pack versioning (owner decisions in §7.2 still open) -- T-3 is next.

@@ -824,6 +824,8 @@
                     @endcan
                 @endif
 
+                <x-tax-evidence-vault :evidences="$invoice->taxEvidences" :store-url="['url' => route('invoices.tax-evidences.store', $invoice), 'permission' => 'invoices.tax-evidences.store']" />
+
                 @can('invoices.payments.store')
                     <div class="flex flex-wrap gap-2 mt-4">
                         @if ($paymentDecision->hasErrors())

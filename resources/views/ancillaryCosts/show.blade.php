@@ -209,6 +209,8 @@
                 @endif
             </div>
 
+            <x-tax-evidence-vault :evidences="$ancillaryCost->taxEvidences" :store-url="['url' => route('tax-evidences.store', $ancillaryCost), 'permission' => 'tax-evidences.store']" />
+
             <div class="card-actions justify-between mt-4">
                 <a href="{{ isset($invoice) && $invoice ? route('invoices.show', $invoice) : route('ancillary-costs.index') }}" class="btn btn-ghost gap-2">
                     {{ __('Back') }}

@@ -315,6 +315,7 @@ class InvoiceController extends Controller
             'payments.payer.subject',
             'payments.creator',
             'payments.cheque',
+            'taxEvidences',
         ]);
 
         $paymentDecision = $paymentService->validateInvoicePayment($invoice);

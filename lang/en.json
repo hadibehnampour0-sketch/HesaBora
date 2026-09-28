@@ -3853,5 +3853,9 @@
     "All of this period's sales invoices reached Moadian": "All of this period's sales invoices reached Moadian",
     "This period's VAT matches the accounting ledger": "This period's VAT matches the accounting ledger",
     "High-value costs have supporting evidence attached": "High-value costs have supporting evidence attached",
-    "One or more high-value costs are missing supporting evidence.": "One or more high-value costs are missing supporting evidence."
+    "One or more high-value costs are missing supporting evidence.": "One or more high-value costs are missing supporting evidence.",
+    "Tax evidence": "Tax evidence",
+    "Supporting documents you can show a tax auditor for this record.": "Supporting documents you can show a tax auditor for this record.",
+    "Delete this evidence?": "Delete this evidence?",
+    "Attach evidence": "Attach evidence"
 }
