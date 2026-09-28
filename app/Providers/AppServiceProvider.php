@@ -7,6 +7,8 @@ use App\Events\InvoiceStatusChanged;
 use App\Faker\PersianProductProvider;
 use App\Faker\PersianServiceProvider;
 use App\Models\User;
+use App\Models\WarehouseProductStock;
+use App\Observers\WarehouseProductStockObserver;
 use App\Services\ActivityLogService;
 use App\Services\WebhookService;
 use Faker\Generator;
@@ -141,6 +143,9 @@ class AppServiceProvider extends ServiceProvider
                 'new_status' => $event->newStatus->name,
             ], $event->cheque->company_id);
         });
+
+        // Integration Hub two-way stock sync, live half (Dakhl_INTEGRATION_PLATFORMS_AND_POLICY_PLAN_2026-09-28.md §3).
+        WarehouseProductStock::observe(WarehouseProductStockObserver::class);
     }
 
     private function logRoleEvent(string $event, Model $model, mixed $rolesOrIds): void

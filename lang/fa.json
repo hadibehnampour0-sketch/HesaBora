@@ -3938,5 +3938,16 @@
     "Product \":name\" (platform id :id) is not mapped to a Dakhl product yet.": "کالای «:name» (شناسه‌ی پلتفرم :id) هنوز به کالایی در دخل وصل نشده.",
     "The Dakhl product mapped to \":name\" no longer exists.": "کالای دخل که به «:name» وصل بود دیگر وجود ندارد.",
     "Price mismatch for \":name\": platform :platform vs Dakhl :dakhl.": "اختلاف قیمت برای «:name»: پلتفرم :platform در برابر دخل :dakhl.",
-    "Not enough stock for \":name\" (need :need, have :have).": "موجودی کافی برای «:name» نیست (نیاز :need، موجود :have)."
+    "Not enough stock for \":name\" (need :need, have :have).": "موجودی کافی برای «:name» نیست (نیاز :need، موجود :have).",
+    "This handler only processes order-cancelled events.": "این پردازشگر فقط رویدادهای «سفارش لغو شد» را می‌پذیرد.",
+    "No Dakhl invoice has been imported for this order yet.": "هنوز فاکتوری در دخل برای این سفارش وارد نشده است.",
+    "The invoice imported for this order no longer exists.": "فاکتور واردشده برای این سفارش دیگر وجود ندارد.",
+    "Voided invoice #:number": "فاکتور شماره‌ی :number باطل شد",
+    "Product mapping": "اتصال کالاها",
+    "Map every product to its platform id here, before any order comes in, instead of one at a time from the review queue.": "همه‌ی کالاها را همین‌جا به شناسه‌شان در پلتفرم وصل کن، قبل از اینکه سفارشی بیاید، به‌جای یکی‌یکی از صف بازبینی.",
+    "Platform id": "شناسه در پلتفرم",
+    "Not mapped": "وصل نشده",
+    "Save mappings": "ذخیره‌ی اتصال‌ها",
+    "Map products": "اتصال کالاها",
+    ":count mapping updated.|:count mappings updated.": ":count اتصال به‌روز شد.|:count اتصال به‌روز شد."
 }

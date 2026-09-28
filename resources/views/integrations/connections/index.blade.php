@@ -78,12 +78,17 @@
                     </form>
                 @endcan
 
-                @can('integrations.connections.push-inventory')
-                    <form method="POST" action="{{ route('integrations.connections.push-inventory', $connection) }}" class="mt-2">
-                        @csrf
-                        <button class="btn btn-xs btn-outline">{{ __('Sync stock now') }}</button>
-                    </form>
-                @endcan
+                <div class="mt-2 flex flex-wrap gap-2">
+                    @can('integrations.connections.push-inventory')
+                        <form method="POST" action="{{ route('integrations.connections.push-inventory', $connection) }}">
+                            @csrf
+                            <button class="btn btn-xs btn-outline">{{ __('Sync stock now') }}</button>
+                        </form>
+                    @endcan
+                    @can('integrations.connections.mappings.index')
+                        <a href="{{ route('integrations.connections.mappings.index', $connection) }}" class="btn btn-xs btn-outline">{{ __('Map products') }}</a>
+                    @endcan
+                </div>
             </div>
         @empty
             <div class="alert text-sm">{{ __('No connections yet. Add the first one above.') }}</div>

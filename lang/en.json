@@ -3914,5 +3914,16 @@
     "Product \":name\" (platform id :id) is not mapped to a Dakhl product yet.": "Product \":name\" (platform id :id) is not mapped to a Dakhl product yet.",
     "The Dakhl product mapped to \":name\" no longer exists.": "The Dakhl product mapped to \":name\" no longer exists.",
     "Price mismatch for \":name\": platform :platform vs Dakhl :dakhl.": "Price mismatch for \":name\": platform :platform vs Dakhl :dakhl.",
-    "Not enough stock for \":name\" (need :need, have :have).": "Not enough stock for \":name\" (need :need, have :have)."
+    "Not enough stock for \":name\" (need :need, have :have).": "Not enough stock for \":name\" (need :need, have :have).",
+    "This handler only processes order-cancelled events.": "This handler only processes order-cancelled events.",
+    "No Dakhl invoice has been imported for this order yet.": "No Dakhl invoice has been imported for this order yet.",
+    "The invoice imported for this order no longer exists.": "The invoice imported for this order no longer exists.",
+    "Voided invoice #:number": "Voided invoice #:number",
+    "Product mapping": "Product mapping",
+    "Map every product to its platform id here, before any order comes in, instead of one at a time from the review queue.": "Map every product to its platform id here, before any order comes in, instead of one at a time from the review queue.",
+    "Platform id": "Platform id",
+    "Not mapped": "Not mapped",
+    "Save mappings": "Save mappings",
+    "Map products": "Map products",
+    ":count mapping updated.|:count mappings updated.": ":count mapping updated.|:count mappings updated."
 }

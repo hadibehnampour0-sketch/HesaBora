@@ -28,7 +28,26 @@ class WooCommerceAdapter implements IntegrationAdapter
     {
         $this->verifySignature($headers, $rawBody);
 
-        if (! isset($rawPayload['id'], $rawPayload['line_items'])) {
+        if (! isset($rawPayload['id'])) {
+            throw new InvalidArgumentException('Payload is not a recognizable WooCommerce order.');
+        }
+
+        // WooCommerce has no separate "order cancelled"/"refund" webhook topic -- it re-delivers
+        // the same order resource on the `order.updated` topic with its `status` field changed.
+        $topic = strtolower($headers['x-wc-webhook-topic'] ?? 'order.created');
+        $status = strtolower((string) ($rawPayload['status'] ?? ''));
+
+        if (str_starts_with($topic, 'order.updated')) {
+            return match ($status) {
+                'cancelled' => [new CanonicalEvent($this->source(), (string) $rawPayload['id'], IntegrationEventType::ORDER_CANCELLED, ['order_number' => (string) ($rawPayload['number'] ?? $rawPayload['id'])])],
+                'refunded' => [new CanonicalEvent($this->source(), (string) $rawPayload['id'], IntegrationEventType::REFUND_ISSUED, ['order_number' => (string) ($rawPayload['number'] ?? $rawPayload['id'])])],
+                // Every other status transition (processing, completed, on-hold, ...) has no
+                // automated effect in this version -- nothing to ingest, not an error.
+                default => [],
+            };
+        }
+
+        if (! isset($rawPayload['line_items'])) {
             throw new InvalidArgumentException('Payload is not a recognizable WooCommerce order.');
         }
 

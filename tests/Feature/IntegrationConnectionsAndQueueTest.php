@@ -249,4 +249,55 @@ class IntegrationConnectionsAndQueueTest extends TestCase
 
         $this->get(route('integrations.queue.index'))->assertOk()->assertDontSee('Secret other-company reason');
     }
+
+    // --- Bulk product mapping -------------------------------------------------------
+
+    public function test_the_mapping_screen_needs_its_own_permission(): void
+    {
+        $connection = IntegrationConnection::create([
+            'source_system' => 'woocommerce', 'name' => 'My Shop',
+            'credentials' => ['site_url' => 'https://x.test', 'consumer_key' => 'a', 'consumer_secret' => 'b', 'webhook_secret' => 'c'],
+        ]);
+
+        $this->get(route('integrations.connections.mappings.index', $connection))->assertForbidden();
+    }
+
+    public function test_saving_the_bulk_mapping_form_creates_updates_and_clears_mappings(): void
+    {
+        $this->grant('integrations.connections.mappings.index', 'integrations.connections.mappings.store');
+        $productA = $this->createProduct(['code' => 'A1', 'name' => 'Widget A']);
+        $productB = $this->createProduct(['code' => 'B1', 'name' => 'Widget B']);
+        $connection = IntegrationConnection::create([
+            'source_system' => 'woocommerce', 'name' => 'My Shop',
+            'credentials' => ['site_url' => 'https://x.test', 'consumer_key' => 'a', 'consumer_secret' => 'b', 'webhook_secret' => 'c'],
+        ]);
+        // Product A already mapped to 501; the form will change it to 999.
+        app(ExternalReferenceService::class)->link('woocommerce', '501', 'product', $productA->id);
+
+        $this->get(route('integrations.connections.mappings.index', $connection))->assertOk()->assertSee('Widget A')->assertSee('501');
+
+        $this->post(route('integrations.connections.mappings.store', $connection), [
+            'external_ids' => [$productA->id => '999', $productB->id => '777'],
+        ])->assertSessionHasNoErrors();
+
+        $this->assertSame($productA->id, app(ExternalReferenceService::class)->resolve('woocommerce', '999', 'product'));
+        $this->assertNull(app(ExternalReferenceService::class)->resolve('woocommerce', '501', 'product'));
+        $this->assertSame($productB->id, app(ExternalReferenceService::class)->resolve('woocommerce', '777', 'product'));
+    }
+
+    public function test_clearing_the_field_removes_an_existing_mapping(): void
+    {
+        $this->grant('integrations.connections.mappings.store');
+        $product = $this->createProduct(['code' => 'A1']);
+        $connection = IntegrationConnection::create([
+            'source_system' => 'woocommerce', 'name' => 'My Shop',
+            'credentials' => ['site_url' => 'https://x.test', 'consumer_key' => 'a', 'consumer_secret' => 'b', 'webhook_secret' => 'c'],
+        ]);
+        app(ExternalReferenceService::class)->link('woocommerce', '501', 'product', $product->id);
+
+        $this->post(route('integrations.connections.mappings.store', $connection), ['external_ids' => [$product->id => '']])
+            ->assertSessionHasNoErrors();
+
+        $this->assertNull(app(ExternalReferenceService::class)->resolve('woocommerce', '501', 'product'));
+    }
 }

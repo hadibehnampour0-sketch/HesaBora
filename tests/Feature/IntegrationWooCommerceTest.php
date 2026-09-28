@@ -15,6 +15,7 @@ use App\Models\Warehouse;
 use App\Models\WarehouseProductStock;
 use App\Services\Integration\Adapters\WooCommerceAdapter;
 use App\Services\Integration\ExternalReferenceService;
+use App\Services\Integration\IntegrationEventType;
 use App\Services\Integration\IntegrationHub;
 use App\Services\Integration\IntegrationHubFactory;
 use Cookie;
@@ -353,5 +354,81 @@ class IntegrationWooCommerceTest extends TestCase
         $response->assertOk();
         $this->assertSame(0, Invoice::withoutGlobalScopes()->where('company_id', $other->id)->count());
         $this->assertSame(0, Invoice::withoutGlobalScopes()->where('company_id', $this->companyId)->count());
+    }
+
+    // --- Cancellation (order.updated -> status=cancelled) ---------------------------
+
+    private function importOneOrder(IntegrationConnection $connection): Invoice
+    {
+        $product = $this->createProduct(['code' => 'SKU-1', 'quantity' => 10, 'selling_price' => 1000]);
+        app(ExternalReferenceService::class)->link('woocommerce', '900', 'product', $product->id);
+
+        $payload = $this->orderPayload();
+        $body = json_encode($payload);
+        $adapter = new WooCommerceAdapter($connection);
+        $events = $adapter->normalize($payload, $this->signedHeaders($payload, 'whsec_test'), $body);
+        app(IntegrationHubFactory::class)->make()->ingest($events[0]);
+
+        return Invoice::latest('id')->firstOrFail();
+    }
+
+    public function test_a_cancelled_order_voids_the_invoice_that_was_created_for_it(): void
+    {
+        $connection = $this->connection();
+        $invoice = $this->importOneOrder($connection);
+
+        $cancelPayload = $this->orderPayload([], ['status' => 'cancelled']);
+        $body = json_encode($cancelPayload);
+        $adapter = new WooCommerceAdapter($connection);
+        $events = $adapter->normalize($cancelPayload, array_merge($this->signedHeaders($cancelPayload, 'whsec_test'), ['x-wc-webhook-topic' => 'order.updated']), $body);
+
+        $this->assertCount(1, $events);
+        $result = app(IntegrationHubFactory::class)->make()->ingest($events[0]);
+
+        $this->assertSame(IntegrationHub::PROCESSED, $result['outcome']);
+        $this->assertTrue($invoice->voidInvoice()->exists());
+    }
+
+    public function test_an_order_update_with_an_unhandled_status_produces_no_event(): void
+    {
+        $connection = $this->connection();
+        $payload = $this->orderPayload([], ['status' => 'processing']);
+        $body = json_encode($payload);
+        $adapter = new WooCommerceAdapter($connection);
+
+        $events = $adapter->normalize($payload, array_merge($this->signedHeaders($payload, 'whsec_test'), ['x-wc-webhook-topic' => 'order.updated']), $body);
+
+        $this->assertSame([], $events);
+    }
+
+    public function test_a_refund_notification_is_normalized_but_left_unhandled_for_a_human(): void
+    {
+        $connection = $this->connection();
+        $invoice = $this->importOneOrder($connection);
+
+        $payload = $this->orderPayload([], ['status' => 'refunded']);
+        $body = json_encode($payload);
+        $adapter = new WooCommerceAdapter($connection);
+        $events = $adapter->normalize($payload, array_merge($this->signedHeaders($payload, 'whsec_test'), ['x-wc-webhook-topic' => 'order.updated']), $body);
+
+        $this->assertSame(IntegrationEventType::REFUND_ISSUED, $events[0]->type);
+        $result = app(IntegrationHubFactory::class)->make()->ingest($events[0]);
+
+        $this->assertSame(IntegrationHub::UNHANDLED, $result['outcome']);
+        // Never guessed at: the original invoice is untouched.
+        $this->assertFalse($invoice->fresh()->voidInvoice()->exists());
+    }
+
+    public function test_cancelling_an_order_that_was_never_imported_is_held_for_review(): void
+    {
+        $connection = $this->connection();
+        $payload = $this->orderPayload([], ['status' => 'cancelled']);
+        $body = json_encode($payload);
+        $adapter = new WooCommerceAdapter($connection);
+        $events = $adapter->normalize($payload, array_merge($this->signedHeaders($payload, 'whsec_test'), ['x-wc-webhook-topic' => 'order.updated']), $body);
+
+        $result = app(IntegrationHubFactory::class)->make()->ingest($events[0]);
+
+        $this->assertSame(IntegrationHub::PENDING_DEPENDENCY, $result['outcome']);
     }
 }

@@ -103,6 +103,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // Integration Hub screens (Dakhl_INTEGRATION_PLATFORMS_AND_POLICY_PLAN_2026-09-28.md).
             'integrations.connections' => ['index', 'store', 'update', 'destroy', 'push-inventory'],
+            'integrations.connections.mappings' => ['index', 'store'],
             'integrations.queue' => ['index', 'retry', 'map-product'],
             'tax-readiness' => ['index', 'recalculate'],
 

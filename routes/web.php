@@ -227,6 +227,8 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::put('connections/{connection}', [Controllers\IntegrationConnectionController::class, 'update'])->name('connections.update');
             Route::delete('connections/{connection}', [Controllers\IntegrationConnectionController::class, 'destroy'])->name('connections.destroy');
             Route::post('connections/{connection}/push-inventory', [Controllers\IntegrationConnectionController::class, 'pushInventory'])->name('connections.push-inventory');
+            Route::get('connections/{connection}/mappings', [Controllers\IntegrationProductMappingController::class, 'index'])->name('connections.mappings.index');
+            Route::post('connections/{connection}/mappings', [Controllers\IntegrationProductMappingController::class, 'store'])->name('connections.mappings.store');
 
             Route::get('queue', [Controllers\IntegrationQueueController::class, 'index'])->name('queue.index');
             Route::post('queue/{event}/retry', [Controllers\IntegrationQueueController::class, 'retry'])->name('queue.retry');
