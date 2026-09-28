@@ -28,6 +28,24 @@
             </a>
         @endif
 
+        @can('tax-center.audit-pack')
+            <form method="GET" action="{{ route('tax-center.audit-pack') }}" class="today-panel flex flex-wrap items-end gap-3">
+                <div>
+                    <div class="today-panel-title">{{ __('Audit pack') }}</div>
+                    <p class="mt-1 text-xs text-base-content/60">{{ __('One ZIP file with the seasonal VAT report, its ledger reconciliation, that period\'s invoices, Moadian statuses and every evidence file on record -- ready to hand to the tax office or an auditor.') }}</p>
+                </div>
+                <label class="form-control"><span class="label-text mb-1 text-xs">{{ __('Fiscal Year') }}</span>
+                    <input type="number" name="jalali_year" value="{{ $currentJalaliYear }}" class="input input-bordered input-sm w-28"></label>
+                <label class="form-control"><span class="label-text mb-1 text-xs">{{ __('Quarter') }}</span>
+                    <select name="quarter" class="select select-bordered select-sm">
+                        @foreach ([1 => __('Spring'), 2 => __('Summer'), 3 => __('Autumn'), 4 => __('Winter')] as $q => $label)
+                            <option value="{{ $q }}" @selected($q === $currentQuarter)>{{ __('Quarter') }} {{ $q }} ({{ $label }})</option>
+                        @endforeach
+                    </select></label>
+                <button type="submit" class="btn btn-sm btn-primary">{{ __('Download audit pack') }}</button>
+            </form>
+        @endcan
+
         @if ($cards->isEmpty())
             <div class="alert text-sm">{{ __('Nothing to show yet for your permissions.') }}</div>
         @else

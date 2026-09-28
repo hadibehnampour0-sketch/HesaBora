@@ -3811,5 +3811,21 @@
     "Raw material": "Raw material",
     "Semi-finished": "Semi-finished",
     "Finished good": "Finished good",
-    "Waste": "Waste"
+    "Waste": "Waste",
+    "Ledger reconciliation": "Ledger reconciliation",
+    "Matches the ledger": "Matches the ledger",
+    "Does not match the ledger": "Does not match the ledger",
+    "This report is computed from invoices. This check independently re-computes the same VAT from the accounting ledger and compares them -- a difference usually means a manual journal entry touched the VAT account directly.": "This report is computed from invoices. This check independently re-computes the same VAT from the accounting ledger and compares them -- a difference usually means a manual journal entry touched the VAT account directly.",
+    "From invoices": "From invoices",
+    "From ledger": "From ledger",
+    "Audit pack": "Audit pack",
+    "One ZIP file with the seasonal VAT report, its ledger reconciliation, that period's invoices, Moadian statuses and every evidence file on record -- ready to hand to the tax office or an auditor.": "One ZIP file with the seasonal VAT report, its ledger reconciliation, that period's invoices, Moadian statuses and every evidence file on record -- ready to hand to the tax office or an auditor.",
+    "Download audit pack": "Download audit pack",
+    "Dakhl tax audit pack": "Dakhl tax audit pack",
+    "Generated at": "Generated at",
+    "Contents": "Contents",
+    "supporting documents on file": "supporting documents on file",
+    "Does not match the ledger -- see seasonal-vat-report.csv": "Does not match the ledger -- see seasonal-vat-report.csv",
+    "Metric": "Metric",
+    "Invoice Count": "Invoice Count"
 }

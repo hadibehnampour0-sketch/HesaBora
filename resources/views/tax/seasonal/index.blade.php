@@ -61,6 +61,35 @@
                 <div class="alert mt-6 text-xs">
                     {{ __('This report is a reasonable, invoice-level approximation of the Article 169 seasonal VAT return. It has not been verified against the exact byte-level TTMS filing format.') }}
                 </div>
+
+                <div class="today-panel mt-6">
+                    <div class="flex items-center justify-between">
+                        <div class="today-panel-title">{{ __('Ledger reconciliation') }}</div>
+                        <span class="badge {{ $reconciliation['is_balanced'] ? 'badge-success' : 'badge-error' }}">
+                            {{ $reconciliation['is_balanced'] ? __('Matches the ledger') : __('Does not match the ledger') }}
+                        </span>
+                    </div>
+                    <p class="mt-1 text-xs text-base-content/60">{{ __('This report is computed from invoices. This check independently re-computes the same VAT from the accounting ledger and compares them -- a difference usually means a manual journal entry touched the VAT account directly.') }}</p>
+
+                    <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <div class="rounded-xl border p-3 {{ $reconciliation['vat_collected_matches'] ? 'border-base-300' : 'border-error' }}">
+                            <div class="text-xs opacity-60">{{ __('VAT Collected') }}</div>
+                            <div class="mt-1 flex justify-between text-sm"><span>{{ __('From invoices') }}</span><b>{{ number_format($reconciliation['report_vat_collected']) }}</b></div>
+                            <div class="flex justify-between text-sm"><span>{{ __('From ledger') }}</span><b>{{ number_format($reconciliation['ledger_vat_collected']) }}</b></div>
+                            @unless ($reconciliation['vat_collected_matches'])
+                                <div class="mt-1 text-xs text-error">{{ __('Difference') }}: {{ number_format($reconciliation['vat_collected_difference']) }}</div>
+                            @endunless
+                        </div>
+                        <div class="rounded-xl border p-3 {{ $reconciliation['input_vat_matches'] ? 'border-base-300' : 'border-error' }}">
+                            <div class="text-xs opacity-60">{{ __('Creditable Input VAT') }}</div>
+                            <div class="mt-1 flex justify-between text-sm"><span>{{ __('From invoices') }}</span><b>{{ number_format($reconciliation['report_input_vat']) }}</b></div>
+                            <div class="flex justify-between text-sm"><span>{{ __('From ledger') }}</span><b>{{ number_format($reconciliation['ledger_input_vat']) }}</b></div>
+                            @unless ($reconciliation['input_vat_matches'])
+                                <div class="mt-1 text-xs text-error">{{ __('Difference') }}: {{ number_format($reconciliation['input_vat_difference']) }}</div>
+                            @endunless
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

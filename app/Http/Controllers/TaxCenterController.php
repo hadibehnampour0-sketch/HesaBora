@@ -19,6 +19,9 @@ class TaxCenterController extends Controller
             ? TaxReadinessLog::latest('calculated_at')->first()
             : null;
 
-        return view('tax-center.index', compact('latest'));
+        [$currentJalaliYear, $currentJalaliMonth] = gregorian_to_jalali(now()->year, now()->month, now()->day);
+        $currentQuarter = (int) ceil($currentJalaliMonth / 3);
+
+        return view('tax-center.index', compact('latest', 'currentJalaliYear', 'currentQuarter'));
     }
 }

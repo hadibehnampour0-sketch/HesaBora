@@ -3835,5 +3835,21 @@
     "Raw material": "ماده اولیه",
     "Semi-finished": "نیمه‌ساخته",
     "Finished good": "محصول نهایی",
-    "Waste": "ضایعات"
+    "Waste": "ضایعات",
+    "Ledger reconciliation": "تطبیق با دفتر",
+    "Matches the ledger": "با دفتر همخوانی دارد",
+    "Does not match the ledger": "با دفتر همخوانی ندارد",
+    "This report is computed from invoices. This check independently re-computes the same VAT from the accounting ledger and compares them -- a difference usually means a manual journal entry touched the VAT account directly.": "این گزارش از روی فاکتورها محاسبه می‌شود. این بررسی همان ارزش افزوده را جدا از روی دفتر حسابداری دوباره حساب می‌کند و مقایسه می‌کند؛ اختلاف معمولاً یعنی یک سند دستی مستقیم حساب ارزش افزوده را دستکاری کرده است.",
+    "From invoices": "از روی فاکتورها",
+    "From ledger": "از روی دفتر",
+    "Audit pack": "بسته‌ی ممیزی",
+    "One ZIP file with the seasonal VAT report, its ledger reconciliation, that period's invoices, Moadian statuses and every evidence file on record -- ready to hand to the tax office or an auditor.": "یک فایل ZIP شامل گزارش فصلی ارزش افزوده، تطبیق آن با دفتر، فاکتورهای همان دوره، وضعیت‌های مودیان و همه‌ی مدارک ثبت‌شده — آماده‌ی تحویل به اداره‌ی مالیات یا ممیز.",
+    "Download audit pack": "دانلود بسته‌ی ممیزی",
+    "Dakhl tax audit pack": "بسته‌ی ممیزی مالیاتی دخل",
+    "Generated at": "زمان ساخت",
+    "Contents": "محتویات",
+    "supporting documents on file": "مدارک پشتیبان ثبت‌شده",
+    "Does not match the ledger -- see seasonal-vat-report.csv": "با دفتر همخوانی ندارد -- فایل seasonal-vat-report.csv را ببینید",
+    "Metric": "شاخص",
+    "Invoice Count": "تعداد فاکتور"
 }
