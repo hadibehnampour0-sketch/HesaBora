@@ -9,6 +9,11 @@ Route::get('/logout', [Controllers\Auth\LoginController::class, 'logout'])->name
 Route::post('/locale', [Controllers\Auth\LoginController::class, 'locale'])->name('locale');
 Route::post('/impersonation/leave', [Controllers\Management\UserController::class, 'leaveImpersonation'])->middleware('auth')->name('impersonation.leave');
 
+// Unauthenticated inbound platform webhook (design doc: the URL token + HMAC signature are its
+// only credentials -- a real platform cannot log in). Throttled against abuse/probing.
+Route::post('/integrations/woocommerce/webhook/{token}', [Controllers\IntegrationWebhookController::class, 'woocommerce'])
+    ->middleware('throttle:60,1')->name('integrations.woocommerce.webhook');
+
 Route::get('/forgot-password', [Controllers\Auth\PasswordResetController::class, 'showForgotPasswordForm'])->name('password.request');
 Route::post('/forgot-password', [Controllers\Auth\PasswordResetController::class, 'sendResetLink'])->middleware('throttle:6,1')->name('password.email');
 Route::get('/reset-password/{token}', [Controllers\Auth\PasswordResetController::class, 'showResetPasswordForm'])->name('password.reset');
@@ -214,6 +219,19 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::get('tax-center/prepare', [Controllers\TaxFilingPreparationController::class, 'index'])->name('tax-center.prepare');
         Route::get('tax-center/calendar', [Controllers\TaxFilingCalendarController::class, 'index'])->name('tax-center.calendar');
         Route::post('tax-center/calendar/mark-filed', [Controllers\TaxFilingCalendarController::class, 'markFiled'])->name('tax-center.calendar.mark-filed');
+
+        // Integration Hub screens (Dakhl_INTEGRATION_PLATFORMS_AND_POLICY_PLAN_2026-09-28.md).
+        Route::prefix('integrations')->name('integrations.')->group(function () {
+            Route::get('connections', [Controllers\IntegrationConnectionController::class, 'index'])->name('connections.index');
+            Route::post('connections', [Controllers\IntegrationConnectionController::class, 'store'])->name('connections.store');
+            Route::put('connections/{connection}', [Controllers\IntegrationConnectionController::class, 'update'])->name('connections.update');
+            Route::delete('connections/{connection}', [Controllers\IntegrationConnectionController::class, 'destroy'])->name('connections.destroy');
+            Route::post('connections/{connection}/push-inventory', [Controllers\IntegrationConnectionController::class, 'pushInventory'])->name('connections.push-inventory');
+
+            Route::get('queue', [Controllers\IntegrationQueueController::class, 'index'])->name('queue.index');
+            Route::post('queue/{event}/retry', [Controllers\IntegrationQueueController::class, 'retry'])->name('queue.retry');
+            Route::post('queue/map-product', [Controllers\IntegrationQueueController::class, 'mapProduct'])->name('queue.map-product');
+        });
         Route::get('tax-readiness', [Controllers\TaxReadinessController::class, 'index'])->name('tax-readiness.index');
         Route::post('tax-readiness/recalculate', [Controllers\TaxReadinessController::class, 'recalculate'])->name('tax-readiness.recalculate');
 

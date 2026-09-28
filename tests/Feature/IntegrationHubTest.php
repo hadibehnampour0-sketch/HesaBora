@@ -195,13 +195,18 @@ class IntegrationHubTest extends TestCase
                 return 'fakeshop';
             }
 
-            public function normalize(array $rawPayload, array $headers): array
+            public function normalize(array $rawPayload, array $headers, string $rawBody = ''): array
             {
                 if (($headers['x-signature'] ?? null) !== 'valid') {
                     throw new InvalidArgumentException('bad signature');
                 }
 
                 return [new CanonicalEvent($this->source(), (string) $rawPayload['id'], IntegrationEventType::ORDER_CREATED, ['total' => $rawPayload['total']])];
+            }
+
+            public function pushInventory(string $externalProductId, float $quantity): void
+            {
+                // Not exercised by this test.
             }
         };
 

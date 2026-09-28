@@ -77,6 +77,16 @@ class IntegrationHub
         });
     }
 
+    /** Re-run one specific waiting/failed/unhandled event (e.g. after a human fixed its cause from the review queue). */
+    public function retryEvent(IntegrationEvent $record): array
+    {
+        return DB::transaction(function () use ($record) {
+            $locked = IntegrationEvent::query()->lockForUpdate()->findOrFail($record->id);
+
+            return $this->run($locked, new CanonicalEvent($locked->source_system, $locked->external_id, IntegrationEventType::from($locked->event_type), $locked->payload));
+        });
+    }
+
     /** Re-run every waiting event (e.g. after a dependency such as the order's customer arrived). */
     public function retryWaiting(): int
     {

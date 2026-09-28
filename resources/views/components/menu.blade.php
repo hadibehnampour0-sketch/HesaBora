@@ -432,13 +432,19 @@
             @endcanany
 
             {{-- System --}}
-            @canany(['companies.index', 'users.index', 'configs.index', 'backups.create', 'workflow-governance.edit'])
+            @canany(['companies.index', 'users.index', 'configs.index', 'backups.create', 'workflow-governance.edit', 'integrations.connections.index', 'integrations.queue.index'])
                 <li>
                     <details>
                         <summary>{{ __('System') }}</summary>
                         <ul>
                             @can('companies.index')
                                 <li><a href="{{ route('companies.index') }}">{{ __('Companies') }}</a></li>
+                            @endcan
+                            @can('integrations.connections.index')
+                                <li><a href="{{ route('integrations.connections.index') }}">{{ __('Integrations') }}</a></li>
+                            @endcan
+                            @can('integrations.queue.index')
+                                <li><a href="{{ route('integrations.queue.index') }}">{{ __('Integration review queue') }}</a></li>
                             @endcan
                             @can('users.index')
                                 <li><a href="{{ route('users.index') }}">{{ __('Users') }}</a></li>

@@ -100,6 +100,10 @@ class RolesAndPermissionsSeeder extends Seeder
 
             // P9.7 (Tax Readiness Score).
             'tax-center' => ['index', 'audit-pack', 'prepare', 'calendar', 'calendar.mark-filed'],
+
+            // Integration Hub screens (Dakhl_INTEGRATION_PLATFORMS_AND_POLICY_PLAN_2026-09-28.md).
+            'integrations.connections' => ['index', 'store', 'update', 'destroy', 'push-inventory'],
+            'integrations.queue' => ['index', 'retry', 'map-product'],
             'tax-readiness' => ['index', 'recalculate'],
 
             // P12.2 (Tax Alert & Smart Notification Engine).
