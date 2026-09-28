@@ -3828,5 +3828,7 @@
     "No active reservations.": "رزرو فعالی وجود ندارد.",
     "An instalment plan exists for this invoice.": "برای این فاکتور یک برنامه‌ی اقساط وجود دارد.",
     "View instalment plan": "مشاهده‌ی برنامه‌ی اقساط",
-    "Apply a payment term...": "اعمال یک شرط پرداخت..."
+    "Apply a payment term...": "اعمال یک شرط پرداخت...",
+    "Dimensions": "ابعاد تحلیلی",
+    "Tag": "برچسب"
 }

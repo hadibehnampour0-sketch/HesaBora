@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTransactionRequest;
+use App\Models\AnalyticDimension;
 use App\Models\Company;
 use App\Models\Document;
 use App\Models\Subject;
@@ -138,7 +139,12 @@ class DocumentController extends Controller
             $q->where('users.id', Auth::id());
         })->where('id', '!=', getActiveCompany())->get();
 
-        return view('documents.show', compact('document', 'fiscalYears'));
+        $document->load('transactions.analyticDimensions');
+        $availableDimensions = auth()->user()->can('analytic-dimensions.transactions.sync')
+            ? AnalyticDimension::where('is_active', true)->orderBy('type')->orderBy('code')->get()
+            : collect();
+
+        return view('documents.show', compact('document', 'fiscalYears', 'availableDimensions'));
     }
 
     public function print(Document $document)

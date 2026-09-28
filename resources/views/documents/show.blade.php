@@ -106,6 +106,9 @@
                                 <th class="px-4 py-3 text-right">{{ __('Description') }}</th>
                                 <th class="px-4 py-3 text-right">{{ __('Debit') }}</th>
                                 <th class="px-4 py-3 text-right">{{ __('Credit') }}</th>
+                                @if ($availableDimensions->isNotEmpty())
+                                    <th class="px-4 py-3">{{ __('Dimensions') }}</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -128,10 +131,36 @@
                                     <td class="px-4 py-3 text-right">
                                         {{ $transaction->value > 0 ? formatNumber($transaction->value) : formatNumber(0) }}
                                     </td>
+                                    @if ($availableDimensions->isNotEmpty())
+                                        <td class="px-4 py-3">
+                                            <details class="dropdown">
+                                                <summary class="btn btn-ghost btn-xs">
+                                                    @forelse ($transaction->analyticDimensions as $tag)
+                                                        <span class="badge badge-outline badge-xs">{{ $tag->code }}</span>
+                                                    @empty
+                                                        <span class="text-xs text-base-content/50">{{ __('Tag') }}</span>
+                                                    @endforelse
+                                                </summary>
+                                                <form method="POST" action="{{ route('analytic-dimensions.transactions.sync', $transaction) }}"
+                                                    class="dropdown-content z-10 mt-1 w-56 space-y-1 rounded-box border border-base-300 bg-base-100 p-3 shadow">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    @foreach ($availableDimensions as $dimension)
+                                                        <label class="flex items-center gap-2 text-xs">
+                                                            <input type="checkbox" name="dimension_ids[]" value="{{ $dimension->id }}" class="checkbox checkbox-xs"
+                                                                @checked($transaction->analyticDimensions->contains('id', $dimension->id))>
+                                                            <span>{{ $dimension->code }} — {{ $dimension->name }}</span>
+                                                        </label>
+                                                    @endforeach
+                                                    <button type="submit" class="btn btn-primary btn-xs mt-2 w-full">{{ __('Save') }}</button>
+                                                </form>
+                                            </details>
+                                        </td>
+                                    @endif
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-6 text-center text-gray-500 dark:text-slate-400">
+                                    <td colspan="{{ $availableDimensions->isNotEmpty() ? 7 : 6 }}" class="px-4 py-6 text-center text-gray-500 dark:text-slate-400">
                                         {{ __('There are no transactions in this document yet.') }}
                                     </td>
                                 </tr>

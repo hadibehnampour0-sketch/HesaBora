@@ -1754,3 +1754,10 @@ An audit of GET routes whose controllers only return JSON found built-and-tested
 
 `payment-terms.apply` (creates a `SettlementObligation` + instalment plan for an invoice) had no caller anywhere in the UI -- reachable only by hand-building the POST. `InvoiceController::show` now loads any existing obligation for the invoice and, if none exists and the invoice still has a remaining balance, the open payment terms; `invoices/show.blade.php` shows either a link to the existing instalment plan (`settlements.show`) or a picker to apply one, gated by `payment-terms.apply`/`settlements.show`.
 Tests: `InvoicePaymentTermTest` (2): apply-then-picker-disappears, and the picker stays hidden both without the permission and once the invoice is fully paid. Full suite: 1861 passed.
+
+## Entry 101 — 2026-09-28 — Tag document transaction lines with an analytic dimension from the document page
+
+`analytic-dimensions.transactions.sync` (P3.1) had no caller in the UI. `DocumentController::show` now eager-loads each transaction's tagged dimensions and, only for a user with that permission, the active dimension list; `documents/show.blade.php` gained a compact per-row dropdown (checkboxes, one PUT per row) to tag/untag. Inactive dimensions are not offered. No change to `AnalyticDimensionService` or its existing tests.
+Tests: `DocumentDimensionTaggingTest` (3). Full suite: 1864 passed.
+
+This closes the "remaining gaps" list from Entries 98-100 (stock reservations screen, apply payment term from invoice, tag transactions with a dimension). Everything backend-only found in that audit now has a screen.
