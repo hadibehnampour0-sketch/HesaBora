@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
@@ -417,6 +418,47 @@ class IntegrationWooCommerceTest extends TestCase
         $this->assertSame(IntegrationHub::UNHANDLED, $result['outcome']);
         // Never guessed at: the original invoice is untouched.
         $this->assertFalse($invoice->fresh()->voidInvoice()->exists());
+    }
+
+    public function test_the_void_invoice_number_is_scoped_to_the_void_sequence_and_this_company_only(): void
+    {
+        // A regular sell invoice with a huge number, in the SAME company --
+        // the void sequence must never be derived from it (the pre-fix bug
+        // read `Invoice::withoutGlobalScopes()->max('number')` with no
+        // `invoice_type` filter AND no company scope at all).
+        $unrelatedProduct = $this->createProduct(['code' => 'SKU-UNRELATED', 'quantity' => 5, 'selling_price' => 1000]);
+        $this->sell([$this->productItem($unrelatedProduct, 1, 1000)], true, 99999);
+
+        $other = Company::factory()->create(['fiscal_year' => 1405]);
+        $otherCustomer = Customer::factory()->create(['company_id' => $other->id]);
+        // Invoice::creating() unconditionally stamps company_id from
+        // getActiveCompany() -- the active company must actually be
+        // switched for this fixture row to land where intended.
+        config(['active-company-id' => $other->id]);
+        Invoice::create([
+            'customer_id' => $otherCustomer->id,
+            'invoice_type' => InvoiceType::VOID,
+            'status' => InvoiceStatus::APPROVED,
+            'number' => 500_000,
+            'date' => now()->toDateString(),
+            'title' => 'other company void fixture',
+            'subtraction' => 0,
+            'vat' => 0,
+            'amount' => 0,
+        ]);
+        config(['active-company-id' => $this->companyId]);
+
+        $connection = $this->connection();
+        $invoice = $this->importOneOrder($connection);
+
+        $cancelPayload = $this->orderPayload([], ['status' => 'cancelled']);
+        $body = json_encode($cancelPayload);
+        $adapter = new WooCommerceAdapter($connection);
+        $events = $adapter->normalize($cancelPayload, array_merge($this->signedHeaders($cancelPayload, 'whsec_test'), ['x-wc-webhook-topic' => 'order.updated']), $body);
+        app(IntegrationHubFactory::class)->make()->ingest($events[0]);
+
+        $voidInvoice = $invoice->voidInvoice()->firstOrFail();
+        $this->assertSame(1.0, (float) $voidInvoice->number, 'the void number must come from THIS company\'s own void sequence, not from an unrelated sell invoice or another company\'s void invoice');
     }
 
     public function test_cancelling_an_order_that_was_never_imported_is_held_for_review(): void
