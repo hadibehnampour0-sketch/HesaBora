@@ -245,6 +245,33 @@
                 {{ __('Add Transaction') }}
             </div>
         </button>
+
+        @can('promotions.evaluate')
+            <div class="px-4 mt-2">
+                <button type="button" class="btn btn-sm btn-outline" @click="suggestPromotions()">
+                    {{ __('Check active promotions') }}
+                </button>
+
+                <template x-if="promotionSuggestions && ! promotionSuggestions.discounts.length && ! promotionSuggestions.bonus_items.length">
+                    <div class="text-sm text-gray-500 mt-2">{{ __('No promotion applies to this cart right now.') }}</div>
+                </template>
+
+                <div class="mt-2 space-y-2" x-show="promotionSuggestions && (promotionSuggestions.discounts.length || promotionSuggestions.bonus_items.length)">
+                    <template x-for="discount in (promotionSuggestions ? promotionSuggestions.discounts : [])" :key="discount.promotion_id + '-' + discount.product_id">
+                        <div class="alert alert-info flex items-center justify-between text-sm py-2">
+                            <span x-text="discount.promotion_title + ' — ' + $store.utils.localizeNumber(String(discount.discount_percent)) + '% {{ __('off') }}'"></span>
+                            <button type="button" class="btn btn-xs btn-primary" @click="applyDiscount(discount)">{{ __('Apply') }}</button>
+                        </div>
+                    </template>
+                    <template x-for="bonus in (promotionSuggestions ? promotionSuggestions.bonus_items : [])" :key="bonus.promotion_id + '-' + bonus.product_id">
+                        <div class="alert alert-success flex items-center justify-between text-sm py-2">
+                            <span x-text="bonus.promotion_title + ' — ' + getProductName(bonus.product_id) + ' × ' + $store.utils.localizeNumber(String(bonus.quantity)) + ' {{ __('free') }}'"></span>
+                            <button type="button" class="btn btn-xs btn-primary" @click="applyBonusItem(bonus)">{{ __('Apply') }}</button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        @endcan
     </div>
     <hr style="">
     <div class="flex flex-row justify-between" x-data="{ subtractionsInput: '{{ old('subtraction') ?? ($invoice->subtraction ?? 0) }}' }">
@@ -319,6 +346,60 @@
                 products: {!! json_encode($products, JSON_UNESCAPED_UNICODE) !!},
                 services: {!! json_encode($services, JSON_UNESCAPED_UNICODE) !!},
                 isEditing: {{ $invoice->exists ? 'true' : 'false' }},
+                promotionSuggestions: null,
+                getProductName(productId) {
+                    const product = this.products.find(p => p.id == productId);
+                    return product ? product.name : '';
+                },
+                suggestPromotions() {
+                    const cart = this.transactions
+                        .filter(t => t.product_id)
+                        .map(t => ({ product_id: t.product_id, quantity: Number(this.$store.utils.convertToEnglish(t.quantity)) || 0 }))
+                        .filter(line => line.quantity > 0);
+
+                    if (! cart.length) {
+                        this.promotionSuggestions = { discounts: [], bonus_items: [] };
+                        return;
+                    }
+
+                    const customerId = document.querySelector('input[name="customer_id"]')?.value || null;
+                    const token = document.querySelector('input[name="_token"]')?.value;
+
+                    fetch('{{ route('promotions.evaluate') }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+                        body: JSON.stringify({ customer_id: customerId || null, cart }),
+                    })
+                        .then(res => res.ok ? res.json() : { discounts: [], bonus_items: [] })
+                        .then(data => { this.promotionSuggestions = data; })
+                        .catch(() => {});
+                },
+                applyDiscount(discount) {
+                    this.transactions.filter(t => t.product_id == discount.product_id).forEach(t => {
+                        const qty = Number(this.$store.utils.convertToEnglish(t.quantity)) || 0;
+                        const unit = Number(this.$store.utils.convertToEnglish(t.unit)) || 0;
+                        t.off = Math.round((qty * unit) * discount.discount_percent / 100);
+                    });
+                },
+                applyBonusItem(bonus) {
+                    const newId = this.transactions.length ? this.transactions[this.transactions.length - 1].id + 1 : 1;
+                    const vatRate = this.isEditing ? 0 : this.getProductVat(bonus.product_id);
+                    this.transactions.push({
+                        id: newId,
+                        service_id: null,
+                        product_id: bonus.product_id,
+                        item_type: 'product',
+                        item_id: `product-${bonus.product_id}`,
+                        inventory_subject_id: this.getProductInventorySubjectId(bonus.product_id),
+                        quantity: bonus.quantity,
+                        unit: 0,
+                        off: 0,
+                        vat: vatRate,
+                        total: 0,
+                        desc: bonus.promotion_title,
+                    });
+                    this.activeTab = this.transactions.length - 1;
+                },
                 addTransaction() {
                     const newId = this.transactions.length ? this.transactions[this.transactions
                         .length - 1].id + 1 : 1;

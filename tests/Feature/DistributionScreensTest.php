@@ -138,6 +138,20 @@ class DistributionScreensTest extends TestCase
         $this->post(route('distribution.visitors.store'), ['user_id' => $outsider->id])->assertSessionHasErrors('user_id');
     }
 
+    public function test_a_visitors_commission_rate_can_be_set_and_cleared(): void
+    {
+        $this->grantAll();
+        $visitor = $this->addVisitor(false);
+
+        $this->put(route('distribution.visitors.update', $visitor), ['commission_rate' => '5.5'])->assertSessionHasNoErrors();
+        $this->assertSame(5.5, (float) $visitor->fresh()->commission_rate);
+
+        $this->put(route('distribution.visitors.update', $visitor), ['commission_rate' => ''])->assertSessionHasNoErrors();
+        $this->assertNull($visitor->fresh()->commission_rate);
+
+        $this->put(route('distribution.visitors.update', $visitor), ['commission_rate' => '150'])->assertSessionHasErrors('commission_rate');
+    }
+
     public function test_removing_a_visitor_keeps_the_van_warehouse(): void
     {
         $this->grantAll();
@@ -164,6 +178,32 @@ class DistributionScreensTest extends TestCase
         $plan = VisitPlan::firstOrFail();
         $this->patch(route('distribution.plans.update-status', $plan), ['status' => 'completed'])->assertSessionHasNoErrors();
         $this->assertSame('completed', $plan->fresh()->status->value);
+    }
+
+    public function test_the_route_day_calendar_shows_this_weeks_plans_and_navigates_by_week(): void
+    {
+        $this->grantAll();
+        $visitor = $this->addVisitor(false);
+
+        $thisWeek = now()->toDateString();
+        $nextWeek = now()->addDays(7)->toDateString();
+
+        VisitPlan::create(['user_id' => $visitor->user_id, 'plan_date' => $thisWeek]);
+        VisitPlan::create(['user_id' => $visitor->user_id, 'plan_date' => $nextWeek]);
+
+        // This week's calendar only carries this week's plan...
+        $response = $this->get(route('distribution.plans.index'));
+        $response->assertOk();
+        $weekPlans = $response->viewData('weekPlans');
+        $this->assertTrue($weekPlans->has($thisWeek));
+        $this->assertFalse($weekPlans->has($nextWeek));
+
+        // ...and navigating forward a week brings the other plan into view.
+        $response = $this->get(route('distribution.plans.index', ['week' => $nextWeek]));
+        $response->assertOk();
+        $weekPlans = $response->viewData('weekPlans');
+        $this->assertTrue($weekPlans->has($nextWeek));
+        $this->assertFalse($weekPlans->has($thisWeek));
     }
 
     public function test_a_settlement_goes_from_draft_to_submitted_to_approved(): void

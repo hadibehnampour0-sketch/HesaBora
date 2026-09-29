@@ -55,7 +55,7 @@
                     @endcan
                 </div>
                 @can('distribution.visitors.update')
-                    <form method="POST" action="{{ route('distribution.visitors.update', $visitor) }}" class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-5">
+                    <form method="POST" action="{{ route('distribution.visitors.update', $visitor) }}" class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-6">
                         @csrf @method('PUT')
                         <select name="warehouse_id" class="select select-bordered select-sm">
                             <option value="">{{ __('No warehouse yet') }}</option>
@@ -65,6 +65,7 @@
                         </select>
                         <input type="text" name="phone" value="{{ $visitor->phone }}" maxlength="30" class="input input-bordered input-sm" placeholder="{{ __('Phone') }}">
                         <input type="text" name="notes" value="{{ $visitor->notes }}" maxlength="1000" class="input input-bordered input-sm" placeholder="{{ __('Notes') }}">
+                        <input type="number" step="0.01" min="0" max="100" name="commission_rate" value="{{ $visitor->commission_rate }}" class="input input-bordered input-sm" placeholder="{{ __('Commission rate (%) — leave blank for the default tiers') }}">
                         <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="is_active" value="1" class="checkbox checkbox-sm" @checked($visitor->is_active)>{{ __('Active') }}</label>
                         <button class="btn btn-sm btn-outline">{{ __('Save') }}</button>
                     </form>

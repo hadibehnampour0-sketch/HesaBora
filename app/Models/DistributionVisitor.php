@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /** A field visitor (ویزیتور): a company user, optionally with a dedicated van warehouse. */
 class DistributionVisitor extends Model
 {
-    protected $fillable = ['company_id', 'user_id', 'warehouse_id', 'is_active', 'phone', 'notes'];
+    protected $fillable = ['company_id', 'user_id', 'warehouse_id', 'is_active', 'phone', 'notes', 'commission_rate'];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'commission_rate' => 'decimal:2',
     ];
 
     public static function booted(): void

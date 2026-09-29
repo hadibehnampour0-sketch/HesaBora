@@ -9,6 +9,7 @@ use App\Models\Company;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\DailySettlement;
+use App\Models\ProductGroup;
 use App\Models\Promotion;
 use App\Models\SalesRoute;
 use App\Models\User;
@@ -58,7 +59,7 @@ class FieldOperationsTest extends TestCase
         $this->importSubjects($this->companyId);
         $this->importConfigs($this->companyId);
 
-        \App\Models\ProductGroup::factory()->withSubjects()->create(['name' => 'g', 'vat' => 0, 'company_id' => $this->companyId]);
+        ProductGroup::factory()->withSubjects()->create(['name' => 'g', 'vat' => 0, 'company_id' => $this->companyId]);
         $customerGroup = CustomerGroup::factory()->withSubject()->create(['name' => 'g', 'company_id' => $this->companyId]);
         $this->customer = Customer::factory()->withGroup($customerGroup)->withSubject()->create(['company_id' => $this->companyId]);
 
@@ -300,6 +301,36 @@ class FieldOperationsTest extends TestCase
 
         $response->assertOk();
         $this->assertCount(1, $response->json('discounts'));
+    }
+
+    public function test_the_evaluate_endpoint_resolves_the_promotions_group_from_a_customer_id(): void
+    {
+        $this->grant(['promotions.evaluate']);
+        $product = $this->createProduct();
+        $group = CustomerGroup::factory()->withSubject()->create(['company_id' => $this->companyId]);
+        $customer = Customer::factory()->withGroup($group)->withSubject()->create(['company_id' => $this->companyId]);
+        Promotion::create([
+            'title' => 'Group-only discount',
+            'type' => PromotionType::TIERED_DISCOUNT->value,
+            'customer_group_id' => $group->id,
+            'rules' => ['product_id' => $product->id, 'tiers' => [['min_qty' => 1, 'discount_percent' => 8]]],
+        ]);
+
+        // Positive control: without the customer_id, the group-scoped
+        // promotion must NOT apply -- otherwise the resolution path below
+        // proves nothing.
+        $this->postJson(route('promotions.evaluate'), [
+            'cart' => [['product_id' => $product->id, 'quantity' => 1]],
+        ])->assertOk()->assertJsonCount(0, 'discounts');
+
+        $response = $this->postJson(route('promotions.evaluate'), [
+            'customer_id' => $customer->id,
+            'cart' => [['product_id' => $product->id, 'quantity' => 1]],
+        ]);
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json('discounts'));
+        $this->assertSame(8.0, (float) $response->json('discounts.0.discount_percent'));
     }
 
     // -----------------------------------------------------------------

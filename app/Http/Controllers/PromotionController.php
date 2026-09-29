@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PromotionType;
+use App\Models\Customer;
 use App\Models\Promotion;
 use App\Services\PromotionEngineService;
 use Illuminate\Http\Request;
@@ -61,6 +62,7 @@ class PromotionController extends Controller
     public function evaluate(Request $request)
     {
         $validated = $request->validate([
+            'customer_id' => ['nullable', 'integer', Rule::exists('customers', 'id')->where('company_id', getActiveCompany())],
             'customer_group_id' => ['nullable', 'integer'],
             'cart' => ['required', 'array', 'min:1'],
             'cart.*.product_id' => ['required', 'integer'],
@@ -68,8 +70,13 @@ class PromotionController extends Controller
             'date' => ['nullable', 'date'],
         ]);
 
+        // The sell form only knows the customer, not their group -- resolve
+        // it here rather than pushing group data into the invoice form's JS.
+        $customerGroupId = $validated['customer_group_id']
+            ?? (isset($validated['customer_id']) ? Customer::find($validated['customer_id'])?->group_id : null);
+
         $result = $this->engine->evaluate(
-            $validated['customer_group_id'] ?? null,
+            $customerGroupId,
             $validated['cart'],
             isset($validated['date']) ? Carbon::parse($validated['date']) : null
         );

@@ -3989,5 +3989,14 @@
     "Recipe deleted successfully.": "فرمول با موفقیت حذف شد.",
     "Produced :quantity units at a unit cost of :cost.": ":quantity واحد با بهای هر واحد :cost تولید شد.",
     "The quantity to produce must be greater than zero.": "تعداد تولید باید بیشتر از صفر باشد.",
-    "Not enough \":name\" in this warehouse: need :need, have :have.": "موجودی «:name» در این انبار کافی نیست: نیاز :need، موجود :have."
+    "Not enough \":name\" in this warehouse: need :need, have :have.": "موجودی «:name» در این انبار کافی نیست: نیاز :need، موجود :have.",
+    "Commission rate (%) — leave blank for the default tiers": "نرخ کمیسیون (%) — برای استفاده از پله‌های پیش‌فرض خالی بگذارید",
+    "Check active promotions": "بررسی تخفیف/جایزه فعال",
+    "No promotion applies to this cart right now.": "در حال حاضر هیچ تخفیف یا جایزه‌ای برای این سبد وجود ندارد.",
+    "off": "تخفیف",
+    "free": "رایگان",
+    "Route-day calendar": "تقویم مسیر روزانه",
+    "Previous week": "هفته قبل",
+    "This week": "این هفته",
+    "Next week": "هفته بعد"
 }

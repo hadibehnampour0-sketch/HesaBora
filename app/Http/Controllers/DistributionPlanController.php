@@ -8,6 +8,7 @@ use App\Models\SalesRoute;
 use App\Models\VisitPlan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -19,6 +20,20 @@ class DistributionPlanController extends Controller
     {
         $date = $request->filled('date') ? jalaliInputToGregorian($request->input('date'), 'date') : null;
 
+        // The week grid always starts on Saturday (the Iranian week's first
+        // day) regardless of locale -- Carbon::SATURDAY, not startOfWeek()'s
+        // own locale-dependent default (Monday).
+        $weekStart = $request->filled('week')
+            ? Carbon::parse($request->input('week'))->startOfDay()
+            : now()->startOfDay();
+        $weekStart = $weekStart->copy()->subDays(($weekStart->dayOfWeek - Carbon::SATURDAY + 7) % 7);
+        $weekDays = collect(range(0, 6))->map(fn ($i) => $weekStart->copy()->addDays($i));
+
+        $weekPlans = VisitPlan::with(['user', 'route'])
+            ->whereBetween('plan_date', [$weekStart->toDateString(), $weekStart->copy()->addDays(6)->toDateString()])
+            ->get()
+            ->groupBy(fn (VisitPlan $plan) => $plan->plan_date->toDateString());
+
         return view('distribution.plans', [
             'plans' => VisitPlan::with(['user', 'route'])
                 ->when($date, fn ($q) => $q->whereDate('plan_date', $date))
@@ -26,6 +41,9 @@ class DistributionPlanController extends Controller
             'visitors' => DistributionVisitor::with('user')->where('is_active', true)->get()->sortBy(fn ($v) => $v->user?->name)->values(),
             'routes' => SalesRoute::where('is_active', true)->orderBy('title')->get(['id', 'title']),
             'filterDate' => $request->input('date'),
+            'weekStart' => $weekStart,
+            'weekDays' => $weekDays,
+            'weekPlans' => $weekPlans,
         ]);
     }
 

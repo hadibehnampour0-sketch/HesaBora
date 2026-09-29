@@ -3965,5 +3965,14 @@
     "Recipe deleted successfully.": "Recipe deleted successfully.",
     "Produced :quantity units at a unit cost of :cost.": "Produced :quantity units at a unit cost of :cost.",
     "The quantity to produce must be greater than zero.": "The quantity to produce must be greater than zero.",
-    "Not enough \":name\" in this warehouse: need :need, have :have.": "Not enough \":name\" in this warehouse: need :need, have :have."
+    "Not enough \":name\" in this warehouse: need :need, have :have.": "Not enough \":name\" in this warehouse: need :need, have :have.",
+    "Commission rate (%) — leave blank for the default tiers": "Commission rate (%) — leave blank for the default tiers",
+    "Check active promotions": "Check active promotions",
+    "No promotion applies to this cart right now.": "No promotion applies to this cart right now.",
+    "off": "off",
+    "free": "free",
+    "Route-day calendar": "Route-day calendar",
+    "Previous week": "Previous week",
+    "This week": "This week",
+    "Next week": "Next week"
 }

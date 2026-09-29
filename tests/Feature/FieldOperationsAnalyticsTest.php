@@ -8,6 +8,7 @@ use App\Models\Company;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\DailySettlement;
+use App\Models\DistributionVisitor;
 use App\Models\Payment;
 use App\Models\ProductGroup;
 use App\Models\RepCommission;
@@ -147,6 +148,69 @@ class FieldOperationsAnalyticsTest extends TestCase
 
         $this->assertSame(1, RepCommission::count());
         $this->assertSame(70_000_000.0, (float) RepCommission::first()->total_settled_amount);
+    }
+
+    public function test_a_visitors_own_commission_rate_overrides_the_tier(): void
+    {
+        $rep = User::factory()->create();
+        Company::find($this->companyId)->users()->syncWithoutDetaching($rep);
+        DistributionVisitor::create(['user_id' => $rep->id, 'commission_rate' => 7.5]);
+        DailySettlement::create([
+            'user_id' => $rep->id,
+            'settlement_date' => '2026-06-05',
+            'total_invoiced_amount' => 100_000_000,
+            'status' => DailySettlementStatus::APPROVED,
+        ]);
+
+        $results = app(RepCommissionEngineService::class)->calculateForPeriod($this->companyId, '2026-06-01', '2026-06-30');
+
+        $commission = $results->first();
+        $this->assertSame('Custom', $commission->tier_label);
+        $this->assertSame(7.5, (float) $commission->commission_rate);
+        $this->assertSame(7_500_000.0, (float) $commission->commission_amount);
+    }
+
+    public function test_a_visitor_without_an_override_still_uses_the_default_tiers(): void
+    {
+        $rep = User::factory()->create();
+        Company::find($this->companyId)->users()->syncWithoutDetaching($rep);
+        DistributionVisitor::create(['user_id' => $rep->id]);
+        DailySettlement::create([
+            'user_id' => $rep->id,
+            'settlement_date' => '2026-06-05',
+            'total_invoiced_amount' => 100_000_000,
+            'status' => DailySettlementStatus::APPROVED,
+        ]);
+
+        $results = app(RepCommissionEngineService::class)->calculateForPeriod($this->companyId, '2026-06-01', '2026-06-30');
+
+        $commission = $results->first();
+        $this->assertSame('Silver', $commission->tier_label);
+        $this->assertSame(2.0, (float) $commission->commission_rate);
+    }
+
+    public function test_another_companys_visitor_override_does_not_leak_into_this_companys_calculation(): void
+    {
+        $rep = User::factory()->create();
+        Company::find($this->companyId)->users()->syncWithoutDetaching($rep);
+        DailySettlement::create([
+            'user_id' => $rep->id,
+            'settlement_date' => '2026-06-05',
+            'total_invoiced_amount' => 100_000_000,
+            'status' => DailySettlementStatus::APPROVED,
+        ]);
+
+        $otherCompany = Company::factory()->create();
+        $otherCompany->users()->syncWithoutDetaching($rep);
+        config(['active-company-id' => $otherCompany->id]);
+        DistributionVisitor::create(['user_id' => $rep->id, 'commission_rate' => 9.9]);
+        config(['active-company-id' => $this->companyId]);
+
+        $results = app(RepCommissionEngineService::class)->calculateForPeriod($this->companyId, '2026-06-01', '2026-06-30');
+
+        $commission = $results->first();
+        $this->assertSame('Silver', $commission->tier_label);
+        $this->assertSame(2.0, (float) $commission->commission_rate);
     }
 
     public function test_a_user_cannot_read_another_companys_rep_commissions(): void

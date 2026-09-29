@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\DailySettlementStatus;
 use App\Models\DailySettlement;
+use App\Models\DistributionVisitor;
 use App\Models\RepCommission;
 use Illuminate\Support\Collection;
 
@@ -18,10 +19,10 @@ use Illuminate\Support\Collection;
  * Tier thresholds/rates below are a REASONABLE DEFAULT, not a value the
  * owner specified -- a class constant for this pass, mirroring
  * TaxReadinessService::MATERIAL_EXPENSE_THRESHOLD's own precedent
- * (guardrail #49). If this needs to become a real per-company configured
- * policy later, follow the same Config/ConfigLoader pattern P7's
- * WorkflowGovernanceSettingsService already established rather than
- * inventing a new settings mechanism.
+ * (guardrail #49). A visitor with their OWN agreed commission rate
+ * (`distribution_visitors.commission_rate`, set from the Visitors screen)
+ * overrides the tier lookup entirely for that person -- the tiers remain
+ * the company-wide default for everyone else.
  */
 class RepCommissionEngineService
 {
@@ -50,9 +51,18 @@ class RepCommissionEngineService
             ->groupBy('user_id')
             ->get();
 
-        return $totals->map(function ($row) use ($companyId, $periodStart, $periodEnd) {
+        $overrideRates = DistributionVisitor::withoutGlobalScopes()
+            ->where('company_id', $companyId)
+            ->whereIn('user_id', $totals->pluck('user_id'))
+            ->whereNotNull('commission_rate')
+            ->pluck('commission_rate', 'user_id');
+
+        return $totals->map(function ($row) use ($companyId, $periodStart, $periodEnd, $overrideRates) {
             $total = (float) $row->total;
-            $tier = $this->tierFor($total);
+            $overrideRate = $overrideRates->get($row->user_id);
+            $tier = $overrideRate !== null
+                ? ['rate' => (float) $overrideRate, 'label' => 'Custom']
+                : $this->tierFor($total);
 
             // Guardrail #35: updateOrCreate()'s own lookup compares the raw
             // 'Y-m-d' argument against period_start/period_end's stored,

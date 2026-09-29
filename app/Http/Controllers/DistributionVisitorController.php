@@ -55,6 +55,7 @@ class DistributionVisitorController extends Controller
             'warehouse_id' => ['nullable', 'integer', Rule::exists('warehouses', 'id')->where('company_id', getActiveCompany())],
             'phone' => ['nullable', 'string', 'max:30'],
             'notes' => ['nullable', 'string', 'max:1000'],
+            'commission_rate' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ]);
 
         $visitor->update($validated + ['is_active' => $request->boolean('is_active')]);
