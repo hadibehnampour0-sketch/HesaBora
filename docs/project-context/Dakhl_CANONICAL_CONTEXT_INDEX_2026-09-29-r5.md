@@ -42,8 +42,9 @@ The log has a history of colliding decision numbers — once already, when an ow
 | D-100, D-101, D-102 | **RESERVED** | Gold/Silver domain discovery sequence — named as prerequisites in D-099 §12 |
 | D-103 | **RESERVED (draft)** | Manufacturing/BOM readiness — proposed in `Dakhl_MANUFACTURING_BOM_RESEARCH_AND_PLAN_2026-09-28.md` §5, not yet ratified |
 | D-104…D-107 | IMPLEMENTED / ratification pending | WooCommerce adapter; two-way stock sync + cancellation; Production Lite; distribution gap closure |
+| D-108…D-115 | **PROPOSED** | Retail Multi-POS LAN (D-108), Smart SMS & Payment Portal (D-109), Loyalty/Caller-ID (D-110), Shahkar/Bank (D-111), Financing/Interest (D-112), Template Designer (D-113), Vision AI OCR (D-114), Competitor Migration & Health Check (D-115) |
 
-**Next free ID: D-108.**
+**Next free ID: D-116.**
 
 Note the trap: there are also *files* named `Dakhl_D100_…`, `Dakhl_D101_…`, `Dakhl_D102_…`. Those are the Trade discovery documents, which is why those numbers are reserved.
 

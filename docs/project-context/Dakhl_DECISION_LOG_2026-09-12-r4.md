@@ -2597,3 +2597,95 @@ This is consistent with the phase's own "no new ledger table" rule (D-106 rule 2
 ## Documentation-state note (recorded so this gap does not recur silently)
 
 At the time of this pass, five project-context documents were at four different freshness levels. The four commits updated only `CLOUD_AUTONOMOUS_EXECUTION_LOG.md` (Entries 109–111); the Decision Log, the Full Status Report, the Canonical Index and the Autonomous State file were all left behind. **Root cause: nothing in the workflow requires a Decision Log entry before a commit lands.** The execution log was updated diligently, the decision log was not. A pre-commit check (or simply a standing rule) is the fix; this note records that the gap was structural, not a one-off oversight.
+
+---
+
+## D-108 — Retail Multi-POS LAN, Real-Time Inventory & Hardware Suite — 2026-10-20 — PROPOSED
+
+*Specification proposed by user request on 2026-10-20; roadmap Section 41. Implementation locked until user review and phased sign-off.*
+
+### 1. Decision
+Dakhl defines Phase 17 for local-area network multi-station retail POS (supermarkets, chain stores, retail branches) using an on-premises Store Hub with local event broadcast (WebSocket/SSE) for real-time stock sync, backed by optimistic UI updates and pessimistic `lockForUpdate()` checkout validation. Peripheral hardware (barcode scanners, thermal printers, cash drawers, PC-POS banking terminals, and digital weighing scales) will be interfaced via a unified Hardware Abstraction Layer (HAL / Dakhl Hardware Bridge).
+
+### 2. Locked rules
+1. **Local LAN autonomy:** Client POS terminals communicate with the local store hub node over LAN with zero dependency on active internet connectivity during sales operations.
+2. **Double-checkout safety:** Displayed stock updates in real time via broadcast; actual invoice finalization preserves the atomic row-level lock on `WarehouseProductStock` — overselling remains impossible.
+3. **Flawless Persian printing:** Thermal receipt printing utilizes the Canvas Rasterizer pipeline (rendering monochrome bitmaps) to eliminate code-page and reverse-glyph firmware bugs on ESC/POS printers.
+4. **PC-POS reconciliation:** Invoices settled via card reader must bind the returned transaction reference (RRN) to the payment record; manual amount re-entry by cashiers is bypassed.
+
+### 3. Phasing
+- Phase 17.1: Retail POS screen & LAN WebSocket stock broadcast.
+- Phase 17.2: Barcode scanners (HID & weight GS1) + Thermal Canvas printing.
+- Phase 17.3: PC-POS bank card terminals + RJ11 cash drawer trigger.
+- Phase 17.4: Digital weighing scales & Barcode label printing.
+
+---
+
+## D-109 — Smart SMS Event Automation & Customer Online Collection Portal (Phase 18) — 2026-10-20 — PROPOSED
+
+*Specification proposed on 2026-10-20; roadmap Section 42. Implementation locked until user review and sign-off.*
+
+### 1. Decision
+Dakhl defines Phase 18 for event-driven transactional SMS notifications (cheque due dates, debt collection, invoice dispatch, payment receipts) and secure tokenized online customer portals with integrated Iranian payment gateway (IPG) links. Successful webhooks directly trigger existing `PaymentService::createPayment()` and `allocate()` pipelines, auto-posting ledger records without manual accounting entry.
+
+---
+
+## D-110 — Customer Loyalty Points, Store Credit Wallet & Telephony/Caller ID (Phase 19) — 2026-10-20 — PROPOSED
+
+*Specification proposed on 2026-10-20; roadmap Section 42.*
+
+### 1. Decision
+Dakhl defines Phase 19 for customer retention through purchase-accrued loyalty points, a store credit deposit wallet, and desktop Caller ID / VoIP integration for instant customer financial identification on incoming calls.
+
+---
+
+## D-111 — Official Identity (Shahkar) & Banking Inquiries (Phase 20) — 2026-10-20 — PROPOSED
+
+*Specification proposed on 2026-10-20; roadmap Section 42.*
+
+### 1. Decision
+Dakhl defines Phase 20 for real-time verification of National ID vs. Mobile Phone ownership via the Shahkar government service, and live IBAN (Sheba) / card-to-sheba inquiries to prevent bad debt and identity fraud on credit and cheque sales.
+
+---
+
+## D-112 — Advanced Financing, Installment Interest & Delay Penalty Engine (Phase 21) — 2026-10-20 — PROPOSED
+
+*Specification proposed on 2026-10-20; roadmap Section 42.*
+
+### 1. Decision
+Dakhl defines Phase 21 for sales financing with market interest rates (سود ماهانه بازاری) and standard banking amortization formulas, plus automated late-payment penalty calculations posted to designated financial income accounts.
+
+---
+
+## D-113 — Modular Visual Document & Invoice Template Designer (Phase 22) — 2026-10-20 — PROPOSED
+
+*Specification proposed on 2026-10-20; roadmap Section 42.*
+
+### 1. Decision
+Dakhl defines Phase 22 for a visual, no-code template builder allowing companies to customize invoice layouts (A4, A5, thermal roll), reorder/toggle columns, place logos/watermarks, and define dynamic legal terms.
+
+---
+
+## D-114 — Cognitive Paper Ingestion & Vision AI Invoice Extraction (Phase 23) — 2026-10-20 — PROPOSED
+
+*Specification proposed on 2026-10-20; roadmap Section 42.*
+
+### 1. Decision
+Dakhl defines Phase 23 for multi-modal AI / OCR paper invoice ingestion. Photos or PDFs of physical supplier receipts and delivery notes are parsed into pre-populated Buy Invoices and Ancillary Costs with mandatory human approval queue gating prior to ledger posting.
+
+---
+
+## D-115 — Universal Competitor Migration & Accounting Health Check Engine (Phase 24) — 2026-10-20 — PROPOSED
+
+*Specification proposed on 2026-10-20; roadmap Section 42.*
+
+### 1. Decision
+Dakhl defines Phase 24 for frictionless customer migration from legacy Iranian accounting platforms (Holoo, Sepidar, Dasht, Mahak, Parmis, Hesabgar, and standard Excel formats). The system ingests direct backup archives (`.zip` / database dumps) through a staged pipeline (`Extract -> Map -> Audit -> Preview -> Commit`), automatically generating balanced opening journal entries (`سند افتتاحیه`), initial warehouse inventories, and active cheques.
+
+### 2. Locked rules
+1. **Provenance isolation (D-085 compliance):** All imported historical records are tagged `provenance = FinancialProvenance::BASELINE`, ensuring baseline data can never be confused with native, audit-verified Dakhl documents.
+2. **Accounting & tax health check:** The migration pipeline actively sanitizes legacy errors: identifying unbalanced transactions, invalid national IDs, and tax/Moadian non-compliance, presenting automated, one-click remediation proposals before committing data to the ledger.
+3. **Fidelity guarantee:** A side-by-side trial balance and balance sheet preview is rendered to verify mathematical integrity before final import.
+
+
+

@@ -2469,3 +2469,130 @@ Owner asked for all three, in order. (1) **Quick payments** (`/quick-payment/{re
 
 ### 40.22 Integration Hub skeleton + consolidated report (2026-09-25)
 Built the design doc's step 3 without any real platform: `external_references` (company-scoped, unique per external id/entity type) and `integration_events` (idempotent ledger keyed by company/source/external_id/event_type; same payload = no-op, different payload = conflict, waiting/failed events retryable, unhandled events kept), plus adapter/handler interfaces and 12 tests with a fake adapter. No route/UI/handlers. Consolidated owner report: `Dakhl_PROGRESS_REPORT_2026-09-25.md`.
+
+# 41. Current Verified Override — 2026-10-20 (Phase 17 — Retail Multi-POS LAN, Real-Time Inventory & Hardware Suite)
+## Status: SPECIFICATION & ARCHITECTURAL LOCK / PHASED EXECUTION ROADMAP
+
+### 41.1 Objective & Domain Scope
+Expansion of Dakhl into modern multi-terminal retail environments (chain stores, supermarkets, retail branches). Multiple POS stations operating within a local area network (LAN) sharing a single accounting and warehouse instance, requiring real-time inventory synchronization and frictionless hardware integration.
+
+### 41.2 Local LAN Multi-Station Architecture
+1. **Local Store Hub (Edge Node):** A primary station or local on-premises machine acts as the Local Hub running MariaDB and a local lightweight event broadcaster (WebSockets/SSE). Client POS stations communicate over LAN with sub-5ms latency.
+2. **Offline-First Resilience:** In the event of wide-area Internet failure, the entire local store/branch continues operation seamlessly via local LAN without interruption. Sync with Cloud HQ resumes automatically when connectivity is restored via the existing P10 Outbox/Inbox pipeline.
+3. **Real-Time Inventory Mutation Broadcast:** Any stock change (sales, returns, warehouse adjustments) triggers a lightweight local broadcast (`ProductStockMutated`). Connected terminals dynamically update their displayed stock badges in real-time without requiring full-page refreshes.
+4. **Pessimistic Concurrency & Checkout Safety:** Even with real-time UI updates, final checkout execution uses the proven `lockForUpdate()` pattern on `WarehouseProductStock` rows, preventing overselling even during simultaneous sub-second checkouts across multiple tills.
+
+### 41.3 Hardware Integration Layer (Dakhl Hardware Bridge / HAL)
+Hardware must be seamless and plug-and-play across desktop and web deployments without complex driver configurations:
+1. **Barcode Scanners:**
+   - Global keystroke listener (USB/Wireless HID) detecting high-speed input streams terminated by Enter, regardless of active UI focus.
+   - Intelligent GS1/weight-embedded barcode decoding for digital scales (extracting product code, weight, and price automatically).
+2. **Thermal Receipt Printers (ESC/POS 58mm/80mm):**
+   - **Canvas Rasterizer Pipeline:** Converts receipt layouts into monochrome bitmap streams before issuing standard ESC/POS raster graphics commands. Guarantees 100% correct Persian typography, cursive ligatures, and right-to-left layout across all printer models regardless of hardware code-page (CP1256) limitations.
+   - **Silent Auto-Print:** Direct print dispatch without opening browser print dialogs.
+3. **Cash Drawers (RJ11):**
+   - Pulse command (`ESC p`) routed through the thermal printer upon cash payment confirmation.
+4. **PC-POS Banking Terminals (کارتخوان متصل به سیستم):**
+   - Direct integration with Iranian payment switch protocols (به‌پرداخت، سامان‌کیش، سداد، ایران‌کیش، آسان‌پرداخت).
+   - Amount sent automatically from Dakhl to POS terminal; customer cards and enters PIN; payment reference and RRN returned automatically, auto-settling and posting the invoice payment without manual cashier entry.
+5. **Digital Weighing Scales:**
+   - Serial/USB real-time weight polling for bulk, produce, and confectionery goods.
+6. **Delivery Model (Hardware Bridge):**
+   - Direct OS hardware access in Desktop mode (Electron/NativePHP).
+   - Lightweight, standalone local companion agent (`localhost:19890`) for pure web browser clients in LAN environments.
+
+### 41.4 Phased Implementation Priority (Roadmap Sequencing)
+- **Phase 17.1 (Core Retail POS Screen & LAN Broadcast):** Dedicated high-speed keyboard-centric retail checkout UI + local WebSocket broadcast for stock synchronization.
+- **Phase 17.2 (Scanning & Receipt Printing):** Global HID barcode scanner listener, weight barcode parser, and Canvas ESC/POS Persian thermal printing with silent print.
+- **Phase 17.3 (Financial Peripherals):** PC-POS banking terminal protocol adapter, cash drawer RJ11 pulse triggering, and automated payment reconciliation.
+- **Phase 17.4 (Weighing & Labeling):** Real-time digital scale serial polling and shelf/product barcode label printing.
+
+# 42. Current Verified Override — 2026-10-20 (Market Parity & Growth Suite — Comprehensive Strategic Expansion)
+## Status: STRATEGIC LOCK & PHASED IMPLEMENTATION REGISTER
+
+### 42.1 Strategic Rationale & Market Parity Mandate
+Dakhl is established with an unbreakable accounting core, double-entry integrity, and true offline/online sync. To achieve total market dominance across Iranian SMBs and retail chains, Dakhl must match and exceed the experiential, communication, and commercial features offered by established rivals (Sepidar/Dasht, Holoo APEX, Hesabfa, Mahak, Parmis, Payamgostar) as well as global benchmarks (Odoo, Zoho Books).
+
+### 42.2 New Phases Overview & Domain Specifications
+
+#### Phase 18 — Customer Engagement & Online Cash Collection (ارتباط با مشتری و وصول مطالبات)
+- **18.1 Smart SMS Event Automation Engine:**
+  - Automated transactional SMS triggers: Invoice issuance/delivery with shortlink, payment confirmation receipts, cheque due-date warnings (T-3, T-1, T-0), installment reminders, overdue balance notifications, and celebratory greetings (birthday/anniversary).
+  - Multi-provider gateway support (Kavenegar, Melipayamak, FarazSMS, Ghasedak) with shared template-based pattern delivery (ارسال بر اساس الگو/پترن بدون معطلی در بلک‌لیست مخابرات).
+- **18.2 Customer Online Portal & Shaparak Payment Links:**
+  - Secure, signed permanent tokenized links for invoices and customer account statements (کارت‌حساب).
+  - Online IPG checkout (زرین‌پال، به‌پرداخت ملت، سامان‌کیش، سداد، زیبال).
+  - Automated payment ingestion: successful webhook triggers `PaymentService::createPayment()` and `allocate()` directly via the existing idempotent financial pipeline, clearing the debt and auto-posting ledger records without manual accounting intervention.
+
+#### Phase 19 — Customer Retention, Loyalty & Telephony (وفادارسازی و باشگاه مشتریان)
+- **19.1 Customer Loyalty Points & Store Credit Wallet:**
+  - Purchase-to-points accrual formulas (e.g., 1 point per 100,000 Rials), convertible into wallet credit or direct invoice discount.
+  - Tiered customer memberships (Bronze, Silver, Gold, VIP) with group-level automatic pricing and promotion overrides.
+  - Store credit ledger strictly maintained as a customer deposit subject in the accounting core.
+- **19.2 Caller ID & VoIP Integration:**
+  - USB Modem Caller ID & VoIP SIP webhook integration.
+  - Instant incoming call popup displaying customer identity, historical purchase volume, current debt/credit balance, and unclosed invoices before lifting the handset.
+
+#### Phase 20 — Official Identity & Financial Inquiries (استعلام‌های حاکمیتی و بانکی)
+- **20.1 Shahkar Identity Verification (سامانه شاهکار):**
+  - Direct validation of National ID vs. Mobile Phone ownership for credit/cheque customers, mitigating bad-debt and fraudulent identity risks.
+- **20.2 Banking Inquiries (استعلام شبا و کارت):**
+  - Live inquiry of IBAN (Sheba) account holder name and automated Card-to-Sheba conversion directly within customer and payment forms.
+
+#### Phase 21 — Advanced Sales Financing & Installment Interest (تسهیلات و فروش اقساطی)
+- **21.1 Installment Financing & Calculation Engine:**
+  - Support for market interest (سود ماهانه بازاری، مثلاً ۳ الی ۵ درصد ماهیانه روی مانده اصل بدهی).
+  - Standard banking compound/installment calculation formulas with customizable down-payment (پیش‌پرداخت).
+  - Automated overdue penalty / delay damages (جریمه دیرکرد) calculations strictly posted to designated financial income subjects.
+
+#### Phase 22 — Visual Document & Invoice Template Designer (طراح بصری قالب فاکتور)
+- **22.1 Modular Visual Template Builder:**
+  - User-configurable invoice layouts (A4, A5, 80mm thermal, custom continuous paper).
+  - Column visibility toggles (tax, discount, barcode, unit, item description), logo alignment, custom watermarks, and editable dynamic footer legal terms and bank account Sheba boxes without requiring Blade or PHP code modifications.
+
+#### Phase 23 — Cognitive Document Ingestion & AI Vision (هوش مصنوعی استخراج فاکتور)
+- **23.1 AI Paper Invoice & Receipt OCR:**
+  - Image/PDF ingestion of physical supplier invoices, delivery notes, and expense slips.
+  - Multi-modal LLM / OCR parsing extracting vendor, line items, quantities, unit prices, and VAT into a pre-populated Buy Invoice or Ancillary Cost draft.
+  - Mandatory human review and verification queue before approval and ledger posting (preserving the non-negotiable principle: *a posted financial record is never wrong on purpose*).
+
+#### Phase 24 — Universal Competitor Migration & Accounting Health Check Engine (موتور مهاجرت هوشمند و احیای سلامت مالی)
+- **24.1 Zero-Friction Competitor Ingestion Adapters:**
+  - Automated parser and ingestion adapters for backup archives and database dumps from legacy Iranian accounting systems:
+    - **Holoo (هلو):** Parsing SQLite/Access/SQL backup files (`.zip` / database dumps) extracting persons, goods, warehouse stocks, opening balances, cheques, and historical invoices.
+    - **Sepidar & Dasht (سپیدار و دشت همکاران سیستم):** Ingesting Excel/SQL Server backup schemas.
+    - **Mahak, Parmis, Hesabgar (محک، پارمیس، شایگان):** Dedicated standard extractors.
+    - **Universal Multi-Sheet Excel/CSV:** Standardized migration spreadsheet format for custom and unlisted legacy software.
+- **24.2 Staged Migration Pipeline (`Extract -> Map -> Audit -> Preview -> Commit`):**
+  - **Smart Subject & Coding Mapping:** Auto-maps legacy account codes to Dakhl's hierarchical structure (Subject tree) while allowing merchants to preserve their customized sub-ledgers.
+  - **Financial Provenance Tagging (D-085 compliance):** All migrated historical documents are tagged `provenance = FinancialProvenance::BASELINE` to keep native audits clean.
+  - **Automated Balanced Opening Entries:** Generates balanced opening journal entries (`سند افتتاحیه`), initial warehouse inventories, and unreconciled active cheques.
+- **24.3 Intelligent Financial & Tax Health Check (پزشک مالی و اصلاح هوشمند):**
+  - **Sanitization & Anomaly Detection:** Identifies unbalanced legacy transactions, missing national IDs, invalid tax calculations, and orphaned payments inherited from the old system.
+  - **Tax Compliance Realignment:** Flags historical invoices with incorrect VAT percentages or non-compliant Moadian structures, offering automated one-click remediation proposals before committing to Dakhl.
+  - **Before/After Audit Preview:** Renders trial balance and balance sheet comparisons so the accountant can verify 100% mathematical fidelity before final import.
+
+---
+
+### 42.3 Master Strategic Phased Implementation Priority (Roadmap Execution Waves)
+
+To ensure maximum commercial velocity and fast business return, the implementation of all new capabilities is ordered into three distinct execution waves:
+
+- **Wave 1 — Immediate Cash, Customer Reach & Switching Engine (موج اول: نقدینگی، ارتباط مستقیم و مهاجرت بی‌دردسر):**
+  1. Priority 1: **Smart SMS Automation Engine (Phase 18.1)** — Instant reminder impact on overdue debts and cheques.
+  2. Priority 2: **Customer Portal & Online Payment Links (Phase 18.2)** — Turns Dakhl into a self-collecting cash machine.
+  3. Priority 3: **Universal Competitor Migration & Health Check (Phase 24)** — Eliminates customer switching costs; imports backups from Holoo, Sepidar, Mahak with financial/tax repair.
+  4. Priority 4: **Retail Multi-POS LAN, Real-Time Inventory & Hardware Suite (Phase 17)** — Dominates physical retail counters, supermarkets and store chains.
+
+- **Wave 2 — Customer Retention, Trust & Financing (موج دوم: اعتبارسنجی، وفاداری و فروش اقساطی):**
+  5. Priority 5: **Shahkar & Banking Inquiry Layer (Phase 20)** — Neutralizes credit risks on credit sales and cheques.
+  6. Priority 6: **Customer Loyalty & Points Wallet (Phase 19.1)** — Increases repeat customer purchases.
+  7. Priority 7: **Advanced Financing & Installment Interest Engine (Phase 21)** — Captures appliances, mobile, and installment retailers.
+
+- **Wave 3 — Visual Flexibility, Telephony & Vision AI (موج سوم: شخصی‌سازی و فناوری‌های پیشرفته):**
+  8. Priority 8: **Visual Print & Invoice Template Designer (Phase 22)** — Frictionless template customization for every company.
+  9. Priority 9: **Caller ID & VoIP Pop-up (Phase 19.2)** — High-speed phone order taking.
+  10. Priority 10: **AI Paper Invoice OCR & Document Digitization (Phase 23)** — Zero-friction paper invoice entry via computer vision.
+
+
+
