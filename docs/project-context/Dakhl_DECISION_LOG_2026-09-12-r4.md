@@ -2423,3 +2423,177 @@ Positive: real trade can be modeled; Accounting Core is not contaminated; ready 
 This Decision grants no permission for Migration, Schema Change, Model Creation, API Route, or Service Implementation. Implementation only after D-100, D-101, D-102 and owner approval.
 
 *Assistant notes (not part of the decision text):* the owner's relayed remark keeps the word "Generic" deliberately, warning against an "all-purpose engine on paper" that solves no deep domain; D-100 (Gold/Silver Domain Discovery) is considered more important than the data model because interviews may change current assumptions. Guardrail #5 in AGENTS.md remains in force and should be updated only when the owner accepts D-099.
+
+---
+
+# Documentation Catch-Up Pass — 2026-09-29
+
+## Why this section exists
+
+Four commits landed after this log's last entry (D-099, 2026-09-25) with **no Decision Log entry at all**. This section closes that gap, and records three real defects found while transcribing the as-built code back into decisions.
+
+**Decision-ID allocation, verified across every file in `docs/` before writing:** D-100, D-101, D-102 are reserved by the Trade discovery sequence (D-099 §12 names them explicitly as prerequisites). D-103 is reserved as a *draft* in `Dakhl_MANUFACTURING_BOM_RESEARCH_AND_PLAN_2026-09-28.md` §5. **The first free ID is therefore D-104**, not D-100 — a repeat of exactly the collision the owner's own note at "Product Vision Integration Pass" (above) had to resolve once already.
+
+**Status honesty — read this before treating D-104..D-107 as owner decisions.** Unlike D-070..D-099 (owner-authored contract text), D-104..D-107 are **RETROSPECTIVE transcriptions of work that was already built and committed**, reconstructed from the code, tests and execution log at the four commits named. They record *what was decided and shipped*, not a forward decision awaiting sign-off. They are marked **RATIFICATION PENDING** accordingly. Per house rule the owner still authors any genuine forward-looking decision text; if the owner disagrees with any transcription below, **the code is the implementation truth and this entry is what gets corrected**, not the reverse.
+
+---
+
+## D-104 — First Real Integration Adapter (WooCommerce) with Auto-Approve + Review Queue — 2026-09-29 — IMPLEMENTED / RATIFICATION PENDING
+
+*Transcribed from commit `7c67414a` ("feat(integration): first real platform adapter (WooCommerce)"). Design input: `Dakhl_INTEGRATION_PLATFORMS_AND_POLICY_PLAN_2026-09-28.md` §2/§5, which the owner's direction had already selected WooCommerce as build-order-first.*
+
+### 1. Decision
+The Integration Hub graduates from a fake-adapter-tested skeleton to its first **real platform adapter**. Imported orders auto-create and auto-approve a Sell invoice through the **unchanged `InvoiceService` approval path** — never a second accounting engine. The safety valve is a visible review queue, not manual-first.
+
+### 2. Locked rules
+1. **Auto-approve is conditional, not blanket.** Auto-approval happens only when *all four* hold: (a) every line resolves to a known Dakhl product via `ExternalReference`; (b) the customer resolves or is safely auto-created (matched by phone/national ID, never silently merged into an existing different customer); (c) platform price is within a configurable tolerance of Dakhl's price; (d) sufficient stock exists, respecting the existing oversell guard.
+2. **Anything ambiguous is held, visibly.** A failed condition routes the order to the review queue — the same UI pattern already built for the Moadian work queue (Entry 104). It is never silently dropped and never force-posted with guessed data. This is the same non-negotiable rule as D-086..D-089: **a posted financial record is never wrong on purpose.**
+3. **No new accounting engine.** The adapter calls the existing `InvoiceService`; it does not re-derive posting. Idempotency remains `IntegrationHub`'s existing `integration_events`/`external_references` ledger — no second mechanism, no parallel mapping table.
+4. **Credentials are encrypted at rest** (`IntegrationConnection`), and platform traffic is outbound-only from the server; inbound arrives via that platform's webhook endpoint.
+5. **Abstraction discipline (guardrail #53).** `IntegrationAdapter` gained exactly one additive method (`pushInventory`) alongside `normalize()`. The second concrete adapter now exists, so the interface is no longer speculative.
+
+### 3. As built
+`IntegrationConnection` + migration; `WooCommerceAdapter`; `OrderImportHandler`; `IntegrationHubFactory`; `IntegrationInventoryPushService`; `PushIntegrationInventoryCommand`; `IntegrationConnectionController`/`IntegrationQueueController`/`IntegrationWebhookController`; two screens under `resources/views/integrations/`; 4 seeded permissions. 609 lines of new tests across `IntegrationWooCommerceTest` and `IntegrationConnectionsAndQueueTest`.
+
+### 4. Why this belongs in the Decision Log
+Auto-approving an externally-sourced financial document is exactly the class of action this project has spent D-084..D-089 locking down from the *inside*. Extending auto-approval to a third party means the safety argument now depends on four conditions being checked correctly, not on a human clicking approve.
+
+---
+
+## D-105 — Two-Way Stock Sync, Order Cancellation, Bulk Product Mapping — 2026-09-29 — IMPLEMENTED / RATIFICATION PENDING
+
+*Transcribed from commit `b68e1b7d` ("feat(integration): live two-way stock push, order-cancellation handling, and bulk product mapping"). Design input: the same plan doc §3.*
+
+### 1. Decision
+Stock moves **both ways**. A single new observer on `WarehouseProductStock` is the one hook point that catches every existing stock-mutating service, and an order cancellation voids the invoice the same import created.
+
+### 2. Locked rules
+1. **Dakhl's stock ledger is the single number that gets aggregated and pushed out** — chosen because it is the one place that already sees every channel's sale (a counter sale and a platform sale both decrement Dakhl through the identical invoice path), not because Dakhl is declared authoritative.
+2. **One hook point, zero footprint.** `WarehouseProductStockObserver::saved()` fires only when `wasChanged('quantity')`, and exits early if no active `IntegrationConnection` exists. This deliberately avoids adding a push call inside `InvoiceService`/`WarehouseService`/`ProductService`/`StockReservationService` — services that are already heavily tested and reviewed.
+3. **Delivery is always via a queued job, never inline** — the same principle `WebhookService` already established.
+4. **Cancellation goes through the existing guarded void path.** `OrderCancelHandler` calls `InvoiceService::validateVoidingInvoice()` first and, if the invoice is already paid or otherwise not voidable, surfaces *that validation's own reason* into the review queue.
+5. **Refunds are explicitly NOT interpreted.** `REFUND_ISSUED` has no handler registered and stays an unhandled event for a human, because a partial refund needs to know which lines/amounts were refunded. This pass does not guess at it.
+6. **Concurrency limitation stated, not hidden.** Two genuinely simultaneous sales for the last unit cannot be made impossible over a network with webhook latency. Mitigations: push immediately rather than batched, and an optional per-product safety buffer the merchant controls.
+
+### 3. As built
+`WarehouseProductStockObserver` (registered in `AppServiceProvider`); `PushProductStockJob`; `OrderCancelHandler`; `IntegrationProductMappingController` + mappings screen; `IntegrationAdapter::pushInventory()`; `WooCommerceAdapter` stock writes. 249 lines of new tests.
+
+### 4. Open Engineering Items found while transcribing (see "Open Findings" below)
+This pass introduced two behaviors the Decision Log must carry forward as known-open, not as settled: the outbound push's **commit-boundary timing**, and `OrderCancelHandler`'s **number allocation** (which reintroduces a defect class that Workstream S already found and fixed once). Both are recorded below rather than silently left in the code.
+
+---
+
+## D-106 — Manufacturing Phase 1 "Production Lite" — 2026-09-29 — IMPLEMENTED / RATIFICATION PENDING
+
+*Transcribed from commit `257b8bf7` ("feat(manufacturing): Production Lite (Phase 1)"). Plan input: `Dakhl_MANUFACTURING_BOM_RESEARCH_AND_PLAN_2026-09-28.md` §4 Phase 1, whose draft decision text is proposed as **D-103**. This entry records the build; D-103 remains the owner-facing proposal and is still unratified.*
+
+### 1. Decision
+Single-step production is built as its own module, branded to users **"تولید و بهای تمام‌شده"**, never "Manufacturing"/"MRP". It is Phase 1 only: no routings, no work centers, no MRP, no quality control, no batch/serial genealogy.
+
+### 2. Locked rules
+1. **No `Product` → `Item` rename.** `Product` already is the stock-tracked-item concept, and `invoice_items.itemable_type` is already polymorphic. The plan's own correction of the supplied research stands.
+2. **No generic cross-module `stock_movements` ledger.** `ProductionOrder` keeps its own materials/outputs history, exactly as `WarehouseTransfer` does today. Retrofitting four already-audited subsystems onto a shared ledger to serve one new module is the premature generalization D-074 already rejected once for Trade.
+3. **Existing lock discipline reused, not reinvented.** `produce()` locks the recipe plus every material and output `WarehouseProductStock` row in one sorted, consistent order inside a single `DB::transaction` — the same deadlock-avoidance reasoning `WarehouseService::lockedStocks()` already documents. Insufficient stock is rejected (respecting `oversell`) exactly as an invoice would be.
+4. **No new cost engine.** Material cost = Σ(consumed × that row's current `average_cost`), plus optional manual labor/overhead on the order; output cost is blended into the output product's `average_cost` with the same weighted-average math `WarehouseService` already uses for purchases.
+5. **Waste % means "this much MORE is actually consumed"** (spillage), not "this much less ends up in the product" — a semantics choice stated explicitly in the service so it is not re-derived differently later.
+6. **"Produce on sell" (Holoo's simpler model) is not the default** and remains a possible later toggle, not the initial design.
+
+### 3. As built
+`ProductionRecipe`/`ProductionRecipeItem`/`ProductionOrder`/`ProductionOrderMaterial` + 2 migrations; `ManufacturingService` (`createRecipe`/`estimate`/`produce`); `ProductionRecipeController`/`ProductionOrderController`; recipes + orders screens; 4 seeded permissions. 261 lines of new tests.
+
+### 4. Open Engineering Item found while transcribing (see "Open Findings" below)
+`produce()` moves real stock and computes real cost but **posts no `Document`**. This is recorded as a known, deliberate-for-now limitation with a named consequence, not as an oversight silently absorbed.
+
+---
+
+## D-107 — Capillary-Distribution / Field-Ops Gap Closure (item 3/3) — 2026-09-29 — IMPLEMENTED / RATIFICATION PENDING
+
+*Transcribed from commit `0c808aa3` ("feat(distribution,tax-lite): per-visitor commission override, promotion suggestions on invoices, route-day calendar").*
+
+### 1. Decision
+Three named gaps from the P11/Field-Ops plan are closed. None of them adds a new subsystem, and two of them close a UI/UI-wiring absence that had been flagged for a while.
+
+### 2. Locked rules
+1. **Per-visitor commission override wins outright, it is not a tier.** A visitor's own `commission_rate` replaces the tiered calculation entirely for that person (tier label becomes `'Custom'`); an unset rate falls back to the existing tiers completely unchanged. No blending, no per-tier override — a second discount axis for a field-sales agreement is a business-policy shape nobody has specified yet.
+2. **Promotion suggestions are suggestion-only, never auto-applied.** The invoice form gained a "Check active promotions" button that posts the cart + customer and shows each suggested discount/bonus with its own Apply button. It is gated on the existing `promotions.evaluate` permission, and `evaluate()` now resolves the customer group server-side from `customer_id` rather than pushing customer-group data into the form's JS. This matches this project's standing rule that a new subsystem never silently touches invoice math.
+3. **The route-day calendar is additive, not a replacement.** A 7-day Saturday-start grid (matching the Iranian week regardless of locale) sits *above* the existing flat list, with week navigation and a per-day quick-add form hitting the same `distribution.plans.store` route. The flat list stays for full-history browsing and filtering.
+
+### 3. As built
+`distribution_visitors.commission_rate` + migration; `RepCommissionEngineService`; `DistributionPlanController`/`DistributionVisitorController`; `PromotionController::evaluate`; calendar + promotion UI on the sell form. 137 lines of new tests, including a positive control proving a group-scoped promotion does *not* apply without the group.
+
+### 4. Test note worth preserving
+`DistributionScreensTest` asserts the calendar's week-scoping by inspecting `weekPlans` rather than scraping HTML, because the untouched flat list below it would otherwise mask the assertion. That is the right instinct — record it so a future edit does not "simplify" it into a brittle string match.
+
+---
+
+# Open Findings — 2026-09-29 documentation catch-up (NOT yet decisions; owner action required)
+
+Found by reading the as-built code of the four commits above, not by a new test run. Each is real and reproducible from the file/line cited. **None is fixed by this pass** — this pass is documentation-only. They are recorded here so they are not rediscovered later from scratch.
+
+## Finding A — `OrderCancelHandler` reintroduces the naive `MAX(number)+1` defect class — ~~CRITICAL~~ **FIXED, VERIFIED 2026-09-29**
+
+> **Status update (2026-09-29, later same day):** independently verified and **fixed in commit `18b701f7`** by a concurrent session. `OrderCancelHandler` now allocates the void invoice number through `nextVoidInvoiceNumberForUpdate()` — a `lockForUpdate()` query scoped to `invoice_type = VOID` and to the model's normal `FiscalYearScope` (hence the right company), computed **inside the same `DB::transaction()` that creates the void invoice**. Fail-first verified by that session: reverting the fix reproduces the exact cross-company leak described below. The original finding is preserved verbatim underneath as the audit trail of what was wrong.
+
+`app/Services/Integration/Handlers/OrderCancelHandler.php:58`
+```php
+$number = (float) ((Invoice::withoutGlobalScopes()->max('number') ?? 0) + 1);
+```
+
+This was the **exact pattern Workstream S identified as CRITICAL finding #8** and fixed for `DocumentService::createDocument()` — a number fallback that can assign the identical number to two documents. It had been reintroduced, in a new place, with three aggravating factors:
+
+- **No lock, no transaction** around the read-then-write, so it is racy against any concurrent invoice creation.
+- **`withoutGlobalScopes()`** makes the read **global** — every company, every invoice type — not scoped to the company that owns the invoice being voided.
+- It is **inconsistent with every other numbering path in the codebase**: the normal creation path uses the Document's own number (`$invoiceData['document_number']`), and user-entered numbers go through validation. This handler was the only place that invents a number itself.
+
+**Why the DB constraint does not save it.** The final collision guard is `unique(['number', 'invoice_type', 'company_id'])`. A void invoice is always written with `invoice_type = VOID` (`InvoiceService::voidInvoice()`), so a void racing a *sell* invoice produces the same visible number under a *different* `invoice_type` — the constraint does not fire, and two documents show one number. Two concurrent *voids* would collide on the constraint and surface as a raw integrity error rather than a handled rejection.
+
+**Disposition (done):** routed through a locked, VOID-scoped allocator inside the void's own transaction, mirroring `DocumentService::nextDocumentNumberForUpdate()`. Committed `18b701f7`.
+
+## Finding B — `config('amir.*')` is populated only in the `web` middleware group (config-integrity)
+
+`app/Http/Middleware/ConfigLoader.php:43` is the *only* thing that creates the `amir.*` config namespace, and `bootstrap/app.php:54` registers it **only in the `web` group**. There is no `config/amir.php`; ~95 call sites read `config('amir.<key>')` expecting subject IDs resolved from the `configs` table at runtime.
+
+Consequence: in any **non-web** context — `api`, queue workers, console commands, and the sync/device path — every `config('amir.*')` lookup returns `null`. The four commits above do not currently trigger it (API v1 delegates to legacy controllers, and `PushProductStockJob` re-enters through a service rather than re-reading config), which is exactly why the full suite stays green. It is a latent failure, not a live one.
+
+**Recommended disposition:** either register `ConfigLoader` for the contexts that need it, or extract the namespace build into something callable from a non-HTTP entry point. Small change, but it needs a deliberate decision because it touches request-lifecycle assumptions.
+
+## Finding C — ~~`AncillaryCostTransactionBuilder` produces an unbalanced document~~ **MISDIAGNOSIS — REFUTED, no bug exists**
+
+> **Status update (2026-09-29, later same day):** **This finding is wrong and is retained only as an audit trail.** A concurrent session traced the real data path instead of reading the builder in isolation, and disproved it. The original text is preserved verbatim underneath, but it must not be acted on — the "recommended fix" below would have **double-counted VAT and broken a correct posting**.
+>
+> **What the refutation established.** `StoreAncillaryCostRequest::prepareForValidation()` (`app/Http/Requests/StoreAncillaryCostRequest.php:37-38`) — the *only* path `AncillaryCostService::createAncillaryCost()` is ever called from — computes `amount` as the **VAT-inclusive grand total**, not the bare item sum this finding assumed:
+> ```php
+> $vatPrice = $total * ($this->input('vat') ?? 0) / 100;
+> $total += $total * ($this->input('vat') ?? 0) / 100;   // amount is now subtotal + VAT
+> ```
+> So in the builder the customer line's `+$this->data['amount']` already equals `+(subtotal + vatPrice)`, and the document sums to zero exactly. Proven by a new test, `tests/Feature/AncillaryCostVatBalanceTest.php`, which posts through the real create-and-approve endpoint with VAT > 0 and asserts the resulting document balances. Both fixes were committed as `18b701f7`.
+>
+> **One part of the original finding survives, correctly, as a gap rather than a bug:** this exact case genuinely had **zero prior test coverage** — that is precisely why a misdiagnosis looked plausible. The coverage gap is now closed by that new test. The lesson recorded for future passes: *a builder read in isolation cannot tell you what its callers actually pass; trace the request path before declaring a posting defect.* That is the same shape as guardrail #31/36's "verify against the real path, not the isolated assumption."
+
+~~`app/Services/AncillaryCostTransactionBuilder.php` — items push `-$amount` (line 60) and VAT pushes `-$vatPrice` (line 74), but the balancing customer line pushes **raw** `+$this->data['amount']` (line 90). When `amount` equals the sum of items (the normal case), the document sums to `-$vatPrice`, not zero, so approval fails with `"The sum of transactions must be zero."`~~
+
+~~Compounding it, `AncillaryCostService`'s validation only requires `amount` to be `required|numeric|min:0` — it never asserts the amount equals the item total — so the balancing leg depends on caller-supplied data rather than on structure.~~
+
+~~**Why 21 test files mentioning ancillary cost never caught it:** they all exercise higher-level flows (approval authorization, tax-deductible status, the wizard, COGS) and none drives this builder's transaction array directly.~~
+
+~~**Recommended disposition:** a real fix plus a fail-first test that builds an ancillary cost **with VAT** and asserts the transaction sum is zero. Accounting-posting logic, so guardrail #3 (human review) applies.~~
+
+## Finding D — outbound stock push can fire before its transaction commits (latent, design-level)
+
+`WarehouseProductStockObserver::saved()` dispatches `PushProductStockJob` from inside the caller's open transaction, and `QUEUE_CONNECTION=sync` in this environment means the job runs **inline, before commit**. If the surrounding transaction later rolls back, the platform has already been told a quantity that never became true. `PushProductStockJob`'s own docblock claims "a platform being slow/down never blocks or fails the stock mutation" — that is true for *failures* but not for the *commit boundary*, which the sync driver collapses.
+
+**Recommended disposition:** dispatch after commit (`->afterCommit()`), or move to a real queue connection for this job. One-line fix, but it changes delivery timing, so it is recorded as a decision rather than applied silently.
+
+## Finding E — `produce()` posts no accounting document (known limitation, deliberate for now)
+
+`ManufacturingService::produce()` mutates `WarehouseProductStock` and computes a real weighted-average cost, but creates **no `Document`/`Transaction` pair**. Material consumption and output therefore change inventory *valuation* without changing the Inventory subject in the general ledger, so the trial balance and the inventory-valuation report can legitimately disagree after production activity.
+
+This is consistent with the phase's own "no new ledger table" rule (D-106 rule 2) and is **not** a violation of it — that rule is about not retrofitting four subsystems onto a shared movement ledger, not about forbidding accounting entries. It is recorded so the divergence is a known quantity rather than a surprise on the first customer's books.
+
+**Recommended disposition:** an owner decision on whether Phase 2 should post production documents (Dr Manufacturing/WIP, Cr Raw Material; Dr Finished Goods, Cr WIP). Not started; not assumed.
+
+---
+
+## Documentation-state note (recorded so this gap does not recur silently)
+
+At the time of this pass, five project-context documents were at four different freshness levels. The four commits updated only `CLOUD_AUTONOMOUS_EXECUTION_LOG.md` (Entries 109–111); the Decision Log, the Full Status Report, the Canonical Index and the Autonomous State file were all left behind. **Root cause: nothing in the workflow requires a Decision Log entry before a commit lands.** The execution log was updated diligently, the decision log was not. A pre-commit check (or simply a standing rule) is the fix; this note records that the gap was structural, not a one-off oversight.

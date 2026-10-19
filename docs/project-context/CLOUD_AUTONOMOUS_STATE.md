@@ -2753,3 +2753,41 @@ Docs only: vision doc + roadmap §40 + Decision Log narrative + Entry 71. D-074 
 
 ## §14 — 2026-09-25 Industry Profiles
 Built per owner request; see roadmap §40.12. Suite 1758/1758. Open: browser visual check by owner, wiring of profile settings to invoicing is intentionally NOT done.
+
+---
+
+## §15 — 2026-09-29 Documentation catch-up (documentation-only pass, no code changed)
+
+**Why this session existed.** A full read-only audit of the repository found the documentation had silently fallen behind the code: **four commits had landed with no Decision Log entry at all**, and five project-context documents were at four different freshness levels. This session's scope was closing that gap. **No production code, test, or schema was touched.**
+
+### What shipped in the four undocumented commits
+| Commit | Substance |
+|---|---|
+| `7c67414a` | **First real integration adapter — WooCommerce.** Auto-approve-with-review-queue order import, encrypted connections, outbound stock push. The Integration Hub stops being a fake-adapter skeleton. |
+| `b68e1b7d` | **Live two-way stock push** (one `WarehouseProductStockObserver` as the single hook point), order-cancellation handling, bulk product mapping. |
+| `257b8bf7` | **Manufacturing Phase 1 "Production Lite."** Recipes, produce-now with waste/cost math, production history. Phase 0's `Product.type` column finally gets a reader. |
+| `0c808aa3` | **Capillary-distribution gap closure (item 3/3).** Per-visitor commission override, promotion suggestions wired into the sell invoice form, route-day calendar. |
+
+### Documentation written
+1. **Decision Log** (`Dakhl_DECISION_LOG_2026-09-12-r4.md`) — appended a "Documentation Catch-Up Pass" section: **D-104…D-107** transcribing the four commits above, plus a **five-item "Open Findings"** section. Marked **RATIFICATION PENDING**: unlike D-070…D-099 these are *retrospective* transcriptions of shipped code, not owner-authored forward decisions. If the owner disagrees with a transcription, the code is implementation truth and the entry is what gets corrected.
+2. **`Dakhl_FULL_STATUS_REPORT_2026-09-29.md`** (new). The 2026-09-28 report is preserved unchanged as history; the new one's §0 tables every difference explicitly so nothing needs hand-diffing. Suite figure corrected 1890 → 1941.
+3. **`Dakhl_CANONICAL_CONTEXT_INDEX_2026-09-29-r5.md`** (new). r4 is broken: it pointed at `..._ROADMAP_2026-09-12-r5.md` and `..._DECISION_LOG_...-r3.md`, **neither of which exists** — an agent following it literally would conclude the project had no master context and no decision log. r5 adds a **decision-ID allocation table** (D-100/101/102 reserved by the Trade discovery sequence, D-103 reserved as the Manufacturing draft, next free **D-108**) because this project has already had one decision-number collision and would have had a second.
+4. **This file**, §15.
+
+### Five real defects found while transcribing (recorded, NOT fixed)
+Found by reading the as-built code, not by a failing test. Full detail in the Decision Log's "Open Findings".
+
+1. **CRITICAL — `AncillaryCostTransactionBuilder` produces an unbalanced document when VAT > 0**, so those costs cannot be approved. Items and VAT push negative; the balancing leg pushes raw `amount`. `AncillaryCostService` never validates `amount` == item total, so balancing depends on caller data, not structure. 21 test files mention ancillary cost; none drives this builder. **Pre-existing, unrelated to the four commits.**
+2. **CRITICAL — `OrderCancelHandler:58` reintroduces the naive `MAX(number)+1` pattern** that Workstream S already found and fixed once for `DocumentService`. No lock, no transaction, `withoutGlobalScopes()` makes the read global. The `unique(['number','invoice_type','company_id'])` guard does not catch a void racing a sell, since `invoice_type` differs.
+3. **Latent — `config('amir.*')` is built only by `ConfigLoader`, registered only in the `web` group** (`bootstrap/app.php:54`). ~95 call sites; in api/queue/console/sync contexts every lookup returns `null`. Latent because current paths delegate.
+4. **Latent — the outbound stock push can fire before its transaction commits.** `QUEUE_CONNECTION=sync` runs `PushProductStockJob` inline inside the caller's open transaction; a later rollback leaves the platform holding a quantity that never became true.
+5. **Known limitation — `ManufacturingService::produce()` posts no accounting document**, so inventory valuation and the general ledger can legitimately diverge. A Phase 2 decision, not a bug.
+
+**The first and second are accounting/doc-numbering logic, so AGENTS.md guardrail #3 (human review) applies to any fix.** None was fixed here — this pass was documentation-only by scope.
+
+### Structural cause of this gap (worth fixing so it does not recur)
+The four commits updated `CLOUD_AUTONOMOUS_EXECUTION_LOG.md` (Entries 109–111) diligently and the Decision Log not at all. **Nothing in the workflow requires a Decision Log entry before a commit lands.** The gap was process, not carelessness.
+
+### Current git state (start of this session)
+Branch `dakhl-foundation`, HEAD `0c808aa3`, working tree clean before these doc edits, **1941/1941 tests green** (as reported by Entry 111), backup mirror current. **Next free decision ID: D-108.** Standing owner-gated items are unchanged: Trade (needs real dealer interviews; D-099 stays PROPOSED), Basalam/Digikala (blocked on account/OAuth registration), tax rule-pack versioning (owner policy), plus the two CRITICAL fixes above.
+
