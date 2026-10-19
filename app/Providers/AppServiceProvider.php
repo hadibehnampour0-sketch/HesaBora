@@ -22,6 +22,9 @@ use Spatie\Permission\Events\PermissionAttached;
 use Spatie\Permission\Events\PermissionDetached;
 use Spatie\Permission\Events\RoleAttached;
 use Spatie\Permission\Events\RoleDetached;
+use App\Listeners\SendSmsOnDomainEventListener;
+use App\Models\Payment;
+use App\Observers\PaymentSmsObserver;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -143,6 +146,10 @@ class AppServiceProvider extends ServiceProvider
                 'new_status' => $event->newStatus->name,
             ], $event->cheque->company_id);
         });
+
+        // Phase 18.1 Smart SMS Event Automation
+        Event::listen(InvoiceStatusChanged::class, [SendSmsOnDomainEventListener::class, 'handleInvoiceStatusChanged']);
+        Payment::observe(PaymentSmsObserver::class);
 
         // Integration Hub two-way stock sync, live half (Dakhl_INTEGRATION_PLATFORMS_AND_POLICY_PLAN_2026-09-28.md §3).
         WarehouseProductStock::observe(WarehouseProductStockObserver::class);

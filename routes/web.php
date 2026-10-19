@@ -262,6 +262,14 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::get('field-operations-analytics', [Controllers\FieldOperationsAnalyticsController::class, 'index'])->name('field-operations-analytics.index');
         Route::post('field-operations-analytics/recalculate', [Controllers\FieldOperationsAnalyticsController::class, 'recalculate'])->name('field-operations-analytics.recalculate');
 
+        // Phase 18.1 (Smart SMS Event Automation).
+        Route::prefix('sms')->name('sms.')->group(function () {
+            Route::get('/', [Controllers\SmsController::class, 'index'])->name('index');
+            Route::post('config', [Controllers\SmsController::class, 'updateConfig'])->name('config.update');
+            Route::post('templates/{eventType}', [Controllers\SmsController::class, 'updateTemplate'])->name('template.update');
+            Route::post('test-send', [Controllers\SmsController::class, 'testSend'])->name('test-send');
+        });
+
         // Industry Profiles (per-trade settings + calculators; definitions are data files).
         Route::get('industry-profiles', [Controllers\IndustryProfileController::class, 'index'])->name('industry-profiles.index');
         Route::get('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'show'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.show');
