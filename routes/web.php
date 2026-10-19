@@ -14,6 +14,14 @@ Route::post('/impersonation/leave', [Controllers\Management\UserController::clas
 Route::post('/integrations/woocommerce/webhook/{token}', [Controllers\IntegrationWebhookController::class, 'woocommerce'])
     ->middleware('throttle:60,1')->name('integrations.woocommerce.webhook');
 
+// Phase 18.2: Customer Online Portal & Shaparak Payment Links
+Route::prefix('portal')->name('portal.')->group(function () {
+    Route::get('invoice/{token}', [Controllers\CustomerPortalController::class, 'showInvoice'])->name('invoice.show');
+    Route::post('invoice/{token}/pay', [Controllers\CustomerPortalController::class, 'initiatePayment'])->name('invoice.pay');
+    Route::match(['get', 'post'], 'invoice/{token}/callback', [Controllers\CustomerPortalController::class, 'paymentCallback'])->name('invoice.callback');
+    Route::get('invoice/{token}/print', [Controllers\CustomerPortalController::class, 'printInvoice'])->name('invoice.print');
+});
+
 Route::get('/forgot-password', [Controllers\Auth\PasswordResetController::class, 'showForgotPasswordForm'])->name('password.request');
 Route::post('/forgot-password', [Controllers\Auth\PasswordResetController::class, 'sendResetLink'])->middleware('throttle:6,1')->name('password.email');
 Route::get('/reset-password/{token}', [Controllers\Auth\PasswordResetController::class, 'showResetPasswordForm'])->name('password.reset');
@@ -201,6 +209,7 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
     Route::get('invoices/{invoice}/void', [Controllers\InvoiceController::class, 'showVoidForm'])->name('invoices.void-form');
     Route::post('invoices/{invoice}/void', [Controllers\InvoiceController::class, 'voidInvoice'])->name('invoices.void');
     Route::post('invoices/{invoice}/change-status/{status}', [Controllers\InvoiceController::class, 'changeStatus'])->name('invoices.change-status');
+    Route::post('invoices/{invoice}/payment-link', [Controllers\PaymentLinkController::class, 'store'])->name('invoices.payment-link.store');
     Route::post('invoices/{invoice}/payments', [Controllers\PaymentController::class, 'store'])->name('invoices.payments.store');
     Route::post('invoices/{invoice}/payments/cheque', [Controllers\PaymentController::class, 'storeCheque'])->name('invoices.payments.store-cheque');
     Route::delete('invoices/{invoice}/payments/{payment}', [Controllers\PaymentController::class, 'destroy'])->name('invoices.payments.destroy');
