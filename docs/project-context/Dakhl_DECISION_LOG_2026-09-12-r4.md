@@ -2632,7 +2632,7 @@ Dakhl defines Phase 18 for event-driven transactional SMS notifications (cheque 
 
 ## D-110 — Customer Loyalty Points, Store Credit Wallet & Telephony/Caller ID (Phase 19) — 2026-10-20 — IMPLEMENTED
 
-*Implemented and verified on 2026-10-20 (Phase 19.1, commit cdaf65c0). Full test suite tests/Feature/CustomerLoyaltyWalletTest.php passing (7/7 tests, 38 assertions).*
+*Implemented and verified on 2026-10-20. Phase 19.1 (commit cdaf65c0, tests/Feature/CustomerLoyaltyWalletTest.php passing 7/7 tests, 38 assertions). Phase 19.2 (commit 6298bf08, tests/Feature/CallerIdTelephonyTest.php passing 7/7 tests, 36 assertions).*
 
 ### 1. Decision
 Dakhl defines Phase 19 for customer retention through purchase-accrued loyalty points, a store credit deposit wallet, and desktop Caller ID / VoIP integration for instant customer financial identification on incoming calls.
@@ -2657,18 +2657,18 @@ Dakhl defines Phase 21 for sales financing with market interest rates (سود م
 
 ---
 
-## D-113 — Modular Visual Document & Invoice Template Designer (Phase 22) — 2026-10-20 — PROPOSED
+## D-113 — Modular Visual Document & Invoice Template Designer (Phase 22) — 2026-10-20 — IMPLEMENTED
 
-*Specification proposed on 2026-10-20; roadmap Section 42.*
+*Implemented and verified on 2026-10-20 (Phase 22, commit 00a446b4). Full test suite tests/Feature/InvoicePrintTemplateTest.php passing (6/6 tests, 21 assertions).*
 
 ### 1. Decision
 Dakhl defines Phase 22 for a visual, no-code template builder allowing companies to customize invoice layouts (A4, A5, thermal roll), reorder/toggle columns, place logos/watermarks, and define dynamic legal terms.
 
 ---
 
-## D-114 — Cognitive Paper Ingestion & Vision AI Invoice Extraction (Phase 23) — 2026-10-20 — PROPOSED
+## D-114 — Cognitive Paper Ingestion & Vision AI Invoice Extraction (Phase 23) — 2026-10-20 — IMPLEMENTED
 
-*Specification proposed on 2026-10-20; roadmap Section 42.*
+*Implemented and verified on 2026-10-20 (Phase 23, commit 9601ad33). Full test suite tests/Feature/AiInvoiceExtractionTest.php passing (6/6 tests, 31 assertions).*
 
 ### 1. Decision
 Dakhl defines Phase 23 for multi-modal AI / OCR paper invoice ingestion. Photos or PDFs of physical supplier receipts and delivery notes are parsed into pre-populated Buy Invoices and Ancillary Costs with mandatory human approval queue gating prior to ledger posting.
