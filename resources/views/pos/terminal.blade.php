@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('title', 'صندوق فروشگاهی هوشمند (POS)')
-
-@section('content')
+<x-app-layout :title="__('صندوق فروشگاهی هوشمند (POS)')">
 <div class="h-[calc(100vh-80px)] flex flex-col md:flex-row gap-4 p-2 bg-slate-100" x-data="posTerminal()">
 
     <!-- Left / Center: Order Cart & Checkout -->
@@ -261,4 +257,4 @@ function posTerminal() {
     };
 }
 </script>
-@endsection
+</x-app-layout>

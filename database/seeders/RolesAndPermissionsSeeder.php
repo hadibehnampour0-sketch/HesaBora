@@ -255,6 +255,33 @@ class RolesAndPermissionsSeeder extends Seeder
             // Phase U: guided collect/pay page (also needs invoices.payments.store to open).
             'quick-payment' => ['create', 'store'],
 
+            // Phase 17 (Retail Multi-POS LAN)
+            'pos' => ['terminal', 'scan', 'reserve', 'release', 'checkout'],
+
+            // Phase 18.1 (Smart SMS)
+            'sms' => ['index', 'config.update', 'template.update', 'test-send'],
+
+            // Phase 19.1 (Customer Loyalty & Wallet)
+            'loyalty' => ['index', 'settings.update', 'customers.wallet', 'customers.convert-points', 'customers.deposit', 'invoices.pay-with-wallet'],
+
+            // Phase 19.2 (Caller ID & Telephony)
+            'telephony' => ['index', 'webhook', 'lookup', 'logs.status'],
+
+            // Phase 20 (Official Inquiries)
+            'inquiries' => ['index', 'shahkar', 'sheba', 'card', 'postal-code'],
+
+            // Phase 21 (Financing & Installment)
+            'financing' => ['index', 'create', 'store', 'show', 'calculate', 'schedules.pay', 'contracts.penalties'],
+
+            // Phase 22 (Invoice Print Templates)
+            'templates' => ['index', 'create', 'store', 'edit', 'update', 'destroy', 'duplicate', 'default', 'preview'],
+
+            // Phase 23 (AI Paper Invoice Ingestion & OCR)
+            'ai-invoices' => ['index', 'upload', 'store', 'review', 'update', 'convert', 'reject', 'destroy'],
+
+            // Phase 24 (Competitor Migration)
+            'migration' => ['index', 'preview', 'execute'],
+
             // Employee portal
             'employee-portal' => [
                 'employee.show',

@@ -1,8 +1,5 @@
-@extends('layouts.app')
-
-@section('title', 'تحلیل سلامت داده‌ها و تراز افتتاحیه')
-
-@section('content')
+<x-app-layout :title="__('تحلیل سلامت داده‌ها و تراز افتتاحیه')">
+    <x-show-message-bags />
 <div class="container mx-auto px-4 py-6 max-w-5xl space-y-6">
     <div class="flex items-center justify-between border-b pb-4">
         <div>
@@ -125,5 +122,4 @@
             </form>
         </div>
     </div>
-</div>
-@endsection
+</x-app-layout>

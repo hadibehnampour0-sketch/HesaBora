@@ -10,6 +10,7 @@
             <ul>
                 @can('invoices.create')
                     <li><a href="{{ route('invoices.create', ['invoice_type' => 'sell']) }}">{{ __('New sale') }}</a></li>
+                    <li><a href="{{ route('pos.terminal') }}">{{ __('صندوق فروشگاهی سریع (POS)') }}</a></li>
                 @endcan
                 @can('invoices.index')
                     <li><a href="{{ route('invoices.index', ['invoice_type' => 'sell']) }}">{{ __('My sales') }}</a></li>

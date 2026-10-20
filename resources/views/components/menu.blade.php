@@ -88,6 +88,10 @@
                 @can('customers.create')
                     <li><a href="{{ route('customers.create') }}">{{ __('Add Customer') }}</a></li>
                 @endcan
+                <li><a href="{{ route('pos.terminal') }}">{{ __('صندوق فروشگاهی (POS)') }}</a></li>
+                <li><a href="{{ route('templates.index') }}">{{ __('طراح قالب‌های چاپ فاکتور') }}</a></li>
+                <li><a href="{{ route('ai-invoices.index') }}">{{ __('ورود فاکتور با هوش مصنوعی (OCR)') }}</a></li>
+                <li><a href="{{ route('financing.index') }}">{{ __('فروش اقساطی و تسهیلات') }}</a></li>
             </ul>
         </details>
     </li>
@@ -350,6 +354,10 @@
                 @can('customer-groups.index')
                     <li><a href="{{ route('customer-groups.index') }}">{{ __('Customer Groups') }}</a></li>
                 @endcan
+                <li><a href="{{ route('loyalty.index') }}">{{ __('باشگاه مشتریان و کیف‌پول') }}</a></li>
+                <li><a href="{{ route('telephony.index') }}">{{ __('کالرآیدی و تلفن سانترال') }}</a></li>
+                <li><a href="{{ route('inquiries.index') }}">{{ __('استعلام شاهکار، شبا و کارت') }}</a></li>
+                <li><a href="{{ route('sms.index') }}">{{ __('ارسال پیامک هوشمند') }}</a></li>
             </ul>
         </details>
     </li>
@@ -465,6 +473,7 @@
                                 <li><a href="{{ route('backups.create') }}">{{ __('Backup') }}</a></li>
                                 <li><a href="{{ route('backups.upload') }}">{{ __('Upload Backup') }}</a></li>
                             @endcan
+                            <li><a href="{{ route('migration.index') }}">{{ __('مهاجرت از سایر نرم‌افزارها (هلو، سپیدار و...)') }}</a></li>
                         </ul>
                     </details>
                 </li>

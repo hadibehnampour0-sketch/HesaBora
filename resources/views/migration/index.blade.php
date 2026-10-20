@@ -1,8 +1,5 @@
-@extends('layouts.app')
-
-@section('title', 'مهاجرت هوشمند از نرم‌افزارهای حسابداری دیگر')
-
-@section('content')
+<x-app-layout :title="__('مهاجرت هوشمند از نرم‌افزارهای حسابداری رقیب')">
+    <x-show-message-bags />
 <div class="container mx-auto px-4 py-6 max-w-4xl space-y-6">
     <div class="flex items-center justify-between border-b pb-4">
         <div>
@@ -81,5 +78,4 @@
             </form>
         </div>
     </div>
-</div>
-@endsection
+</x-app-layout>
