@@ -2600,9 +2600,9 @@ At the time of this pass, five project-context documents were at four different 
 
 ---
 
-## D-108 — Retail Multi-POS LAN, Real-Time Inventory & Hardware Suite — 2026-10-20 — PROPOSED
+## D-108 — Retail Multi-POS LAN, Real-Time Inventory & Hardware Suite — 2026-10-20 — IMPLEMENTED
 
-*Specification proposed by user request on 2026-10-20; roadmap Section 41. Implementation locked until user review and phased sign-off.*
+*Implemented and verified on 2026-10-20 (Phase 17, commits cf23ad3f). Full test suite tests/Feature/PosHardwareSuiteTest.php passing (5/5 tests, 42 assertions).*
 
 ### 1. Decision
 Dakhl defines Phase 17 for local-area network multi-station retail POS (supermarkets, chain stores, retail branches) using an on-premises Store Hub with local event broadcast (WebSocket/SSE) for real-time stock sync, backed by optimistic UI updates and pessimistic `lockForUpdate()` checkout validation. Peripheral hardware (barcode scanners, thermal printers, cash drawers, PC-POS banking terminals, and digital weighing scales) will be interfaced via a unified Hardware Abstraction Layer (HAL / Dakhl Hardware Bridge).
@@ -2621,9 +2621,9 @@ Dakhl defines Phase 17 for local-area network multi-station retail POS (supermar
 
 ---
 
-## D-109 — Smart SMS Event Automation & Customer Online Collection Portal (Phase 18) — 2026-10-20 — PROPOSED
+## D-109 — Smart SMS Event Automation & Customer Online Collection Portal (Phase 18) — 2026-10-20 — IMPLEMENTED
 
-*Specification proposed on 2026-10-20; roadmap Section 42. Implementation locked until user review and sign-off.*
+*Implemented and verified on 2026-10-20 (Phases 18.1 & 18.2, commits 0aab32a2 & ebdc141e). Full test suites tests/Feature/SmsAutomationTest.php and tests/Feature/PaymentLinkTest.php passing (11/11 tests, 57 assertions).*
 
 ### 1. Decision
 Dakhl defines Phase 18 for event-driven transactional SMS notifications (cheque due dates, debt collection, invoice dispatch, payment receipts) and secure tokenized online customer portals with integrated Iranian payment gateway (IPG) links. Successful webhooks directly trigger existing `PaymentService::createPayment()` and `allocate()` pipelines, auto-posting ledger records without manual accounting entry.
@@ -2675,9 +2675,9 @@ Dakhl defines Phase 23 for multi-modal AI / OCR paper invoice ingestion. Photos 
 
 ---
 
-## D-115 — Universal Competitor Migration & Accounting Health Check Engine (Phase 24) — 2026-10-20 — PROPOSED
+## D-115 — Universal Competitor Migration & Accounting Health Check Engine (Phase 24) — 2026-10-20 — IMPLEMENTED
 
-*Specification proposed on 2026-10-20; roadmap Section 42.*
+*Implemented and verified on 2026-10-20 (Phase 24, commit 6eefc7cd). Full test suite tests/Feature/CompetitorMigrationTest.php passing (4/4 tests, 37 assertions).*
 
 ### 1. Decision
 Dakhl defines Phase 24 for frictionless customer migration from legacy Iranian accounting platforms (Holoo, Sepidar, Dasht, Mahak, Parmis, Hesabgar, and standard Excel formats). The system ingests direct backup archives (`.zip` / database dumps) through a staged pipeline (`Extract -> Map -> Audit -> Preview -> Commit`), automatically generating balanced opening journal entries (`سند افتتاحیه`), initial warehouse inventories, and active cheques.
