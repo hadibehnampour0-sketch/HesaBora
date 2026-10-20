@@ -325,6 +325,19 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::post('contracts/{contract}/penalties', [\App\Http\Controllers\Financing\FinancingController::class, 'applyPenalties'])->name('contracts.penalties');
         });
 
+        // Phase 22 (Visual Document & Invoice Template Designer - D-113).
+        Route::prefix('templates')->name('templates.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'index'])->name('index');
+            Route::get('create', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'store'])->name('store');
+            Route::get('{template}/edit', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'edit'])->name('edit');
+            Route::put('{template}', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'update'])->name('update');
+            Route::delete('{template}', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'destroy'])->name('destroy');
+            Route::post('{template}/duplicate', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'duplicate'])->name('duplicate');
+            Route::post('{template}/default', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'setDefault'])->name('default');
+            Route::get('{template}/preview', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'preview'])->name('preview');
+        });
+
         // Industry Profiles (per-trade settings + calculators; definitions are data files).
         Route::get('industry-profiles', [Controllers\IndustryProfileController::class, 'index'])->name('industry-profiles.index');
         Route::get('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'show'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.show');
