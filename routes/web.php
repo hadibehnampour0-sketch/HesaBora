@@ -304,6 +304,16 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::post('postal-code', [\App\Http\Controllers\Inquiry\OfficialInquiryController::class, 'postalCode'])->name('postal-code');
         });
 
+        // Phase 19.1 (Customer Loyalty Points & Store Credit Wallet - D-110).
+        Route::prefix('loyalty')->name('loyalty.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'index'])->name('index');
+            Route::post('settings', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'updateSettings'])->name('settings.update');
+            Route::get('customers/{customer}', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'customerWallet'])->name('customers.wallet');
+            Route::post('customers/{customer}/convert-points', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'convertPoints'])->name('customers.convert-points');
+            Route::post('customers/{customer}/deposit', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'deposit'])->name('customers.deposit');
+            Route::post('invoices/{invoice}/pay-with-wallet', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'payInvoice'])->name('invoices.pay-with-wallet');
+        });
+
         // Industry Profiles (per-trade settings + calculators; definitions are data files).
         Route::get('industry-profiles', [Controllers\IndustryProfileController::class, 'index'])->name('industry-profiles.index');
         Route::get('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'show'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.show');

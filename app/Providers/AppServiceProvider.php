@@ -155,6 +155,13 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(InvoiceStatusChanged::class, [SendSmsOnDomainEventListener::class, 'handleInvoiceStatusChanged']);
         Payment::observe(PaymentSmsObserver::class);
 
+        // Phase 19.1 Customer Loyalty Points Accrual
+        Event::listen(InvoiceStatusChanged::class, function (InvoiceStatusChanged $event) {
+            if ($event->invoice->status->isApprovedOrSettled()) {
+                app(\App\Services\Loyalty\CustomerLoyaltyWalletService::class)->accruePointsFromInvoice($event->invoice);
+            }
+        });
+
         // Integration Hub two-way stock sync, live half (Dakhl_INTEGRATION_PLATFORMS_AND_POLICY_PLAN_2026-09-28.md §3).
         WarehouseProductStock::observe(WarehouseProductStockObserver::class);
     }
