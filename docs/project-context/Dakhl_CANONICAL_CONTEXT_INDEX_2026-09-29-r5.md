@@ -41,8 +41,8 @@ The log has a history of colliding decision numbers — once already, when an ow
 | D-099 | **PROPOSED** | Trade Engine as business capability. *Stays PROPOSED until real dealer interviews exist.* |
 | D-100, D-101, D-102 | **RESERVED** | Gold/Silver domain discovery sequence — named as prerequisites in D-099 §12 |
 | D-103 | **RESERVED (draft)** | Manufacturing/BOM readiness — proposed in `Dakhl_MANUFACTURING_BOM_RESEARCH_AND_PLAN_2026-09-28.md` §5, not yet ratified |
-| D-108, D-109, D-115 | **IMPLEMENTED** | Retail Multi-POS LAN (D-108), Smart SMS & Payment Portal (D-109), Competitor Migration & Health Check (D-115) |
-| D-110…D-114 | **PROPOSED** | Loyalty/Caller-ID (D-110), Shahkar/Bank (D-111), Financing/Interest (D-112), Template Designer (D-113), Vision AI OCR (D-114) |
+| D-108…D-112, D-115 | **IMPLEMENTED** | Retail Multi-POS LAN (D-108), Smart SMS & Payment Portal (D-109), Loyalty/Store Credit (D-110), Shahkar/Bank Inquiries (D-111), Financing/Interest (D-112), Competitor Migration & Health Check (D-115) |
+| D-113, D-114 | **PROPOSED** | Template Designer (D-113), Vision AI OCR (D-114) |
 
 **Next free ID: D-116.**
 

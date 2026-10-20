@@ -2630,27 +2630,27 @@ Dakhl defines Phase 18 for event-driven transactional SMS notifications (cheque 
 
 ---
 
-## D-110 — Customer Loyalty Points, Store Credit Wallet & Telephony/Caller ID (Phase 19) — 2026-10-20 — PROPOSED
+## D-110 — Customer Loyalty Points, Store Credit Wallet & Telephony/Caller ID (Phase 19) — 2026-10-20 — IMPLEMENTED
 
-*Specification proposed on 2026-10-20; roadmap Section 42.*
+*Implemented and verified on 2026-10-20 (Phase 19.1, commit cdaf65c0). Full test suite tests/Feature/CustomerLoyaltyWalletTest.php passing (7/7 tests, 38 assertions).*
 
 ### 1. Decision
 Dakhl defines Phase 19 for customer retention through purchase-accrued loyalty points, a store credit deposit wallet, and desktop Caller ID / VoIP integration for instant customer financial identification on incoming calls.
 
 ---
 
-## D-111 — Official Identity (Shahkar) & Banking Inquiries (Phase 20) — 2026-10-20 — PROPOSED
+## D-111 — Official Identity (Shahkar) & Banking Inquiries (Phase 20) — 2026-10-20 — IMPLEMENTED
 
-*Specification proposed on 2026-10-20; roadmap Section 42.*
+*Implemented and verified on 2026-10-20 (Phase 20, commit 5a3c7714). Full test suite tests/Feature/OfficialInquiryTest.php passing (8/8 tests, 38 assertions).*
 
 ### 1. Decision
 Dakhl defines Phase 20 for real-time verification of National ID vs. Mobile Phone ownership via the Shahkar government service, and live IBAN (Sheba) / card-to-sheba inquiries to prevent bad debt and identity fraud on credit and cheque sales.
 
 ---
 
-## D-112 — Advanced Financing, Installment Interest & Delay Penalty Engine (Phase 21) — 2026-10-20 — PROPOSED
+## D-112 — Advanced Financing, Installment Interest & Delay Penalty Engine (Phase 21) — 2026-10-20 — IMPLEMENTED
 
-*Specification proposed on 2026-10-20; roadmap Section 42.*
+*Implemented and verified on 2026-10-20 (Phase 21, commit f0a90ef3). Full test suite tests/Feature/FinancingInstallmentTest.php passing (7/7 tests, 41 assertions).*
 
 ### 1. Decision
 Dakhl defines Phase 21 for sales financing with market interest rates (سود ماهانه بازاری) and standard banking amortization formulas, plus automated late-payment penalty calculations posted to designated financial income accounts.
