@@ -338,6 +338,14 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::get('{template}/preview', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'preview'])->name('preview');
         });
 
+        // Phase 19.2 (Desktop Caller ID & VoIP Integration - D-110).
+        Route::prefix('telephony')->name('telephony.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Telephony\TelephonyController::class, 'index'])->name('index');
+            Route::post('webhook', [\App\Http\Controllers\Telephony\TelephonyController::class, 'webhook'])->name('webhook');
+            Route::get('lookup', [\App\Http\Controllers\Telephony\TelephonyController::class, 'lookup'])->name('lookup');
+            Route::post('logs/{log}/status', [\App\Http\Controllers\Telephony\TelephonyController::class, 'updateStatus'])->name('logs.status');
+        });
+
         // Industry Profiles (per-trade settings + calculators; definitions are data files).
         Route::get('industry-profiles', [Controllers\IndustryProfileController::class, 'index'])->name('industry-profiles.index');
         Route::get('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'show'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.show');
