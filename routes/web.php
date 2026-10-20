@@ -286,6 +286,15 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::post('execute', [Controllers\CompetitorMigrationController::class, 'execute'])->name('execute');
         });
 
+        // Phase 17 (Retail Multi-POS LAN & Hardware Suite).
+        Route::prefix('pos')->name('pos.')->group(function () {
+            Route::get('terminal', [Controllers\PosTerminalController::class, 'index'])->name('terminal');
+            Route::post('scan', [Controllers\PosTerminalController::class, 'scanBarcode'])->name('scan');
+            Route::post('reserve', [Controllers\PosTerminalController::class, 'reserveItem'])->name('reserve');
+            Route::post('release', [Controllers\PosTerminalController::class, 'releaseItem'])->name('release');
+            Route::post('checkout', [Controllers\PosTerminalController::class, 'checkout'])->name('checkout');
+        });
+
         // Industry Profiles (per-trade settings + calculators; definitions are data files).
         Route::get('industry-profiles', [Controllers\IndustryProfileController::class, 'index'])->name('industry-profiles.index');
         Route::get('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'show'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.show');
