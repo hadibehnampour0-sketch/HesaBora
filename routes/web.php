@@ -314,6 +314,17 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::post('invoices/{invoice}/pay-with-wallet', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'payInvoice'])->name('invoices.pay-with-wallet');
         });
 
+        // Phase 21 (Advanced Financing & Installment Interest Engine - D-112).
+        Route::prefix('financing')->name('financing.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Financing\FinancingController::class, 'index'])->name('index');
+            Route::get('create', [\App\Http\Controllers\Financing\FinancingController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Financing\FinancingController::class, 'store'])->name('store');
+            Route::get('{contract}', [\App\Http\Controllers\Financing\FinancingController::class, 'show'])->name('show');
+            Route::post('calculate', [\App\Http\Controllers\Financing\FinancingController::class, 'calculate'])->name('calculate');
+            Route::post('schedules/{schedule}/pay', [\App\Http\Controllers\Financing\FinancingController::class, 'paySchedule'])->name('schedules.pay');
+            Route::post('contracts/{contract}/penalties', [\App\Http\Controllers\Financing\FinancingController::class, 'applyPenalties'])->name('contracts.penalties');
+        });
+
         // Industry Profiles (per-trade settings + calculators; definitions are data files).
         Route::get('industry-profiles', [Controllers\IndustryProfileController::class, 'index'])->name('industry-profiles.index');
         Route::get('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'show'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.show');
