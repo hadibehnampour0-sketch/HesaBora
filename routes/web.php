@@ -279,6 +279,13 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::post('test-send', [Controllers\SmsController::class, 'testSend'])->name('test-send');
         });
 
+        // Phase 24 (Universal Competitor Migration & Accounting Health Check Engine).
+        Route::prefix('migration')->name('migration.')->group(function () {
+            Route::get('/', [Controllers\CompetitorMigrationController::class, 'index'])->name('index');
+            Route::post('preview', [Controllers\CompetitorMigrationController::class, 'preview'])->name('preview');
+            Route::post('execute', [Controllers\CompetitorMigrationController::class, 'execute'])->name('execute');
+        });
+
         // Industry Profiles (per-trade settings + calculators; definitions are data files).
         Route::get('industry-profiles', [Controllers\IndustryProfileController::class, 'index'])->name('industry-profiles.index');
         Route::get('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'show'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.show');
