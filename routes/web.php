@@ -295,6 +295,15 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::post('checkout', [Controllers\PosTerminalController::class, 'checkout'])->name('checkout');
         });
 
+        // Phase 20 (Official Identity & Financial Inquiries - D-111).
+        Route::prefix('inquiries')->name('inquiries.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Inquiry\OfficialInquiryController::class, 'index'])->name('index');
+            Route::post('shahkar', [\App\Http\Controllers\Inquiry\OfficialInquiryController::class, 'shahkar'])->name('shahkar');
+            Route::post('sheba', [\App\Http\Controllers\Inquiry\OfficialInquiryController::class, 'sheba'])->name('sheba');
+            Route::post('card', [\App\Http\Controllers\Inquiry\OfficialInquiryController::class, 'card'])->name('card');
+            Route::post('postal-code', [\App\Http\Controllers\Inquiry\OfficialInquiryController::class, 'postalCode'])->name('postal-code');
+        });
+
         // Industry Profiles (per-trade settings + calculators; definitions are data files).
         Route::get('industry-profiles', [Controllers\IndustryProfileController::class, 'index'])->name('industry-profiles.index');
         Route::get('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'show'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.show');
