@@ -41,6 +41,10 @@ class AppServiceProvider extends ServiceProvider
             \App\Services\Inquiry\Contracts\InquiryProviderInterface::class,
             \App\Services\Inquiry\Providers\SandboxInquiryProvider::class
         );
+        $this->app->bind(
+            \App\Services\AiVision\Contracts\InvoiceVisionParserInterface::class,
+            \App\Services\AiVision\Parsers\GeminiVisionInvoiceParser::class
+        );
 
         $this->app->afterResolving(Generator::class, function (Generator $faker) {
             $registered = [];

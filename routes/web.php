@@ -346,6 +346,18 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::post('logs/{log}/status', [\App\Http\Controllers\Telephony\TelephonyController::class, 'updateStatus'])->name('logs.status');
         });
 
+        // Phase 23 (Cognitive Paper Ingestion & Vision AI Invoice Extraction - D-114).
+        Route::prefix('ai-invoices')->name('ai-invoices.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'index'])->name('index');
+            Route::get('upload', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'create'])->name('upload');
+            Route::post('upload', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'upload'])->name('store');
+            Route::get('{extraction}/review', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'review'])->name('review');
+            Route::put('{extraction}', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'update'])->name('update');
+            Route::post('{extraction}/convert', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'convert'])->name('convert');
+            Route::post('{extraction}/reject', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'reject'])->name('reject');
+            Route::delete('{extraction}', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'destroy'])->name('destroy');
+        });
+
         // Industry Profiles (per-trade settings + calculators; definitions are data files).
         Route::get('industry-profiles', [Controllers\IndustryProfileController::class, 'index'])->name('industry-profiles.index');
         Route::get('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'show'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.show');
