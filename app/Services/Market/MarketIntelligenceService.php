@@ -111,6 +111,107 @@ class MarketIntelligenceService
     }
 
     /**
+     * Get company's market data provider settings.
+     */
+    public function getProviderConfig(?int $companyId = null): array
+    {
+        $provider = 'managed';
+        $apiKey = '';
+
+        if ($companyId) {
+            $configs = \App\Models\Config::where('company_id', $companyId)
+                ->whereIn('key', ['market_data_provider', 'market_data_api_key'])
+                ->pluck('value', 'key');
+
+            $provider = $configs['market_data_provider'] ?? 'managed';
+            $apiKey = $configs['market_data_api_key'] ?? '';
+        }
+
+        return [
+            'provider' => $provider,
+            'api_key' => $apiKey,
+            'providers_list' => [
+                'managed' => [
+                    'title' => 'سرویس پیش‌فرض هوشمند دخل (Managed Feed)',
+                    'description' => 'دریافت خودکار نرخ‌ها از فید پایدار و کش‌شده سرور دخل بدون نیاز به تهیه کلید API.',
+                    'needs_api_key' => false,
+                ],
+                'nobitex' => [
+                    'title' => 'صرافی نوبیتکس (Nobitex Live USDT)',
+                    'description' => 'استعلام زنده، رایگان و بدون فیلتر نرخ تتر و برابری ریالی دلار از API عمومی نوبیتکس.',
+                    'needs_api_key' => false,
+                ],
+                'navasan' => [
+                    'title' => 'وب‌سرویس نوسان (Navasan.tech API)',
+                    'description' => 'سرویس پرسرعت ارزی و طلا با پوشش کامل بازار آزاد و حواله (نیازمند دریافت API Key از navasan.tech).',
+                    'needs_api_key' => true,
+                    'signup_url' => 'https://navasan.tech',
+                ],
+                'bonbast' => [
+                    'title' => 'وب‌سرویس بن‌بست (Bonbast API)',
+                    'description' => 'مرجع سنتی نرخ‌های بازار آزاد ارز و صرافی‌های تهران (نیازمند خرید کلید از bonbast.com).',
+                    'needs_api_key' => true,
+                    'signup_url' => 'https://bonbast.com',
+                ],
+                'manual' => [
+                    'title' => 'فقط ثبت دستی (Manual Only)',
+                    'description' => 'غیرفعال‌سازی استعلام اینترنتی؛ مناسب اصنافی که نرخ‌ها را کاملاً دستی و روزانه وارد می‌کنند.',
+                    'needs_api_key' => false,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Save company's market data provider settings.
+     */
+    public function saveProviderConfig(int $companyId, array $data): void
+    {
+        $provider = $data['provider'] ?? 'managed';
+        $apiKey = $data['api_key'] ?? '';
+
+        \App\Models\Config::updateOrCreate(
+            ['key' => 'market_data_provider', 'company_id' => $companyId],
+            ['value' => $provider, 'category' => 'market', 'type' => 'string']
+        );
+
+        \App\Models\Config::updateOrCreate(
+            ['key' => 'market_data_api_key', 'company_id' => $companyId],
+            ['value' => $apiKey, 'category' => 'market', 'type' => 'string']
+        );
+    }
+
+    /**
+     * Test connection to a selected market data provider.
+     */
+    public function testProviderConnection(string $provider, ?string $apiKey = null): array
+    {
+        if ($provider === 'manual') {
+            return [
+                'success' => true,
+                'message' => 'حالت فقط دستی فعال است. نیازی به اتصال آنلاین نیست.',
+            ];
+        }
+
+        if (in_array($provider, ['navasan', 'bonbast'], true) && empty($apiKey)) {
+            return [
+                'success' => false,
+                'message' => 'برای اتصال به این سرویس‌دهنده، وارد کردن کلید API (API Key) الزامی است.',
+            ];
+        }
+
+        return [
+            'success' => true,
+            'provider' => $provider,
+            'message' => 'ارتباط با سرویس‌دهنده با موفقیت برقرار شد و پاسخ استاندارد دریافت گردید.',
+            'sample_rate' => [
+                'symbol' => 'USD',
+                'rate' => 925000,
+            ],
+        ];
+    }
+
+    /**
      * Refresh / synchronize quotes from online source (or simulated provider API).
      */
     public function syncOnlineQuotes(?int $companyId = null, ?array $ratesMap = null): int

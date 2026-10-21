@@ -28,6 +28,7 @@ class MarketIntelligenceController extends Controller
         $quotes = $this->service->getQuotes($companyId);
         $inventoryComparison = $this->service->getInventoryMarketComparison($companyId, $search);
         $guildBroadcasts = $this->service->getGuildBroadcastQuotations($guild, $search);
+        $providerConfig = $this->service->getProviderConfig($companyId);
 
         $availableGuilds = array_keys($this->industryRegistry->all());
 
@@ -36,6 +37,7 @@ class MarketIntelligenceController extends Controller
             'quotes' => $quotes,
             'inventoryComparison' => $inventoryComparison,
             'guildBroadcasts' => $guildBroadcasts,
+            'providerConfig' => $providerConfig,
             'availableGuilds' => $availableGuilds,
             'activeGuild' => $guild,
             'search' => $search,
@@ -124,6 +126,35 @@ class MarketIntelligenceController extends Controller
 
         return redirect()->route('market-intelligence.index', ['tab' => 'inventory'])
             ->with('success', __('قیمت روز و مشخصات بازار کالا ثبت شد.'));
+    }
+
+    public function saveProviderSettings(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'provider' => ['required', 'string', 'in:managed,nobitex,navasan,bonbast,manual'],
+            'api_key' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $companyId = (int) getActiveCompany();
+        $this->service->saveProviderConfig($companyId, $request->only('provider', 'api_key'));
+
+        return redirect()->route('market-intelligence.index', ['tab' => 'settings'])
+            ->with('success', __('تنظیمات سرویس‌دهنده قیمت‌ها با موفقیت ذخیره شد.'));
+    }
+
+    public function testProviderConnection(Request $request): JsonResponse
+    {
+        $request->validate([
+            'provider' => ['required', 'string', 'in:managed,nobitex,navasan,bonbast,manual'],
+            'api_key' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $result = $this->service->testProviderConnection(
+            $request->input('provider'),
+            $request->input('api_key')
+        );
+
+        return response()->json($result);
     }
 
     public function getQuotesApi(): JsonResponse

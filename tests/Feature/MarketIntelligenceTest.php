@@ -165,4 +165,35 @@ class MarketIntelligenceTest extends TestCase
             ->assertOk()
             ->assertJsonPath('success', true);
     }
+
+    public function test_provider_configuration_and_connection_testing(): void
+    {
+        $this->grant(
+            'access-super-admin-panel',
+            'market-intelligence.save-settings',
+            'market-intelligence.test-connection'
+        );
+
+        $this->post(route('market-intelligence.save-settings'), [
+            'provider' => 'navasan',
+            'api_key' => 'test_key_12345',
+        ])->assertRedirect();
+
+        $config = $this->service()->getProviderConfig($this->company->id);
+        $this->assertSame('navasan', $config['provider']);
+        $this->assertSame('test_key_12345', $config['api_key']);
+
+        $this->postJson(route('market-intelligence.test-connection'), [
+            'provider' => 'navasan',
+            'api_key' => 'test_key_12345',
+        ])->assertOk()
+          ->assertJsonPath('success', true);
+
+        // Missing key for navasan should fail
+        $this->postJson(route('market-intelligence.test-connection'), [
+            'provider' => 'navasan',
+            'api_key' => '',
+        ])->assertOk()
+          ->assertJsonPath('success', false);
+    }
 }

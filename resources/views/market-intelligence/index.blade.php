@@ -131,6 +131,9 @@
                     <span class="badge badge-secondary badge-xs mr-2">{{ count($guildBroadcasts) }}</span>
                 @endif
             </button>
+            <button type="button" class="tab font-medium transition-all" :class="{ 'tab-active': activeTab === 'settings' }" @click="activeTab = 'settings'">
+                ⚙️ {{ __('تنظیمات وب‌سرویس و کلید API') }}
+            </button>
         </div>
 
         {{-- TAB 1: CURRENCY & GOLD RATES --}}
@@ -396,6 +399,61 @@
             </div>
         </div>
 
+        {{-- TAB 4: API & PROVIDER SETTINGS --}}
+        <div x-show="activeTab === 'settings'" class="space-y-4">
+            <div class="card bg-base-100 shadow border border-base-200">
+                <div class="card-body p-4 sm:p-6">
+                    <div class="mb-4">
+                        <h2 class="text-lg font-bold">{{ __('پیکربندی منبع دریافت قیمت‌ها (Bring Your Own API)') }}</h2>
+                        <p class="text-xs text-base-content/60">{{ __('شما می‌توانید از سرویس هوشمند داخلی دخل استفاده کنید یا کلید API اختصاصی خود از سامانه‌های نوسان یا بن‌بست را متصل نمایید.') }}</p>
+                    </div>
+
+                    <form method="POST" action="{{ route('market-intelligence.save-settings') }}" class="space-y-6">
+                        @csrf
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @foreach ($providerConfig['providers_list'] as $pKey => $pSpec)
+                                <label class="card bg-base-200/60 border border-base-300 p-4 rounded-xl cursor-pointer hover:border-primary transition"
+                                    :class="{ 'border-primary ring-2 ring-primary/20 bg-primary/5': selectedProvider === '{{ $pKey }}' }">
+                                    <div class="flex items-start gap-3">
+                                        <input type="radio" name="provider" value="{{ $pKey }}" class="radio radio-primary radio-sm mt-1"
+                                            x-model="selectedProvider" @checked($providerConfig['provider'] === $pKey)>
+                                        <div>
+                                            <div class="font-bold text-sm">{{ $pSpec['title'] }}</div>
+                                            <div class="text-xs text-base-content/70 mt-1 leading-relaxed">{{ $pSpec['description'] }}</div>
+                                            @if (! empty($pSpec['signup_url']))
+                                                <a href="{{ $pSpec['signup_url'] }}" target="_blank" rel="noopener noreferrer" class="link link-primary text-[11px] mt-2 inline-block">
+                                                    دریافت کلید API از وب‌سایت رسمی ←
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </label>
+                            @endforeach
+                        </div>
+
+                        <div x-show="selectedProvider === 'navasan' || selectedProvider === 'bonbast'" class="card bg-base-200 p-4 rounded-xl space-y-3">
+                            <h3 class="font-bold text-sm">کلید دسترسی اختصاصی (API Key / Token)</h3>
+                            <div class="form-control">
+                                <input type="text" name="api_key" x-model="apiKey" placeholder="مثال: nvs_live_9a8b7c6d5e4f3a2b1..." class="input input-bordered w-full font-mono text-sm">
+                                <span class="text-[11px] opacity-60 mt-1">کلید اختصاصی حساب کاربری شما در سرویس‌دهنده منتخب.</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button type="button" class="btn btn-sm btn-outline" @click="testConnection()" :disabled="testing">
+                                    <span x-show="!testing">تست اتصال به وب‌سرویس</span>
+                                    <span x-show="testing" class="loading loading-spinner loading-xs"></span>
+                                </button>
+                                <span x-text="testMessage" class="text-xs font-medium" :class="testSuccess ? 'text-success' : 'text-error'"></span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-end gap-2 pt-2">
+                            <button type="submit" class="btn btn-primary">{{ __('ذخیره تنظیمات وب‌سرویس') }}</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         {{-- MODAL 1: Manual Quote Update --}}
         <div class="modal" :class="{ 'modal-open': isQuoteModalOpen }">
             <div class="modal-box">
@@ -493,6 +551,39 @@
                 quoteModalData: { symbol: '', title: '', price: 0, action: '' },
                 isProductModalOpen: false,
                 productModalData: {},
+                selectedProvider: '{{ $providerConfig['provider'] }}',
+                apiKey: '{{ $providerConfig['api_key'] }}',
+                testing: false,
+                testMessage: '',
+                testSuccess: true,
+
+                async testConnection() {
+                    this.testing = true;
+                    this.testMessage = '';
+                    try {
+                        const token = document.querySelector('input[name=_token]').value;
+                        const res = await fetch('{{ route('market-intelligence.test-connection') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': token,
+                            },
+                            body: JSON.stringify({
+                                provider: this.selectedProvider,
+                                api_key: this.apiKey,
+                            }),
+                        });
+                        const data = await res.json();
+                        this.testSuccess = data.success;
+                        this.testMessage = data.message || (data.success ? 'اتصال با موفقیت تأیید شد.' : 'خطا در برقراری ارتباط');
+                    } catch (e) {
+                        this.testSuccess = false;
+                        this.testMessage = 'خطای ارتباط با سرور: ' + e;
+                    } finally {
+                        this.testing = false;
+                    }
+                },
 
                 openQuoteModal(symbol, title, price) {
                     this.quoteModalData = {

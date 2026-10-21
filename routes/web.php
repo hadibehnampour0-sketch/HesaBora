@@ -385,6 +385,8 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::post('quotes/sync-online', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'syncOnline'])->name('sync-online');
             Route::post('quotes/{symbol}', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'updateQuote'])->name('update-quote');
             Route::post('products/{product}', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'updateProductMarketPrice'])->name('update-product-price');
+            Route::post('settings', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'saveProviderSettings'])->name('save-settings');
+            Route::post('settings/test-connection', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'testProviderConnection'])->name('test-connection');
             Route::get('api/quotes', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'getQuotesApi'])->name('api-quotes');
         });
 
