@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\Customer;
 use App\Models\Payment;
 use App\Services\Sms\SmsService;
 

@@ -16,6 +16,7 @@ use App\Models\TaxEvidence;
 use App\Models\TaxReadinessLog;
 use App\Models\User;
 use App\Services\TaxAlertEngineService;
+use App\Services\TaxFilingCalendarService;
 use App\Services\TaxReadinessService;
 use App\Services\TaxRuleService;
 use Cookie;
@@ -68,6 +69,12 @@ class TaxAlertEngineTest extends TestCase
         $this->actingAs($this->user);
 
         app(TaxRuleService::class)->recordRule(null, 10.0, false, '2020-01-01', null, 'General');
+
+        // TaxFilingCalendarTest tests overdue filing alerts explicitly.
+        // TaxAlertEngineTest focuses on the other engine rules without calendar date drift.
+        $this->mock(TaxFilingCalendarService::class, function ($mock) {
+            $mock->shouldReceive('overdueUnfiledQuarters')->andReturn([]);
+        });
     }
 
     public function test_a_low_readiness_score_raises_a_critical_alert(): void
