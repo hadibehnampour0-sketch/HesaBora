@@ -9,6 +9,15 @@
             </a>
         </div>
 
+        <!-- Command Palette Quick Search Trigger -->
+        <button type="button"
+                onclick="window.openCommandPalette && window.openCommandPalette()"
+                class="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-base-300 bg-base-200/50 hover:bg-base-200 text-xs text-base-content/60 hover:text-base-content transition cursor-pointer shadow-xs">
+            <svg class="w-3.5 h-3.5 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <span>{{ __('جستجوی سریع...') }}</span>
+            <kbd class="px-1.5 py-0.5 rounded bg-base-300 text-base-content/80 text-[10px] font-mono font-bold">Ctrl + K</kbd>
+        </button>
+
         <nav aria-label="{{ __('User menu') }}">
             <ul class="app-main-menu flex shrink-0 items-center menu menu-horizontal px-1" data-main-menu>
                 @can('access-super-admin-panel')

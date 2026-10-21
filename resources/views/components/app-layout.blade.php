@@ -44,6 +44,12 @@
         </div>
     </div>
 
+    <!-- Global Quick Search Command Palette (Ctrl+K) -->
+    <x-command-palette />
+
+    <!-- Global Floating AI Copilot Launcher -->
+    <x-floating-copilot />
+
     @stack('scripts')
 
     @stack('footer')
