@@ -131,7 +131,7 @@ class MarketIntelligenceController extends Controller
     public function saveProviderSettings(Request $request): RedirectResponse
     {
         $request->validate([
-            'provider' => ['required', 'string', 'in:managed,nobitex,navasan,bonbast,manual'],
+            'provider' => ['required', 'string', 'in:managed,nobitex,navasan,bonbast,github_feed,manual'],
             'api_key' => ['nullable', 'string', 'max:255'],
         ]);
 
@@ -145,7 +145,7 @@ class MarketIntelligenceController extends Controller
     public function testProviderConnection(Request $request): JsonResponse
     {
         $request->validate([
-            'provider' => ['required', 'string', 'in:managed,nobitex,navasan,bonbast,manual'],
+            'provider' => ['required', 'string', 'in:managed,nobitex,navasan,bonbast,github_feed,manual'],
             'api_key' => ['nullable', 'string', 'max:255'],
         ]);
 
