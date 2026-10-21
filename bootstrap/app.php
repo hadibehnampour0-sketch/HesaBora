@@ -72,6 +72,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'ensure-feature-enabled' => EnsureFeatureEnabled::class,
             'auth.device' => AuthenticateDevice::class,
             'idempotency' => EnsureIdempotencyKey::class,
+            'licensed' => \App\Http\Middleware\EnsureModuleLicensed::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

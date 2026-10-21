@@ -184,6 +184,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'permissions' => self::CRUD_NO_SHOW,
             'roles' => self::CRUD_NO_SHOW,
             'configs' => self::CRUD,
+            'license' => ['index', 'activate', 'status', 'generate-demo'],
 
             // HR
             'hr.employees' => [...self::CRUD, 'export'],

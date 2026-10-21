@@ -232,6 +232,11 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::resource('users', Controllers\Management\UserController::class)->except(['show']);
         // ConfigController only implements index/edit/update; the other resource routes 500'd (missing methods).
         Route::resource('configs', Controllers\ConfigController::class)->only(['index', 'edit', 'update']);
+        // Phase 16: Modular Licensing & Subscription Entitlements
+        Route::get('license', [Controllers\LicenseController::class, 'index'])->name('license.index');
+        Route::post('license/activate', [Controllers\LicenseController::class, 'activate'])->name('license.activate');
+        Route::post('license/generate-demo', [Controllers\LicenseController::class, 'generateDemo'])->name('license.generate-demo');
+        Route::get('license/status', [Controllers\LicenseController::class, 'status'])->name('license.status');
         Route::get('workflow-governance', [Controllers\WorkflowGovernanceController::class, 'edit'])->name('workflow-governance.edit');
         Route::put('workflow-governance', [Controllers\WorkflowGovernanceController::class, 'update'])->name('workflow-governance.update');
         Route::get('tax-center', [Controllers\TaxCenterController::class, 'index'])->name('tax-center.index');

@@ -135,6 +135,7 @@
 
                 // Migration & Settings
                 { title: 'مهاجرت اطلاعات از رقبا (هلو/سپیدار)', category: 'انتقال داده', icon: '🔄', url: '{{ route('migration.index') }}' },
+                { title: 'مدیریت لایسنس و اشتراک ماژولار', category: 'پیکربندی', icon: '🔐', url: '{{ route('license.index') }}' },
                 { title: 'تنظیمات حساب کاربری و پوسته', category: 'پیکربندی', icon: '⚙️', url: '{{ route('account.edit') }}' }
             ],
 

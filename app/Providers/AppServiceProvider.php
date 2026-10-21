@@ -79,6 +79,10 @@ class AppServiceProvider extends ServiceProvider
 
         App::setLocale(config('app.locale', 'fa'));
 
+        // Phase 16: Modular Licensing & Subscription Entitlements
+        \Illuminate\Support\Facades\Blade::if('licensed', fn (string $module) => app(\App\Services\LicenseService::class)->isModuleLicensed($module));
+        \Illuminate\Support\Facades\Blade::if('unlicensed', fn (string $module) => ! app(\App\Services\LicenseService::class)->isModuleLicensed($module));
+
         Gate::before(function ($user, $ability) {
             // Company-scoped Spatie roles() cannot resolve this globally --
             // see User::isSuperAdmin().

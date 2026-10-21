@@ -870,7 +870,7 @@ Required end-to-end scenarios include:
 ---
 
 # 21. P16 — MODULAR LICENSING / SUBSCRIPTION / ENTITLEMENT PLATFORM
-## Status: STRATEGIC / COMMERCIAL ARCHITECTURE LOCK
+## Status: IMPLEMENTED & VERIFIED (Decision D-117)
 
 Goal:
 Sell Dakhl as a modular product where customers activate only the capabilities they need, while preserving one shared financial truth and one codebase. Sales, Inventory, Tax, Moadian, CRM, HR/Payroll, Market Intelligence and AI may be sold as independently entitled modules where commercially justified.
@@ -2608,3 +2608,25 @@ To ensure maximum commercial velocity and fast business return, the implementati
 3. **Company & Fiscal Scoping:** All conversations (`CopilotConversation`) and messages (`CopilotMessage`) are bound by `FiscalYearScope` and company scoping; cross-company leakage is impossible.
 4. **Interactive Persian UI:** Dedicated conversational hub (`/copilot`), multi-turn session persistence, suggested prompt pills, live typing state, responsive markdown/table renderer, and navigation entry with prominent `AI` badge in both Advanced and Simple menus.
 5. **Verification & Test Suite:** Verified via `tests/Feature/FinancialCopilotTest.php` (11/11 tests passed, 43 assertions).
+
+---
+
+# 44. Current Verified Override — 2026-10-21 (Phase 16 — Modular Licensing, Offline Cryptographic Activation & Subscription Entitlements)
+## Status: IMPLEMENTED & VERIFIED (Decision D-117)
+
+### 44.1 Architectural Highlights
+1. **Offline-First Cryptographic Licensing:** Uses HMAC-SHA256 signatures over URL-safe base64 payloads (`DAKHL-LIC-v1.{payload}.{signature}`). Mathematically verifiable 100% offline without phone-home requirements or third-party server dependencies.
+2. **Deterministic Node-Locking Fingerprint:** Deterministically derives machine hardware identifiers (`DAKHL-XXXX-XXXX-XXXX-XXXX`) from OS, hostname, architecture, and machine GUID, preventing illicit multi-seat cloning while supporting portable unlocked licenses (`*`).
+3. **16 Independent Modular Capabilities:**
+   - Core Bookkeeping (`core_accounting`), Advanced Invoicing (`sales_purchase`), Multi-Warehouse (`inventory_warehouse`), Treasury & Cheques (`cheques_treasury`).
+   - Iran Tax OS & Moadian (`tax_moadian`), Fast Retail POS (`pos_retail`), Capillary Distribution (`distribution`), Production BOM & Costing (`production_bom`), HR & Iranian Payroll (`hr_payroll`).
+   - Smart SMS Automation (`sms_automation`), Customer Loyalty Club (`customer_loyalty`), Caller ID & VoIP (`telephony_voip`), Official Shahkar/IBAN Inquiries (`official_inquiries`), Installment Financing (`installment_financing`), AI Copilot & Document OCR (`ai_copilot`), Competitor Data Migration (`migration_tools`).
+4. **Commercial Tier Catalog & Packaging:**
+   - **Basic (Bronze / اصناف خرد):** Core accounting, invoices, warehouse, cheques (1 company, 2 users).
+   - **Professional (Silver / رشد کسب‌وکار):** Base + Tax Moadian, POS Retail, Loyalty Club, SMS Automation, Official Inquiries, Financing, Migration (3 companies, 5 users).
+   - **Enterprise (Gold / سازمانی نامحدود):** All 16 modules unlocked, unlimited companies, users, and devices.
+   - **Trial (Democenter):** Auto-provisions a 14-day evaluation license on fresh setup.
+5. **Non-Destructive Expiration & 7-Day Grace Period:** Expiration never deletes financial records; 7-day grace period allows read-only/warning workflows. Gated via `EnsureModuleLicensed` middleware (`licensed:module_key`) and `@licensed('module_key')` Blade directives.
+6. **Modern Fintech Hub UI:** Visual management interface at `/management/license` with active tier status, days remaining counter, one-click hardware ID copy, module capability matrix, plans comparison catalog, and admin demo key generator.
+7. **Verification & Test Suite:** Verified via `tests/Feature/ModularLicensingTest.php` (10/10 tests passed, 60 assertions) and full platform test suite (2,034/2,034 passed, 7,954 assertions, 0 regressions).
+

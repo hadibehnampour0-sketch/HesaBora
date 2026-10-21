@@ -475,6 +475,7 @@
                             @endcan
                             @can('configs.index')
                                 <li><a href="{{ route('configs.index') }}">{{ __('Configs') }}</a></li>
+                                <li><a href="{{ route('license.index') }}" class="flex items-center justify-between"><span>{{ __('مدیریت لایسنس و اشتراک') }}</span><span class="badge badge-primary badge-xs">Pro</span></a></li>
                             @endcan
                             @can('workflow-governance.edit')
                                 <li><a href="{{ route('workflow-governance.edit') }}">{{ __('Workflow Governance') }}</a></li>

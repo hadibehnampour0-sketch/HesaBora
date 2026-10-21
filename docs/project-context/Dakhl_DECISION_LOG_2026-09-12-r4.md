@@ -2687,5 +2687,50 @@ Dakhl defines Phase 24 for frictionless customer migration from legacy Iranian a
 2. **Accounting & tax health check:** The migration pipeline actively sanitizes legacy errors: identifying unbalanced transactions, invalid national IDs, and tax/Moadian non-compliance, presenting automated, one-click remediation proposals before committing data to the ledger.
 3. **Fidelity guarantee:** A side-by-side trial balance and balance sheet preview is rendered to verify mathematical integrity before final import.
 
+---
+
+## D-116 — Conversational AI Financial Copilot (Dual Engine: Offline Deterministic + Grounded LLM) — 2026-10-21 — IMPLEMENTED
+
+*Implemented and verified on 2026-10-21 (Phase AI, commit cf052ac5). Full test suite tests/Feature/FinancialCopilotTest.php passing (11/11 tests, 43 assertions).*
+
+### 1. Decision
+Dakhl defines Phase AI for an interactive conversational financial assistant accessible via a dedicated workspace (`/copilot`) and a floating launcher. The assistant is architecturally grounded in live verified domain services to eliminate hallucination.
+
+### 2. Locked rules
+1. **Zero Financial Hallucination:** The conversational assistant never guesses, calculates in parallel, or estimates financial facts. All answers are grounded strictly in the verified domain services (`FinancialKnowledgeService`, `TodayDashboardService`, `AgeingService`, `ChequeRiskDashboardService`, `TaxReadinessService`, `WarehouseDashboardService`).
+2. **Dual-Engine Architecture (Deterministic Offline + LLM Grounded):**
+   - **Deterministic Financial NLP Engine (`DeterministicFinancialChatEngine`):** Instant, zero-cost, privacy-safe, fully offline Persian intent matcher for core business metrics (Revenue, Sales, Overdue Debtors & Ageing, Cheques & Treasury, Tax Readiness & Moadian, Inventory Alerts, Cash/Bank Balances).
+   - **Gemini LLM Copilot Engine (`GeminiFinancialChatEngine`):** Grounded LLM reasoning via Google Gemini 2.5 Flash with fallback to deterministic engine on network failure or absent API key.
+3. **Fiscal & Company Scoping:** Conversations (`CopilotConversation`) and messages (`CopilotMessage`) are scoped under `FiscalYearScope` and company context; cross-company leakage is prevented.
+
+---
+
+## D-117 — Modular Licensing, Offline Cryptographic Activation & Subscription Entitlements (Phase 16) — 2026-10-21 — IMPLEMENTED
+
+*Implemented and verified on 2026-10-21 (Phase 16, commit pending). Full test suite tests/Feature/ModularLicensingTest.php passing (10/10 tests, 60 assertions).*
+
+### 1. Decision
+Dakhl defines Phase 16 as an offline-first modular licensing and commercial entitlement platform following the master architectural model:
+`Product -> Plan -> Subscription -> Entitlement -> Module/Feature -> License/Activation`
+
+### 2. Locked rules
+1. **Offline-First Asymmetric / Cryptographic Verification:**
+   - Licenses are formatted as high-entropy tokens: `DAKHL-LIC-v1.{Base64Payload}.{HMAC-SHA256Signature}`.
+   - Mathematical anti-tampering verification is performed 100% offline using `hash_equals()` without mandatory internet access or phone-home dependency.
+2. **Deterministic Machine Fingerprint (Node-Locking):**
+   - Deterministic hardware fingerprint (`DAKHL-XXXX-XXXX-XXXX-XXXX`) generated from machine OS, hostname, architecture, and machine GUID prevents unauthorized desktop duplication while allowing portability when wildcard (`*`) is specified.
+3. **16 Canonical Modular Capabilities:**
+   - Gated capabilities: `core_accounting`, `sales_purchase`, `inventory_warehouse`, `cheques_treasury`, `tax_moadian`, `pos_retail`, `distribution`, `production_bom`, `hr_payroll`, `sms_automation`, `customer_loyalty`, `telephony_voip`, `official_inquiries`, `installment_financing`, `ai_copilot`, `migration_tools`.
+4. **Commercial Tier Packaging:**
+   - **Basic (Bronze / اصناف خرد):** Core accounting, invoices, warehouse, cheques (1 company, 2 users).
+   - **Professional (Silver / رشد کسب‌وکار):** Base + Tax Moadian, POS Retail, Loyalty Club, SMS Automation, Official Inquiries, Financing, Migration (3 companies, 5 users).
+   - **Enterprise (Gold / سازمانی نامحدود):** All 16 modules unlocked, unlimited companies and users.
+   - **Trial (Democenter):** Auto-provisions 14-day full evaluation upon fresh setup.
+5. **Non-Destructive Expiration & Grace Period:**
+   - License expiration never deletes or corrupts financial data.
+   - A 7-day grace period is enforced upon expiration with warning banners before read-only / gated enforcement.
+   - Access is enforced via `EnsureModuleLicensed` middleware (`licensed:module_key`) and Blade directives (`@licensed('pos_retail')`, `@unlicensed('distribution')`).
+
+
 
 
