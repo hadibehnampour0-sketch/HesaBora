@@ -855,6 +855,13 @@
                                     </button>
                                 @endcan
                             @endif
+
+                            @if($invoice->invoice_type === App\Enums\InvoiceType::SELL)
+                                <button type="button" class="btn btn-accent gap-2 font-bold shadow-md shadow-accent/20" onclick="pc_pos_modal.showModal()">
+                                    <span>💳</span>
+                                    {{ __('ارسال به کارتخوان (PC-POS)') }}
+                                </button>
+                            @endif
                         @endif
                     </div>
 
@@ -968,6 +975,9 @@
                             <button>{{ __('close') }}</button>
                         </form>
                     </dialog>
+
+                    @include('invoices._pc-pos-modal')
+
                     @if($chequeDirection)
                         @can('invoices.payments.store-cheque')
                             <dialog id="cheque_payment_modal" class="modal">

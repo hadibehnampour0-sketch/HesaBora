@@ -1,6 +1,15 @@
 <?php
 
 use App\Http\Controllers;
+use App\Http\Controllers\AiCopilot\FinancialCopilotController;
+use App\Http\Controllers\AiVision\AiInvoiceExtractionController;
+use App\Http\Controllers\Financing\FinancingController;
+use App\Http\Controllers\Hardware\PcPosTerminalController;
+use App\Http\Controllers\Inquiry\OfficialInquiryController;
+use App\Http\Controllers\Loyalty\CustomerLoyaltyController;
+use App\Http\Controllers\Market\MarketIntelligenceController;
+use App\Http\Controllers\Telephony\TelephonyController;
+use App\Http\Controllers\Template\InvoiceTemplateController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
@@ -300,75 +309,85 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::post('checkout', [Controllers\PosTerminalController::class, 'checkout'])->name('checkout');
         });
 
+        // Phase 17.3 (PC-POS Banking Terminals & Peripheral Integration).
+        Route::prefix('pc-pos')->name('pc-pos.')->group(function () {
+            Route::get('/', [PcPosTerminalController::class, 'index'])->name('index');
+            Route::post('/', [PcPosTerminalController::class, 'store'])->name('store');
+            Route::put('{terminal}', [PcPosTerminalController::class, 'update'])->name('update');
+            Route::delete('{terminal}', [PcPosTerminalController::class, 'destroy'])->name('destroy');
+            Route::post('{terminal}/ping', [PcPosTerminalController::class, 'ping'])->name('ping');
+            Route::post('invoices/{invoice}/pay', [PcPosTerminalController::class, 'payInvoice'])->name('pay-invoice');
+        });
+
         // Phase 20 (Official Identity & Financial Inquiries - D-111).
         Route::prefix('inquiries')->name('inquiries.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Inquiry\OfficialInquiryController::class, 'index'])->name('index');
-            Route::post('shahkar', [\App\Http\Controllers\Inquiry\OfficialInquiryController::class, 'shahkar'])->name('shahkar');
-            Route::post('sheba', [\App\Http\Controllers\Inquiry\OfficialInquiryController::class, 'sheba'])->name('sheba');
-            Route::post('card', [\App\Http\Controllers\Inquiry\OfficialInquiryController::class, 'card'])->name('card');
-            Route::post('postal-code', [\App\Http\Controllers\Inquiry\OfficialInquiryController::class, 'postalCode'])->name('postal-code');
+            Route::get('/', [OfficialInquiryController::class, 'index'])->name('index');
+            Route::post('shahkar', [OfficialInquiryController::class, 'shahkar'])->name('shahkar');
+            Route::post('sheba', [OfficialInquiryController::class, 'sheba'])->name('sheba');
+            Route::post('card', [OfficialInquiryController::class, 'card'])->name('card');
+            Route::post('postal-code', [OfficialInquiryController::class, 'postalCode'])->name('postal-code');
         });
 
         // Phase 19.1 (Customer Loyalty Points & Store Credit Wallet - D-110).
         Route::prefix('loyalty')->name('loyalty.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'index'])->name('index');
-            Route::post('settings', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'updateSettings'])->name('settings.update');
-            Route::get('customers/{customer}', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'customerWallet'])->name('customers.wallet');
-            Route::post('customers/{customer}/convert-points', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'convertPoints'])->name('customers.convert-points');
-            Route::post('customers/{customer}/deposit', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'deposit'])->name('customers.deposit');
-            Route::post('invoices/{invoice}/pay-with-wallet', [\App\Http\Controllers\Loyalty\CustomerLoyaltyController::class, 'payInvoice'])->name('invoices.pay-with-wallet');
+            Route::get('/', [CustomerLoyaltyController::class, 'index'])->name('index');
+            Route::post('settings', [CustomerLoyaltyController::class, 'updateSettings'])->name('settings.update');
+            Route::get('customers/{customer}', [CustomerLoyaltyController::class, 'customerWallet'])->name('customers.wallet');
+            Route::post('customers/{customer}/convert-points', [CustomerLoyaltyController::class, 'convertPoints'])->name('customers.convert-points');
+            Route::post('customers/{customer}/deposit', [CustomerLoyaltyController::class, 'deposit'])->name('customers.deposit');
+            Route::post('invoices/{invoice}/pay-with-wallet', [CustomerLoyaltyController::class, 'payInvoice'])->name('invoices.pay-with-wallet');
         });
 
         // Phase 21 (Advanced Financing & Installment Interest Engine - D-112).
         Route::prefix('financing')->name('financing.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Financing\FinancingController::class, 'index'])->name('index');
-            Route::get('create', [\App\Http\Controllers\Financing\FinancingController::class, 'create'])->name('create');
-            Route::post('/', [\App\Http\Controllers\Financing\FinancingController::class, 'store'])->name('store');
-            Route::get('{contract}', [\App\Http\Controllers\Financing\FinancingController::class, 'show'])->name('show');
-            Route::post('calculate', [\App\Http\Controllers\Financing\FinancingController::class, 'calculate'])->name('calculate');
-            Route::post('schedules/{schedule}/pay', [\App\Http\Controllers\Financing\FinancingController::class, 'paySchedule'])->name('schedules.pay');
-            Route::post('contracts/{contract}/penalties', [\App\Http\Controllers\Financing\FinancingController::class, 'applyPenalties'])->name('contracts.penalties');
+            Route::get('/', [FinancingController::class, 'index'])->name('index');
+            Route::get('create', [FinancingController::class, 'create'])->name('create');
+            Route::post('/', [FinancingController::class, 'store'])->name('store');
+            Route::get('{contract}', [FinancingController::class, 'show'])->name('show');
+            Route::post('calculate', [FinancingController::class, 'calculate'])->name('calculate');
+            Route::post('schedules/{schedule}/pay', [FinancingController::class, 'paySchedule'])->name('schedules.pay');
+            Route::post('contracts/{contract}/penalties', [FinancingController::class, 'applyPenalties'])->name('contracts.penalties');
         });
 
         // Phase 22 (Visual Document & Invoice Template Designer - D-113).
         Route::prefix('templates')->name('templates.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'index'])->name('index');
-            Route::get('create', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'create'])->name('create');
-            Route::post('/', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'store'])->name('store');
-            Route::get('{template}/edit', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'edit'])->name('edit');
-            Route::put('{template}', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'update'])->name('update');
-            Route::delete('{template}', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'destroy'])->name('destroy');
-            Route::post('{template}/duplicate', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'duplicate'])->name('duplicate');
-            Route::post('{template}/default', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'setDefault'])->name('default');
-            Route::get('{template}/preview', [\App\Http\Controllers\Template\InvoiceTemplateController::class, 'preview'])->name('preview');
+            Route::get('/', [InvoiceTemplateController::class, 'index'])->name('index');
+            Route::get('create', [InvoiceTemplateController::class, 'create'])->name('create');
+            Route::post('/', [InvoiceTemplateController::class, 'store'])->name('store');
+            Route::get('{template}/edit', [InvoiceTemplateController::class, 'edit'])->name('edit');
+            Route::put('{template}', [InvoiceTemplateController::class, 'update'])->name('update');
+            Route::delete('{template}', [InvoiceTemplateController::class, 'destroy'])->name('destroy');
+            Route::post('{template}/duplicate', [InvoiceTemplateController::class, 'duplicate'])->name('duplicate');
+            Route::post('{template}/default', [InvoiceTemplateController::class, 'setDefault'])->name('default');
+            Route::get('{template}/preview', [InvoiceTemplateController::class, 'preview'])->name('preview');
         });
 
         // Phase 19.2 (Desktop Caller ID & VoIP Integration - D-110).
         Route::prefix('telephony')->name('telephony.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Telephony\TelephonyController::class, 'index'])->name('index');
-            Route::post('webhook', [\App\Http\Controllers\Telephony\TelephonyController::class, 'webhook'])->name('webhook');
-            Route::get('lookup', [\App\Http\Controllers\Telephony\TelephonyController::class, 'lookup'])->name('lookup');
-            Route::post('logs/{log}/status', [\App\Http\Controllers\Telephony\TelephonyController::class, 'updateStatus'])->name('logs.status');
+            Route::get('/', [TelephonyController::class, 'index'])->name('index');
+            Route::post('webhook', [TelephonyController::class, 'webhook'])->name('webhook');
+            Route::get('lookup', [TelephonyController::class, 'lookup'])->name('lookup');
+            Route::post('logs/{log}/status', [TelephonyController::class, 'updateStatus'])->name('logs.status');
         });
 
         // Phase 23 (Cognitive Paper Ingestion & Vision AI Invoice Extraction - D-114).
         Route::prefix('ai-invoices')->name('ai-invoices.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'index'])->name('index');
-            Route::get('upload', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'create'])->name('upload');
-            Route::post('upload', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'upload'])->name('store');
-            Route::get('{extraction}/review', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'review'])->name('review');
-            Route::put('{extraction}', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'update'])->name('update');
-            Route::post('{extraction}/convert', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'convert'])->name('convert');
-            Route::post('{extraction}/reject', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'reject'])->name('reject');
-            Route::delete('{extraction}', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'destroy'])->name('destroy');
+            Route::get('/', [AiInvoiceExtractionController::class, 'index'])->name('index');
+            Route::get('upload', [AiInvoiceExtractionController::class, 'create'])->name('upload');
+            Route::post('upload', [AiInvoiceExtractionController::class, 'upload'])->name('store');
+            Route::get('{extraction}/review', [AiInvoiceExtractionController::class, 'review'])->name('review');
+            Route::put('{extraction}', [AiInvoiceExtractionController::class, 'update'])->name('update');
+            Route::post('{extraction}/convert', [AiInvoiceExtractionController::class, 'convert'])->name('convert');
+            Route::post('{extraction}/reject', [AiInvoiceExtractionController::class, 'reject'])->name('reject');
+            Route::delete('{extraction}', [AiInvoiceExtractionController::class, 'destroy'])->name('destroy');
         });
 
         // Phase AI (Conversational AI Financial Copilot).
         Route::prefix('copilot')->name('copilot.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\AiCopilot\FinancialCopilotController::class, 'index'])->name('index');
-            Route::post('chat', [\App\Http\Controllers\AiCopilot\FinancialCopilotController::class, 'chat'])->name('chat');
-            Route::get('conversations/{conversation}', [\App\Http\Controllers\AiCopilot\FinancialCopilotController::class, 'show'])->name('show');
-            Route::delete('conversations/{conversation}', [\App\Http\Controllers\AiCopilot\FinancialCopilotController::class, 'destroy'])->name('destroy');
+            Route::get('/', [FinancialCopilotController::class, 'index'])->name('index');
+            Route::post('chat', [FinancialCopilotController::class, 'chat'])->name('chat');
+            Route::get('conversations/{conversation}', [FinancialCopilotController::class, 'show'])->name('show');
+            Route::delete('conversations/{conversation}', [FinancialCopilotController::class, 'destroy'])->name('destroy');
         });
 
         // Industry Profiles (per-trade settings + calculators; definitions are data files).
@@ -381,13 +400,13 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
 
         // Market Intelligence & Industry Prices (Phase 11 - D-014, D-015, D-016)
         Route::prefix('market-intelligence')->name('market-intelligence.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'index'])->name('index');
-            Route::post('quotes/sync-online', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'syncOnline'])->name('sync-online');
-            Route::post('quotes/{symbol}', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'updateQuote'])->name('update-quote');
-            Route::post('products/{product}', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'updateProductMarketPrice'])->name('update-product-price');
-            Route::post('settings', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'saveProviderSettings'])->name('save-settings');
-            Route::post('settings/test-connection', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'testProviderConnection'])->name('test-connection');
-            Route::get('api/quotes', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'getQuotesApi'])->name('api-quotes');
+            Route::get('/', [MarketIntelligenceController::class, 'index'])->name('index');
+            Route::post('quotes/sync-online', [MarketIntelligenceController::class, 'syncOnline'])->name('sync-online');
+            Route::post('quotes/{symbol}', [MarketIntelligenceController::class, 'updateQuote'])->name('update-quote');
+            Route::post('products/{product}', [MarketIntelligenceController::class, 'updateProductMarketPrice'])->name('update-product-price');
+            Route::post('settings', [MarketIntelligenceController::class, 'saveProviderSettings'])->name('save-settings');
+            Route::post('settings/test-connection', [MarketIntelligenceController::class, 'testProviderConnection'])->name('test-connection');
+            Route::get('api/quotes', [MarketIntelligenceController::class, 'getQuotesApi'])->name('api-quotes');
         });
 
         // P11 (Field Sales & Distribution -- "FieldOperations"). Backend

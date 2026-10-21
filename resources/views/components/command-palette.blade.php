@@ -101,6 +101,7 @@
                 // Invoices & Sales
                 { title: 'صدور فاکتور فروش جدید', category: 'فروش و درآمد', icon: '📝', url: '{{ route('invoices.create', ['invoice_type' => 'sell']) }}' },
                 { title: 'صندوق فروشگاهی سریع (POS)', category: 'فروش خرده‌فروشی', icon: '🛒', url: '{{ route('pos.terminal') }}' },
+                { title: 'کارتخوان‌های متصل به سیستم (PC-POS)', category: 'سخت‌افزار و پرداخت', icon: '💳', url: '{{ route('pc-pos.index') }}' },
                 { title: 'لیست فاکتورهای فروش', category: 'فروش و درآمد', icon: '📋', url: '{{ route('invoices.index', ['invoice_type' => 'sell']) }}' },
                 { title: 'صدور فاکتور خرید', category: 'خرید و تأمین', icon: '🛍️', url: '{{ route('invoices.create', ['invoice_type' => 'buy']) }}' },
                 { title: 'فروش اقساطی و محاسبات سود/دیرکرد', category: 'تسهیلات و مالی', icon: '💳', url: '{{ route('financing.index') }}' },

@@ -260,6 +260,9 @@ class RolesAndPermissionsSeeder extends Seeder
             // Phase 17 (Retail Multi-POS LAN)
             'pos' => ['terminal', 'scan', 'reserve', 'release', 'checkout'],
 
+            // Phase 17.3 (PC-POS Banking Terminals)
+            'pc-pos' => ['index', 'store', 'update', 'destroy', 'ping', 'pay-invoice'],
+
             // Phase 18.1 (Smart SMS)
             'sms' => ['index', 'config.update', 'template.update', 'test-send'],
 

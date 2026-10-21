@@ -99,6 +99,7 @@
                     <li><a href="{{ route('customers.create') }}">{{ __('Add Customer') }}</a></li>
                 @endcan
                 <li><a href="{{ route('pos.terminal') }}">{{ __('صندوق فروشگاهی (POS)') }}</a></li>
+                <li><a href="{{ route('pc-pos.index') }}">{{ __('کارتخوان‌های متصل (PC-POS)') }}</a></li>
                 <li><a href="{{ route('templates.index') }}">{{ __('طراح قالب‌های چاپ فاکتور') }}</a></li>
                 <li><a href="{{ route('ai-invoices.index') }}">{{ __('ورود فاکتور با هوش مصنوعی (OCR)') }}</a></li>
                 <li><a href="{{ route('financing.index') }}">{{ __('فروش اقساطی و تسهیلات') }}</a></li>
