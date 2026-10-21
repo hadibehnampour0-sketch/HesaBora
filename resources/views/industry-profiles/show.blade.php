@@ -167,7 +167,9 @@
                 <div class="card bg-base-100 shadow-xl">
                     <div class="card-body">
                         <span class="card-title text-base">{{ __('Calculators') }}</span>
-                        <p class="text-xs text-base-content/60">{{ __('Informational only — results use your saved settings and are never posted.') }}</p>
+                        <div class="alert alert-info text-xs py-2 px-3 mt-1 flex items-center justify-between">
+                            <span>⚖️ {{ __('درصدهای مصوب قانونی و اتحادیه به عنوان مبنا نمایش داده شده‌اند؛ شما می‌توانید درصد دلخواه خود را در کادر مربوطه وارد نمایید تا محاسبات بر مبنای نرخ انتخابی شما انجام شود.') }}</span>
+                        </div>
                         <form class="hidden">@csrf</form>
 
                         <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-2">
@@ -177,8 +179,24 @@
                                     <div class="font-semibold mb-3">{{ $t($calculator['title']) }}</div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         @foreach ($calculator['inputs'] as $input)
+                                            @php
+                                                $statutorySettingKey = null;
+                                                $statutoryValue = null;
+                                                foreach ($calculator['components'] ?? [] as $comp) {
+                                                    if (($comp['input'] ?? null) === $input['key'] && isset($comp['setting'])) {
+                                                        $statutorySettingKey = $comp['setting'];
+                                                        $statutoryValue = $effective[$statutorySettingKey]['value'] ?? ($effective[$statutorySettingKey]['default'] ?? null);
+                                                        break;
+                                                    }
+                                                }
+                                            @endphp
                                             <label class="form-control">
-                                                <span class="label-text text-xs mb-1">{{ $t($input['title']) }}</span>
+                                                <span class="label-text text-xs mb-1 flex items-center justify-between">
+                                                    <span>{{ $t($input['title']) }}</span>
+                                                    @if ($statutoryValue !== null)
+                                                        <span class="badge badge-xs badge-info badge-outline">مصوب: {{ $statutoryValue }}%</span>
+                                                    @endif
+                                                </span>
                                                 @if (isset($input['options']))
                                                     <select class="select select-bordered select-sm" x-model="inputs.{{ $input['key'] }}">
                                                         @foreach ($input['options'] as $option)
@@ -186,7 +204,12 @@
                                                         @endforeach
                                                     </select>
                                                 @else
-                                                    <input type="number" step="any" class="input input-bordered input-sm" x-model="inputs.{{ $input['key'] }}" />
+                                                    <input type="number" step="any" class="input input-bordered input-sm"
+                                                        placeholder="{{ $statutoryValue !== null ? __('پیش‌فرض مصوب: :v%', ['v' => $statutoryValue]) : '' }}"
+                                                        x-model="inputs.{{ $input['key'] }}" />
+                                                @endif
+                                                @if ($statutoryValue !== null)
+                                                    <span class="text-[10px] text-base-content/60 mt-0.5">{{ __('خالی بگذارید تا نرخ مصوب :v% اعمال شود، یا درصد دلخواه خود را بنویسید.', ['v' => $statutoryValue]) }}</span>
                                                 @endif
                                             </label>
                                         @endforeach

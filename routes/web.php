@@ -379,6 +379,15 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::post('industry-profiles/{profile}/settings/{setting}/confirm', [Controllers\IndustryProfileController::class, 'confirm'])->where(['profile' => '[a-z][a-z0-9_]*', 'setting' => '[a-z][a-z0-9_]*'])->name('industry-profiles.confirm');
         Route::post('industry-profiles/{profile}/calculators/{calculator}', [Controllers\IndustryProfileController::class, 'calculate'])->where(['profile' => '[a-z][a-z0-9_]*', 'calculator' => '[a-z][a-z0-9_]*'])->name('industry-profiles.calculate');
 
+        // Market Intelligence & Industry Prices (Phase 11 - D-014, D-015, D-016)
+        Route::prefix('market-intelligence')->name('market-intelligence.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'index'])->name('index');
+            Route::post('quotes/sync-online', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'syncOnline'])->name('sync-online');
+            Route::post('quotes/{symbol}', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'updateQuote'])->name('update-quote');
+            Route::post('products/{product}', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'updateProductMarketPrice'])->name('update-product-price');
+            Route::get('api/quotes', [\App\Http\Controllers\Market\MarketIntelligenceController::class, 'getQuotesApi'])->name('api-quotes');
+        });
+
         // P11 (Field Sales & Distribution -- "FieldOperations"). Backend
         // only for this pass -- JSON endpoints matching the same style
         // P3's Currency/PaymentTerm controllers established (no dedicated

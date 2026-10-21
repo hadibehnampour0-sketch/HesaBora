@@ -270,6 +270,7 @@
                 @endcan
                 @can('products.index')
                     <li><a href="{{ route('products.index') }}">{{ __('Products') }}</a></li>
+                    <li><a href="{{ route('market-intelligence.index', ['tab' => 'inventory']) }}">{{ __('قیمت روز اقلام و شبکه هم‌صنفان') }}</a></li>
                 @endcan
                 @can('product-groups.index')
                     <li><a href="{{ route('product-groups.index') }}">{{ __('Product Groups') }}</a></li>
@@ -350,6 +351,13 @@
 @can('industry-profiles.index')
     <li><a href="{{ route('industry-profiles.index') }}"><x-menu-icon name="industry" />{{ __('Industry Profiles') }}</a></li>
 @endcan
+<li>
+    <a href="{{ route('market-intelligence.index') }}" class="font-medium flex items-center gap-1.5">
+        <x-menu-icon name="currencies" />
+        {{ __('رصد زنده بازار و قیمت‌ها') }}
+        <span class="badge badge-accent badge-xs py-0.5 px-1 text-[9px]">LIVE</span>
+    </a>
+</li>
 
 @canany(['crm.dashboard', 'customers.index', 'customer-groups.index'])
     <li>
