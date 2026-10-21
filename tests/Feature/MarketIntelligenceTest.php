@@ -5,10 +5,10 @@ namespace Tests\Feature;
 use App\Models\Company;
 use App\Models\MarketQuote;
 use App\Models\Product;
-use App\Models\ProductMarketPrice;
 use App\Models\User;
 use App\Services\Market\MarketIntelligenceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
 class MarketIntelligenceTest extends TestCase
@@ -16,6 +16,7 @@ class MarketIntelligenceTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Company $company;
 
     protected function setUp(): void
@@ -34,7 +35,7 @@ class MarketIntelligenceTest extends TestCase
     private function grant(string ...$permissions): void
     {
         foreach ($permissions as $permission) {
-            $this->user->givePermissionTo(\Spatie\Permission\Models\Permission::firstOrCreate(['name' => $permission]));
+            $this->user->givePermissionTo(Permission::firstOrCreate(['name' => $permission]));
         }
     }
 
@@ -49,9 +50,30 @@ class MarketIntelligenceTest extends TestCase
 
         $this->assertNotEmpty($quotes);
         $this->assertNotNull($quotes->firstWhere('symbol', 'USD'));
+        $this->assertNotNull($quotes->firstWhere('symbol', 'EUR'));
+        $this->assertNotNull($quotes->firstWhere('symbol', 'AED'));
+        $this->assertNotNull($quotes->firstWhere('symbol', 'GBP'));
+        $this->assertNotNull($quotes->firstWhere('symbol', 'CNY'));
         $this->assertNotNull($quotes->firstWhere('symbol', 'GOLD_18K'));
+        $this->assertNotNull($quotes->firstWhere('symbol', 'GOLD_24K'));
+        $this->assertNotNull($quotes->firstWhere('symbol', 'GOLD_MAZANEH'));
         $this->assertNotNull($quotes->firstWhere('symbol', 'COIN_EMAMI'));
+        $this->assertNotNull($quotes->firstWhere('symbol', 'SILVER'));
         $this->assertNotNull($quotes->firstWhere('symbol', 'USDT'));
+        $this->assertNotNull($quotes->firstWhere('symbol', 'BTC'));
+        $this->assertNotNull($quotes->firstWhere('symbol', 'QAR'));
+        $this->assertNotNull($quotes->firstWhere('symbol', 'SAR'));
+        $this->assertNotNull($quotes->firstWhere('symbol', 'AZN'));
+    }
+
+    public function test_home_page_displays_compact_market_ticker(): void
+    {
+        $this->grant('home', 'documents.show', 'invoices.index', 'products.index');
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('مظنه زنده بازار و قیمت‌های روز', false)
+            ->assertSee('دلار آمریکا', false);
     }
 
     public function test_manual_quote_update_computes_fluctuation_and_records_user(): void
@@ -187,13 +209,13 @@ class MarketIntelligenceTest extends TestCase
             'provider' => 'navasan',
             'api_key' => 'test_key_12345',
         ])->assertOk()
-          ->assertJsonPath('success', true);
+            ->assertJsonPath('success', true);
 
         // Missing key for navasan should fail
         $this->postJson(route('market-intelligence.test-connection'), [
             'provider' => 'navasan',
             'api_key' => '',
         ])->assertOk()
-          ->assertJsonPath('success', false);
+            ->assertJsonPath('success', false);
     }
 }

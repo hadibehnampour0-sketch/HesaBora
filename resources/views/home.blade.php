@@ -40,6 +40,8 @@
     <div class="home-dashboard pb-6">
         @include('home._header', compact('homeVariant'))
 
+        @include('home._market-ticker')
+
         @if ($hasBusinessPerms)
             @include('home._today')
         @else

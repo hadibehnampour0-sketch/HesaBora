@@ -3,12 +3,13 @@
 namespace App\Services\Market;
 
 use App\Models\Company;
+use App\Models\Config;
 use App\Models\MarketQuote;
 use App\Models\Product;
 use App\Models\ProductMarketPrice;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 
 class MarketIntelligenceService
@@ -21,8 +22,23 @@ class MarketIntelligenceService
         'EUR' => ['title_fa' => 'یورو اروپا', 'title_en' => 'Euro', 'category' => 'currency', 'price' => 985000],
         'AED' => ['title_fa' => 'درهم امارات', 'title_en' => 'UAE Dirham', 'category' => 'currency', 'price' => 252000],
         'TRY' => ['title_fa' => 'لیر ترکیه', 'title_en' => 'Turkish Lira', 'category' => 'currency', 'price' => 27500],
+        'GBP' => ['title_fa' => 'پوند انگلیس', 'title_en' => 'British Pound', 'category' => 'currency', 'price' => 1180000],
+        'CNY' => ['title_fa' => 'یوان چین', 'title_en' => 'Chinese Yuan', 'category' => 'currency', 'price' => 128500],
+        'CAD' => ['title_fa' => 'دلار کانادا', 'title_en' => 'Canadian Dollar', 'category' => 'currency', 'price' => 675000],
+        'AUD' => ['title_fa' => 'دلار استرالیا', 'title_en' => 'Australian Dollar', 'category' => 'currency', 'price' => 610000],
+        'CHF' => ['title_fa' => 'فرانک سوئیس', 'title_en' => 'Swiss Franc', 'category' => 'currency', 'price' => 1045000],
+        'IQD' => ['title_fa' => 'صد دینار عراق', 'title_en' => '100 Iraqi Dinar', 'category' => 'currency', 'price' => 71000],
+        'KWD' => ['title_fa' => 'دینار کویت', 'title_en' => 'Kuwaiti Dinar', 'category' => 'currency', 'price' => 3020000],
+        'OMR' => ['title_fa' => 'ریال عمان', 'title_en' => 'Omani Rial', 'category' => 'currency', 'price' => 2410000],
+        'QAR' => ['title_fa' => 'ریال قطر', 'title_en' => 'Qatari Rial', 'category' => 'currency', 'price' => 254000],
+        'SAR' => ['title_fa' => 'ریال عربستان', 'title_en' => 'Saudi Riyal', 'category' => 'currency', 'price' => 246000],
+        'INR' => ['title_fa' => 'روپیه هند', 'title_en' => 'Indian Rupee', 'category' => 'currency', 'price' => 11000],
+        'AZN' => ['title_fa' => 'منات آذربایجان', 'title_en' => 'Azerbaijani Manat', 'category' => 'currency', 'price' => 544000],
+        'RUB' => ['title_fa' => 'روبل روسیه', 'title_en' => 'Russian Ruble', 'category' => 'currency', 'price' => 9600],
         'USDT' => ['title_fa' => 'تتر / دلار دیجیتال', 'title_en' => 'Tether USDT', 'category' => 'crypto', 'price' => 930000],
+        'BTC' => ['title_fa' => 'بیت‌کوین (BTC)', 'title_en' => 'Bitcoin', 'category' => 'crypto', 'price' => 65000000000],
         'GOLD_18K' => ['title_fa' => 'یک گرم طلای ۱۸ عیار', 'title_en' => 'Gold 18K (1g)', 'category' => 'gold', 'price' => 43250000],
+        'GOLD_24K' => ['title_fa' => 'یک گرم طلای ۲۴ عیار', 'title_en' => 'Gold 24K (1g)', 'category' => 'gold', 'price' => 57660000],
         'GOLD_MAZANEH' => ['title_fa' => 'مظنه طلا (مثقال ۱۷ عیار)', 'title_en' => 'Gold Mazaneh (1 Mesghal)', 'category' => 'gold', 'price' => 187300000],
         'GOLD_OUNCE' => ['title_fa' => 'انس جهانی طلا ($)', 'title_en' => 'Ounce Gold (USD)', 'category' => 'gold', 'price' => 2720.50],
         'COIN_EMAMI' => ['title_fa' => 'سکه امامی (طرح جدید)', 'title_en' => 'Emami Gold Coin', 'category' => 'coin', 'price' => 528000000],
@@ -30,12 +46,13 @@ class MarketIntelligenceService
         'COIN_HALF' => ['title_fa' => 'نیم سکه بهار آزادی', 'title_en' => 'Half Gold Coin', 'category' => 'coin', 'price' => 282000000],
         'COIN_QUARTER' => ['title_fa' => 'ربع سکه بهار آزادی', 'title_en' => 'Quarter Gold Coin', 'category' => 'coin', 'price' => 184000000],
         'COIN_GRAM' => ['title_fa' => 'سکه گرمی بانک مرکزی', 'title_en' => 'Gram Gold Coin', 'category' => 'coin', 'price' => 86000000],
+        'SILVER' => ['title_fa' => 'یک گرم نقره ۹۹۹', 'title_en' => 'Silver 999 (1g)', 'category' => 'gold', 'price' => 790000],
     ];
 
     /**
      * Get all active quotes, ensuring standard symbols exist.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, MarketQuote>
+     * @return Collection<int, MarketQuote>
      */
     public function getQuotes(?int $companyId = null, ?string $category = null): Collection
     {
@@ -119,7 +136,7 @@ class MarketIntelligenceService
         $apiKey = '';
 
         if ($companyId) {
-            $configs = \App\Models\Config::where('company_id', $companyId)
+            $configs = Config::where('company_id', $companyId)
                 ->whereIn('key', ['market_data_provider', 'market_data_api_key'])
                 ->pluck('value', 'key');
 
@@ -175,12 +192,12 @@ class MarketIntelligenceService
         $provider = $data['provider'] ?? 'managed';
         $apiKey = $data['api_key'] ?? '';
 
-        \App\Models\Config::updateOrCreate(
+        Config::updateOrCreate(
             ['key' => 'market_data_provider', 'company_id' => $companyId],
             ['value' => $provider, 'category' => 'market', 'type' => 'string']
         );
 
-        \App\Models\Config::updateOrCreate(
+        Config::updateOrCreate(
             ['key' => 'market_data_api_key', 'company_id' => $companyId],
             ['value' => $apiKey, 'category' => 'market', 'type' => 'string']
         );
@@ -233,7 +250,7 @@ class MarketIntelligenceService
         $rates = [];
 
         try {
-            $fiatRes = \Illuminate\Support\Facades\Http::timeout(3)->get('https://raw.githubusercontent.com/HosseinOdd/Navasan-API/main/data/fiat.json');
+            $fiatRes = Http::timeout(3)->get('https://raw.githubusercontent.com/HosseinOdd/Navasan-API/main/data/fiat.json');
             if ($fiatRes->successful()) {
                 $fiat = $fiatRes->json();
                 if (isset($fiat['usd']['value'])) {
@@ -248,16 +265,66 @@ class MarketIntelligenceService
                 if (isset($fiat['try']['value'])) {
                     $rates['TRY'] = (float) $fiat['try']['value'] * 10;
                 }
+                if (isset($fiat['gbp']['value'])) {
+                    $rates['GBP'] = (float) $fiat['gbp']['value'] * 10;
+                }
+                if (isset($fiat['cny']['value'])) {
+                    $rates['CNY'] = (float) $fiat['cny']['value'] * 10;
+                }
+                if (isset($fiat['cad']['value'])) {
+                    $rates['CAD'] = (float) $fiat['cad']['value'] * 10;
+                }
+                if (isset($fiat['aud']['value'])) {
+                    $rates['AUD'] = (float) $fiat['aud']['value'] * 10;
+                }
+                if (isset($fiat['chf']['value'])) {
+                    $rates['CHF'] = (float) $fiat['chf']['value'] * 10;
+                }
+                if (isset($fiat['iqd']['value'])) {
+                    $rates['IQD'] = (float) $fiat['iqd']['value'] * 10;
+                }
+                if (isset($fiat['kwd']['value'])) {
+                    $rates['KWD'] = (float) $fiat['kwd']['value'] * 10;
+                }
+                if (isset($fiat['omr']['value'])) {
+                    $rates['OMR'] = (float) $fiat['omr']['value'] * 10;
+                }
+                if (isset($fiat['rub']['value'])) {
+                    $rates['RUB'] = (float) $fiat['rub']['value'] * 10;
+                }
+                if (isset($fiat['qar']['value'])) {
+                    $rates['QAR'] = (float) $fiat['qar']['value'] * 10;
+                }
+                if (isset($fiat['sar']['value'])) {
+                    $rates['SAR'] = (float) $fiat['sar']['value'] * 10;
+                }
+                if (isset($fiat['inr']['value'])) {
+                    $rates['INR'] = (float) $fiat['inr']['value'] * 10;
+                }
+                if (isset($fiat['azn']['value'])) {
+                    $rates['AZN'] = (float) $fiat['azn']['value'] * 10;
+                }
+                if (isset($fiat['btc']['value'])) {
+                    $rates['BTC'] = (float) $fiat['btc']['value'] * 10;
+                }
             }
 
-            $goldRes = \Illuminate\Support\Facades\Http::timeout(3)->get('https://raw.githubusercontent.com/HosseinOdd/Navasan-API/main/data/gold.json');
+            $goldRes = Http::timeout(3)->get('https://raw.githubusercontent.com/HosseinOdd/Navasan-API/main/data/gold.json');
             if ($goldRes->successful()) {
                 $gold = $goldRes->json();
                 if (isset($gold['18ayar']['value'])) {
                     $rates['GOLD_18K'] = (float) $gold['18ayar']['value'] * 10;
                 }
-                if (isset($gold['mesghal']['value'])) {
-                    $rates['GOLD_MAZANEH'] = (float) $gold['mesghal']['value'] * 10;
+                if (isset($gold['24ayar']['value'])) {
+                    $rates['GOLD_24K'] = (float) $gold['24ayar']['value'] * 10;
+                }
+                $mazanehVal = $gold['abshodeh']['value'] ?? $gold['mesghal']['value'] ?? null;
+                if ($mazanehVal !== null) {
+                    $rates['GOLD_MAZANEH'] = (float) $mazanehVal * 10;
+                }
+                $ounceVal = $gold['usd_xau']['value'] ?? $gold['ons']['value'] ?? null;
+                if ($ounceVal !== null) {
+                    $rates['GOLD_OUNCE'] = (float) $ounceVal;
                 }
                 if (isset($gold['sekkeh']['value'])) {
                     $rates['COIN_EMAMI'] = (float) $gold['sekkeh']['value'] * 10;
@@ -273,6 +340,9 @@ class MarketIntelligenceService
                 }
                 if (isset($gold['gerami']['value'])) {
                     $rates['COIN_GRAM'] = (float) $gold['gerami']['value'] * 10;
+                }
+                if (isset($gold['silver']['value'])) {
+                    $rates['SILVER'] = (float) $gold['silver']['value'] * 10;
                 }
             }
         } catch (\Throwable) {
