@@ -1,0 +1,280 @@
+{
+  "key": "carpet_textile",
+  "title": {
+    "fa": "فرش، موکت و منسوجات",
+    "en": "Carpets, Rugs & Textiles"
+  },
+  "description": {
+    "fa": "مدیریت شانه و تراکم فرش، ابعاد استاندارد (۱۲، ۹ و ۶ متری)، متراژ موکت و طاقه پارچه، زیگزاگ و خدمات ریشه‌دوزی، و مالیات.",
+    "en": "Carpet reed & density specifications, standard dimensions (12m, 9m, 6m), roll/meter textile conversion, overlocking/fringe services, and VAT."
+  },
+  "sections": [
+    {
+      "key": "specifications",
+      "title": {
+        "fa": "مشخصات فنی و استانداردهای بافت",
+        "en": "Technical Specs & Weaving Standards"
+      },
+      "fields": [
+        {
+          "key": "default_reed_shaneh",
+          "type": "select",
+          "default": "1200",
+          "options": [
+            {
+              "value": "700",
+              "label": {
+                "fa": "۷۰۰ شانه",
+                "en": "700 Reed"
+              }
+            },
+            {
+              "value": "1000",
+              "label": {
+                "fa": "۱۰۰۰ شانه",
+                "en": "1000 Reed"
+              }
+            },
+            {
+              "value": "1200",
+              "label": {
+                "fa": "۱۲۰۰ شانه",
+                "en": "1200 Reed"
+              }
+            },
+            {
+              "value": "1500",
+              "label": {
+                "fa": "۱۵۰۰ شانه",
+                "en": "1500 Reed"
+              }
+            }
+          ],
+          "status": "verified",
+          "title": {
+            "fa": "شانه پیش‌فرض فرش ماشینی",
+            "en": "Default machine carpet reed (Shaneh)"
+          }
+        },
+        {
+          "key": "default_density_tarakom",
+          "type": "integer",
+          "default": 3600,
+          "min": 1000,
+          "max": 5000,
+          "unit": "تراکم",
+          "status": "assumed",
+          "title": {
+            "fa": "تراکم پیش‌فرض بافت",
+            "en": "Default weaving density (Tarakom)"
+          }
+        },
+        {
+          "key": "yarn_material_type",
+          "type": "select",
+          "default": "acrylic_heatset",
+          "options": [
+            {
+              "value": "acrylic_heatset",
+              "label": {
+                "fa": "۱۰۰٪ اکریلیک هیت‌ست شده",
+                "en": "100% Heatset Acrylic"
+              }
+            },
+            {
+              "value": "polyester_modal",
+              "label": {
+                "fa": "پلی‌استر / ابریشم مصنوعی",
+                "en": "Polyester / Artificial Silk"
+              }
+            },
+            {
+              "value": "bcf",
+              "label": {
+                "fa": "بی‌سی‌اف (BCF)",
+                "en": "BCF Polypropylene"
+              }
+            },
+            {
+              "value": "wool_handmade",
+              "label": {
+                "fa": "پشم دستباف / کرک و ابریشم",
+                "en": "Handmade Wool / Silk"
+              }
+            }
+          ],
+          "status": "assumed",
+          "title": {
+            "fa": "جنس الیاف نخ خاب",
+            "en": "Pile yarn fiber material"
+          }
+        }
+      ]
+    },
+    {
+      "key": "pricing_margins",
+      "title": {
+        "fa": "سود بازرگانی و مالیات",
+        "en": "Trade Margin & VAT"
+      },
+      "fields": [
+        {
+          "key": "retail_margin_percent",
+          "type": "percent",
+          "default": 20.0,
+          "unit": "%",
+          "status": "assumed",
+          "title": {
+            "fa": "حاشیه سود خرده‌فروشی فرش و موکت",
+            "en": "Retail carpet & flooring profit margin (%)"
+          }
+        },
+        {
+          "key": "vat_rate_percent",
+          "type": "percent",
+          "default": 10.0,
+          "unit": "%",
+          "status": "verified",
+          "title": {
+            "fa": "نرخ مالیات بر ارزش افزوده",
+            "en": "VAT rate (%)"
+          }
+        }
+      ]
+    }
+  ],
+  "calculators": [
+    {
+      "key": "rug_price_by_sqm",
+      "type": "layered_price",
+      "title": {
+        "fa": "محاسبه قیمت تخته فرش بر اساس متراژ و سود فروشگاهی",
+        "en": "Rug price calculation by area (sqm) and store margin"
+      },
+      "inputs": [
+        {
+          "key": "area_sqm",
+          "type": "decimal",
+          "min": 0.1,
+          "title": {
+            "fa": "متراژ تخته فرش یا موکت (متر مربع)",
+            "en": "Carpet or flooring area (sqm)"
+          }
+        },
+        {
+          "key": "cost_per_sqm",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "بهای تمام‌شده هر متر مربع (ریال)",
+            "en": "Cost per square meter (Rial)"
+          }
+        }
+      ],
+      "components": [
+        {
+          "key": "base_cost",
+          "type": "product",
+          "factors": [
+            "area_sqm",
+            "cost_per_sqm"
+          ],
+          "title": {
+            "fa": "بهای تمام‌شده اولیه بافت",
+            "en": "Initial weaving cost"
+          }
+        },
+        {
+          "key": "profit",
+          "type": "percent",
+          "of": [
+            "base_cost"
+          ],
+          "setting": "retail_margin_percent",
+          "title": {
+            "fa": "سود فروشگاه فرش",
+            "en": "Carpet store margin"
+          }
+        },
+        {
+          "key": "vat",
+          "type": "percent",
+          "of": [
+            "base_cost",
+            "profit"
+          ],
+          "setting": "vat_rate_percent",
+          "title": {
+            "fa": "ارزش افزوده (۱۰٪)",
+            "en": "VAT (10%)"
+          }
+        }
+      ],
+      "params": {
+        "money_decimals": 0
+      }
+    },
+    {
+      "key": "unit_convert",
+      "type": "unit_convert",
+      "title": {
+        "fa": "تبدیل ابعاد قالی، متراژ و طاقه پارچه",
+        "en": "Rug size, area & fabric roll conversion"
+      },
+      "inputs": [
+        {
+          "key": "value",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "تعداد یا متراژ",
+            "en": "Quantity or Area"
+          }
+        },
+        {
+          "key": "from",
+          "type": "select",
+          "options": [
+            "sqm",
+            "rug_12m",
+            "rug_9m",
+            "rug_6m",
+            "rug_4m",
+            "yard"
+          ],
+          "title": {
+            "fa": "از واحد",
+            "en": "From unit"
+          }
+        },
+        {
+          "key": "to",
+          "type": "select",
+          "options": [
+            "sqm",
+            "rug_12m",
+            "rug_9m",
+            "rug_6m",
+            "rug_4m",
+            "yard"
+          ],
+          "title": {
+            "fa": "به واحد",
+            "en": "To unit"
+          }
+        }
+      ],
+      "params": {
+        "units": {
+          "sqm": 1.0,
+          "rug_12m": 12.0,
+          "rug_9m": 8.75,
+          "rug_6m": 6.0,
+          "rug_4m": 3.375,
+          "yard": 0.8361
+        },
+        "decimals": 3
+      }
+    }
+  ]
+}

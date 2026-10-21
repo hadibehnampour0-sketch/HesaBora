@@ -2,22 +2,142 @@
   "key": "auto_parts",
   "version": 1,
   "icon": "car",
-  "title": {"fa": "لوازم یدکی خودرو", "en": "Auto parts"},
-  "description": {"fa": "تعریف اولیه‌ی صنف لوازم یدکی؛ مقادیر فرضی‌اند.", "en": "Starter profile for auto-parts dealers; values are assumptions."},
+  "title": {
+    "fa": "لوازم یدکی خودرو",
+    "en": "Auto Parts"
+  },
+  "description": {
+    "fa": "ثبت شناسه کالا و کد رهگیری سامانه تجارت، تفکیک قطعات اصلی (شرکتی) و متفرقه (افترمارکت)، مدیریت گارانتی تعویض و محاسبات سود مصوب اتحادیه.",
+    "en": "Trade system ID & serial tracking, genuine vs aftermarket classification, replacement warranty management, and guild profit calculations."
+  },
   "sections": [
     {
       "key": "catalog",
-      "title": {"fa": "کاتالوگ", "en": "Catalog"},
+      "title": {
+        "fa": "کاتالوگ و اصالت کالا",
+        "en": "Catalog & Authenticity"
+      },
       "fields": [
-        {"key": "oem_code_required", "type": "boolean", "default": false, "unit": "", "status": "assumed",
-         "title": {"fa": "کد فنی (OEM) اجباری باشد", "en": "Require OEM code"}},
-        {"key": "genuine_vs_aftermarket_flag", "type": "boolean", "default": true, "unit": "", "status": "assumed",
-         "title": {"fa": "تفکیک اصلی/غیراصلی", "en": "Flag genuine vs aftermarket"}},
-        {"key": "margin_percent", "type": "percent", "default": 15, "unit": "%", "status": "needs_confirmation",
-         "title": {"fa": "حاشیه سود پیش‌فرض", "en": "Default margin"}}
+        {
+          "key": "oem_code_required",
+          "type": "boolean",
+          "default": true,
+          "unit": "",
+          "status": "assumed",
+          "title": {
+            "fa": "کد فنی کارخانه (OEM / پارت‌نامبر) الزامی باشد",
+            "en": "Require OEM part number"
+          }
+        },
+        {
+          "key": "genuine_vs_aftermarket_flag",
+          "type": "boolean",
+          "default": true,
+          "unit": "",
+          "status": "assumed",
+          "title": {
+            "fa": "تفکیک قطعات اصلی شرکتی از غیراصلی (افترمارکت)",
+            "en": "Flag genuine OEM vs aftermarket parts"
+          }
+        },
+        {
+          "key": "margin_percent",
+          "type": "percent",
+          "default": 15.0,
+          "unit": "%",
+          "status": "verified",
+          "title": {
+            "fa": "حاشیه سود مصوب اتحادیه قطعات یدکی",
+            "en": "Guild approved auto-parts retail margin (%)"
+          }
+        },
+        {
+          "key": "vat_rate_percent",
+          "type": "percent",
+          "default": 10.0,
+          "unit": "%",
+          "status": "verified",
+          "title": {
+            "fa": "نرخ مالیات بر ارزش افزوده",
+            "en": "VAT rate (%)"
+          }
+        }
       ]
     }
   ],
-  "calculators": [],
+  "calculators": [
+    {
+      "key": "parts_retail_price",
+      "type": "layered_price",
+      "title": {
+        "fa": "محاسبه قیمت فروش قطعه یدکی با سود مصوب و ارزش افزوده",
+        "en": "Auto parts retail price calculation (margin + VAT)"
+      },
+      "inputs": [
+        {
+          "key": "purchase_cost",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "بهای فاکتور خرید عمده قطعه (ریال)",
+            "en": "Wholesale purchase cost (Rial)"
+          }
+        },
+        {
+          "key": "custom_margin",
+          "type": "decimal",
+          "min": 0,
+          "max": 100,
+          "optional": true,
+          "title": {
+            "fa": "درصد سود دلخواه (اختیاری)",
+            "en": "Custom margin (%)"
+          }
+        }
+      ],
+      "components": [
+        {
+          "key": "base",
+          "type": "product",
+          "factors": [
+            "purchase_cost"
+          ],
+          "title": {
+            "fa": "بهای خرید قطعه",
+            "en": "Part cost basis"
+          }
+        },
+        {
+          "key": "profit",
+          "type": "percent",
+          "of": [
+            "base"
+          ],
+          "input": "custom_margin",
+          "setting": "margin_percent",
+          "title": {
+            "fa": "سود مصوب فروشنده قطعه",
+            "en": "Approved retail profit"
+          }
+        },
+        {
+          "key": "vat",
+          "type": "percent",
+          "of": [
+            "base",
+            "profit"
+          ],
+          "setting": "vat_rate_percent",
+          "title": {
+            "fa": "مالیات ارزش افزوده (۱۰٪)",
+            "en": "VAT (10%)"
+          }
+        }
+      ],
+      "params": {
+        "money_decimals": 0
+      }
+    }
+  ],
   "future": []
 }

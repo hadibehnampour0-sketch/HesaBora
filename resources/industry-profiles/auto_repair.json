@@ -1,0 +1,159 @@
+{
+  "key": "auto_repair",
+  "title": {
+    "fa": "خدمات خودرو و تعمیرگاه",
+    "en": "Auto Repair & Mechanics"
+  },
+  "description": {
+    "fa": "ثبت تفکیکی اجرت مکانیکی، باتری‌سازی و جلوبندی از بهای قطعات یدکی، گارانتی تعمیرات و کیلومتر خودرو، و صدور پیش‌فاکتور خدمات طبق نرخ‌نامه اتحادیه.",
+    "en": "Separation of repair labor wages from spare parts cost, service warranty/odometer tracking, and union-rate auto repair estimate calculation."
+  },
+  "sections": [
+    {
+      "key": "rates_warranty",
+      "title": {
+        "fa": "نرخ‌نامه اتحادیه و ضمانت خدمات",
+        "en": "Union Rates & Service Warranty"
+      },
+      "fields": [
+        {
+          "key": "repair_warranty_days",
+          "type": "integer",
+          "default": 30,
+          "min": 0,
+          "max": 365,
+          "unit": "روز",
+          "status": "assumed",
+          "title": {
+            "fa": "مدت ضمانت کارکرد تعمیرات",
+            "en": "Repair workmanship warranty (days)"
+          }
+        },
+        {
+          "key": "track_odometer_km",
+          "type": "boolean",
+          "default": true,
+          "status": "verified",
+          "title": {
+            "fa": "ثبت الزامی کیلومتر کارکرد خودرو در پذیرش",
+            "en": "Mandatory odometer reading on vehicle reception"
+          }
+        },
+        {
+          "key": "consumables_handling_margin_percent",
+          "type": "percent",
+          "default": 10.0,
+          "unit": "%",
+          "status": "assumed",
+          "title": {
+            "fa": "درصد کارمزد تهیه و ضمانت قطعات یدکی",
+            "en": "Parts procurement & handling markup (%)"
+          }
+        },
+        {
+          "key": "vat_rate_percent",
+          "type": "percent",
+          "default": 10.0,
+          "unit": "%",
+          "status": "verified",
+          "title": {
+            "fa": "نرخ مالیات بر ارزش افزوده خدمات",
+            "en": "Service VAT rate (%)"
+          }
+        }
+      ]
+    }
+  ],
+  "calculators": [
+    {
+      "key": "repair_invoice_estimate",
+      "type": "layered_price",
+      "title": {
+        "fa": "محاسبه برآورد هزینه تعمیرات (تفکیک اجرت، قطعات و مالیات)",
+        "en": "Repair invoice estimate (labor, parts & tax split)"
+      },
+      "inputs": [
+        {
+          "key": "labor_hours",
+          "type": "decimal",
+          "min": 0.25,
+          "title": {
+            "fa": "ساعات کارشناسی / اجرت تعمیرات",
+            "en": "Labor hours / standard units"
+          }
+        },
+        {
+          "key": "hourly_wage_rate",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "نرخ هر ساعت اجرت مصوب اتحادیه (ریال)",
+            "en": "Union hourly labor rate (Rial)"
+          }
+        },
+        {
+          "key": "parts_cost",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "مجموع بهای خرید قطعات یدکی (ریال)",
+            "en": "Total spare parts cost (Rial)"
+          }
+        }
+      ],
+      "components": [
+        {
+          "key": "labor_total",
+          "type": "product",
+          "factors": [
+            "labor_hours",
+            "hourly_wage_rate"
+          ],
+          "title": {
+            "fa": "مجموع دستمزد و اجرت تعمیرکار",
+            "en": "Total mechanic labor fee"
+          }
+        },
+        {
+          "key": "parts_total",
+          "type": "product",
+          "factors": [
+            "parts_cost"
+          ],
+          "title": {
+            "fa": "بهای قطعات یدکی مصرفی",
+            "en": "Spare parts cost"
+          }
+        },
+        {
+          "key": "parts_handling",
+          "type": "percent",
+          "of": [
+            "parts_total"
+          ],
+          "setting": "consumables_handling_margin_percent",
+          "title": {
+            "fa": "کارمزد تأمین و تست قطعه",
+            "en": "Parts procurement markup"
+          }
+        },
+        {
+          "key": "vat",
+          "type": "percent",
+          "of": [
+            "labor_total",
+            "parts_handling"
+          ],
+          "setting": "vat_rate_percent",
+          "title": {
+            "fa": "مالیات ارزش افزوده اجرت و خدمات",
+            "en": "Service VAT"
+          }
+        }
+      ],
+      "params": {
+        "money_decimals": 0
+      }
+    }
+  ]
+}

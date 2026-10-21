@@ -1,0 +1,68 @@
+{
+  "key": "restaurant_cafe",
+  "version": 1,
+  "icon": "restaurant",
+  "title": {"fa": "رستوران، فست‌فود و کافی‌شاپ", "en": "Restaurant, Fast-food & Cafe"},
+  "description": {
+    "fa": "تنظیمات اختصاصی رستوران، فست‌فود، کافی‌شاپ و کترینگ شامل حق سرویس، مالیات ارزش افزوده، هزینه‌های بسته‌بندی بیرون‌بر و محاسبه قیمت تمام‌شده غذا (Food Cost).",
+    "en": "Settings and calculators for restaurants, fast-food outlets, cafes, and catering, covering service charge, VAT, takeaway packaging, and food costing."
+  },
+  "sections": [
+    {
+      "key": "service_tax",
+      "title": {"fa": "حق سرویس و مالیات", "en": "Service charge & Tax"},
+      "fields": [
+        {
+          "key": "service_charge_percent", "type": "percent", "default": 0, "min": 0, "max": 25, "unit": "%",
+          "status": "assumed",
+          "title": {"fa": "حق سرویس سالن (درصد)", "en": "Dine-in service charge (%)"},
+          "help": {"fa": "درصد حق سرویس پذیرایی داخل سالن.", "en": "Service charge percentage for dine-in guests."}
+        },
+        {
+          "key": "vat_percent", "type": "percent", "default": 10, "unit": "%",
+          "status": "verified",
+          "title": {"fa": "نرخ ارزش افزوده رستورانی (درصد)", "en": "Restaurant VAT rate (%)"},
+          "help": {"fa": "نرخ قانونی مالیات بر ارزش افزوده خدمات رستورانی طبق قانون دائمی مالیات بر ارزش افزوده.", "en": "Statutory restaurant VAT rate under the VAT law."}
+        },
+        {
+          "key": "margin_percent", "type": "percent", "default": 45, "unit": "%",
+          "status": "assumed",
+          "title": {"fa": "حاشیه سود ناخالص هدف (درصد)", "en": "Target gross margin (%)"}
+        }
+      ]
+    },
+    {
+      "key": "operations",
+      "title": {"fa": "عملیات و آشپزخانه", "en": "Kitchen & Operations"},
+      "fields": [
+        {
+          "key": "kitchen_prep_minutes", "type": "integer", "default": 20, "min": 1, "max": 180, "unit": "دقیقه",
+          "status": "assumed",
+          "title": {"fa": "زمان پیش‌فرض آماده‌سازی غذا", "en": "Default kitchen prep time (min)"}
+        },
+        {
+          "key": "waste_tolerance_percent", "type": "percent", "default": 4, "min": 0, "max": 20, "unit": "%",
+          "status": "assumed",
+          "title": {"fa": "درصد پرت و ضایعات مجاز مواد اولیه", "en": "Ingredient waste tolerance (%)"}
+        }
+      ]
+    }
+  ],
+  "calculators": [
+    {
+      "key": "menu_price",
+      "type": "layered_price",
+      "title": {"fa": "قیمت‌گذاری منوی غذا و قیمت مصرف‌کننده", "en": "Menu pricing & consumer bill"},
+      "inputs": [
+        {"key": "raw_cost", "type": "decimal", "min": 0, "title": {"fa": "بهای تمام‌شده مواد اولیه غذا (تومان)", "en": "Raw ingredient cost"}}
+      ],
+      "components": [
+        {"key": "raw", "type": "product", "factors": ["raw_cost"], "title": {"fa": "بهای مواد اولیه", "en": "Raw ingredients"}},
+        {"key": "margin", "type": "percent", "setting": "margin_percent", "of": ["raw"], "title": {"fa": "سود ناخالص رستوران", "en": "Gross profit"}},
+        {"key": "service", "type": "percent", "setting": "service_charge_percent", "of": ["raw", "margin"], "title": {"fa": "حق سرویس", "en": "Service charge"}},
+        {"key": "vat", "type": "percent", "setting": "vat_percent", "of": ["raw", "margin", "service"], "title": {"fa": "ارزش افزوده قانونی", "en": "VAT"}}
+      ]
+    }
+  ],
+  "future": []
+}

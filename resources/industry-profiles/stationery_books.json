@@ -1,0 +1,202 @@
+{
+  "key": "stationery_books",
+  "title": {
+    "fa": "کتاب، نشر و نوشت‌افزار",
+    "en": "Books, Publishing & Stationery"
+  },
+  "description": {
+    "fa": "تفکیک معافیت قانونی مالیات ارزش افزوده کتاب و مطبوعات از نوشت‌افزار، واحدهای بسته‌بندی جین و قراص، تخفیف پشت جلد ناشر و محاسبه سود لوازم‌التحریر.",
+    "en": "VAT exemption handling for books/press vs taxable stationery, dozen/gross counting units, cover-price publisher discounts, and stationery retail pricing."
+  },
+  "sections": [
+    {
+      "key": "tax_exemption",
+      "title": {
+        "fa": "معافیت قانونی و مالیات",
+        "en": "Tax Exemption & VAT"
+      },
+      "fields": [
+        {
+          "key": "books_vat_exempt_active",
+          "type": "boolean",
+          "default": true,
+          "status": "verified",
+          "title": {
+            "fa": "معافیت مالیات ارزش افزوده کتاب، مطبوعات و نشر",
+            "en": "VAT exemption for books, press and publication"
+          },
+          "help": {
+            "fa": "طبق بند «ل» ماده ۱۳۹ قانون مالیات‌های مستقیم و جزء ۱۲ بند «الف» ماده ۹ قانون دائمی مالیات بر ارزش افزوده، کتاب معاف از مالیات است.",
+            "en": "Books and printed press are legally exempt from VAT under Article 9 of VAT law."
+          }
+        },
+        {
+          "key": "stationery_vat_rate_percent",
+          "type": "percent",
+          "default": 10.0,
+          "unit": "%",
+          "status": "verified",
+          "title": {
+            "fa": "نرخ مالیات بر ارزش افزوده نوشت‌افزار و لوازم‌التحریر",
+            "en": "Stationery VAT rate (%)"
+          }
+        },
+        {
+          "key": "publisher_distributor_discount_percent",
+          "type": "percent",
+          "default": 40.0,
+          "unit": "%",
+          "status": "assumed",
+          "title": {
+            "fa": "درصد تخفیف پیش‌فرض خرید کتاب از ناشر / مرکز پخش",
+            "en": "Default distributor/publisher discount off cover price (%)"
+          }
+        },
+        {
+          "key": "stationery_retail_margin_percent",
+          "type": "percent",
+          "default": 25.0,
+          "unit": "%",
+          "status": "assumed",
+          "title": {
+            "fa": "حاشیه سود خرده‌فروشی نوشت‌افزار",
+            "en": "Stationery retail profit margin (%)"
+          }
+        }
+      ]
+    }
+  ],
+  "calculators": [
+    {
+      "key": "stationery_price",
+      "type": "layered_price",
+      "title": {
+        "fa": "محاسبه قیمت فروش نوشت‌افزار با سود و مالیات بر ارزش افزوده",
+        "en": "Stationery retail price calculation (margin + VAT)"
+      },
+      "inputs": [
+        {
+          "key": "purchase_cost",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "بهای خرید هر واحد نوشت‌افزار (ریال)",
+            "en": "Stationery unit cost (Rial)"
+          }
+        },
+        {
+          "key": "custom_margin_percent",
+          "type": "decimal",
+          "min": 0,
+          "max": 100,
+          "optional": true,
+          "title": {
+            "fa": "درصد سود دلخواه (پیش‌فرض از تنظیمات صنف)",
+            "en": "Optional margin (defaults to profile setting)"
+          }
+        }
+      ],
+      "components": [
+        {
+          "key": "base_cost",
+          "type": "product",
+          "factors": [
+            "purchase_cost"
+          ],
+          "title": {
+            "fa": "بهای تمام‌شده خرید",
+            "en": "Base cost"
+          }
+        },
+        {
+          "key": "margin",
+          "type": "percent",
+          "of": [
+            "base_cost"
+          ],
+          "input": "custom_margin_percent",
+          "setting": "stationery_retail_margin_percent",
+          "title": {
+            "fa": "سود خرده‌فروشی نوشت‌افزار",
+            "en": "Retail margin"
+          }
+        },
+        {
+          "key": "vat",
+          "type": "percent",
+          "of": [
+            "base_cost",
+            "margin"
+          ],
+          "setting": "stationery_vat_rate_percent",
+          "title": {
+            "fa": "مالیات ارزش افزوده نوشت‌افزار (۱۰٪)",
+            "en": "Stationery VAT (10%)"
+          }
+        }
+      ],
+      "params": {
+        "money_decimals": 0
+      }
+    },
+    {
+      "key": "unit_convert",
+      "type": "unit_convert",
+      "title": {
+        "fa": "تبدیل واحدهای شمارش (جین، قراص، بسته، بند کاغذ و عدد)",
+        "en": "Counting units conversion (dozen, gross, ream, pack, piece)"
+      },
+      "inputs": [
+        {
+          "key": "value",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "مقدار",
+            "en": "Quantity"
+          }
+        },
+        {
+          "key": "from",
+          "type": "select",
+          "options": [
+            "piece",
+            "dozen",
+            "gross",
+            "pack_10",
+            "ream_500"
+          ],
+          "title": {
+            "fa": "از واحد",
+            "en": "From unit"
+          }
+        },
+        {
+          "key": "to",
+          "type": "select",
+          "options": [
+            "piece",
+            "dozen",
+            "gross",
+            "pack_10",
+            "ream_500"
+          ],
+          "title": {
+            "fa": "به واحد",
+            "en": "To unit"
+          }
+        }
+      ],
+      "params": {
+        "units": {
+          "piece": 1.0,
+          "dozen": 12.0,
+          "gross": 144.0,
+          "pack_10": 10.0,
+          "ream_500": 500.0
+        },
+        "decimals": 2
+      }
+    }
+  ]
+}

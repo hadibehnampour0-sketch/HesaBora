@@ -2,22 +2,200 @@
   "key": "food",
   "version": 1,
   "icon": "food",
-  "title": {"fa": "مواد غذایی", "en": "Food & grocery"},
-  "description": {"fa": "تعریف اولیه‌ی صنف مواد غذایی؛ مقادیر فرضی‌اند.", "en": "Starter profile for food/grocery dealers; values are assumptions."},
+  "title": {
+    "fa": "مواد غذایی و سوپرمارکت",
+    "en": "Food & Grocery"
+  },
+  "description": {
+    "fa": "مدیریت تاریخ انقضا و هشدار فسادپذیری، محاسبات حاشیه سود قیمت مصرف‌کننده، تخفیف‌های پخش و تبدیل کارتن و بسته.",
+    "en": "Expiry date tracking and spoilage alerts, consumer price margin calculation, distributor discounts, and carton/pack conversion."
+  },
   "sections": [
     {
       "key": "shelf_life",
-      "title": {"fa": "تاریخ مصرف", "en": "Shelf life"},
+      "title": {
+        "fa": "تاریخ مصرف و انقضا",
+        "en": "Shelf Life & Expiry"
+      },
       "fields": [
-        {"key": "expiry_tracking", "type": "boolean", "default": true, "unit": "", "status": "assumed",
-         "title": {"fa": "ثبت تاریخ انقضا", "en": "Track expiry dates"}},
-        {"key": "expiry_alert_days", "type": "integer", "default": 14, "min": 1, "max": 365, "unit": "d", "status": "assumed",
-         "title": {"fa": "هشدار نزدیک شدن انقضا (روز)", "en": "Near-expiry alert (days)"}},
-        {"key": "margin_percent", "type": "percent", "default": 12, "unit": "%", "status": "needs_confirmation",
-         "title": {"fa": "حاشیه سود پیش‌فرض", "en": "Default margin"}}
+        {
+          "key": "expiry_tracking",
+          "type": "boolean",
+          "default": true,
+          "unit": "",
+          "status": "assumed",
+          "title": {
+            "fa": "ثبت تاریخ انقضا برای کالاهای تندمصرف (FMCG)",
+            "en": "Track expiry dates for fast-moving goods"
+          }
+        },
+        {
+          "key": "expiry_alert_days",
+          "type": "integer",
+          "default": 14,
+          "min": 1,
+          "max": 365,
+          "unit": "روز",
+          "status": "assumed",
+          "title": {
+            "fa": "هشدار نزدیک شدن انقضا (روز)",
+            "en": "Near-expiry alert threshold (days)"
+          }
+        },
+        {
+          "key": "margin_percent",
+          "type": "percent",
+          "default": 15.0,
+          "unit": "%",
+          "status": "assumed",
+          "title": {
+            "fa": "حاشیه سود پیش‌فرض سوپرمارکت",
+            "en": "Default supermarket margin (%)"
+          }
+        },
+        {
+          "key": "vat_rate_percent",
+          "type": "percent",
+          "default": 10.0,
+          "unit": "%",
+          "status": "verified",
+          "title": {
+            "fa": "نرخ مالیات بر ارزش افزوده اقلام مشمول",
+            "en": "VAT rate on non-exempt items (%)"
+          }
+        }
       ]
     }
   ],
-  "calculators": [],
+  "calculators": [
+    {
+      "key": "retail_price",
+      "type": "layered_price",
+      "title": {
+        "fa": "محاسبه قیمت فروش سوپرمارکت بر اساس بهای فاکتور خرید",
+        "en": "Grocery retail price calculation from wholesale cost"
+      },
+      "inputs": [
+        {
+          "key": "invoice_cost",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "بهای خرید فاکتور پخش (ریال)",
+            "en": "Distributor invoice cost (Rial)"
+          }
+        },
+        {
+          "key": "custom_margin",
+          "type": "decimal",
+          "min": 0,
+          "max": 100,
+          "optional": true,
+          "title": {
+            "fa": "درصد سود دلخواه (اختیاری)",
+            "en": "Custom margin (%)"
+          }
+        }
+      ],
+      "components": [
+        {
+          "key": "base",
+          "type": "product",
+          "factors": [
+            "invoice_cost"
+          ],
+          "title": {
+            "fa": "بهای خرید از شرکت پخش",
+            "en": "Wholesale purchase cost"
+          }
+        },
+        {
+          "key": "profit",
+          "type": "percent",
+          "of": [
+            "base"
+          ],
+          "input": "custom_margin",
+          "setting": "margin_percent",
+          "title": {
+            "fa": "سود سوپرمارکت",
+            "en": "Supermarket margin"
+          }
+        },
+        {
+          "key": "vat",
+          "type": "percent",
+          "of": [
+            "base",
+            "profit"
+          ],
+          "setting": "vat_rate_percent",
+          "title": {
+            "fa": "ارزش افزوده (اقلام غیرمعاف)",
+            "en": "VAT (non-exempt items)"
+          }
+        }
+      ],
+      "params": {
+        "money_decimals": 0
+      }
+    },
+    {
+      "key": "unit_convert",
+      "type": "unit_convert",
+      "title": {
+        "fa": "تبدیل واحدهای بسته‌بندی کارتن، شیرینگ و عدد",
+        "en": "Carton, shrink pack and piece unit conversion"
+      },
+      "inputs": [
+        {
+          "key": "value",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "مقدار",
+            "en": "Quantity"
+          }
+        },
+        {
+          "key": "from",
+          "type": "select",
+          "options": [
+            "piece",
+            "pack_6",
+            "carton_12",
+            "carton_24"
+          ],
+          "title": {
+            "fa": "از واحد",
+            "en": "From unit"
+          }
+        },
+        {
+          "key": "to",
+          "type": "select",
+          "options": [
+            "piece",
+            "pack_6",
+            "carton_12",
+            "carton_24"
+          ],
+          "title": {
+            "fa": "به واحد",
+            "en": "To unit"
+          }
+        }
+      ],
+      "params": {
+        "units": {
+          "piece": 1.0,
+          "pack_6": 6.0,
+          "carton_12": 12.0,
+          "carton_24": 24.0
+        },
+        "decimals": 2
+      }
+    }
+  ],
   "future": []
 }

@@ -2,26 +2,218 @@
   "key": "apparel",
   "version": 1,
   "icon": "shirt",
-  "title": {"fa": "پوشاک", "en": "Apparel"},
-  "description": {"fa": "تعریف اولیه‌ی صنف پوشاک؛ مقادیر فرضی‌اند.", "en": "Starter profile for apparel dealers; values are assumptions."},
+  "title": {
+    "fa": "پوشاک، کیف و کفش",
+    "en": "Apparel & Footwear"
+  },
+  "description": {
+    "fa": "نظام سایزبندی، فروش فصلی و حراج، مدیریت عمده‌فروشی بر مبنای جین و نیم‌جین، و محاسبه بهای فروش پوشاک با احتساب ارزش افزوده.",
+    "en": "Size schemes, seasonal tracking/sales, wholesale dozen/half-dozen management, and retail price calculation with VAT."
+  },
   "sections": [
     {
       "key": "catalog",
-      "title": {"fa": "کاتالوگ", "en": "Catalog"},
+      "title": {
+        "fa": "کاتالوگ و مشخصات",
+        "en": "Catalog & Specifications"
+      },
       "fields": [
-        {"key": "size_scheme", "type": "select", "default": "letters", "unit": "",
-         "options": [
-           {"value": "letters", "label": {"fa": "حروفی (S, M, L)", "en": "Letters (S, M, L)"}},
-           {"value": "numeric", "label": {"fa": "عددی (۳۸، ۴۰ …)", "en": "Numeric (38, 40…)"}}
-         ],
-         "status": "assumed", "title": {"fa": "نظام سایز", "en": "Size scheme"}},
-        {"key": "season_tracking", "type": "boolean", "default": true, "unit": "", "status": "assumed",
-         "title": {"fa": "ثبت فصل کالا", "en": "Track season per item"}},
-        {"key": "margin_percent", "type": "percent", "default": 30, "unit": "%", "status": "needs_confirmation",
-         "title": {"fa": "حاشیه سود پیش‌فرض", "en": "Default margin"}}
+        {
+          "key": "size_scheme",
+          "type": "select",
+          "default": "letters",
+          "unit": "",
+          "options": [
+            {
+              "value": "letters",
+              "label": {
+                "fa": "حروفی (S, M, L, XL, XXL)",
+                "en": "Letters (S, M, L, XL, XXL)"
+              }
+            },
+            {
+              "value": "numeric",
+              "label": {
+                "fa": "عددی (۳۸، ۴۰، ۴۲ …)",
+                "en": "Numeric (38, 40, 42…)"
+              }
+            },
+            {
+              "value": "freestyle",
+              "label": {
+                "fa": "فری‌سایز (Free Size)",
+                "en": "Free Size"
+              }
+            }
+          ],
+          "status": "assumed",
+          "title": {
+            "fa": "نظام سایزبندی",
+            "en": "Size scheme"
+          }
+        },
+        {
+          "key": "season_tracking",
+          "type": "boolean",
+          "default": true,
+          "unit": "",
+          "status": "assumed",
+          "title": {
+            "fa": "ثبت فصل کالا (بهار/تابستان/پاییز/زمستان)",
+            "en": "Track season per item"
+          }
+        },
+        {
+          "key": "margin_percent",
+          "type": "percent",
+          "default": 30.0,
+          "unit": "%",
+          "status": "assumed",
+          "title": {
+            "fa": "حاشیه سود پیش‌فرض فروش پوشاک",
+            "en": "Default retail margin (%)"
+          }
+        },
+        {
+          "key": "vat_rate_percent",
+          "type": "percent",
+          "default": 10.0,
+          "unit": "%",
+          "status": "verified",
+          "title": {
+            "fa": "نرخ مالیات بر ارزش افزوده",
+            "en": "VAT rate (%)"
+          }
+        }
       ]
     }
   ],
-  "calculators": [],
+  "calculators": [
+    {
+      "key": "retail_price",
+      "type": "layered_price",
+      "title": {
+        "fa": "محاسبه قیمت فروش پوشاک با سود و ارزش افزوده",
+        "en": "Apparel retail price calculation (margin + VAT)"
+      },
+      "inputs": [
+        {
+          "key": "cost_price",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "بهای تمام‌شده خرید (ریال)",
+            "en": "Cost price (Rial)"
+          }
+        },
+        {
+          "key": "custom_margin",
+          "type": "decimal",
+          "min": 0,
+          "max": 100,
+          "optional": true,
+          "title": {
+            "fa": "درصد سود دلخواه (اختیاری)",
+            "en": "Optional custom margin (%)"
+          }
+        }
+      ],
+      "components": [
+        {
+          "key": "base",
+          "type": "product",
+          "factors": [
+            "cost_price"
+          ],
+          "title": {
+            "fa": "بهای خرید",
+            "en": "Cost basis"
+          }
+        },
+        {
+          "key": "profit",
+          "type": "percent",
+          "of": [
+            "base"
+          ],
+          "input": "custom_margin",
+          "setting": "margin_percent",
+          "title": {
+            "fa": "سود فروشگاه پوشاک",
+            "en": "Retail margin"
+          }
+        },
+        {
+          "key": "vat",
+          "type": "percent",
+          "of": [
+            "base",
+            "profit"
+          ],
+          "setting": "vat_rate_percent",
+          "title": {
+            "fa": "مالیات ارزش افزوده (۱۰٪)",
+            "en": "VAT (10%)"
+          }
+        }
+      ],
+      "params": {
+        "money_decimals": 0
+      }
+    },
+    {
+      "key": "unit_convert",
+      "type": "unit_convert",
+      "title": {
+        "fa": "تبدیل واحدهای شمارش پوشاک (جین، نیم‌جین، عدد)",
+        "en": "Apparel count conversion (dozen, half-dozen, piece)"
+      },
+      "inputs": [
+        {
+          "key": "value",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "مقدار",
+            "en": "Quantity"
+          }
+        },
+        {
+          "key": "from",
+          "type": "select",
+          "options": [
+            "piece",
+            "dozen",
+            "half_dozen"
+          ],
+          "title": {
+            "fa": "از واحد",
+            "en": "From unit"
+          }
+        },
+        {
+          "key": "to",
+          "type": "select",
+          "options": [
+            "piece",
+            "dozen",
+            "half_dozen"
+          ],
+          "title": {
+            "fa": "به واحد",
+            "en": "To unit"
+          }
+        }
+      ],
+      "params": {
+        "units": {
+          "piece": 1.0,
+          "dozen": 12.0,
+          "half_dozen": 6.0
+        },
+        "decimals": 2
+      }
+    }
+  ],
   "future": []
 }

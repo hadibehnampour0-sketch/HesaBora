@@ -2,31 +2,246 @@
   "key": "mobile",
   "version": 1,
   "icon": "phone",
-  "title": {"fa": "موبایل و لوازم جانبی", "en": "Mobile phones & accessories"},
+  "title": {
+    "fa": "موبایل و لوازم جانبی",
+    "en": "Mobile Phones & Accessories"
+  },
   "description": {
-    "fa": "تعریف اولیه‌ی صنف موبایل. قیمت لحظه‌ای این صنف امروز منبع رسمی قابل‌استفاده ندارد و فقط ورود دستی پشتیبانی می‌شود.",
-    "en": "Starter profile for mobile dealers. There is no legally usable live-price source for this trade today; manual entry only."
+    "fa": "ثبت شناسه IMEI و رجیستری همتا، رعایت سقف سود مصوب ۴٪ گوشی همراه، مدیریت سود لوازم جانبی و ارزش افزوده.",
+    "en": "IMEI & Hamta registry tracking, adherence to the 4% statutory phone margin, accessory profit management, and VAT."
   },
   "sections": [
     {
       "key": "tracking",
-      "title": {"fa": "ردیابی و گارانتی", "en": "Tracking & warranty"},
+      "title": {
+        "fa": "ردیابی، گارانتی و سود",
+        "en": "Tracking, Warranty & Margin"
+      },
       "fields": [
-        {"key": "imei_tracking", "type": "boolean", "default": true, "unit": "", "status": "assumed",
-         "title": {"fa": "ثبت IMEI برای هر دستگاه", "en": "Track IMEI per device"}},
-        {"key": "warranty_days", "type": "integer", "default": 365, "min": 0, "max": 3650, "unit": "d", "status": "assumed",
-         "title": {"fa": "مدت گارانتی پیش‌فرض (روز)", "en": "Default warranty (days)"}},
-        {"key": "margin_percent", "type": "percent", "default": 4, "unit": "%", "status": "needs_confirmation",
-         "title": {"fa": "حاشیه سود پیش‌فرض", "en": "Default margin"}},
-        {"key": "price_source", "type": "select", "default": "manual", "unit": "",
-         "options": [
-           {"value": "manual", "label": {"fa": "ورود دستی", "en": "Manual entry"}},
-           {"value": "byo_api", "label": {"fa": "API شخصی (آینده)", "en": "Own API (future)"}}
-         ],
-         "status": "needs_confirmation", "title": {"fa": "منبع قیمت بازار", "en": "Market price source"}}
+        {
+          "key": "imei_tracking",
+          "type": "boolean",
+          "default": true,
+          "unit": "",
+          "status": "verified",
+          "title": {
+            "fa": "ثبت الزامی IMEI برای هر دستگاه",
+            "en": "Track IMEI per device"
+          }
+        },
+        {
+          "key": "warranty_days",
+          "type": "integer",
+          "default": 540,
+          "min": 0,
+          "max": 3650,
+          "unit": "روز",
+          "status": "verified",
+          "title": {
+            "fa": "مدت گارانتی شرکتی (معمولاً ۱۸ ماه)",
+            "en": "Default manufacturer warranty (days)"
+          }
+        },
+        {
+          "key": "margin_percent",
+          "type": "percent",
+          "default": 4.0,
+          "unit": "%",
+          "status": "verified",
+          "title": {
+            "fa": "سود مصوب اتحادیه برای گوشی تلفن همراه",
+            "en": "Statutory retail profit margin for phones (%)"
+          },
+          "help": {
+            "fa": "طبق ضوابط سازمان حمایت و اتحادیه فناوران، حداکثر سود خرده‌فروشی گوشی ۴٪ است.",
+            "en": "Regulated maximum 4% retail markup on mobile phones."
+          }
+        },
+        {
+          "key": "accessory_margin_percent",
+          "type": "percent",
+          "default": 25.0,
+          "unit": "%",
+          "status": "assumed",
+          "title": {
+            "fa": "حاشیه سود لوازم جانبی (قاب، گلس، کابل و شارژر)",
+            "en": "Accessory retail profit margin (%)"
+          }
+        },
+        {
+          "key": "vat_rate_percent",
+          "type": "percent",
+          "default": 10.0,
+          "unit": "%",
+          "status": "verified",
+          "title": {
+            "fa": "نرخ مالیات بر ارزش افزوده",
+            "en": "VAT rate (%)"
+          }
+        },
+        {
+          "key": "price_source",
+          "type": "select",
+          "default": "manual",
+          "unit": "",
+          "options": [
+            {
+              "value": "manual",
+              "label": {
+                "fa": "ورود دستی",
+                "en": "Manual entry"
+              }
+            },
+            {
+              "value": "byo_api",
+              "label": {
+                "fa": "API اختصاصی (آینده)",
+                "en": "Own API (future)"
+              }
+            }
+          ],
+          "status": "needs_confirmation",
+          "title": {
+            "fa": "منبع استعلام قیمت بازار",
+            "en": "Market price source"
+          }
+        }
       ]
     }
   ],
-  "calculators": [],
+  "calculators": [
+    {
+      "key": "phone_retail_price",
+      "type": "layered_price",
+      "title": {
+        "fa": "محاسبه قیمت مصرف‌کننده گوشی با سود مصوب ۴٪ و مالیات",
+        "en": "Regulated mobile phone consumer price calculation (4% + VAT)"
+      },
+      "inputs": [
+        {
+          "key": "wholesale_cost",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "بهای فاکتور خرید شرکتی گوشی (ریال)",
+            "en": "Wholesale phone cost (Rial)"
+          }
+        }
+      ],
+      "components": [
+        {
+          "key": "base",
+          "type": "product",
+          "factors": [
+            "wholesale_cost"
+          ],
+          "title": {
+            "fa": "بهای خرید از شرکت واردکننده",
+            "en": "Import / wholesale cost"
+          }
+        },
+        {
+          "key": "profit",
+          "type": "percent",
+          "of": [
+            "base"
+          ],
+          "setting": "margin_percent",
+          "title": {
+            "fa": "سود قانونی خرده‌فروشی (۴٪)",
+            "en": "Statutory retail profit (4%)"
+          }
+        },
+        {
+          "key": "vat",
+          "type": "percent",
+          "of": [
+            "base",
+            "profit"
+          ],
+          "setting": "vat_rate_percent",
+          "title": {
+            "fa": "مالیات ارزش افزوده (۱۰٪)",
+            "en": "VAT (10%)"
+          }
+        }
+      ],
+      "params": {
+        "money_decimals": 0
+      }
+    },
+    {
+      "key": "accessory_retail_price",
+      "type": "layered_price",
+      "title": {
+        "fa": "محاسبه قیمت لوازم جانبی موبایل با سود و مالیات",
+        "en": "Accessory retail price calculation (margin + VAT)"
+      },
+      "inputs": [
+        {
+          "key": "purchase_cost",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "بهای خرید عمده لوازم جانبی (ریال)",
+            "en": "Wholesale accessory cost (Rial)"
+          }
+        },
+        {
+          "key": "custom_margin",
+          "type": "decimal",
+          "min": 0,
+          "max": 100,
+          "optional": true,
+          "title": {
+            "fa": "درصد سود دلخواه (اختیاری)",
+            "en": "Custom margin (%)"
+          }
+        }
+      ],
+      "components": [
+        {
+          "key": "base",
+          "type": "product",
+          "factors": [
+            "purchase_cost"
+          ],
+          "title": {
+            "fa": "بهای خرید لوازم جانبی",
+            "en": "Accessory purchase cost"
+          }
+        },
+        {
+          "key": "profit",
+          "type": "percent",
+          "of": [
+            "base"
+          ],
+          "input": "custom_margin",
+          "setting": "accessory_margin_percent",
+          "title": {
+            "fa": "سود فروشگاه",
+            "en": "Retail margin"
+          }
+        },
+        {
+          "key": "vat",
+          "type": "percent",
+          "of": [
+            "base",
+            "profit"
+          ],
+          "setting": "vat_rate_percent",
+          "title": {
+            "fa": "مالیات ارزش افزوده (۱۰٪)",
+            "en": "VAT (10%)"
+          }
+        }
+      ],
+      "params": {
+        "money_decimals": 0
+      }
+    }
+  ],
   "future": []
 }

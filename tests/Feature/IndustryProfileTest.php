@@ -65,7 +65,11 @@ class IndustryProfileTest extends TestCase
     {
         $profiles = app(IndustryProfileRegistry::class)->all();
 
-        foreach (['gold', 'iron', 'general', 'building_materials', 'mobile', 'auto_parts', 'apparel', 'food'] as $key) {
+        foreach ([
+            'gold', 'iron', 'general', 'building_materials', 'mobile', 'auto_parts',
+            'apparel', 'food', 'restaurant_cafe', 'pharmacy_medical', 'confectionery_nuts',
+            'home_appliances', 'carpet_textile', 'auto_repair', 'stationery_books', 'business_insights'
+        ] as $key) {
             $this->assertArrayHasKey($key, $profiles);
             $this->assertNotEmpty(app(IndustryProfileRegistry::class)->fields($key), "{$key} has no settings");
         }
@@ -345,6 +349,99 @@ class IndustryProfileTest extends TestCase
 
         $this->settings()->update('building_materials', ['bag_weight_kg' => '25'], $this->user->id);
         $this->assertSame(0.5, (float) $this->calc('building_materials', 'unit_convert', ['value' => 20, 'from' => 'bag', 'to' => 'ton'])['total']);
+    }
+
+    public function test_confectionery_nuts_calculators(): void
+    {
+        // 1140g gross - 140g default tare = 1000g net = 1 kg * 2,500,000 Rial = 2,500,000 Rial.
+        $netPrice = $this->calc('confectionery_nuts', 'net_sale_price', [
+            'gross_weight_grams' => 1140,
+            'price_per_kg' => 2500000,
+        ]);
+        $this->assertSame(2500000.0, (float) $netPrice['total']);
+
+        // 2 half-kg boxes to 1 kg
+        $convert = $this->calc('confectionery_nuts', 'unit_convert', [
+            'value' => 2,
+            'from' => 'box_half',
+            'to' => 'kg',
+        ]);
+        $this->assertSame(1.0, (float) $convert['total']);
+    }
+
+    public function test_restaurant_cafe_pricing_calculator(): void
+    {
+        // Base food cost 1,000,000; margin 45% = 450,000; service charge 0% = 0; VAT 10% of (base+margin = 1,450,000) = 145,000.
+        // Total = 1,000,000 + 450,000 + 0 + 145,000 = 1,595,000.
+        $price = $this->calc('restaurant_cafe', 'menu_price', [
+            'raw_cost' => 1000000,
+        ]);
+        $this->assertSame(1595000.0, (float) $price['total']);
+    }
+
+    public function test_pharmacy_medical_copay_calculator(): void
+    {
+        // Total drug price 1,000,000; patient copay 30% = 300,000; technical dispensing 5% = 50,000; total copay = 350,000.
+        $copay = $this->calc('pharmacy_medical', 'copay_calc', [
+            'total_prescription_value' => 1000000,
+        ]);
+        $this->assertSame(350000.0, (float) $copay['total']);
+    }
+
+    public function test_home_appliances_consumer_price_calculator(): void
+    {
+        // Wholesale 100,000,000; guild margin 8% = 8,000,000; VAT 10% of 108,000,000 = 10,800,000. Total = 118,800,000.
+        $price = $this->calc('home_appliances', 'consumer_price', [
+            'wholesale_price' => 100000000,
+        ]);
+        $this->assertSame(118800000.0, (float) $price['total']);
+    }
+
+    public function test_auto_repair_estimate_calculator(): void
+    {
+        // Labor: 2 hours @ 1,500,000 = 3,000,000.
+        // Parts: 5,000,000. Handling: 10% = 500,000.
+        // VAT: 10% of (3,000,000 + 500,000) = 350,000.
+        // Total = 3,000,000 + 5,000,000 + 500,000 + 350,000 = 8,850,000.
+        $estimate = $this->calc('auto_repair', 'repair_invoice_estimate', [
+            'labor_hours' => 2,
+            'hourly_wage_rate' => 1500000,
+            'parts_cost' => 5000000,
+        ]);
+        $this->assertSame(8850000.0, (float) $estimate['total']);
+    }
+
+    public function test_carpet_textile_calculators(): void
+    {
+        // 12 sqm @ 5,000,000 = 60,000,000; margin 20% = 12,000,000; VAT 10% of 72,000,000 = 7,200,000. Total = 79,200,000.
+        $rug = $this->calc('carpet_textile', 'rug_price_by_sqm', [
+            'area_sqm' => 12,
+            'cost_per_sqm' => 5000000,
+        ]);
+        $this->assertSame(79200000.0, (float) $rug['total']);
+
+        // Convert 1 rug_12m to sqm = 12.0
+        $convert = $this->calc('carpet_textile', 'unit_convert', [
+            'value' => 1,
+            'from' => 'rug_12m',
+            'to' => 'sqm',
+        ]);
+        $this->assertSame(12.0, (float) $convert['total']);
+    }
+
+    public function test_mobile_and_accessories_calculators(): void
+    {
+        // Wholesale phone: 200,000,000. Margin 4% = 8,000,000. VAT 10% of 208,000,000 = 20,800,000. Total = 228,800,000.
+        $phone = $this->calc('mobile', 'phone_retail_price', [
+            'wholesale_cost' => 200000000,
+        ]);
+        $this->assertSame(228800000.0, (float) $phone['total']);
+
+        // Wholesale accessory: 1,000,000. Margin 25% = 250,000. VAT 10% of 1,250,000 = 125,000. Total = 1,375,000.
+        $accessory = $this->calc('mobile', 'accessory_retail_price', [
+            'purchase_cost' => 1000000,
+        ]);
+        $this->assertSame(1375000.0, (float) $accessory['total']);
     }
 
     public function test_calculator_input_validation(): void

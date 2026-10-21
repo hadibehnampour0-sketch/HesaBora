@@ -1,0 +1,278 @@
+{
+  "key": "confectionery_nuts",
+  "title": {
+    "fa": "قنادی، شیرینی و آجیل",
+    "en": "Confectionery, Sweets & Nuts"
+  },
+  "description": {
+    "fa": "تنظیمات خالص‌فروشی استاندارد (کسر وزن جعبه)، ماندگاری شیرینی تر و خشک، فرمولاسیون و محاسبات بهای تمام‌شده و فروش آجیل.",
+    "en": "Standard net-weight sales (box tare deduction), shelf-life for fresh/dry pastries, and nut pricing/packaging calculations."
+  },
+  "sections": [
+    {
+      "key": "box_tare",
+      "title": {
+        "fa": "وزن استاندارد جعبه و خالص‌فروشی",
+        "en": "Standard Box Tare & Net Sales"
+      },
+      "fields": [
+        {
+          "key": "box_tare_half_kg_grams",
+          "type": "integer",
+          "default": 80,
+          "min": 20,
+          "max": 200,
+          "unit": "گرم",
+          "status": "verified",
+          "title": {
+            "fa": "وزن استاندارد جعبه نیم‌کیلویی (تارا)",
+            "en": "Half-kg box tare weight (g)"
+          },
+          "help": {
+            "fa": "طبق استاندارد ملی ایران و دستورالعمل اتحادیه قنادان برای فروش خالص.",
+            "en": "Standard tare weight for 0.5kg pastry box per national standards."
+          }
+        },
+        {
+          "key": "box_tare_one_kg_grams",
+          "type": "integer",
+          "default": 140,
+          "min": 40,
+          "max": 300,
+          "unit": "گرم",
+          "status": "verified",
+          "title": {
+            "fa": "وزن استاندارد جعبه یک‌کیلویی (تارا)",
+            "en": "1-kg box tare weight (g)"
+          }
+        },
+        {
+          "key": "box_tare_two_kg_grams",
+          "type": "integer",
+          "default": 220,
+          "min": 60,
+          "max": 500,
+          "unit": "گرم",
+          "status": "verified",
+          "title": {
+            "fa": "وزن استاندارد جعبه دو‌کیلویی (تارا)",
+            "en": "2-kg box tare weight (g)"
+          }
+        },
+        {
+          "key": "default_box_tare_grams",
+          "type": "integer",
+          "default": 140,
+          "min": 0,
+          "max": 500,
+          "unit": "گرم",
+          "status": "assumed",
+          "title": {
+            "fa": "کسر وزن جعبه پیش‌فرض در ماشین‌حساب (گرم)",
+            "en": "Default box tare deduction (g)"
+          }
+        },
+        {
+          "key": "grams_per_kg",
+          "type": "integer",
+          "default": 1000,
+          "min": 1000,
+          "max": 1000,
+          "unit": "گرم",
+          "status": "verified",
+          "title": {
+            "fa": "تعداد گرم در کیلوگرم (مبنای تبدیل)",
+            "en": "Grams per kg divisor"
+          }
+        }
+      ]
+    },
+    {
+      "key": "shelf_life",
+      "title": {
+        "fa": "ماندگاری و ضایعات",
+        "en": "Shelf Life & Waste"
+      },
+      "fields": [
+        {
+          "key": "fresh_pastry_shelf_life_days",
+          "type": "integer",
+          "default": 2,
+          "min": 1,
+          "max": 7,
+          "unit": "روز",
+          "status": "verified",
+          "title": {
+            "fa": "ماندگاری استاندارد شیرینی تر و خامه‌ای",
+            "en": "Fresh pastry shelf life (days)"
+          }
+        },
+        {
+          "key": "dry_pastry_shelf_life_days",
+          "type": "integer",
+          "default": 20,
+          "min": 5,
+          "max": 60,
+          "unit": "روز",
+          "status": "verified",
+          "title": {
+            "fa": "ماندگاری شیرینی خشک و سنتی",
+            "en": "Dry pastry shelf life (days)"
+          }
+        },
+        {
+          "key": "waste_tolerance_percent",
+          "type": "percent",
+          "default": 3.0,
+          "unit": "%",
+          "status": "assumed",
+          "title": {
+            "fa": "درصد مجاز ضایعات و دورریز کارگاه",
+            "en": "Workshop waste tolerance (%)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "pricing_margin",
+      "title": {
+        "fa": "حاشیه سود و مالیات",
+        "en": "Margin & VAT"
+      },
+      "fields": [
+        {
+          "key": "guild_profit_margin_percent",
+          "type": "percent",
+          "default": 25.0,
+          "unit": "%",
+          "status": "assumed",
+          "title": {
+            "fa": "سود مصوب اتحادیه قنادان",
+            "en": "Approved guild profit margin (%)"
+          }
+        },
+        {
+          "key": "vat_rate_percent",
+          "type": "percent",
+          "default": 10.0,
+          "unit": "%",
+          "status": "verified",
+          "title": {
+            "fa": "نرخ ارزش افزوده",
+            "en": "VAT rate (%)"
+          }
+        }
+      ]
+    }
+  ],
+  "calculators": [
+    {
+      "key": "net_sale_price",
+      "type": "layered_price",
+      "title": {
+        "fa": "محاسبه قیمت فروش خالص با کسر وزن جعبه",
+        "en": "Net sales price after box tare deduction"
+      },
+      "inputs": [
+        {
+          "key": "gross_weight_grams",
+          "type": "decimal",
+          "min": 1,
+          "title": {
+            "fa": "وزن ناخالص به همراه جعبه (گرم)",
+            "en": "Gross weight with box (g)"
+          }
+        },
+        {
+          "key": "price_per_kg",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "قیمت هر کیلوگرم شیرینی (ریال)",
+            "en": "Price per kg (Rial)"
+          }
+        }
+      ],
+      "components": [
+        {
+          "key": "net_pastry_amount",
+          "type": "product",
+          "factors": [
+            "gross_weight_grams",
+            "price_per_kg"
+          ],
+          "subtract": {
+            "gross_weight_grams": "default_box_tare_grams"
+          },
+          "divide_by_setting": "grams_per_kg",
+          "title": {
+            "fa": "مبلغ شیرینی خالص (پس از کسر وزن جعبه)",
+            "en": "Net pastry price (tare deducted)"
+          }
+        }
+      ],
+      "params": {
+        "money_decimals": 0
+      }
+    },
+    {
+      "key": "unit_convert",
+      "type": "unit_convert",
+      "title": {
+        "fa": "تبدیل واحدهای وزن شیرینی و جعبه",
+        "en": "Pastry weight and box unit conversion"
+      },
+      "inputs": [
+        {
+          "key": "value",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "مقدار",
+            "en": "Value"
+          }
+        },
+        {
+          "key": "from",
+          "type": "select",
+          "options": [
+            "kg",
+            "gram",
+            "box_half",
+            "box_one",
+            "box_two"
+          ],
+          "title": {
+            "fa": "از واحد",
+            "en": "From unit"
+          }
+        },
+        {
+          "key": "to",
+          "type": "select",
+          "options": [
+            "kg",
+            "gram",
+            "box_half",
+            "box_one",
+            "box_two"
+          ],
+          "title": {
+            "fa": "به واحد",
+            "en": "To unit"
+          }
+        }
+      ],
+      "params": {
+        "units": {
+          "kg": 1,
+          "gram": 0.001,
+          "box_half": 0.5,
+          "box_one": 1,
+          "box_two": 2
+        },
+        "decimals": 3
+      }
+    }
+  ]
+}

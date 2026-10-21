@@ -1,0 +1,67 @@
+{
+  "key": "pharmacy_medical",
+  "version": 1,
+  "icon": "pill",
+  "title": {"fa": "داروخانه و تجهیزات پزشکی", "en": "Pharmacy & Medical Supplies"},
+  "description": {
+    "fa": "تنظیمات نسخه، سهم بیمه تامین اجتماعی و سلامت، حق فنی نسخه‌پیچی و هشدارهای انقضای دارو و ردیابی اصالت TTAC.",
+    "en": "Settings and calculators for pharmacies and medical equipment: insurance split, patient copay, dispensing fee, and near-expiry monitoring."
+  },
+  "sections": [
+    {
+      "key": "insurance",
+      "title": {"fa": "بیمه و تعرفه", "en": "Insurance & Tariff"},
+      "fields": [
+        {
+          "key": "patient_copay_percent", "type": "percent", "default": 30, "min": 0, "max": 100, "unit": "%",
+          "status": "verified",
+          "title": {"fa": "فرانشیز سهم بیمار بیمه پایه (درصد)", "en": "Base insurance patient copay (%)"},
+          "help": {"fa": "سهم پرداختی بیمار از بهای مصوب دارو در بیمه‌های پایه (تامین اجتماعی / سلامت).", "en": "Patient share percentage of approved drug price under statutory health insurance."}
+        },
+        {
+          "key": "technical_dispensing_percent", "type": "percent", "default": 5, "min": 0, "max": 25, "unit": "%",
+          "status": "assumed",
+          "title": {"fa": "تعرفه حق فنی نسخه‌پیچی (درصد ارزش نسخه)", "en": "Technical dispensing fee rate (%)"}
+        },
+        {
+          "key": "cosmetics_vat_percent", "type": "percent", "default": 10, "unit": "%",
+          "status": "verified",
+          "title": {"fa": "ارزش افزوده اقلام آرایشی و غیردارویی", "en": "VAT on cosmetics & non-drug items"},
+          "help": {"fa": "داروهای انسانی طبق قانون از مالیات ارزش افزوده معاف هستند، اما اقلام بهداشتی و آرایشی مشمول نرخ عادی‌اند.", "en": "Human medications are VAT-exempt; cosmetics carry standard rate."}
+        }
+      ]
+    },
+    {
+      "key": "inventory",
+      "title": {"fa": "انبار و تاریخ مصرف", "en": "Inventory & Expiry"},
+      "fields": [
+        {
+          "key": "expiry_alert_days", "type": "integer", "default": 90, "min": 7, "max": 365, "unit": "روز",
+          "status": "assumed",
+          "title": {"fa": "هشدار نزدیک شدن سررسید انقضای دارو", "en": "Near-expiry alert threshold (days)"}
+        },
+        {
+          "key": "margin_percent", "type": "percent", "default": 20, "unit": "%",
+          "status": "assumed",
+          "title": {"fa": "حاشیه سود مصوب اقلام آزاد", "en": "Approved margin on OTC goods (%)"}
+        }
+      ]
+    }
+  ],
+  "calculators": [
+    {
+      "key": "copay_calc",
+      "type": "layered_price",
+      "title": {"fa": "محاسبه سهم بیمار و سهم بیمه نسخه", "en": "Prescription patient copay calculation"},
+      "inputs": [
+        {"key": "total_prescription_value", "type": "decimal", "min": 0, "title": {"fa": "جمع مبلغ مصوب داروها (تومان)", "en": "Total approved drug value"}}
+      ],
+      "components": [
+        {"key": "base_drugs", "type": "product", "factors": ["total_prescription_value"], "exclude_from_total": true, "title": {"fa": "کل بهای مصوب دارو", "en": "Total prescription"}},
+        {"key": "patient_share", "type": "percent", "setting": "patient_copay_percent", "of": ["base_drugs"], "title": {"fa": "سهم پرداختی بیمار (فرانشیز)", "en": "Patient copay"}},
+        {"key": "dispensing_fee", "type": "percent", "setting": "technical_dispensing_percent", "of": ["base_drugs"], "title": {"fa": "حق فنی داروساز", "en": "Technical fee"}}
+      ]
+    }
+  ],
+  "future": []
+}

@@ -1,0 +1,186 @@
+{
+  "key": "home_appliances",
+  "title": {
+    "fa": "لوازم خانگی و صوتی‌تصویری",
+    "en": "Home Appliances & Electronics"
+  },
+  "description": {
+    "fa": "مدیریت شماره سریال، گارانتی شرکتی، اتصال به سامانه جامع تجارت، هزینه‌های نصب و حمل، و قیمت‌گذاری کالای اساسی و خرد خانگی.",
+    "en": "Serial number tracking, corporate warranty, Comprehensive Trade System integration, delivery/installation, and retail pricing."
+  },
+  "sections": [
+    {
+      "key": "compliance_warranty",
+      "title": {
+        "fa": "سامانه جامع تجارت و گارانتی",
+        "en": "Trade Compliance & Warranty"
+      },
+      "fields": [
+        {
+          "key": "enforce_trade_system_code",
+          "type": "boolean",
+          "default": true,
+          "status": "verified",
+          "title": {
+            "fa": "الزام ثبت شناسه کالا و شناسه رهگیری سامانه تجارت",
+            "en": "Enforce Comprehensive Trade System product & tracking codes"
+          },
+          "help": {
+            "fa": "طبق دستورالعمل مبارزه با قاچاق کالا، لوازم خانگی بدون شناسه کالا و رهگیری مشمول جریمه می‌شوند.",
+            "en": "Mandatory tracking for home appliances under anti-contraband regulations."
+          }
+        },
+        {
+          "key": "default_warranty_months",
+          "type": "integer",
+          "default": 18,
+          "min": 0,
+          "max": 120,
+          "unit": "ماه",
+          "status": "verified",
+          "title": {
+            "fa": "مدت پیش‌فرض گارانتی شرکتی",
+            "en": "Default manufacturer warranty (months)"
+          }
+        },
+        {
+          "key": "authorized_installer_required",
+          "type": "boolean",
+          "default": true,
+          "status": "assumed",
+          "title": {
+            "fa": "شروع گارانتی فقط با نصب توسط نماینده مجاز",
+            "en": "Warranty valid only if unpacked/installed by authorized agent"
+          }
+        }
+      ]
+    },
+    {
+      "key": "pricing_margins",
+      "title": {
+        "fa": "حاشیه سود اتحادیه و ارزش افزوده",
+        "en": "Guild Margins & VAT"
+      },
+      "fields": [
+        {
+          "key": "major_appliance_margin_percent",
+          "type": "percent",
+          "default": 8.0,
+          "unit": "%",
+          "status": "verified",
+          "title": {
+            "fa": "حاشیه سود مصوب کالای درشت (یخچال، لباسشویی، تلویزیون)",
+            "en": "Approved margin for major appliances (fridge, TV, washer) (%)"
+          }
+        },
+        {
+          "key": "small_appliance_margin_percent",
+          "type": "percent",
+          "default": 15.0,
+          "unit": "%",
+          "status": "assumed",
+          "title": {
+            "fa": "حاشیه سود مصوب کالای خرد و لوازم برقی کوچک",
+            "en": "Approved margin for small electric appliances (%)"
+          }
+        },
+        {
+          "key": "vat_rate_percent",
+          "type": "percent",
+          "default": 10.0,
+          "unit": "%",
+          "status": "verified",
+          "title": {
+            "fa": "نرخ مالیات بر ارزش افزوده",
+            "en": "VAT rate (%)"
+          }
+        },
+        {
+          "key": "installment_markup_percent",
+          "type": "percent",
+          "default": 4.0,
+          "unit": "%",
+          "status": "assumed",
+          "title": {
+            "fa": "درصد کارمزد اقساط ماهیانه معمول",
+            "en": "Typical monthly installment surcharge rate (%)"
+          }
+        }
+      ]
+    }
+  ],
+  "calculators": [
+    {
+      "key": "consumer_price",
+      "type": "layered_price",
+      "title": {
+        "fa": "محاسبه قیمت مصرف‌کننده کالای درشت با سود اتحادیه و مالیات",
+        "en": "Major appliance consumer price calculation (profit + VAT)"
+      },
+      "inputs": [
+        {
+          "key": "wholesale_price",
+          "type": "decimal",
+          "min": 0,
+          "title": {
+            "fa": "قیمت خرید عمده / فاکتور کارخانه (ریال)",
+            "en": "Wholesale / factory invoice price (Rial)"
+          }
+        },
+        {
+          "key": "margin_percent",
+          "type": "decimal",
+          "min": 0,
+          "max": 50,
+          "optional": true,
+          "title": {
+            "fa": "درصد سود اختیاری (پیش‌فرض از تنظیمات صنف)",
+            "en": "Optional profit margin (defaults to profile setting)"
+          }
+        }
+      ],
+      "components": [
+        {
+          "key": "base",
+          "type": "product",
+          "factors": [
+            "wholesale_price"
+          ],
+          "title": {
+            "fa": "بهای تمام‌شده خرید",
+            "en": "Cost basis"
+          }
+        },
+        {
+          "key": "profit",
+          "type": "percent",
+          "of": [
+            "base"
+          ],
+          "input": "margin_percent",
+          "setting": "major_appliance_margin_percent",
+          "title": {
+            "fa": "سود مصوب فروشنده",
+            "en": "Guild retail profit"
+          }
+        },
+        {
+          "key": "vat",
+          "type": "percent",
+          "of": [
+            "base",
+            "profit"
+          ],
+          "setting": "vat_rate_percent",
+          "title": {
+            "fa": "مالیات بر ارزش افزوده (۱۰٪)",
+            "en": "Value-Added Tax (10%)"
+          }
+        }
+      ],
+      "params": {
+        "money_decimals": 0
+      }
+    }
+  ]
+}
