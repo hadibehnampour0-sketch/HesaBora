@@ -2630,3 +2630,16 @@ To ensure maximum commercial velocity and fast business return, the implementati
 6. **Modern Fintech Hub UI:** Visual management interface at `/management/license` with active tier status, days remaining counter, one-click hardware ID copy, module capability matrix, plans comparison catalog, and admin demo key generator.
 7. **Verification & Test Suite:** Verified via `tests/Feature/ModularLicensingTest.php` (10/10 tests passed, 60 assertions) and full platform test suite (2,034/2,034 passed, 7,954 assertions, 0 regressions).
 
+---
+
+# 45. Current Verified Override — 2026-10-21 (Phase 25 — Direct Biometric Attendance Hardware Clock Integration & Punch Sync)
+## Status: IMPLEMENTED & VERIFIED (Decision D-118)
+
+### 45.1 Architectural Highlights
+1. **Direct Socket LAN Communication:** Native TCP/UDP binary socket connector (`ZkHardwareConnector`) communicating directly over port 4370 with Iranian and international attendance clocks (ZKTeco, Kara2000, Palizafzar, Virdi, Suprema). Executes binary handshake (`CMD_CONNECT`), extracts raw punches (`CMD_ATTLOG_RRQ`), and closes sessions cleanly without external middleware dependencies.
+2. **Real-time ADMS / Cloud Server HTTP Push:** Dedicated endpoint (`/api/attendance/iclock`) supporting automatic real-time push from biometric terminals without polling or manual sync triggers.
+3. **Unified Punch Calculation Pipeline:** Reusable pipeline in `AttendanceDeviceSyncService` mapping clock PINs to `Employee::device_id`, aggregating daily in/out bounds, upserting `AttendanceLog`, and triggering automated delay, overtime, mission, and work calculations via `AttendanceService::recalculateLog()`.
+4. **Modern Device Management UI:** Central hub at `/attendance/devices` featuring live connection ping test, manual one-click sync, cloud push URL generator, device status pills, and test punch simulation.
+5. **Verification & Test Suite:** Verified via `tests/Feature/AttendanceDeviceSyncTest.php` (8/8 tests passed, 36 assertions).
+
+

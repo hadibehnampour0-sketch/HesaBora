@@ -466,6 +466,11 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::post('monthly-attendances-bulk', [Controllers\MonthlyAttendanceController::class, 'bulkStore'])->name('monthly-attendances.bulk-store');
         Route::resource('monthly-attendances', Controllers\MonthlyAttendanceController::class);
         Route::resource('work-shifts', Controllers\WorkShiftController::class)->except(['show']);
+        // Biometric Time & Attendance Direct Clock Hardware Devices
+        Route::resource('devices', Controllers\AttendanceDeviceController::class)->except(['show', 'create', 'edit']);
+        Route::post('devices/{device}/ping', [Controllers\AttendanceDeviceController::class, 'ping'])->name('devices.ping');
+        Route::post('devices/{device}/sync', [Controllers\AttendanceDeviceController::class, 'sync'])->name('devices.sync');
+        Route::post('devices/{device}/simulate', [Controllers\AttendanceDeviceController::class, 'simulate'])->name('devices.simulate');
     });
 
     Route::group(['prefix' => 'salary', 'as' => 'salary.'], function () {

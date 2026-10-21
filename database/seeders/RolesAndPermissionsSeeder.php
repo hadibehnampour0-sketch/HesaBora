@@ -201,6 +201,7 @@ class RolesAndPermissionsSeeder extends Seeder
             ],
             'attendance.monthly-attendances' => [...self::CRUD, 'recalculate', 'payroll.store', 'bulk-create', 'bulk-store'],
             'attendance.work-shifts' => self::CRUD_NO_SHOW,
+            'attendance.devices' => [...self::CRUD, 'ping', 'sync', 'simulate'],
 
             // Salary / Payroll
             'salary.tax-slabs' => self::CRUD,

@@ -309,6 +309,7 @@
                 @can('attendance.monthly-attendances.index')
                     <li><a href="{{ route('attendance.monthly-attendances.index') }}">{{ __('Monthly Attendances') }}</a></li>
                 @endcan
+                <li><a href="{{ route('attendance.devices.index') }}">{{ __('دستگاه‌های ثبت ساعت (سخت‌افزار)') }}</a></li>
             </ul>
         </details>
     </li>

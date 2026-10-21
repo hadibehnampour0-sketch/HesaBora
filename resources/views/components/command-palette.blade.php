@@ -123,6 +123,7 @@
                 { title: 'فرمول ساخت و سفارشات تولید (BOM)', category: 'تولید سبک', icon: '⚙️', url: '{{ route('production.recipes.index') }}' },
 
                 // Accounting & Treasury
+                { title: 'سینک و مدیریت دستگاه‌های حضور و غیاب', category: 'منابع انسانی و پرسنل', icon: '⏰', url: '{{ route('attendance.devices.index') }}' },
                 { title: 'ثبت سند حسابداری جدید', category: 'دفاتر حسابداری', icon: '📑', url: '{{ route('documents.create') }}' },
                 { title: 'مدیریت چک‌های صیادی و واگذاری', category: 'خزانه‌داری', icon: '🏦', url: '{{ route('cheques.index') }}' },
                 { title: 'مغایرت‌گیری بانکی خودکار', category: 'خزانه‌داری', icon: '🔄', url: '{{ route('bank-accounts.index') }}' },

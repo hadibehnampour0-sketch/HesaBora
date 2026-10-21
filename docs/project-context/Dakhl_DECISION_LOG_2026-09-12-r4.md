@@ -2731,6 +2731,22 @@ Dakhl defines Phase 16 as an offline-first modular licensing and commercial enti
    - A 7-day grace period is enforced upon expiration with warning banners before read-only / gated enforcement.
    - Access is enforced via `EnsureModuleLicensed` middleware (`licensed:module_key`) and Blade directives (`@licensed('pos_retail')`, `@unlicensed('distribution')`).
 
+---
+
+## D-118 — Direct Biometric Attendance Hardware Clock Integration & Punch Sync (Phase 25) — 2026-10-21 — IMPLEMENTED
+
+*Implemented and verified on 2026-10-21 (Phase 25, commit pending). Full test suite tests/Feature/AttendanceDeviceSyncTest.php passing (8/8 tests, 36 assertions).*
+
+### 1. Decision
+Dakhl defines Phase 25 for direct hardware integration between physical time & attendance biometric clock devices (fingerprint, card, facial recognition) and the accounting/payroll ledger. The system supports direct LAN socket pull (ZKTeco binary packet protocol over TCP/UDP port 4370) as well as real-time ADMS / Cloud Server HTTP Push webhooks.
+
+### 2. Locked rules
+1. **Direct Socket & Protocol Isolation:** The direct network connector (`ZkHardwareConnector`) handles session handshakes (`CMD_CONNECT`), raw punch extraction (`CMD_ATTLOG_RRQ`), and session closure (`CMD_EXIT`) with non-blocking socket timeouts. Network failures never crash the application and surface user-friendly diagnostic logs.
+2. **Unified Pipeline Processing:** Whether punches arrive via LAN socket pull, ADMS HTTP Push, or manual sync, they flow through a unified `processRawPunches()` pipeline, mapping device PINs (`Employee::device_id`) to employees, resolving earliest entry and latest exit times per date, and triggering `AttendanceService::recalculateLog()` for automated work time, delay, and overtime accounting.
+3. **Multi-Company Scoping & Device Token Isolation:** Each registered device (`AttendanceDevice`) is scoped under `FiscalYearScope` and company context, with a dedicated 40-character `cloud_push_token` preventing cross-company device impersonation.
+4. **Offline & Simulation Fallback:** Built-in simulation mode (`MockHardwareConnector`) enables full end-to-end verification and testing in sandbox environments without physical biometric clocks attached.
+
+
 
 
 
