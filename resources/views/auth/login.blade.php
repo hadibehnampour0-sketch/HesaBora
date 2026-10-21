@@ -1,23 +1,53 @@
 <x-login-layout>
-    <div class="login-bg flex-1 overflow-hidden">
-        <div class="flex items-center justify-center rounded-3xl">
-            <div class="card w-96 p-7 mt-16 border border-base-300 bg-base-100 shadow-xl">
-                <div class="flex flex-col items-center mb-6">
-                    <img src="/images/logo.svg" alt="{{ config('app.name') }}" width="72" class="mb-2">
-                    <h1 class="font-bold text-2xl">دخل</h1>
-                    <span class="text-gray-500">{{ config('app.name') }}</span>
+    <div class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-tr from-base-200 via-base-100 to-base-200/50">
+        <div class="w-full max-w-md">
+            <div class="card p-8 rounded-3xl border border-base-300 bg-base-100 shadow-2xl shadow-slate-900/10 transition-all">
+                <div class="flex flex-col items-center mb-6 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-primary text-white flex items-center justify-center shadow-lg shadow-primary/30 mb-3 font-black text-2xl">
+                        د
+                    </div>
+                    <h1 class="font-black text-2xl tracking-tight text-base-content">{{ __('سامانه مالی و حسابداری دخل') }}</h1>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mt-2">
+                        <span>✨</span> {{ __('سیستم عامل مالی و مالیاتی کسب‌وکار') }}
+                    </span>
                 </div>
 
                 <x-show-message-bags />
 
-                <form method="POST" action="{{ route('login') }}" autocomplete="on">
+                <form method="POST" action="{{ route('login') }}" autocomplete="on" class="space-y-4">
                     @csrf
-                    <x-text-input class="mt-1 w-full max-w-xs" :title="__('Username')" input_name="username" id_input="username"
-                        type="text" :placeholder="__('Enter your username')" autocomplete="username" required autofocus />
-                    <x-text-input class="mt-1 w-full max-w-xs" :title="__('Login Password')" input_name="password" id_input="password"
-                        type="password" :placeholder="__('Enter your password')" autocomplete="current-password" required />
-                    <button type="submit" class="btn btn-primary w-full py-2 px-8 rounded mt-4">{{ __('Login') }}</button>
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-base-content/70">{{ __('نام کاربری') }}</label>
+                        <input type="text"
+                               name="username"
+                               id="username"
+                               value="{{ old('username') }}"
+                               placeholder="{{ __('نام کاربری خود را وارد کنید') }}"
+                               autocomplete="username"
+                               required
+                               autofocus
+                               class="input input-bordered w-full rounded-xl text-sm focus:outline-primary bg-base-200/40" />
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-xs font-bold text-base-content/70">{{ __('کلمه عبور ورود') }}</label>
+                        <input type="password"
+                               name="password"
+                               id="password"
+                               placeholder="{{ __('کلمه عبور خود را وارد کنید') }}"
+                               autocomplete="current-password"
+                               required
+                               class="input input-bordered w-full rounded-xl text-sm focus:outline-primary bg-base-200/40" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full rounded-xl font-bold shadow-lg shadow-primary/25 mt-4 transition-all">
+                        {{ __('ورود به سامانه') }}
+                    </button>
                 </form>
+
+                <div class="mt-6 pt-4 border-t border-base-200 text-center text-xs text-base-content/50">
+                    {{ __('نسخه :version', ['version' => config('app.version', '1.0')]) }} • {{ __('دوبل و چندشرکتی') }}
+                </div>
             </div>
         </div>
     </div>

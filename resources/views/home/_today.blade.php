@@ -34,8 +34,18 @@
 
     <div x-show="data" style="display: none" class="space-y-4">
         {{-- Quick actions: plain-language shortcuts over existing screens (permission-gated) --}}
-        <div class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+        <div class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+            @can('copilot.chat')
+                <a href="{{ route('copilot.index') }}" class="today-action border-primary/30 bg-primary/5 text-primary hover:bg-primary/10">
+                    <span class="text-base">✨</span>
+                    {{ __('دستیار مالی AI') }}
+                </a>
+            @endcan
             @can('invoices.create')
+                <a href="{{ route('pos.terminal') }}" class="today-action">
+                    <span class="text-base">🛒</span>
+                    {{ __('صندوق سریع POS') }}
+                </a>
                 <a href="{{ route('invoices.create', ['invoice_type' => 'sell']) }}" class="today-action"><x-menu-icon name="sales" class="h-5 w-5" />{{ __('New sale') }}</a>
                 <a href="{{ route('invoices.create', ['invoice_type' => 'buy']) }}" class="today-action"><x-menu-icon name="buy" class="h-5 w-5" />{{ __('New purchase') }}</a>
             @endcan
