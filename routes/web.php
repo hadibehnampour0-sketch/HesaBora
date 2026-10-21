@@ -358,6 +358,14 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::delete('{extraction}', [\App\Http\Controllers\AiVision\AiInvoiceExtractionController::class, 'destroy'])->name('destroy');
         });
 
+        // Phase AI (Conversational AI Financial Copilot).
+        Route::prefix('copilot')->name('copilot.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\AiCopilot\FinancialCopilotController::class, 'index'])->name('index');
+            Route::post('chat', [\App\Http\Controllers\AiCopilot\FinancialCopilotController::class, 'chat'])->name('chat');
+            Route::get('conversations/{conversation}', [\App\Http\Controllers\AiCopilot\FinancialCopilotController::class, 'show'])->name('show');
+            Route::delete('conversations/{conversation}', [\App\Http\Controllers\AiCopilot\FinancialCopilotController::class, 'destroy'])->name('destroy');
+        });
+
         // Industry Profiles (per-trade settings + calculators; definitions are data files).
         Route::get('industry-profiles', [Controllers\IndustryProfileController::class, 'index'])->name('industry-profiles.index');
         Route::get('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'show'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.show');

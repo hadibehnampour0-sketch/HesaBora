@@ -3,6 +3,16 @@
     <li><a href="/"><x-menu-icon name="home" />{{ __('Home') }}</a></li>
 @endcan
 
+@can('copilot.chat')
+    <li>
+        <a href="{{ route('copilot.index') }}" class="font-bold text-primary flex items-center gap-1.5">
+            <span class="text-base">✨</span>
+            {{ __('دستیار مالی هوش مصنوعی') }}
+            <span class="badge badge-primary badge-xs py-1 px-1.5 text-[9px]">AI</span>
+        </a>
+    </li>
+@endcan
+
 @canany(['invoices.create', 'invoices.index'])
     <li>
         <details open>

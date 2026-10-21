@@ -282,6 +282,9 @@ class RolesAndPermissionsSeeder extends Seeder
             // Phase 24 (Competitor Migration)
             'migration' => ['index', 'preview', 'execute'],
 
+            // Phase AI (Conversational Financial Copilot)
+            'copilot' => ['chat', 'index', 'destroy'],
+
             // Employee portal
             'employee-portal' => [
                 'employee.show',

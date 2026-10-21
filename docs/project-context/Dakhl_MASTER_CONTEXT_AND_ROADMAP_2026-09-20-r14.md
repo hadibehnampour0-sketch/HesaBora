@@ -2596,3 +2596,15 @@ To ensure maximum commercial velocity and fast business return, the implementati
 
 
 
+
+# 43. Current Verified Override — 2026-10-21 (Phase AI — Conversational AI Financial Copilot)
+## Status: IMPLEMENTED & VERIFIED (Decision D-116)
+
+### 43.1 Architectural Principles & Grounding Contract
+1. **One Financial Truth & Zero Hallucination:** The conversational assistant never guesses, calculates in parallel, or estimates financial facts. All answers are grounded strictly in the verified domain services (`FinancialKnowledgeService`, `TodayDashboardService`, `AgeingService`, `ChequeRiskDashboardService`, `TaxReadinessService`, `WarehouseDashboardService`).
+2. **Dual-Engine Architecture (Deterministic Offline + LLM Grounded):**
+   - **Deterministic Financial NLP Engine (`DeterministicFinancialChatEngine`):** Provides instant, zero-cost, privacy-safe, fully offline responses in Persian for core business questions (Sales & Revenue, Overdue Debtors & Ageing, Cheques & Treasury, Tax Readiness & Moadian, Inventory & Low-Stock Alerts, Cash & Bank Balances).
+   - **Gemini LLM Copilot Engine (`GeminiFinancialChatEngine`):** When `GEMINI_API_KEY` is present, enhances the grounded accounting facts with conversational strategic advice, working capital recommendations, and executive summaries using Google Gemini 2.5 Flash, falling back gracefully to the deterministic engine upon missing key or network failure.
+3. **Company & Fiscal Scoping:** All conversations (`CopilotConversation`) and messages (`CopilotMessage`) are bound by `FiscalYearScope` and company scoping; cross-company leakage is impossible.
+4. **Interactive Persian UI:** Dedicated conversational hub (`/copilot`), multi-turn session persistence, suggested prompt pills, live typing state, responsive markdown/table renderer, and navigation entry with prominent `AI` badge in both Advanced and Simple menus.
+5. **Verification & Test Suite:** Verified via `tests/Feature/FinancialCopilotTest.php` (11/11 tests passed, 43 assertions).
