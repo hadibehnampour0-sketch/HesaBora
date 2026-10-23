@@ -13,7 +13,11 @@ use App\Models\ProductGroup;
 use App\Models\Subject;
 use App\Models\User;
 use App\Services\DocumentService;
+use App\Services\Migration\Adapters\AutoUnknownDatabaseAdapter;
+use App\Services\Migration\Adapters\CsvBackupAdapter;
 use App\Services\Migration\Adapters\HolooBackupAdapter;
+use App\Services\Migration\Adapters\SepidarBackupAdapter;
+use App\Services\Migration\Adapters\SqlDumpBackupAdapter;
 use App\Services\Migration\Adapters\UniversalJsonAdapter;
 use App\Services\Migration\Contracts\MigrationAdapterInterface;
 use App\Services\Migration\DTO\HealthCheckResult;
@@ -21,7 +25,6 @@ use App\Services\Migration\DTO\MigrationCommitResult;
 use App\Services\Migration\DTO\MigrationPayload;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 
 class CompetitorMigrationService
 {
@@ -33,8 +36,12 @@ class CompetitorMigrationService
     public function __construct()
     {
         $this->adapters = [
-            new UniversalJsonAdapter,
             new HolooBackupAdapter,
+            new SepidarBackupAdapter,
+            new SqlDumpBackupAdapter,
+            new CsvBackupAdapter,
+            new UniversalJsonAdapter,
+            new AutoUnknownDatabaseAdapter,
         ];
     }
 
@@ -46,12 +53,13 @@ class CompetitorMigrationService
             }
         }
 
-        return new UniversalJsonAdapter;
+        return new AutoUnknownDatabaseAdapter;
     }
 
     public function parse(array|string $data, string $sourceType = 'universal_json'): MigrationPayload
     {
         $adapter = $this->resolveAdapter($sourceType, $data);
+
         return $adapter->parse($data);
     }
 
@@ -178,7 +186,7 @@ class CompetitorMigrationService
         $health = $this->analyzeAndHealthCheck($payload);
         if ($health->hasErrors()) {
             return MigrationCommitResult::failure(
-                'خطاهای مسدودکننده در داده‌های ورودی مانع از مهاجرت گردید: ' .
+                'خطاهای مسدودکننده در داده‌های ورودی مانع از مهاجرت گردید: '.
                 collect($health->errors)->pluck('message')->implode(' | ')
             );
         }
@@ -244,7 +252,7 @@ class CompetitorMigrationService
                 Product::create([
                     'company_id' => $companyId,
                     'name' => $pData['name'],
-                    'code' => ! empty($pData['code']) ? $pData['code'] : ('PRD-' . mt_rand(1000, 9999)),
+                    'code' => ! empty($pData['code']) ? $pData['code'] : ('PRD-'.mt_rand(1000, 9999)),
                     'barcode' => ! empty($pData['barcode']) ? $pData['barcode'] : null,
                     'group' => $productGroup->id,
                     'selling_price' => $pData['sell_price'] ?? 0,
@@ -285,7 +293,7 @@ class CompetitorMigrationService
                     'amount' => (float) $chqData['amount'],
                     'write_date' => $chqData['write_date'] ?? Carbon::today()->toDateString(),
                     'due_date' => $chqData['due_date'] ?? Carbon::today()->addDays(30)->toDateString(),
-                    'cheque_number' => ! empty($chqData['cheque_number']) ? $chqData['cheque_number'] : ('CHK-' . mt_rand(10000, 99999)),
+                    'cheque_number' => ! empty($chqData['cheque_number']) ? $chqData['cheque_number'] : ('CHK-'.mt_rand(10000, 99999)),
                     'sayad_number' => ! empty($chqData['sayad_number']) ? $chqData['sayad_number'] : null,
                     'desc' => 'چک انتقالی از سیستم مالی قدیمی',
                 ]);

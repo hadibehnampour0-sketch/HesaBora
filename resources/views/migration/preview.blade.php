@@ -29,6 +29,34 @@
         </div>
     </div>
 
+    @if(! empty($payload->metadata['inferred_mappings']))
+        <!-- AI Smart Schema Inference Card -->
+        <div class="card bg-emerald-50 border border-emerald-200 rounded-xl">
+            <div class="card-body p-5 space-y-3">
+                <h3 class="font-bold text-emerald-900 text-sm flex items-center gap-2">
+                    <span class="badge badge-success text-white text-xs">موتور تشخیص هوشمند الگو</span>
+                    <span>نگاشت و تفکیک خودکار جداول دیتابیس با حساب‌های دخل:</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+                    @foreach($payload->metadata['inferred_mappings'] as $entity => $info)
+                        <div class="bg-white p-3 rounded-lg border border-emerald-100 shadow-xs">
+                            <div class="flex items-center justify-between text-xs text-slate-500">
+                                <span class="font-bold">{{ match($entity) { 'customers' => 'طرف‌حساب‌ها و اشخاص', 'products' => 'کالاها و انبارداری', 'cheques' => 'چک‌ها و خزانه‌داری', default => $entity } }}</span>
+                                <span class="badge badge-sm badge-success text-white">{{ $info['confidence'] ?? 90 }}% دقت</span>
+                            </div>
+                            <div class="font-bold text-slate-800 text-sm mt-1 font-mono">
+                                {{ $info['source_table'] }}
+                            </div>
+                            <div class="text-[11px] text-slate-500 mt-1">
+                                فیلدهای استخراج‌شده: {{ count($info['field_map'] ?? []) }} ستون
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Health Check & Warnings -->
     @if(! empty($health->warnings))
         <div class="card bg-amber-50 border border-amber-200 rounded-xl">

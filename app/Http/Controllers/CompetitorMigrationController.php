@@ -19,8 +19,8 @@ class CompetitorMigrationController extends Controller
     public function preview(Request $request)
     {
         $request->validate([
-            'source_type' => 'required|string|in:holoo,sepidar,universal_json',
-            'file' => 'nullable|file|mimes:json,txt',
+            'source_type' => 'required|string|in:holoo,sepidar,universal_json,sql_dump,csv,auto_unknown',
+            'file' => 'nullable|file|max:51200',
             'raw_json' => 'nullable|string',
         ]);
 
@@ -60,7 +60,8 @@ class CompetitorMigrationController extends Controller
             if ($request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
             }
-            return back()->with('error', 'خطا در خواندن داده‌ها: ' . $e->getMessage());
+
+            return back()->with('error', 'خطا در خواندن داده‌ها: '.$e->getMessage());
         }
     }
 
@@ -87,6 +88,7 @@ class CompetitorMigrationController extends Controller
             if ($request->wantsJson()) {
                 return response()->json(['success' => false, 'errors' => $result->errors], 422);
             }
+
             return back()->with('error', implode(' - ', $result->errors));
         }
 
