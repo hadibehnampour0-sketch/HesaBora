@@ -108,6 +108,8 @@
 
                 // AI & Smart Tools
                 { title: 'دستیار مالی هوش مصنوعی (Copilot)', category: 'هوش مصنوعی', icon: '✨', url: '{{ route('copilot.index') }}' },
+                { title: 'تهاتر و تبادل اقلام با مغازه‌های همکار', category: 'معاملات و همکاران', icon: '🔄', url: '{{ route('trades.index') }}' },
+                { title: 'استعلام قیمت و قیمت‌های داده‌شده به مشتریان', category: 'فروش و قیمت‌گذاری', icon: '🏷️', url: '{{ route('price-quotes.index') }}' },
                 { title: 'ورود فاکتور با هوش مصنوعی و OCR', category: 'هوش مصنوعی اسنادی', icon: '📄', url: '{{ route('ai-invoices.index') }}' },
                 { title: 'باشگاه مشتریان و کیف پول اعتباری', category: 'وفادارسازی', icon: '🎁', url: '{{ route('loyalty.index') }}' },
                 { title: 'اتوماسیون پیامک هوشمند رویدادی', category: 'ارتباطات', icon: '💬', url: '{{ route('sms.index') }}' },

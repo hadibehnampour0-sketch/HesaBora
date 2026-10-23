@@ -21,6 +21,11 @@ class GeminiFinancialChatEngine
 
     public function answer(int $companyId, string $query, array $conversationHistory = []): array
     {
+        // For accounting actions (payments, trade, quotes) use deterministic action-card engine
+        if ($this->fallbackEngine->isActionOrQuoteQuery($query)) {
+            return $this->fallbackEngine->answer($companyId, $query);
+        }
+
         $apiKey = config('services.gemini.api_key') ?? env('GEMINI_API_KEY');
 
         if (empty($apiKey)) {
@@ -80,7 +85,7 @@ EOT;
             if ($response->successful()) {
                 $body = $response->json();
                 $replyText = $body['candidates'][0]['content']['parts'][0]['text'] ?? null;
-                if (!empty($replyText)) {
+                if (! empty($replyText)) {
                     return [
                         'reply' => $replyText,
                         'tool_calls' => ['gemini_grounded_reasoning'],

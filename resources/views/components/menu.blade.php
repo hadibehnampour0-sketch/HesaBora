@@ -103,6 +103,8 @@
                 <li><a href="{{ route('templates.index') }}">{{ __('طراح قالب‌های چاپ فاکتور') }}</a></li>
                 <li><a href="{{ route('ai-invoices.index') }}">{{ __('ورود فاکتور با هوش مصنوعی (OCR)') }}</a></li>
                 <li><a href="{{ route('financing.index') }}">{{ __('فروش اقساطی و تسهیلات') }}</a></li>
+                <li><a href="{{ route('trades.index') }}">{{ __('تهاتر و تبادل با همکاران') }}</a></li>
+                <li><a href="{{ route('price-quotes.index') }}">{{ __('استعلام و قیمت‌های اعلام‌شده') }}</a></li>
             </ul>
         </details>
     </li>

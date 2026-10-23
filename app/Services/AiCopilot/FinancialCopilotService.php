@@ -21,7 +21,7 @@ class FinancialCopilotService
             $conversation = CopilotConversation::where('id', $conversationId)->first();
         }
 
-        if (!$conversation) {
+        if (! $conversation) {
             $title = Str::limit(trim($query), 50, '...');
             $conversation = CopilotConversation::create([
                 'company_id' => $companyId,
@@ -50,12 +50,17 @@ class FinancialCopilotService
         $engineResponse = $this->chatEngine->answer($companyId, $query, $history);
 
         // Save Assistant Message
+        $toolCallsData = [
+            'tools' => $engineResponse['tool_calls'] ?? [],
+            'action_card' => $engineResponse['action_card'] ?? null,
+        ];
+
         $assistantMessage = CopilotMessage::create([
             'conversation_id' => $conversation->id,
             'company_id' => $companyId,
             'role' => 'assistant',
             'content' => $engineResponse['reply'],
-            'tool_calls' => $engineResponse['tool_calls'] ?? [],
+            'tool_calls' => $toolCallsData,
             'sources' => $engineResponse['sources'] ?? [],
         ]);
 
@@ -64,6 +69,7 @@ class FinancialCopilotService
             'conversation_title' => $conversation->title,
             'user_message' => $userMessage,
             'assistant_message' => $assistantMessage,
+            'action_card' => $engineResponse['action_card'] ?? null,
         ];
     }
 }

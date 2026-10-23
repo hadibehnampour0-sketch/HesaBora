@@ -64,6 +64,7 @@ class FinancialCopilotController extends Controller
             'title' => $result['conversation_title'],
             'user_message' => $result['user_message'],
             'assistant_message' => $result['assistant_message'],
+            'action_card' => $result['action_card'] ?? null,
         ]);
     }
 

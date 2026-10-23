@@ -138,6 +138,7 @@ class FinancialKnowledgeService
             ->get()
             ->filter(function (Product $product) {
                 $stock = WarehouseProductStock::where('product_id', $product->id)->sum('quantity');
+
                 return $stock <= ($product->min_order ?? 0);
             })
             ->take($limit)

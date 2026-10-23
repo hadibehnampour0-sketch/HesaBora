@@ -136,6 +136,30 @@
                                     <div class="text-[11px] text-base-content/50 mt-0.5">{{ __('خلاصه سود، تراز مالی و توصیه نقدینگی') }}</div>
                                 </div>
                             </button>
+
+                            <button type="button" @click="ask('۲۰۰ تومن دادم علی')" class="p-3 bg-emerald-50 hover:bg-emerald-100/70 rounded-xl border border-emerald-200 text-xs text-emerald-900 flex items-start gap-2.5 transition text-right">
+                                <span class="text-base shrink-0">💸</span>
+                                <div>
+                                    <div class="font-medium text-emerald-950">{{ __('ثبت محاوره‌ای پرداخت/دریافت') }}</div>
+                                    <div class="text-[11px] text-emerald-800/60 mt-0.5">{{ __('«۲۰۰ تومن دادم علی» یا «۳۰۰ از حسن گرفتم»') }}</div>
+                                </div>
+                            </button>
+
+                            <button type="button" @click="ask('۲ تا کاور دادم رضا')" class="p-3 bg-indigo-50 hover:bg-indigo-100/70 rounded-xl border border-indigo-200 text-xs text-indigo-900 flex items-start gap-2.5 transition text-right">
+                                <span class="text-base shrink-0">🔄</span>
+                                <div>
+                                    <div class="font-medium text-indigo-950">{{ __('ثبت تهاتر کالا با همکار') }}</div>
+                                    <div class="text-[11px] text-indigo-800/60 mt-0.5">{{ __('«۲ تا کاور دادم رضا» یا «۵ تا گلس گرفتم»') }}</div>
+                                </div>
+                            </button>
+
+                            <button type="button" @click="ask('به علی قیمت گلس چند دادم؟')" class="p-3 bg-amber-50 hover:bg-amber-100/70 rounded-xl border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5 transition text-right">
+                                <span class="text-base shrink-0">🏷️</span>
+                                <div>
+                                    <div class="font-medium text-amber-950">{{ __('استعلام قیمت از حافظه') }}</div>
+                                    <div class="text-[11px] text-amber-800/60 mt-0.5">{{ __('«به علی قیمت گلس چند دادم؟»') }}</div>
+                                </div>
+                            </button>
                         </div>
                     </div>
                 </template>
@@ -156,6 +180,34 @@
                                      ? 'bg-primary text-primary-content rounded-tr-none'
                                      : 'bg-base-200 text-base-content rounded-tl-none border border-base-300'">
                                 <div x-html="renderMarkdown(msg.content)"></div>
+
+                                <!-- Action Card if present -->
+                                <template x-if="msg.action_card">
+                                    <div class="mt-3 p-3.5 bg-base-100 rounded-xl border border-primary/30 shadow-xs space-y-2.5">
+                                        <div class="flex items-center justify-between">
+                                            <span class="font-bold text-xs text-primary flex items-center gap-1.5">
+                                                <span>⚡</span>
+                                                <span x-text="msg.action_card.title"></span>
+                                            </span>
+                                            <span class="badge badge-xs badge-primary text-white">اقدام حسابداری</span>
+                                        </div>
+
+                                        <div class="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                                            <template x-for="(val, label) in (msg.action_card.details || {})" :key="label">
+                                                <div>
+                                                    <span class="text-slate-400" x-text="label + ': '"></span>
+                                                    <strong class="text-slate-800" x-text="val"></strong>
+                                                </div>
+                                            </template>
+                                        </div>
+
+                                        <template x-if="msg.action_card.action_url">
+                                            <a :href="msg.action_card.action_url" class="btn btn-xs btn-primary w-full text-white mt-1 shadow-sm font-bold">
+                                                <span x-text="msg.action_card.button_text || 'تایید و ثبت نهایی سند'"></span> →
+                                            </a>
+                                        </template>
+                                    </div>
+                                </template>
 
                                 <!-- Source badges if any -->
                                 <template x-if="msg.sources && msg.sources.length > 0">
@@ -267,7 +319,8 @@
                             this.messages.push({
                                 role: 'assistant',
                                 content: data.assistant_message.content,
-                                sources: data.assistant_message.sources || []
+                                sources: data.assistant_message.sources || [],
+                                action_card: data.action_card || (data.assistant_message.tool_calls ? data.assistant_message.tool_calls.action_card : null)
                             });
                         } else {
                             this.messages.push({

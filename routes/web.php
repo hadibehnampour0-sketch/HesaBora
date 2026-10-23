@@ -394,6 +394,24 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::delete('conversations/{conversation}', [FinancialCopilotController::class, 'destroy'])->name('destroy');
         });
 
+        // Peer Store Trade & Consignment (تهاتر و تبادل کالا با همکاران)
+        Route::prefix('trades')->name('trades.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'index'])->name('index');
+            Route::get('create', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'create'])->name('create');
+            Route::post('/', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'store'])->name('store');
+            Route::get('{trade}', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'show'])->name('show');
+            Route::post('{trade}/items', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'addItem'])->name('items.add');
+            Route::post('items/{item}/return', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'returnItem'])->name('items.return');
+            Route::post('{trade}/settle', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'settle'])->name('settle');
+        });
+
+        // Quick Price Quotes Scratchpad & Memory Log (استعلام و قیمت‌های اعلام‌شده)
+        Route::prefix('price-quotes')->name('price-quotes.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\PriceQuoteController::class, 'index'])->name('index');
+            Route::post('/', [\App\Http\Controllers\PriceQuoteController::class, 'store'])->name('store');
+            Route::delete('{priceQuote}', [\App\Http\Controllers\PriceQuoteController::class, 'destroy'])->name('destroy');
+        });
+
         // Industry Profiles (per-trade settings + calculators; definitions are data files).
         Route::get('industry-profiles', [Controllers\IndustryProfileController::class, 'index'])->name('industry-profiles.index');
         Route::get('industry-profiles/{profile}', [Controllers\IndustryProfileController::class, 'show'])->where('profile', '[a-z][a-z0-9_]*')->name('industry-profiles.show');
