@@ -19,17 +19,47 @@
                 </h1>
             </div>
 
-            <!-- Hardware Fingerprint Pill -->
-            <div class="flex items-center gap-2 bg-base-200/70 border border-base-300 px-3.5 py-2 rounded-xl text-xs">
-                <span class="text-base-content/60 font-medium">{{ __('شناسه سخت‌افزاری دستگاه:') }}</span>
-                <span class="font-mono font-bold text-primary tabular-nums" id="hwFingerprint">{{ $hardwareFingerprint }}</span>
-                <button type="button"
-                        @click="copyFingerprint('{{ $hardwareFingerprint }}')"
-                        class="btn btn-ghost btn-xs px-2 text-primary hover:bg-primary/10">
-                    <span x-text="copied ? 'کپی شد! ✓' : 'کپی'"></span>
-                </button>
+            <!-- Actions & Hardware Fingerprint Pill -->
+            <div class="flex flex-wrap items-center gap-2">
+                <a href="{{ route('pricing') }}" target="_blank" class="btn btn-outline btn-sm rounded-xl text-xs gap-1">
+                    <span>🌐</span>
+                    <span>{{ __('پورتال تعرفه‌ها') }}</span>
+                </a>
+
+                @if (auth()->user()->isSuperAdmin() || app()->environment('local', 'testing'))
+                    <button type="button" onclick="generator_modal.showModal()" class="btn btn-primary btn-sm rounded-xl text-xs gap-1 font-bold shadow-md shadow-primary/20">
+                        <span>🛠️</span>
+                        <span>{{ __('کارگاه صدور لایسنس و افزونه') }}</span>
+                    </button>
+                @endif
+
+                <div class="flex items-center gap-2 bg-base-200/70 border border-base-300 px-3.5 py-1.5 rounded-xl text-xs">
+                    <span class="text-base-content/60 font-medium">{{ __('شناسه سخت‌افزاری:') }}</span>
+                    <span class="font-mono font-bold text-primary tabular-nums" id="hwFingerprint">{{ $hardwareFingerprint }}</span>
+                    <button type="button"
+                            @click="copyFingerprint('{{ $hardwareFingerprint }}')"
+                            class="btn btn-ghost btn-xs px-2 text-primary hover:bg-primary/10">
+                        <span x-text="copied ? 'کپی شد! ✓' : 'کپی'"></span>
+                    </button>
+                </div>
             </div>
         </div>
+
+        @if (session('generated_key'))
+            <div class="bg-primary/10 border-2 border-primary/30 rounded-3xl p-5 shadow-sm space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-primary flex items-center gap-1.5">
+                        <span>🔑</span> {{ __('کلید لایسنس جدید صادر شد:') }}
+                    </span>
+                    <button type="button" @click="copyFingerprint('{{ session('generated_key') }}')" class="btn btn-primary btn-xs rounded-lg font-bold">
+                        <span x-text="copied ? 'کپی شد! ✓' : 'کپی کلید لایسنس'"></span>
+                    </button>
+                </div>
+                <div class="bg-base-100 p-3 rounded-xl border border-base-300 font-mono text-xs break-all text-base-content select-all dir-ltr text-left">
+                    {{ session('generated_key') }}
+                </div>
+            </div>
+        @endif
 
         @if (session('warning'))
             <div class="alert alert-warning rounded-2xl shadow-sm text-sm">
@@ -323,6 +353,208 @@
                 </div>
             </div>
         </div>
+
+        <!-- License Generator & Add-on Studio Modal -->
+        <dialog id="generator_modal" class="modal">
+            <div class="modal-box max-w-3xl rounded-3xl p-6" x-data="{
+                issueType: 'base',
+                selectedEdition: 'professional',
+                hwLockMode: 'current',
+                currentHw: '{{ $hardwareFingerprint }}',
+                customHw: '',
+                validityDays: '365',
+                allModules: @js($modules),
+                plans: @js($plans),
+                selectedModules: [],
+                init() {
+                    this.syncPlanModules();
+                },
+                syncPlanModules() {
+                    if (this.issueType === 'base' && this.plans[this.selectedEdition]) {
+                        this.selectedModules = [...this.plans[this.selectedEdition].modules];
+                    }
+                },
+                getFinalHw() {
+                    if (this.hwLockMode === 'current') return this.currentHw;
+                    if (this.hwLockMode === 'custom') return this.customHw;
+                    return '*';
+                }
+            }">
+                <form method="dialog">
+                    <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4">✕</button>
+                </form>
+
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-2xl">
+                        🛠️
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-base-content">{{ __('کارگاه تخصصی صدور لایسنس و کدهای افزونه') }}</h3>
+                        <p class="text-xs text-base-content/60">{{ __('صدور لایسنس پکیج کامل یا کد فعال‌سازی تک‌ماژول با امضای دیجیتال غیرقابل جعل') }}</p>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ route('license.generate-custom') }}" class="space-y-4">
+                    @csrf
+
+                    <!-- Toggle Base vs Addon -->
+                    <div class="grid grid-cols-2 gap-2 p-1 bg-base-200/60 rounded-2xl">
+                        <button type="button"
+                                @click="issueType = 'base'; syncPlanModules()"
+                                :class="issueType === 'base' ? 'bg-base-100 text-primary font-bold shadow-sm' : 'text-base-content/60'"
+                                class="py-2 rounded-xl text-xs transition">
+                            📦 {{ __('صدور لایسنس پکیج کامل (Base License)') }}
+                        </button>
+                        <button type="button"
+                                @click="issueType = 'addon'; selectedModules = ['tax_moadian']"
+                                :class="issueType === 'addon' ? 'bg-base-100 text-primary font-bold shadow-sm' : 'text-base-content/60'"
+                                class="py-2 rounded-xl text-xs transition">
+                            🧩 {{ __('صدور کد فعال‌سازی افزونه (Add-on Feature Key)') }}
+                        </button>
+                    </div>
+
+                    <input type="hidden" name="type" :value="issueType" />
+
+                    <!-- Common Inputs -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="label"><span class="label-text text-xs font-bold">{{ __('نام مشتری / شرکت:') }}</span></label>
+                            <input type="text" name="customer_name" required value="مشتری رسمی دخل" class="input input-bordered input-sm w-full rounded-xl" />
+                        </div>
+                        <div>
+                            <label class="label"><span class="label-text text-xs font-bold">{{ __('کد ملی / شناسه ملی اقتصادی:') }}</span></label>
+                            <input type="text" name="customer_national_id" placeholder="اختیاری" class="input input-bordered input-sm w-full rounded-xl font-mono" />
+                        </div>
+                    </div>
+
+                    <!-- Addon Name if Addon Mode -->
+                    <div x-show="issueType === 'addon'">
+                        <label class="label"><span class="label-text text-xs font-bold">{{ __('عنوان افزونه:') }}</span></label>
+                        <input type="text" name="addon_name" value="افزونه ماژولار سامانه مودیان" class="input input-bordered input-sm w-full rounded-xl" />
+                    </div>
+
+                    <!-- Base Edition Selection -->
+                    <div x-show="issueType === 'base'" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="label"><span class="label-text text-xs font-bold">{{ __('پکیج تجاری:') }}</span></label>
+                            <select name="edition" class="select select-bordered select-sm w-full rounded-xl" x-model="selectedEdition" @change="syncPlanModules()">
+                                <option value="basic">{{ __('نسخه برنزی (پایه اصناف خرد)') }}</option>
+                                <option value="professional">{{ __('نسخه نقره‌ای (رشد و بازرگانی)') }}</option>
+                                <option value="enterprise">{{ __('نسخه طلایی (سازمانی نامحدود)') }}</option>
+                                <option value="custom">{{ __('نسخه سفارشی (انتخاب دستی ماژول‌ها)') }}</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="label"><span class="label-text text-xs font-bold">{{ __('مدت اعتبار لایسنس:') }}</span></label>
+                            <select name="valid_days" class="select select-bordered select-sm w-full rounded-xl" x-model="validityDays">
+                                <option value="365">{{ __('۱ ساله (۳۶۵ روز)') }}</option>
+                                <option value="180">{{ __('۶ ماهه (۱۸۰ روز)') }}</option>
+                                <option value="90">{{ __('۳ ماهه (۹۰ روز)') }}</option>
+                                <option value="30">{{ __('۱ ماهه (۳۰ روز)') }}</option>
+                                <option value="0">{{ __('لایسنس دائمی (بدون انقضا)') }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Addon validity if Addon Mode -->
+                    <div x-show="issueType === 'addon'" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="label"><span class="label-text text-xs font-bold">{{ __('مدت اعتبار افزونه:') }}</span></label>
+                            <select name="valid_days" class="select select-bordered select-sm w-full rounded-xl">
+                                <option value="365">{{ __('۱ ساله (۳۶۵ روز)') }}</option>
+                                <option value="0">{{ __('دائمی (همگام با لایسنس پایه)') }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="label"><span class="label-text text-xs font-bold">{{ __('افزودن سقف کاربران:') }}</span></label>
+                            <input type="number" name="add_users" value="0" min="0" class="input input-bordered input-sm w-full rounded-xl font-mono" />
+                        </div>
+                    </div>
+
+                    <!-- Hardware Lock Selection -->
+                    <div class="p-3 bg-base-200/50 rounded-2xl space-y-2">
+                        <label class="block text-xs font-bold text-base-content/80">{{ __('قفل سخت‌افزاری دستگاه (Node-Lock):') }}</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <label class="btn btn-xs rounded-lg flex items-center gap-1 cursor-pointer" :class="hwLockMode === 'current' ? 'btn-primary' : 'btn-ghost'">
+                                <input type="radio" x-model="hwLockMode" value="current" class="hidden" />
+                                <span>💻 {{ __('سیستم فعلی') }}</span>
+                            </label>
+                            <label class="btn btn-xs rounded-lg flex items-center gap-1 cursor-pointer" :class="hwLockMode === 'custom' ? 'btn-primary' : 'btn-ghost'">
+                                <input type="radio" x-model="hwLockMode" value="custom" class="hidden" />
+                                <span>✏️ {{ __('کد دلخواه مشتری') }}</span>
+                            </label>
+                            <label class="btn btn-xs rounded-lg flex items-center gap-1 cursor-pointer" :class="hwLockMode === 'unlocked' ? 'btn-primary' : 'btn-ghost'">
+                                <input type="radio" x-model="hwLockMode" value="unlocked" class="hidden" />
+                                <span>🔓 {{ __('بدون قفل (*)') }}</span>
+                            </label>
+                        </div>
+
+                        <div x-show="hwLockMode === 'current'" class="text-[11px] font-mono text-primary bg-base-100 p-2 rounded-xl border border-base-200">
+                            {{ $hardwareFingerprint }}
+                        </div>
+
+                        <div x-show="hwLockMode === 'custom'">
+                            <input type="text" x-model="customHw" placeholder="DAKHL-XXXX-XXXX-XXXX-XXXX" class="input input-bordered input-xs w-full rounded-xl font-mono text-left" dir="ltr" />
+                        </div>
+
+                        <input type="hidden" name="hardware_fingerprint" :value="getFinalHw()" />
+                    </div>
+
+                    <!-- Quotas if Base -->
+                    <div x-show="issueType === 'base'" class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="label"><span class="label-text text-[11px] font-bold">{{ __('سقف شرکت:') }}</span></label>
+                            <input type="number" name="max_companies" value="1" min="1" class="input input-bordered input-xs w-full rounded-xl font-mono" />
+                        </div>
+                        <div>
+                            <label class="label"><span class="label-text text-[11px] font-bold">{{ __('سقف کاربر:') }}</span></label>
+                            <input type="number" name="max_users" value="2" min="1" class="input input-bordered input-xs w-full rounded-xl font-mono" />
+                        </div>
+                        <div>
+                            <label class="label"><span class="label-text text-[11px] font-bold">{{ __('سقف پایانه پوز:') }}</span></label>
+                            <input type="number" name="max_devices" value="1" min="1" class="input input-bordered input-xs w-full rounded-xl font-mono" />
+                        </div>
+                    </div>
+
+                    <!-- 16 Modules Selection Grid -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-base-content/80">{{ __('انتخاب ماژول‌های فعال:') }}</span>
+                            <div class="space-x-1 space-x-reverse text-[11px]">
+                                <button type="button" @click="selectedModules = Object.keys(allModules)" class="link link-primary">{{ __('انتخاب همه') }}</button>
+                                <span>•</span>
+                                <button type="button" @click="selectedModules = []" class="link link-hover">{{ __('پاک کردن') }}</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-h-48 overflow-y-auto p-2 border border-base-200 rounded-2xl bg-base-100">
+                            <template x-for="(mod, key) in allModules" :key="key">
+                                <label class="flex items-center gap-2 p-1.5 rounded-xl hover:bg-base-200 cursor-pointer text-xs">
+                                    <input type="checkbox" name="modules[]" :value="key" x-model="selectedModules" class="checkbox checkbox-primary checkbox-xs rounded" />
+                                    <span class="truncate" x-text="mod.icon + ' ' + mod.title"></span>
+                                </label>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Auto Activate Option -->
+                    <div class="flex items-center justify-between p-3 bg-base-200/40 rounded-2xl">
+                        <label class="label cursor-pointer gap-2">
+                            <input type="checkbox" name="auto_activate" value="1" checked class="checkbox checkbox-success checkbox-sm rounded-lg" />
+                            <span class="label-text text-xs font-bold">{{ __('فعال‌سازی فوری روی همین سیستم پس از صدور') }}</span>
+                        </label>
+                    </div>
+
+                    <div class="modal-action">
+                        <button type="submit" class="btn btn-primary btn-sm rounded-xl px-6 font-bold shadow-md shadow-primary/20">
+                            <span>🔑</span>
+                            <span>{{ __('تولید و صدور لایسنس دیجیتال') }}</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </dialog>
 
     </div>
 

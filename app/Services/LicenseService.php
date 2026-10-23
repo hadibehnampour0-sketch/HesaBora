@@ -8,27 +8,41 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
-use InvalidArgumentException;
 
 class LicenseService
 {
     // Canonical 16 Modular Capabilities
     public const MODULE_CORE_ACCOUNTING = 'core_accounting';
-    public const MODULE_SALES_PURCHASE   = 'sales_purchase';
-    public const MODULE_INVENTORY        = 'inventory_warehouse';
+
+    public const MODULE_SALES_PURCHASE = 'sales_purchase';
+
+    public const MODULE_INVENTORY = 'inventory_warehouse';
+
     public const MODULE_CHEQUES_TREASURY = 'cheques_treasury';
-    public const MODULE_TAX_MOADIAN      = 'tax_moadian';
-    public const MODULE_POS_RETAIL       = 'pos_retail';
-    public const MODULE_DISTRIBUTION     = 'distribution';
-    public const MODULE_PRODUCTION_BOM   = 'production_bom';
-    public const MODULE_HR_PAYROLL       = 'hr_payroll';
-    public const MODULE_SMS_AUTOMATION   = 'sms_automation';
+
+    public const MODULE_TAX_MOADIAN = 'tax_moadian';
+
+    public const MODULE_POS_RETAIL = 'pos_retail';
+
+    public const MODULE_DISTRIBUTION = 'distribution';
+
+    public const MODULE_PRODUCTION_BOM = 'production_bom';
+
+    public const MODULE_HR_PAYROLL = 'hr_payroll';
+
+    public const MODULE_SMS_AUTOMATION = 'sms_automation';
+
     public const MODULE_CUSTOMER_LOYALTY = 'customer_loyalty';
-    public const MODULE_TELEPHONY_VOIP   = 'telephony_voip';
+
+    public const MODULE_TELEPHONY_VOIP = 'telephony_voip';
+
     public const MODULE_OFFICIAL_INQUIRY = 'official_inquiries';
-    public const MODULE_FINANCING        = 'installment_financing';
-    public const MODULE_AI_COPILOT       = 'ai_copilot';
-    public const MODULE_MIGRATION_TOOLS  = 'migration_tools';
+
+    public const MODULE_FINANCING = 'installment_financing';
+
+    public const MODULE_AI_COPILOT = 'ai_copilot';
+
+    public const MODULE_MIGRATION_TOOLS = 'migration_tools';
 
     private const CACHE_KEY = 'dakhl_active_license';
 
@@ -37,7 +51,7 @@ class LicenseService
      */
     public function getSecretKey(): string
     {
-        return config('app.license_secret', config('app.key', 'dakhl-offline-secret-default-key')) . ':dakhl-lic-auth-v1';
+        return config('app.license_secret', config('app.key', 'dakhl-offline-secret-default-key')).':dakhl-lic-auth-v1';
     }
 
     /**
@@ -63,7 +77,7 @@ class LicenseService
         $hash = strtoupper(hash('sha256', implode('|', $components)));
 
         // Format nicely: DAKHL-XXXX-XXXX-XXXX-XXXX
-        return 'DAKHL-' . substr($hash, 0, 4) . '-' . substr($hash, 4, 4) . '-' . substr($hash, 8, 4) . '-' . substr($hash, 12, 4);
+        return 'DAKHL-'.substr($hash, 0, 4).'-'.substr($hash, 4, 4).'-'.substr($hash, 8, 4).'-'.substr($hash, 12, 4);
     }
 
     /**
@@ -75,6 +89,8 @@ class LicenseService
         $expiresAt = ! empty($data['expires_at']) ? Carbon::parse($data['expires_at'])->timestamp : null;
 
         $payload = [
+            'type' => $data['type'] ?? 'base',
+            'addon_name' => $data['addon_name'] ?? null,
             'edition' => $data['edition'] ?? 'professional',
             'customer_name' => $data['customer_name'] ?? 'مشتری گرامی دخل',
             'customer_national_id' => $data['customer_national_id'] ?? null,
@@ -83,6 +99,9 @@ class LicenseService
             'max_companies' => (int) ($data['max_companies'] ?? 1),
             'max_users' => (int) ($data['max_users'] ?? 2),
             'max_devices' => (int) ($data['max_devices'] ?? 1),
+            'add_companies' => (int) ($data['add_companies'] ?? 0),
+            'add_users' => (int) ($data['add_users'] ?? 0),
+            'add_devices' => (int) ($data['add_devices'] ?? 0),
             'grace_period_days' => (int) ($data['grace_period_days'] ?? 7),
             'issued_at' => $issuedAt,
             'expires_at' => $expiresAt,
@@ -95,6 +114,17 @@ class LicenseService
         $signature = hash_hmac('sha256', $payloadBase64, $secret ?? $this->getSecretKey());
 
         return "DAKHL-LIC-v1.{$payloadBase64}.{$signature}";
+    }
+
+    /**
+     * Issue an Add-on Feature Key to unlock specific capabilities or quotas on an existing installation.
+     */
+    public function issueAddonKey(array $data, ?string $secret = null): string
+    {
+        return $this->issueLicenseKey(array_merge($data, [
+            'type' => 'addon',
+            'edition' => $data['edition'] ?? 'addon',
+        ]), $secret);
     }
 
     /**
@@ -191,6 +221,66 @@ class LicenseService
         $signature = $verification['signature'];
         $hash = hash('sha256', $licenseKey);
 
+        // Check if this is an Add-on Feature Key meant to enrich the active license
+        if (($payload['type'] ?? 'base') === 'addon') {
+            $activeLicense = $this->getActiveLicense($companyId);
+            $newModules = $payload['modules'] ?? [];
+            $existingModules = $activeLicense->modules ?? [];
+
+            $mergedModules = in_array('*', $existingModules, true)
+                ? ['*']
+                : array_values(array_unique(array_merge($existingModules, $newModules)));
+
+            $maxCompanies = $activeLicense->max_companies === -1
+                ? -1
+                : $activeLicense->max_companies + (int) ($payload['add_companies'] ?? 0);
+
+            $maxUsers = $activeLicense->max_users === -1
+                ? -1
+                : $activeLicense->max_users + (int) ($payload['add_users'] ?? 0);
+
+            $maxDevices = $activeLicense->max_devices === -1
+                ? -1
+                : $activeLicense->max_devices + (int) ($payload['add_devices'] ?? 0);
+
+            $metadata = $activeLicense->metadata ?? [];
+            $metadata['addons'] = $metadata['addons'] ?? [];
+            $metadata['addons'][] = [
+                'name' => $payload['addon_name'] ?? 'افزونه ماژولار',
+                'modules' => $newModules,
+                'activated_at' => now()->toIso8601String(),
+                'signature' => $signature,
+            ];
+
+            // If addon has an expiration that extends current expiry
+            $expiresAt = $activeLicense->expires_at;
+            if (! empty($payload['expires_at'])) {
+                $addonExpires = Carbon::createFromTimestamp($payload['expires_at']);
+                if ($expiresAt === null || $addonExpires->greaterThan($expiresAt)) {
+                    $expiresAt = $addonExpires;
+                }
+            }
+
+            $activeLicense->update([
+                'modules' => $mergedModules,
+                'max_companies' => $maxCompanies,
+                'max_users' => $maxUsers,
+                'max_devices' => $maxDevices,
+                'expires_at' => $expiresAt,
+                'metadata' => $metadata,
+            ]);
+
+            $this->flushCache();
+
+            $addonName = $payload['addon_name'] ?? 'ماژول انتخابی';
+
+            return [
+                'success' => true,
+                'message' => "افزونه «{$addonName}» با موفقیت فعال و به لایسنس شما اضافه گردید.",
+                'license' => $activeLicense->fresh(),
+            ];
+        }
+
         // Deactivate old active licenses
         License::query()
             ->when($companyId, fn ($q) => $q->where('company_id', $companyId), fn ($q) => $q->whereNull('company_id'))
@@ -234,7 +324,7 @@ class LicenseService
      */
     public function getActiveLicense(?int $companyId = null): License
     {
-        $cacheKey = self::CACHE_KEY . '_' . ($companyId ?? 'global');
+        $cacheKey = self::CACHE_KEY.'_'.($companyId ?? 'global');
 
         return Cache::remember($cacheKey, 3600, function () use ($companyId) {
             $license = License::query()
@@ -348,10 +438,10 @@ class LicenseService
      */
     public function flushCache(): void
     {
-        Cache::forget(self::CACHE_KEY . '_global');
+        Cache::forget(self::CACHE_KEY.'_global');
         $companies = Company::pluck('id');
         foreach ($companies as $id) {
-            Cache::forget(self::CACHE_KEY . "_{$id}");
+            Cache::forget(self::CACHE_KEY."_{$id}");
         }
     }
 

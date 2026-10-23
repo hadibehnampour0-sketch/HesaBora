@@ -23,6 +23,9 @@ Route::post('/impersonation/leave', [Controllers\Management\UserController::clas
 Route::post('/integrations/woocommerce/webhook/{token}', [Controllers\IntegrationWebhookController::class, 'woocommerce'])
     ->middleware('throttle:60,1')->name('integrations.woocommerce.webhook');
 
+// Public Pricing, Product Capabilities & Online License Ordering Portal
+Route::get('/pricing', [Controllers\LicenseController::class, 'publicPricing'])->name('pricing');
+
 // Phase 18.2: Customer Online Portal & Shaparak Payment Links
 Route::prefix('portal')->name('portal.')->group(function () {
     Route::get('invoice/{token}', [Controllers\CustomerPortalController::class, 'showInvoice'])->name('invoice.show');
@@ -245,6 +248,7 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::get('license', [Controllers\LicenseController::class, 'index'])->name('license.index');
         Route::post('license/activate', [Controllers\LicenseController::class, 'activate'])->name('license.activate');
         Route::post('license/generate-demo', [Controllers\LicenseController::class, 'generateDemo'])->name('license.generate-demo');
+        Route::post('license/generate-custom', [Controllers\LicenseController::class, 'generateCustom'])->name('license.generate-custom');
         Route::get('license/status', [Controllers\LicenseController::class, 'status'])->name('license.status');
         Route::get('workflow-governance', [Controllers\WorkflowGovernanceController::class, 'edit'])->name('workflow-governance.edit');
         Route::put('workflow-governance', [Controllers\WorkflowGovernanceController::class, 'update'])->name('workflow-governance.update');

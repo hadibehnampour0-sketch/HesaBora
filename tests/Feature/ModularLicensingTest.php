@@ -7,9 +7,9 @@ use App\Models\Company;
 use App\Models\License;
 use App\Models\User;
 use App\Services\LicenseService;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Spatie\Permission\Models\Permission;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +20,9 @@ class ModularLicensingTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Company $company;
+
     protected LicenseService $licenseService;
 
     protected function setUp(): void
@@ -332,10 +334,91 @@ class ModularLicensingTest extends TestCase
         ]);
         $this->licenseService->flushCache();
 
-        $viewLicensed = \Illuminate\Support\Facades\Blade::render('@licensed("pos_retail") YES @else NO @endlicensed');
+        $viewLicensed = Blade::render('@licensed("pos_retail") YES @else NO @endlicensed');
         $this->assertStringContainsString('YES', $viewLicensed);
 
-        $viewUnlicensed = \Illuminate\Support\Facades\Blade::render('@unlicensed("distribution") LOCKED @else UNLOCKED @endunlicensed');
+        $viewUnlicensed = Blade::render('@unlicensed("distribution") LOCKED @else UNLOCKED @endunlicensed');
         $this->assertStringContainsString('LOCKED', $viewUnlicensed);
+    }
+
+    public function test_addon_module_key_merges_into_active_license_and_increments_quotas(): void
+    {
+        License::query()->update(['is_active' => false]);
+        $base = License::create([
+            'license_key' => 'key_base_bronze',
+            'license_hash' => hash('sha256', 'key_base_bronze'),
+            'edition' => 'basic',
+            'customer_name' => 'فروشگاه برنزی تست',
+            'modules' => [LicenseService::MODULE_CORE_ACCOUNTING, LicenseService::MODULE_SALES_PURCHASE],
+            'max_companies' => 1,
+            'max_users' => 2,
+            'max_devices' => 1,
+            'issued_at' => now(),
+            'expires_at' => now()->addYear(),
+            'is_active' => true,
+            'signature' => 'sig_base',
+        ]);
+        $this->licenseService->flushCache();
+
+        $this->assertTrue($this->licenseService->isModuleLicensed(LicenseService::MODULE_SALES_PURCHASE));
+        $this->assertFalse($this->licenseService->isModuleLicensed(LicenseService::MODULE_TAX_MOADIAN));
+
+        // Issue and activate an Add-on Feature Key for Tax Moadian + 2 extra users
+        $addonKey = $this->licenseService->issueAddonKey([
+            'addon_name' => 'افزونه سامانه مودیان',
+            'modules' => [LicenseService::MODULE_TAX_MOADIAN],
+            'add_users' => 2,
+            'hardware_fingerprint' => '*',
+        ]);
+
+        $result = $this->licenseService->activateLicenseKey($addonKey, null, false);
+        $this->assertTrue($result['success']);
+        $this->assertStringContainsString('سامانه مودیان', $result['message']);
+
+        // Base modules still present + Moadian now unlocked!
+        $active = $this->licenseService->getActiveLicense();
+        $this->assertTrue($active->hasModule(LicenseService::MODULE_CORE_ACCOUNTING));
+        $this->assertTrue($active->hasModule(LicenseService::MODULE_SALES_PURCHASE));
+        $this->assertTrue($active->hasModule(LicenseService::MODULE_TAX_MOADIAN));
+        $this->assertEquals(4, $active->max_users); // 2 + 2 = 4
+    }
+
+    public function test_admin_can_generate_custom_license_via_studio(): void
+    {
+        $this->actingAs($this->user);
+
+        $response = $this->post(route('license.generate-custom'), [
+            'type' => 'base',
+            'customer_name' => 'شرکت توسعه تجارت پیشرو',
+            'hardware_fingerprint' => '*',
+            'edition' => 'custom',
+            'valid_days' => 180,
+            'max_companies' => 3,
+            'max_users' => 6,
+            'max_devices' => 2,
+            'modules' => [LicenseService::MODULE_CORE_ACCOUNTING, LicenseService::MODULE_POS_RETAIL],
+            'auto_activate' => '1',
+        ]);
+
+        $response->assertRedirect(route('license.index'));
+        $response->assertSessionHas('success');
+        $response->assertSessionHas('generated_key');
+
+        $active = $this->licenseService->getActiveLicense();
+        $this->assertEquals('شرکت توسعه تجارت پیشرو', $active->customer_name);
+        $this->assertEquals(6, $active->max_users);
+        $this->assertTrue($active->hasModule(LicenseService::MODULE_POS_RETAIL));
+    }
+
+    public function test_public_pricing_page_renders_successfully(): void
+    {
+        $response = $this->get(route('pricing'));
+
+        $response->assertOk()
+            ->assertSee('دخل')
+            ->assertSee('نسخه برنزی')
+            ->assertSee('نسخه نقره‌ای')
+            ->assertSee('نسخه طلایی')
+            ->assertSee('۱۶ ماژول قدرتمند دخل', false);
     }
 }
