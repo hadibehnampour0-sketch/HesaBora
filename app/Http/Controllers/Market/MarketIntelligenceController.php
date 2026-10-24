@@ -25,6 +25,7 @@ class MarketIntelligenceController extends Controller
         $guild = $request->query('guild');
         $search = $request->query('search');
 
+        $this->service->ensureRealisticMarketData($companyId, auth()->id());
         $quotes = $this->service->getQuotes($companyId);
         $inventoryComparison = $this->service->getInventoryMarketComparison($companyId, $search);
         $guildBroadcasts = $this->service->getGuildBroadcastQuotations($guild, $search);
