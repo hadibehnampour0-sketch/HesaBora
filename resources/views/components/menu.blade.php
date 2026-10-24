@@ -22,6 +22,46 @@
     </li>
 @endcan
 
+{{-- ۲. تابلوی زنده قیمت آنلاین و مظنه بازار (Live Market & Online Pricing) --}}
+<li>
+    <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
+        <summary class="font-bold text-accent">
+            <x-menu-icon name="currencies" />
+            <span>{{ __('قیمت آنلاین و تابلوی بازار') }}</span>
+            <span class="badge badge-accent badge-xs py-0.5 px-1 text-[9px]">LIVE</span>
+        </summary>
+        <ul class="{{ $topDropdownContentClass }}">
+            <li>
+                <a href="{{ route('market-intelligence.index', ['tab' => 'rates']) }}" class="font-bold flex items-center justify-between text-cyan-400">
+                    <span>{{ __('تابلوی زنده طلا، ارز و سکه') }}</span>
+                    <span class="badge badge-xs badge-accent">آنلاین</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('market-intelligence.index', ['tab' => 'inventory']) }}">
+                    {{ __('مقایسه قیمت انبار با نرخ لحظه‌ای بازار') }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('market-intelligence.index', ['tab' => 'guild']) }}">
+                    {{ __('نرخ‌های عمده‌فروشی شبکه هم‌صنفان') }}
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('price-quotes.index') }}" class="flex items-center justify-between">
+                    <span>{{ __('استعلام و سابقه قیمت‌های اعلام‌شده') }}</span>
+                    <span class="badge badge-xs badge-info">قیمت‌دهی</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('market-intelligence.index', ['tab' => 'settings']) }}">
+                    {{ __('تنظیمات منابع استعلام (TGJU، نوسان و...)') }}
+                </a>
+            </li>
+        </ul>
+    </details>
+</li>
+
 @can('employee-portal.dashboard')
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
@@ -38,7 +78,7 @@
     </li>
 @endcan
 
-{{-- ۲. فروش، صندوق و بازرگانی (Sales & Retail) --}}
+{{-- ۳. فروش، صندوق و بازرگانی (Sales & Retail) --}}
 @canany(['invoices.dashboard', 'invoices.index', 'invoices.inactive', 'invoices.create'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
@@ -62,6 +102,7 @@
                 <li><a href="{{ route('trades.index') }}" class="flex items-center justify-between"><span>{{ __('تهاتر و تبادل با همکاران') }}</span><span class="badge badge-xs badge-info">جدید</span></a></li>
                 <li><a href="{{ route('price-quotes.index') }}">{{ __('استعلام و سابقه قیمت‌ها') }}</a></li>
                 <li><a href="{{ route('financing.index') }}">{{ __('فروش اقساطی و تسهیلات') }}</a></li>
+                <li><a href="{{ route('templates.index') }}">{{ __('طراح قالب‌های چاپ فاکتور') }}</a></li>
                 @can('invoices.inactive')
                     <li><a href="{{ route('invoices.inactive') }}">{{ __('Activate Confirmed Invoices') }}</a></li>
                 @endcan
@@ -70,7 +111,7 @@
     </li>
 @endcanany
 
-{{-- ۳. خرید، تدارکات و هزینه‌ها (Procurement & Purchases) --}}
+{{-- ۴. خرید، تدارکات و هزینه‌ها (Procurement & Purchases) --}}
 @canany(['invoices.index', 'ancillary-costs.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
@@ -89,20 +130,22 @@
     </li>
 @endcanany
 
-{{-- ۴. خزانه‌داری، دریافت و پرداخت (Treasury & Cash Management) --}}
+{{-- ۵. خزانه‌داری، دریافت و پرداخت (Treasury & Cash Management) --}}
 @canany(['cheques.index', 'bank-accounts.index', 'banks.index', 'chequebooks.index', 'payment-terms.index', 'quick-payment.create', 'ageing.receivables', 'ageing.payables'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="treasury" />{{ __('خزانه‌داری و نقدینگی') }}</summary>
-            <ul class="{{ $topDropdownContentClass }}">
+            <ul class="{{ $scrollingTopDropdownContentClass }}">
                 @can('quick-payment.create')
                     <li><a href="{{ route('quick-payment.create', 'receive') }}">{{ __('دریافت وجه (سریع)') }}</a></li>
                     <li><a href="{{ route('quick-payment.create', 'pay') }}">{{ __('پرداخت وجه (سریع)') }}</a></li>
                 @endcan
                 <li><a href="{{ route('bank-reconciliation.landing') }}" class="font-bold flex items-center justify-between text-info"><span>{{ __('مغایرت‌گیری بانکی هوشمند') }}</span><span class="badge badge-xs badge-info">اتوماتیک</span></a></li>
-                <li><a href="{{ route('cash-banks') }}">{{ __('مانده و گردش نقد و بانک‌ها') }}</a></li>
+                <li><a href="{{ route('reports.company-overview.cash-banks') }}">{{ __('مانده و گردش نقد و بانک‌ها') }}</a></li>
+                <li><a href="{{ route('transactions.index') }}">{{ __('فهرست کلیه تراکنش‌های مالی') }}</a></li>
                 @can('cheques.index')
                     <li><a href="{{ route('cheques.index') }}" class="font-bold">{{ __('مدیریت چک‌ها و صیاد') }}</a></li>
+                    <li><a href="{{ route('cheques.report') }}">{{ __('گزارش تحلیلی و آماری چک‌ها') }}</a></li>
                 @endcan
                 @can('chequebooks.index')
                     <li><a href="{{ route('chequebooks.index') }}">{{ __('Chequebooks') }}</a></li>
@@ -136,7 +179,7 @@
     </li>
 @endcanany
 
-{{-- ۵. حسابداری مالی و دفاتر (Financial Accounting & Ledgers) --}}
+{{-- ۶. حسابداری مالی و دفاتر (Financial Accounting & Ledgers) --}}
 @canany(['documents.index', 'documents.create', 'fixed-assets.index', 'currencies.index', 'recurring-invoice-templates.index', 'analytic-dimensions.index', 'subjects.index', 'reports.documents', 'reports.journal', 'reports.ledger', 'reports.sub-ledger', 'reports.trial-balance'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
@@ -195,22 +238,22 @@
     </li>
 @endcanany
 
-{{-- ۶. انبارداری و کالاها (Warehouse & Inventory) --}}
+{{-- ۷. انبارداری و کالاها (Warehouse & Inventory) --}}
 @canany(['warehouse.dashboard', 'warehouses.index', 'products.index', 'product-groups.index', 'services.index', 'service-groups.index', 'stock-reservations.index', 'production.recipes.index', 'production.orders.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="warehouse" />{{ __('Warehouse') }}</summary>
-            <ul class="{{ $topDropdownContentClass }}">
+            <ul class="{{ $scrollingTopDropdownContentClass }}">
                 @can('warehouse.dashboard')
                     <li><a href="{{ route('warehouse.dashboard') }}">{{ __('Warehouse Dashboard') }}</a></li>
                 @endcan
                 @can('warehouses.index')
                     <li><a href="{{ route('warehouses.index') }}">{{ __('Warehouses') }}</a></li>
                     <li><a href="{{ route('warehouses.transfer') }}">{{ __('انتقال و جابجایی بین انبارها') }}</a></li>
+                    <li><a href="{{ route('warehouses.transfer-history') }}">{{ __('تاریخچه حواله‌های انتقال') }}</a></li>
                 @endcan
                 @can('products.index')
                     <li><a href="{{ route('products.index') }}">{{ __('Products') }}</a></li>
-                    <li><a href="{{ route('market-intelligence.index', ['tab' => 'inventory']) }}">{{ __('قیمت روز اقلام و شبکه هم‌صنفان') }}</a></li>
                 @endcan
                 @can('product-groups.index')
                     <li><a href="{{ route('product-groups.index') }}">{{ __('Product Groups') }}</a></li>
@@ -224,6 +267,8 @@
                 @can('stock-reservations.index')
                     <li><a href="{{ route('stock-reservations.index') }}">{{ __('Stock reservations') }}</a></li>
                 @endcan
+                <li><a href="{{ route('inventory-reports.valuation') }}">{{ __('ارزش‌گذاری ریالی انبار') }}</a></li>
+                <li><a href="{{ route('inventory-reports.slow-moving') }}">{{ __('کالاهای راکد و کم‌گردش') }}</a></li>
                 @canany(['production.orders.index', 'production.recipes.index'])
                     <li>
                         <details>
@@ -244,12 +289,12 @@
     </li>
 @endcanany
 
-{{-- ۷. سامانه مودیان و مالیات (Tax & Moadian Center) --}}
+{{-- ۸. سامانه مودیان و مالیات (Tax & Moadian Center) --}}
 @canany(['tax-center.index', 'tax-readiness.index', 'seasonal-tax.index', 'invoices.moadian-histories.index', 'invoices.moadian-queue.index', 'tax-alerts.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="tax" />{{ __('Tax') }}</summary>
-            <ul class="{{ $topDropdownContentClass }}">
+            <ul class="{{ $scrollingTopDropdownContentClass }}">
                 @can('tax-center.index')
                     <li><a href="{{ route('tax-center.index') }}" class="font-bold text-primary">{{ __('Tax Center') }}</a></li>
                 @endcan
@@ -271,6 +316,7 @@
                 @can('seasonal-tax.index')
                     <li><a href="{{ route('seasonal-tax.index') }}">{{ __('Seasonal Tax Report') }}</a></li>
                 @endcan
+                <li><a href="{{ route('tax-center.audit-pack') }}">{{ __('دانلود بسته ممیزی مالیاتی') }}</a></li>
                 @can('tax-alerts.index')
                     <li><a href="{{ route('tax-alerts.index') }}">{{ __('Tax alerts') }}</a></li>
                 @endcan
@@ -279,7 +325,7 @@
     </li>
 @endcanany
 
-{{-- ۸. طرف‌حساب‌ها و ارتباط با مشتریان (CRM & Customers) --}}
+{{-- ۹. طرف‌حساب‌ها و ارتباط با مشتریان (CRM & Customers) --}}
 @canany(['crm.dashboard', 'customers.index', 'customers.create', 'customer-groups.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
@@ -306,7 +352,7 @@
     </li>
 @endcanany
 
-{{-- ۹. منابع انسانی و حقوق و دستمزد (HR & Payroll) --}}
+{{-- ۱۰. منابع انسانی و حقوق و دستمزد (HR & Payroll) --}}
 @canany(['salary.payrolls.dashboard', 'salary.payrolls.index', 'hr.employees.index', 'hr.personnel-requests.index',
     'attendance.attendance-logs.index', 'attendance.monthly-attendances.index', 'hr.org-charts.index'])
     <li>
@@ -387,7 +433,7 @@
     </li>
 @endcanany
 
-{{-- ۱۰. پخش مویرگی (Capillary distribution) --}}
+{{-- ۱۱. پخش مویرگی (Capillary distribution) --}}
 @canany(['distribution.index', 'distribution.routes.index', 'distribution.visitors.index', 'distribution.plans.index', 'distribution.promotions.index', 'distribution.settlements.index', 'field-operations-analytics.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
@@ -419,7 +465,7 @@
     </li>
 @endcanany
 
-{{-- ۱۱. گزارش‌ها و هوش تجاری (BI & Reports) --}}
+{{-- ۱۲. گزارش‌ها و هوش تجاری (BI & Reports) --}}
 @canany(['reports.company-overview', 'reports.cost-income', 'dashboards.cash-flow', 'dashboards.cheque-risk', 'dashboards.profitability-by-dimension', 'inventory-reports.valuation', 'inventory-reports.slow-moving', 'budgets.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
@@ -428,6 +474,7 @@
                 @can('reports.company-overview')
                     <li><a href="{{ route('reports.company-overview') }}" class="font-bold">{{ __('Company overview') }}</a></li>
                 @endcan
+                <li><a href="{{ route('reports.plain') }}" class="font-bold text-primary">{{ __('وضعیت کسب‌وکار به زبان ساده') }}</a></li>
                 @can('reports.cost-income')
                     <li><a href="{{ route('reports.cost-income') }}">{{ __('Cost and Income Dashboard') }}</a></li>
                 @endcan
@@ -454,22 +501,12 @@
     </li>
 @endcanany
 
-{{-- ۱۲. رصد زنده بازار و اصناف --}}
-<li>
-    <a href="{{ route('market-intelligence.index') }}" class="font-medium flex items-center justify-between">
-        <div class="flex items-center gap-2">
-            <x-menu-icon name="currencies" />
-            <span>{{ __('رصد زنده بازار و طلا/ارز') }}</span>
-        </div>
-        <span class="badge badge-accent badge-xs py-0.5 px-1 text-[9px]">LIVE</span>
-    </a>
-</li>
-
+{{-- ۱۳. پروفایل اصناف و بازار --}}
 @can('industry-profiles.index')
     <li><a href="{{ route('industry-profiles.index') }}"><x-menu-icon name="industry" />{{ __('Industry Profiles') }}</a></li>
 @endcan
 
-{{-- ۱۳. مدیریت سیستم، قالب‌ها و یکپارچه‌سازی (System & Settings) --}}
+{{-- ۱۴. مدیریت سیستم، قالب‌ها و یکپارچه‌سازی (System & Settings) --}}
 <li>
     <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
         <summary><x-menu-icon name="settings" />{{ __('مدیریت و تنظیمات') }}</summary>
@@ -479,7 +516,10 @@
                 <li><a href="{{ route('companies.index') }}" class="font-bold">{{ __('شرکت‌ها و سال مالی') }}</a></li>
             @endcan
             @can('users.index')
-                <li><a href="{{ route('users.index') }}">{{ __('کاربران و سطوح دسترسی') }}</a></li>
+                <li><a href="{{ route('users.index') }}">{{ __('کاربران و پرسنل سیستم') }}</a></li>
+            @endcan
+            @can('roles.index')
+                <li><a href="{{ route('roles.index') }}">{{ __('نقش‌ها و ماتریس دسترسی‌ها') }}</a></li>
             @endcan
             <li><a href="{{ route('account.edit') }}">{{ __('پروفایل و حساب کاربری من') }}</a></li>
             <li><a href="{{ route('templates.index') }}">{{ __('طراح قالب‌های چاپ فاکتور') }}</a></li>
@@ -488,11 +528,12 @@
                 <li><a href="{{ route('license.index') }}" class="flex items-center justify-between"><span>{{ __('مدیریت لایسنس و اشتراک') }}</span><span class="badge badge-primary badge-xs">Pro</span></a></li>
             @endcan
             <li><a href="{{ route('api-tokens.index') }}">{{ __('کلیدها و توکن‌های API') }}</a></li>
+            <li><a href="{{ route('devices.index') }}">{{ __('دستگاه‌ها و صندوق‌های فعال شعب') }}</a></li>
+            <li><a href="{{ route('sync-conflicts.index') }}">{{ __('مدیریت شعب و تعارضات آفلاین') }}</a></li>
+            <li><a href="{{ route('pricing') }}" class="flex items-center justify-between"><span>{{ __('تعرفه‌ها و بسته امکانات') }}</span><span class="badge badge-xs badge-outline">پلن‌ها</span></a></li>
             @canany(['access-super-admin-panel', 'activity-logs.index'])
                 <li><a href="{{ route('management.activity-logs.index') }}">{{ __('لاگ فعالیت‌ها و ردپای حسابرسی') }}</a></li>
             @endcanany
-            <li><a href="{{ route('sync-conflicts.index') }}">{{ __('مدیریت شعب و تعارضات آفلاین') }}</a></li>
-            <li><a href="{{ route('pricing') }}" class="flex items-center justify-between"><span>{{ __('تعرفه‌ها و بسته امکانات') }}</span><span class="badge badge-xs badge-outline">پلن‌ها</span></a></li>
             @can('integrations.connections.index')
                 <li><a href="{{ route('integrations.connections.index') }}">{{ __('اتصال به فروشگاه‌ها و وب‌هوک') }}</a></li>
             @endcan
