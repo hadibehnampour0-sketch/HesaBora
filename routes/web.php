@@ -28,6 +28,7 @@ Route::post('/integrations/woocommerce/webhook/{token}', [Controllers\Integratio
 // Public Pricing, Product Capabilities & Online License Ordering Portal
 Route::get('/pricing', [Controllers\LicenseController::class, 'publicPricing'])->name('pricing');
 Route::view('/logo-showcase', 'logo-showcase')->name('logo.showcase');
+Route::view('/pages-showcase', 'pages-showcase')->name('pages.showcase');
 
 // Phase 18.2: Customer Online Portal & Shaparak Payment Links
 Route::prefix('portal')->name('portal.')->group(function () {

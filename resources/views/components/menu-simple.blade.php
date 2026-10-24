@@ -22,6 +22,8 @@
                     <li><a href="{{ route('invoices.create', ['invoice_type' => 'sell']) }}">{{ __('New sale') }}</a></li>
                     <li><a href="{{ route('pos.terminal') }}">{{ __('صندوق فروشگاهی سریع (POS)') }}</a></li>
                     <li><a href="{{ route('pc-pos.index') }}">{{ __('کارتخوان‌های متصل (PC-POS)') }}</a></li>
+                    <li><a href="{{ route('trades.index') }}">{{ __('تهاتر و تبادل با همکاران') }}</a></li>
+                    <li><a href="{{ route('price-quotes.index') }}">{{ __('استعلام و سابقه قیمت‌ها') }}</a></li>
                 @endcan
                 @can('invoices.index')
                     <li><a href="{{ route('invoices.index', ['invoice_type' => 'sell']) }}">{{ __('My sales') }}</a></li>
