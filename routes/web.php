@@ -8,8 +8,10 @@ use App\Http\Controllers\Hardware\PcPosTerminalController;
 use App\Http\Controllers\Inquiry\OfficialInquiryController;
 use App\Http\Controllers\Loyalty\CustomerLoyaltyController;
 use App\Http\Controllers\Market\MarketIntelligenceController;
+use App\Http\Controllers\PriceQuoteController;
 use App\Http\Controllers\Telephony\TelephonyController;
 use App\Http\Controllers\Template\InvoiceTemplateController;
+use App\Http\Controllers\Trade\TradeExchangeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
@@ -25,6 +27,7 @@ Route::post('/integrations/woocommerce/webhook/{token}', [Controllers\Integratio
 
 // Public Pricing, Product Capabilities & Online License Ordering Portal
 Route::get('/pricing', [Controllers\LicenseController::class, 'publicPricing'])->name('pricing');
+Route::view('/logo-showcase', 'logo-showcase')->name('logo.showcase');
 
 // Phase 18.2: Customer Online Portal & Shaparak Payment Links
 Route::prefix('portal')->name('portal.')->group(function () {
@@ -396,20 +399,20 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
 
         // Peer Store Trade & Consignment (تهاتر و تبادل کالا با همکاران)
         Route::prefix('trades')->name('trades.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'index'])->name('index');
-            Route::get('create', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'create'])->name('create');
-            Route::post('/', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'store'])->name('store');
-            Route::get('{trade}', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'show'])->name('show');
-            Route::post('{trade}/items', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'addItem'])->name('items.add');
-            Route::post('items/{item}/return', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'returnItem'])->name('items.return');
-            Route::post('{trade}/settle', [\App\Http\Controllers\Trade\TradeExchangeController::class, 'settle'])->name('settle');
+            Route::get('/', [TradeExchangeController::class, 'index'])->name('index');
+            Route::get('create', [TradeExchangeController::class, 'create'])->name('create');
+            Route::post('/', [TradeExchangeController::class, 'store'])->name('store');
+            Route::get('{trade}', [TradeExchangeController::class, 'show'])->name('show');
+            Route::post('{trade}/items', [TradeExchangeController::class, 'addItem'])->name('items.add');
+            Route::post('items/{item}/return', [TradeExchangeController::class, 'returnItem'])->name('items.return');
+            Route::post('{trade}/settle', [TradeExchangeController::class, 'settle'])->name('settle');
         });
 
         // Quick Price Quotes Scratchpad & Memory Log (استعلام و قیمت‌های اعلام‌شده)
         Route::prefix('price-quotes')->name('price-quotes.')->group(function () {
-            Route::get('/', [\App\Http\Controllers\PriceQuoteController::class, 'index'])->name('index');
-            Route::post('/', [\App\Http\Controllers\PriceQuoteController::class, 'store'])->name('store');
-            Route::delete('{priceQuote}', [\App\Http\Controllers\PriceQuoteController::class, 'destroy'])->name('destroy');
+            Route::get('/', [PriceQuoteController::class, 'index'])->name('index');
+            Route::post('/', [PriceQuoteController::class, 'store'])->name('store');
+            Route::delete('{priceQuote}', [PriceQuoteController::class, 'destroy'])->name('destroy');
         });
 
         // Industry Profiles (per-trade settings + calculators; definitions are data files).

@@ -67,6 +67,8 @@
         } catch (e) {}
     </script>
     <title>{{ $title }} | {{ __(config('app.name')) }}</title>
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+    <link rel="icon" type="image/png" href="/images/logo.png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -83,8 +85,8 @@
             <div class="relative flex h-20 items-center gap-3 border-b border-[var(--sidebar-border)] px-6">
                 <a href="{{ route('management.dashboard') }}" class="flex min-w-0 flex-1 items-center gap-3">
                     <span
-                        class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-primary">
-                        <img src="/images/logo.svg" alt="" class="h-7 w-7 object-contain brightness-0 invert">
+                        class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-slate-900 border border-slate-800 p-1.5 shadow-md">
+                        <img src="/images/logo.svg" alt="" class="h-full w-full object-contain">
                     </span>
                     <span class="min-w-0">
                         <strong

@@ -1,7 +1,12 @@
 <aside class="app-sidebar flex h-full w-72 max-w-[85vw] flex-col" aria-label="{{ __('Main navigation') }}">
     <a href="/" class="flex items-center gap-3 px-5 py-5" aria-label="{{ config('app.name') }}">
-        <img src="/images/logo.svg" alt="" class="h-10 w-10 object-contain">
-        <span class="text-lg font-bold text-primary">{{ config('app.name') }}</span>
+        <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-900 border border-slate-800 p-1.5 shadow-md">
+            <img src="/images/logo.svg" alt="" class="h-full w-full object-contain">
+        </div>
+        <div class="flex flex-col min-w-0">
+            <span class="text-lg font-black tracking-tight text-primary leading-none">{{ config('app.name') }}</span>
+            <span class="text-[11px] text-base-content/50 font-medium mt-1">حسابداری و مالیات ابری</span>
+        </div>
     </a>
 
     <nav class="app-sidebar-scroll min-h-0 flex-1 overflow-y-auto px-3 pb-4">

@@ -17,6 +17,8 @@
         }
     </script>
     <title>{{ $title }}</title>
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+    <link rel="icon" type="image/png" href="/images/logo.png">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
 </head>

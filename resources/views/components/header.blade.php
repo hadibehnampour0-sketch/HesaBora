@@ -5,7 +5,9 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
             </label>
             <a href="/" class="flex items-center gap-2 lg:hidden" aria-label="{{ config('app.name') }}">
-                <img src="/images/logo.svg" alt="" class="h-8 w-8 object-contain">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-900 border border-slate-800 p-1 shadow-xs">
+                    <img src="/images/logo.svg" alt="" class="h-full w-full object-contain">
+                </div>
             </a>
         </div>
 
