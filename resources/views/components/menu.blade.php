@@ -22,7 +22,7 @@
     </li>
 @endcan
 
-{{-- ۲. تابلوی زنده قیمت آنلاین و مظنه بازار (Live Market & Online Pricing) --}}
+{{-- ۲. قیمت آنلاین و تابلوی بازار (Live Market & Pricing) --}}
 <li>
     <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
         <summary class="font-bold text-accent">
@@ -56,91 +56,102 @@
             </li>
             <li>
                 <a href="{{ route('market-intelligence.index', ['tab' => 'settings']) }}">
-                    {{ __('تنظیمات منابع استعلام (TGJU، نوسان و...)') }}
+                    {{ __('تنظیمات منابع استعلام نرخ‌ها') }}
                 </a>
             </li>
         </ul>
     </details>
 </li>
 
-@can('employee-portal.dashboard')
+{{-- ۳. بازرگانی و معاملات (Commerce & Trade: Sales, POS & Purchases) --}}
+@canany(['invoices.dashboard', 'invoices.index', 'invoices.inactive', 'invoices.create', 'ancillary-costs.index', 'integrations.connections.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary><x-menu-icon name="portal" />{{ __('My Portal') }}</summary>
-            <ul class="{{ $topDropdownContentClass }}">
-                <li><a href="{{ route('employee-portal.dashboard') }}">{{ __('Dashboard') }}</a></li>
-                <li><a href="{{ route('employee-portal.attendance-logs') }}">{{ __('My Attendance') }}</a></li>
-                <li><a href="{{ route('employee-portal.monthly-attendances') }}">{{ __('Monthly Attendance') }}</a></li>
-                <li><a href="{{ route('employee-portal.payrolls') }}">{{ __('My Payrolls') }}</a></li>
-                <li><a href="{{ route('employee-portal.personnel-requests.index') }}">{{ __('My Requests') }}</a></li>
-                <li><a href="{{ route('employee-portal.employee.show') }}">{{ __('My Information') }}</a></li>
-            </ul>
-        </details>
-    </li>
-@endcan
-
-{{-- ۳. فروش، صندوق و بازرگانی (Sales & Retail) --}}
-@canany(['invoices.dashboard', 'invoices.index', 'invoices.inactive', 'invoices.create'])
-    <li>
-        <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary><x-menu-icon name="sales" />{{ __('فروش و صندوق') }}</summary>
-            <ul class="{{ $topDropdownContentClass }}">
+            <summary class="font-bold">
+                <x-menu-icon name="sales" />
+                <span>{{ __('بازرگانی و معاملات') }}</span>
+            </summary>
+            <ul class="{{ $scrollingTopDropdownContentClass }}">
                 @can('invoices.dashboard')
-                    <li><a href="{{ route('invoices.dashboard') }}">{{ __('Invoice Dashboard') }}</a></li>
-                @endcan
-                <li><a href="{{ route('pos.terminal') }}" class="font-bold text-accent">{{ __('صندوق فروشگاهی سریع (POS)') }}</a></li>
-                <li><a href="{{ route('pc-pos.index') }}">{{ __('کارتخوان‌های متصل (PC-POS)') }}</a></li>
-                <li>
-                    <details>
-                        <summary>{{ __('Sales') }}</summary>
-                        <ul>
-                            <li><a href="{{ route('invoices.index', ['invoice_type' => 'sell']) }}">{{ __('Sell List') }}</a></li>
-                            <li><a href="{{ route('invoices.index', ['invoice_type' => 'return_sell']) }}">{{ __('Return Sell List') }}</a></li>
-                            <li><a href="{{ route('invoices.index', ['invoice_type' => 'void']) }}">{{ __('Voided Sell') }}</a></li>
-                        </ul>
-                    </details>
-                </li>
-                <li><a href="{{ route('trades.index') }}" class="flex items-center justify-between"><span>{{ __('تهاتر و تبادل با همکاران') }}</span><span class="badge badge-xs badge-info">جدید</span></a></li>
-                <li><a href="{{ route('price-quotes.index') }}">{{ __('استعلام و سابقه قیمت‌ها') }}</a></li>
-                <li><a href="{{ route('market-intelligence.index', ['tab' => 'guild']) }}" class="flex items-center justify-between"><span>{{ __('قیمت عمده‌فروشان و همکاران') }}</span><span class="badge badge-xs badge-accent">B2B</span></a></li>
-                @can('integrations.connections.index')
                     <li>
-                        <a href="{{ route('integrations.connections.index') }}" class="flex items-center justify-between text-primary font-medium">
-                            <span>{{ __('اتصال به فروشگاه آنلاین (ووکامرس)') }}</span>
-                            <span class="badge badge-xs badge-primary">آنلاین</span>
+                        <a href="{{ route('invoices.dashboard') }}" class="font-bold text-primary">
+                            {{ __('داشبورد فاکتورها و بازرگانی') }}
                         </a>
                     </li>
                 @endcan
-                <li><a href="{{ route('financing.index') }}">{{ __('فروش اقساطی و تسهیلات') }}</a></li>
-                <li><a href="{{ route('templates.index') }}">{{ __('طراح قالب‌های چاپ فاکتور') }}</a></li>
-                @can('invoices.inactive')
-                    <li><a href="{{ route('invoices.inactive') }}">{{ __('Activate Confirmed Invoices') }}</a></li>
-                @endcan
+
+                <li>
+                    <a href="{{ route('pos.terminal') }}" class="font-bold text-accent">
+                        {{ __('صندوق فروشگاهی سریع (POS)') }}
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('pc-pos.index') }}">
+                        {{ __('کارتخوان‌های متصل (PC-POS)') }}
+                    </a>
+                </li>
+
+                {{-- زیربخش عملیات فروش و مشتریان --}}
+                <li>
+                    <details open>
+                        <summary class="font-semibold text-base-content/85">{{ __('عملیات فروش و مشتریان') }}</summary>
+                        <ul>
+                            @can('invoices.index')
+                                <li><a href="{{ route('invoices.index', ['invoice_type' => 'sell']) }}">{{ __('فاکتورهای فروش') }}</a></li>
+                                <li><a href="{{ route('invoices.index', ['invoice_type' => 'return_sell']) }}">{{ __('برگشت از فروش') }}</a></li>
+                                <li><a href="{{ route('invoices.index', ['invoice_type' => 'void']) }}">{{ __('فاکتورهای ابطال شده') }}</a></li>
+                            @endcan
+                            <li>
+                                <a href="{{ route('trades.index') }}" class="flex items-center justify-between">
+                                    <span>{{ __('تهاتر و تبادل با همکاران') }}</span>
+                                    <span class="badge badge-xs badge-info">جدید</span>
+                                </a>
+                            </li>
+                            <li><a href="{{ route('financing.index') }}">{{ __('فروش اقساطی و تسهیلات') }}</a></li>
+                            @can('integrations.connections.index')
+                                <li>
+                                    <a href="{{ route('integrations.connections.index') }}" class="flex items-center justify-between text-primary font-medium">
+                                        <span>{{ __('اتصال به فروشگاه آنلاین (ووکامرس)') }}</span>
+                                        <span class="badge badge-xs badge-primary">آنلاین</span>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('invoices.inactive')
+                                <li><a href="{{ route('invoices.inactive') }}">{{ __('فعالسازی فاکتورهای غیرفعال') }}</a></li>
+                            @endcan
+                        </ul>
+                    </details>
+                </li>
+
+                {{-- زیربخش عملیات خرید و تدارکات --}}
+                @canany(['invoices.index', 'ancillary-costs.index'])
+                    <li>
+                        <details>
+                            <summary class="font-semibold text-base-content/85">{{ __('عملیات خرید و تدارکات') }}</summary>
+                            <ul>
+                                <li><a href="{{ route('invoices.index', ['invoice_type' => 'buy']) }}">{{ __('فاکتورهای خرید کالا') }}</a></li>
+                                <li><a href="{{ route('invoices.index', ['invoice_type' => 'buy', 'service_buy' => '1']) }}">{{ __('خرید خدمات') }}</a></li>
+                                <li><a href="{{ route('invoices.index', ['invoice_type' => 'return_buy']) }}">{{ __('برگشت از خرید') }}</a></li>
+                                <li><a href="{{ route('invoices.index', ['invoice_type' => 'return_buy', 'service_buy' => '1']) }}">{{ __('برگشت خرید خدمات') }}</a></li>
+                                @can('ancillary-costs.index')
+                                    <li><a href="{{ route('ancillary-costs.index') }}">{{ __('هزینه‌ها و خدمات جانبی خرید (سربار)') }}</a></li>
+                                @endcan
+                                <li>
+                                    <a href="{{ route('ai-invoices.index') }}" class="text-primary font-medium flex items-center gap-1.5">
+                                        <x-menu-icon name="ai" />
+                                        <span>{{ __('ورود فاکتور با هوش مصنوعی (OCR)') }}</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </details>
+                    </li>
+                @endcanany
             </ul>
         </details>
     </li>
 @endcanany
 
-{{-- ۴. خرید، تدارکات و هزینه‌ها (Procurement & Purchases) --}}
-@canany(['invoices.index', 'ancillary-costs.index'])
-    <li>
-        <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary><x-menu-icon name="buy" />{{ __('خرید و تدارکات') }}</summary>
-            <ul class="{{ $topDropdownContentClass }}">
-                <li><a href="{{ route('invoices.index', ['invoice_type' => 'buy']) }}">{{ __('Buy List') }}</a></li>
-                <li><a href="{{ route('invoices.index', ['invoice_type' => 'buy', 'service_buy' => '1']) }}">{{ __('Buy Service') }}</a></li>
-                <li><a href="{{ route('invoices.index', ['invoice_type' => 'return_buy']) }}">{{ __('Return Buy List') }}</a></li>
-                <li><a href="{{ route('invoices.index', ['invoice_type' => 'return_buy', 'service_buy' => '1']) }}">{{ __('Service Buy Return') }}</a></li>
-                @can('ancillary-costs.index')
-                    <li><a href="{{ route('ancillary-costs.index') }}">{{ __('Ancillary Cost List') }}</a></li>
-                @endcan
-                <li><a href="{{ route('ai-invoices.index') }}" class="text-primary font-medium flex items-center gap-1.5"><x-menu-icon name="ai" />{{ __('ورود فاکتور با هوش مصنوعی (OCR)') }}</a></li>
-            </ul>
-        </details>
-    </li>
-@endcanany
-
-{{-- ۵. خزانه‌داری، دریافت و پرداخت (Treasury & Cash Management) --}}
+{{-- ۴. خزانه‌داری و نقدینگی (Treasury & Cash Management) --}}
 @canany(['cheques.index', 'bank-accounts.index', 'banks.index', 'chequebooks.index', 'payment-terms.index', 'quick-payment.create', 'ageing.receivables', 'ageing.payables'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
@@ -158,16 +169,16 @@
                     <li><a href="{{ route('cheques.report') }}">{{ __('گزارش تحلیلی و آماری چک‌ها') }}</a></li>
                 @endcan
                 @can('chequebooks.index')
-                    <li><a href="{{ route('chequebooks.index') }}">{{ __('Chequebooks') }}</a></li>
+                    <li><a href="{{ route('chequebooks.index') }}">{{ __('دسته‌چک‌ها') }}</a></li>
                 @endcan
                 @can('bank-accounts.index')
-                    <li><a href="{{ route('bank-accounts.index') }}">{{ __('Bank Accounts') }}</a></li>
+                    <li><a href="{{ route('bank-accounts.index') }}">{{ __('حساب‌های بانکی') }}</a></li>
                 @endcan
                 @can('banks.index')
-                    <li><a href="{{ route('banks.index') }}">{{ __('Banks') }}</a></li>
+                    <li><a href="{{ route('banks.index') }}">{{ __('بانک‌ها') }}</a></li>
                 @endcan
                 @can('payment-terms.index')
-                    <li><a href="{{ route('payment-terms.index') }}">{{ __('Payment terms') }}</a></li>
+                    <li><a href="{{ route('payment-terms.index') }}">{{ __('شرایط پرداخت و تسویه') }}</a></li>
                 @endcan
                 @canany(['ageing.receivables', 'ageing.payables'])
                     <li>
@@ -175,10 +186,61 @@
                             <summary>{{ __('سررسید مطالبات و بدهی‌ها') }}</summary>
                             <ul>
                                 @can('ageing.receivables')
-                                    <li><a href="{{ route('ageing.receivables') }}">{{ __('Accounts Receivable Ageing') }}</a></li>
+                                    <li><a href="{{ route('ageing.receivables') }}">{{ __('تحلیل سررسید بدهکاران (مشتریان)') }}</a></li>
                                 @endcan
                                 @can('ageing.payables')
-                                    <li><a href="{{ route('ageing.payables') }}">{{ __('Accounts Payable Ageing') }}</a></li>
+                                    <li><a href="{{ route('ageing.payables') }}">{{ __('تحلیل سررسید بستانکاران (تامین‌کنندگان)') }}</a></li>
+                                @endcan
+                            </ul>
+                        </details>
+                    </li>
+                @endcanany
+            </ul>
+        </details>
+    </li>
+@endcanany
+
+{{-- ۵. انبارداری و کالاها (Warehouse & Inventory) --}}
+@canany(['warehouse.dashboard', 'warehouses.index', 'products.index', 'product-groups.index', 'services.index', 'service-groups.index', 'stock-reservations.index', 'production.recipes.index', 'production.orders.index'])
+    <li>
+        <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
+            <summary><x-menu-icon name="warehouse" />{{ __('انبارداری و کالاها') }}</summary>
+            <ul class="{{ $scrollingTopDropdownContentClass }}">
+                @can('warehouse.dashboard')
+                    <li><a href="{{ route('warehouse.dashboard') }}">{{ __('داشبورد انبار') }}</a></li>
+                @endcan
+                @can('products.index')
+                    <li><a href="{{ route('products.index') }}">{{ __('کالاها') }}</a></li>
+                @endcan
+                @can('product-groups.index')
+                    <li><a href="{{ route('product-groups.index') }}">{{ __('گروه‌های کالا') }}</a></li>
+                @endcan
+                @can('services.index')
+                    <li><a href="{{ route('services.index') }}">{{ __('خدمات') }}</a></li>
+                @endcan
+                @can('service-groups.index')
+                    <li><a href="{{ route('service-groups.index') }}">{{ __('گروه‌های خدمت') }}</a></li>
+                @endcan
+                @can('warehouses.index')
+                    <li><a href="{{ route('warehouses.index') }}">{{ __('انبارها') }}</a></li>
+                    <li><a href="{{ route('warehouses.transfer') }}">{{ __('انتقال و جابجایی بین انبارها') }}</a></li>
+                    <li><a href="{{ route('warehouses.transfer-history') }}">{{ __('تاریخچه حواله‌های انتقال') }}</a></li>
+                @endcan
+                @can('stock-reservations.index')
+                    <li><a href="{{ route('stock-reservations.index') }}">{{ __('رزرو کالا و تعهدات سفارش') }}</a></li>
+                @endcan
+                <li><a href="{{ route('inventory-reports.valuation') }}">{{ __('ارزش‌گذاری ریالی انبار') }}</a></li>
+                <li><a href="{{ route('inventory-reports.slow-moving') }}">{{ __('کالاهای راکد و کم‌گردش') }}</a></li>
+                @canany(['production.orders.index', 'production.recipes.index'])
+                    <li>
+                        <details>
+                            <summary>{{ __('تولید و بهای تمام‌شده') }}</summary>
+                            <ul>
+                                @can('production.orders.index')
+                                    <li><a href="{{ route('production.orders.index') }}">{{ __('سفارشات تولید') }}</a></li>
+                                @endcan
+                                @can('production.recipes.index')
+                                    <li><a href="{{ route('production.recipes.index') }}">{{ __('فرمولاسیون و Recipes') }}</a></li>
                                 @endcan
                             </ul>
                         </details>
@@ -196,10 +258,10 @@
             <summary><x-menu-icon name="accounting" />{{ __('حسابداری مالی') }}</summary>
             <ul class="{{ $scrollingTopDropdownContentClass }}">
                 @can('documents.create')
-                    <li><a href="{{ route('documents.create') }}" class="font-bold text-primary">{{ __('Create Document') }}</a></li>
+                    <li><a href="{{ route('documents.create') }}" class="font-bold text-primary">{{ __('ثبت سند حسابداری جدید') }}</a></li>
                 @endcan
                 @can('documents.index')
-                    <li><a href="{{ route('documents.index') }}">{{ __('Document List') }}</a></li>
+                    <li><a href="{{ route('documents.index') }}">{{ __('لیست اسناد حسابداری') }}</a></li>
                 @endcan
                 @can('subjects.index')
                     <li><a href="{{ route('subjects.index') }}">{{ __('کدینگ حساب‌ها (سرفصل‌ها)') }}</a></li>
@@ -210,19 +272,19 @@
                             <summary>{{ __('دفاتر مالی و ترازنامه') }}</summary>
                             <ul>
                                 @can('reports.journal')
-                                    <li><a href="{{ route('reports.journal') }}">{{ __('Journal') }}</a></li>
+                                    <li><a href="{{ route('reports.journal') }}">{{ __('دفتر روزنامه') }}</a></li>
                                 @endcan
                                 @can('reports.ledger')
-                                    <li><a href="{{ route('reports.ledger') }}">{{ __('Ledger') }}</a></li>
+                                    <li><a href="{{ route('reports.ledger') }}">{{ __('دفتر کل') }}</a></li>
                                 @endcan
                                 @can('reports.sub-ledger')
-                                    <li><a href="{{ route('reports.sub-ledger') }}">{{ __('Sub Ledger') }}</a></li>
+                                    <li><a href="{{ route('reports.sub-ledger') }}">{{ __('دفتر معین') }}</a></li>
                                 @endcan
                                 @can('reports.trial-balance')
-                                    <li><a href="{{ route('reports.trial-balance') }}" class="font-bold">{{ __('Trial Balance') }}</a></li>
+                                    <li><a href="{{ route('reports.trial-balance') }}" class="font-bold">{{ __('تراز آزمایشی') }}</a></li>
                                 @endcan
                                 @can('reports.documents')
-                                    <li><a href="{{ route('reports.documents') }}">{{ __('Documents Report') }}</a></li>
+                                    <li><a href="{{ route('reports.documents') }}">{{ __('خلاصه اسناد') }}</a></li>
                                 @endcan
                             </ul>
                         </details>
@@ -232,168 +294,135 @@
                     <li><a href="{{ route('documents.sort-numbers') }}">{{ __('مرتب‌سازی شماره اسناد') }}</a></li>
                 @endcan
                 @can('fixed-assets.index')
-                    <li><a href="{{ route('fixed-assets.index') }}">{{ __('Fixed assets') }}</a></li>
+                    <li><a href="{{ route('fixed-assets.index') }}">{{ __('اموال و دارایی‌های ثابت') }}</a></li>
                 @endcan
                 @can('recurring-invoice-templates.index')
-                    <li><a href="{{ route('recurring-invoice-templates.index') }}">{{ __('Recurring invoices') }}</a></li>
+                    <li><a href="{{ route('recurring-invoice-templates.index') }}">{{ __('الگوهای فاکتور دوره‌ای') }}</a></li>
                 @endcan
                 @can('currencies.index')
-                    <li><a href="{{ route('currencies.index') }}">{{ __('Currencies') }}</a></li>
+                    <li><a href="{{ route('currencies.index') }}">{{ __('ارزها و تسعیر ارز') }}</a></li>
                 @endcan
                 @can('analytic-dimensions.index')
-                    <li><a href="{{ route('analytic-dimensions.index') }}">{{ __('Analytic dimensions') }}</a></li>
+                    <li><a href="{{ route('analytic-dimensions.index') }}">{{ __('ابعاد و مراکز تحلیلی (پروژه‌ها و مراکز هزینه)') }}</a></li>
                 @endcan
             </ul>
         </details>
     </li>
 @endcanany
 
-{{-- ۷. انبارداری و کالاها (Warehouse & Inventory) --}}
-@canany(['warehouse.dashboard', 'warehouses.index', 'products.index', 'product-groups.index', 'services.index', 'service-groups.index', 'stock-reservations.index', 'production.recipes.index', 'production.orders.index'])
-    <li>
-        <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary><x-menu-icon name="warehouse" />{{ __('Warehouse') }}</summary>
-            <ul class="{{ $scrollingTopDropdownContentClass }}">
-                @can('warehouse.dashboard')
-                    <li><a href="{{ route('warehouse.dashboard') }}">{{ __('Warehouse Dashboard') }}</a></li>
-                @endcan
-                @can('warehouses.index')
-                    <li><a href="{{ route('warehouses.index') }}">{{ __('Warehouses') }}</a></li>
-                    <li><a href="{{ route('warehouses.transfer') }}">{{ __('انتقال و جابجایی بین انبارها') }}</a></li>
-                    <li><a href="{{ route('warehouses.transfer-history') }}">{{ __('تاریخچه حواله‌های انتقال') }}</a></li>
-                @endcan
-                @can('products.index')
-                    <li><a href="{{ route('products.index') }}">{{ __('Products') }}</a></li>
-                @endcan
-                @can('product-groups.index')
-                    <li><a href="{{ route('product-groups.index') }}">{{ __('Product Groups') }}</a></li>
-                @endcan
-                @can('services.index')
-                    <li><a href="{{ route('services.index') }}">{{ __('Services') }}</a></li>
-                @endcan
-                @can('service-groups.index')
-                    <li><a href="{{ route('service-groups.index') }}">{{ __('Service Groups') }}</a></li>
-                @endcan
-                @can('stock-reservations.index')
-                    <li><a href="{{ route('stock-reservations.index') }}">{{ __('Stock reservations') }}</a></li>
-                @endcan
-                <li><a href="{{ route('inventory-reports.valuation') }}">{{ __('ارزش‌گذاری ریالی انبار') }}</a></li>
-                <li><a href="{{ route('inventory-reports.slow-moving') }}">{{ __('کالاهای راکد و کم‌گردش') }}</a></li>
-                @canany(['production.orders.index', 'production.recipes.index'])
-                    <li>
-                        <details>
-                            <summary>{{ __('Production & cost') }}</summary>
-                            <ul>
-                                @can('production.orders.index')
-                                    <li><a href="{{ route('production.orders.index') }}">{{ __('سفارشات تولید') }}</a></li>
-                                @endcan
-                                @can('production.recipes.index')
-                                    <li><a href="{{ route('production.recipes.index') }}">{{ __('فرمولاسیون و Recipes') }}</a></li>
-                                @endcan
-                            </ul>
-                        </details>
-                    </li>
-                @endcanany
-            </ul>
-        </details>
-    </li>
-@endcanany
-
-{{-- ۸. سامانه مودیان و مالیات (Tax & Moadian Center) --}}
+{{-- ۷. سامانه مودیان و مالیات (Tax & Moadian Center) --}}
 @canany(['tax-center.index', 'tax-readiness.index', 'seasonal-tax.index', 'invoices.moadian-histories.index', 'invoices.moadian-queue.index', 'tax-alerts.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="tax" />{{ __('Tax') }}</summary>
             <ul class="{{ $scrollingTopDropdownContentClass }}">
                 @can('tax-center.index')
-                    <li><a href="{{ route('tax-center.index') }}" class="font-bold text-primary">{{ __('Tax Center') }}</a></li>
+                    <li><a href="{{ route('tax-center.index') }}" class="font-bold text-primary">{{ __('پیشخوان و داشبورد مالیاتی') }}</a></li>
                 @endcan
                 @can('invoices.moadian-queue.index')
-                    <li><a href="{{ route('invoices.moadian-queue.index') }}" class="font-medium flex items-center justify-between"><span>{{ __('Moadian work queue') }}</span><span class="badge badge-warning badge-xs">کارپوشه</span></a></li>
+                    <li><a href="{{ route('invoices.moadian-queue.index') }}" class="font-medium flex items-center justify-between"><span>{{ __('کارپوشه سامانه مودیان') }}</span><span class="badge badge-warning badge-xs">کارپوشه</span></a></li>
                 @endcan
                 @can('invoices.moadian-histories.index')
-                    <li><a href="{{ route('invoices.moadian-histories.index') }}">{{ __('Moadian Histories') }}</a></li>
+                    <li><a href="{{ route('invoices.moadian-histories.index') }}">{{ __('تاریخچه ارسال‌های مودیان') }}</a></li>
                 @endcan
                 @can('tax-center.prepare')
-                    <li><a href="{{ route('tax-center.prepare') }}">{{ __('Prepare my tax filing') }}</a></li>
+                    <li><a href="{{ route('tax-center.prepare') }}">{{ __('آماده‌سازی اظهارنامه مالیاتی') }}</a></li>
                 @endcan
                 @can('tax-center.calendar')
-                    <li><a href="{{ route('tax-center.calendar') }}">{{ __('Filing calendar') }}</a></li>
+                    <li><a href="{{ route('tax-center.calendar') }}">{{ __('تقویم تکالیف مالیاتی') }}</a></li>
                 @endcan
                 @can('tax-readiness.index')
-                    <li><a href="{{ route('tax-readiness.index') }}">{{ __('Tax Readiness') }}</a></li>
+                    <li><a href="{{ route('tax-readiness.index') }}">{{ __('آمادگی مالیاتی و سلامت پرونده') }}</a></li>
                 @endcan
                 @can('seasonal-tax.index')
-                    <li><a href="{{ route('seasonal-tax.index') }}">{{ __('Seasonal Tax Report') }}</a></li>
+                    <li><a href="{{ route('seasonal-tax.index') }}">{{ __('گزارش فصلی ماده ۱۶۹') }}</a></li>
                 @endcan
                 <li><a href="{{ route('tax-center.audit-pack') }}">{{ __('دانلود بسته ممیزی مالیاتی') }}</a></li>
                 @can('tax-alerts.index')
-                    <li><a href="{{ route('tax-alerts.index') }}">{{ __('Tax alerts') }}</a></li>
+                    <li><a href="{{ route('tax-alerts.index') }}">{{ __('هشدارهای ریسک ممیزی مالیاتی') }}</a></li>
                 @endcan
             </ul>
         </details>
     </li>
 @endcanany
 
-{{-- ۹. طرف‌حساب‌ها و ارتباط با مشتریان (CRM & Customers) --}}
+{{-- ۸. طرف‌حساب‌ها و ارتباط با مشتریان (CRM & Customers) --}}
 @canany(['crm.dashboard', 'customers.index', 'customers.create', 'customer-groups.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
             <summary><x-menu-icon name="crm" />{{ __('مشتریان و CRM') }}</summary>
             <ul class="{{ $topDropdownContentClass }}">
                 @can('crm.dashboard')
-                    <li><a href="{{ route('crm.dashboard') }}">{{ __('CRM Dashboard') }}</a></li>
+                    <li><a href="{{ route('crm.dashboard') }}">{{ __('داشبورد CRM') }}</a></li>
                 @endcan
                 @can('customers.create')
-                    <li><a href="{{ route('customers.create') }}" class="font-medium text-primary">{{ __('Add Customer') }}</a></li>
+                    <li><a href="{{ route('customers.create') }}" class="font-medium text-primary">{{ __('تعریف مشتری جدید') }}</a></li>
                 @endcan
                 @can('customers.index')
-                    <li><a href="{{ route('customers.index') }}">{{ __('Customers') }}</a></li>
+                    <li><a href="{{ route('customers.index') }}">{{ __('لیست مشتریان') }}</a></li>
                 @endcan
                 @can('customer-groups.index')
-                    <li><a href="{{ route('customer-groups.index') }}">{{ __('Customer Groups') }}</a></li>
+                    <li><a href="{{ route('customer-groups.index') }}">{{ __('گروه‌بندی مشتریان') }}</a></li>
                 @endcan
-                <li><a href="{{ route('loyalty.index') }}">{{ __('باشگاه مشتریان و کیف‌پول') }}</a></li>
+                <li><a href="{{ route('loyalty.index') }}">{{ __('باشگاه مشتریان و کیف‌پول اعتباری') }}</a></li>
                 <li><a href="{{ route('telephony.index') }}">{{ __('کالرآیدی و تلفن سانترال') }}</a></li>
-                <li><a href="{{ route('inquiries.index') }}">{{ __('استعلام شاهکار، شبا و کارت') }}</a></li>
+                <li><a href="{{ route('inquiries.index') }}">{{ __('استعلام آنلاین شاهکار، شبا و کارت') }}</a></li>
                 <li><a href="{{ route('sms.index') }}">{{ __('ارسال پیامک هوشمند') }}</a></li>
             </ul>
         </details>
     </li>
 @endcanany
 
-{{-- ۱۰. منابع انسانی و حقوق و دستمزد (HR & Payroll) --}}
+{{-- ۹. منابع انسانی و پرسنل (HR, Payroll & Employee Portal) [ادغام پرتال پرسنلی] --}}
 @canany(['salary.payrolls.dashboard', 'salary.payrolls.index', 'hr.employees.index', 'hr.personnel-requests.index',
-    'attendance.attendance-logs.index', 'attendance.monthly-attendances.index', 'hr.org-charts.index'])
+    'attendance.attendance-logs.index', 'attendance.monthly-attendances.index', 'hr.org-charts.index', 'employee-portal.dashboard'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary><x-menu-icon name="hr" />{{ __('HR') }}</summary>
+            <summary><x-menu-icon name="hr" />{{ __('منابع انسانی و پرسنل') }}</summary>
             <ul class="{{ $scrollingTopDropdownContentClass }}">
                 @can('salary.payrolls.dashboard')
-                    <li><a href="{{ route('salary.payrolls.dashboard') }}">{{ __('Payroll Dashboard') }}</a></li>
+                    <li><a href="{{ route('salary.payrolls.dashboard') }}">{{ __('داشبورد حقوق و دستمزد') }}</a></li>
                 @endcan
                 @can('hr.employees.index')
-                    <li><a href="{{ route('hr.employees.index') }}" class="font-bold">{{ __('Employees') }}</a></li>
+                    <li><a href="{{ route('hr.employees.index') }}" class="font-bold">{{ __('پرسنل و کارمندان') }}</a></li>
                 @endcan
                 @can('salary.payrolls.index')
-                    <li><a href="{{ route('salary.payrolls.index') }}">{{ __('Payrolls') }}</a></li>
+                    <li><a href="{{ route('salary.payrolls.index') }}">{{ __('فیش‌ها و لیست حقوق') }}</a></li>
                 @endcan
                 @can('hr.personnel-requests.index')
-                    <li><a href="{{ route('hr.personnel-requests.index') }}">{{ __('Personnel Requests') }}</a></li>
+                    <li><a href="{{ route('hr.personnel-requests.index') }}">{{ __('درخواست‌های پرسنلی (مرخصی و مساعده)') }}</a></li>
                 @endcan
+
+                {{-- کارتابل پرسنلی من (ادغام شده از پرتال من قدیم) --}}
+                @can('employee-portal.dashboard')
+                    <li>
+                        <details>
+                            <summary class="font-semibold text-primary">{{ __('کارتابل پرسنلی من') }}</summary>
+                            <ul>
+                                <li><a href="{{ route('employee-portal.dashboard') }}">{{ __('داشبورد من') }}</a></li>
+                                <li><a href="{{ route('employee-portal.attendance-logs') }}">{{ __('ترددهای من') }}</a></li>
+                                <li><a href="{{ route('employee-portal.monthly-attendances') }}">{{ __('کارکرد ماهانه من') }}</a></li>
+                                <li><a href="{{ route('employee-portal.payrolls') }}">{{ __('فیش‌های حقوقی من') }}</a></li>
+                                <li><a href="{{ route('employee-portal.personnel-requests.index') }}">{{ __('درخواست‌های مرخصی و مساعده من') }}</a></li>
+                                <li><a href="{{ route('employee-portal.employee.show') }}">{{ __('اطلاعات فردی و استخدامی من') }}</a></li>
+                            </ul>
+                        </details>
+                    </li>
+                @endcan
+
                 <li>
                     <details>
                         <summary>{{ __('حضور، غیاب و شیفت‌ها') }}</summary>
                         <ul>
                             @can('attendance.attendance-logs.index')
-                                <li><a href="{{ route('attendance.attendance-logs.index') }}">{{ __('Attendance Logs') }}</a></li>
+                                <li><a href="{{ route('attendance.attendance-logs.index') }}">{{ __('ترددهای ثبت شده') }}</a></li>
                             @endcan
                             @can('attendance.monthly-attendances.index')
-                                <li><a href="{{ route('attendance.monthly-attendances.index') }}">{{ __('Monthly Attendances') }}</a></li>
+                                <li><a href="{{ route('attendance.monthly-attendances.index') }}">{{ __('کارکرد ماهانه پرسنل') }}</a></li>
                             @endcan
                             <li><a href="{{ route('attendance.devices.index') }}">{{ __('دستگاه‌های ثبت ساعت (سخت‌افزار)') }}</a></li>
                             @can('attendance.work-shifts.index')
-                                <li><a href="{{ route('attendance.work-shifts.index') }}">{{ __('Work Shifts') }}</a></li>
+                                <li><a href="{{ route('attendance.work-shifts.index') }}">{{ __('شیفت‌های کاری') }}</a></li>
                             @endcan
                         </ul>
                     </details>
@@ -403,22 +432,22 @@
                         <summary>{{ __('احکام و پایه‌های حقوقی') }}</summary>
                         <ul>
                             @can('salary.salary-decrees.index')
-                                <li><a href="{{ route('salary.salary-decrees.index') }}">{{ __('Salary Decrees') }}</a></li>
+                                <li><a href="{{ route('salary.salary-decrees.index') }}">{{ __('احکام کارگزینی و حقوقی') }}</a></li>
                             @endcan
                             @can('salary.payroll-elements.index')
-                                <li><a href="{{ route('salary.payroll-elements.index') }}">{{ __('Payroll Elements') }}</a></li>
+                                <li><a href="{{ route('salary.payroll-elements.index') }}">{{ __('عوامل و اقلام حقوقی') }}</a></li>
                             @endcan
                             @can('salary.tax-slabs.index')
-                                <li><a href="{{ route('salary.tax-slabs.index') }}">{{ __('Yearly Tax Slabs') }}</a></li>
+                                <li><a href="{{ route('salary.tax-slabs.index') }}">{{ __('پله‌های مالیات سالانه') }}</a></li>
                             @endcan
                             @can('salary.work-sites.index')
-                                <li><a href="{{ route('salary.work-sites.index') }}">{{ __('Work Sites') }}</a></li>
+                                <li><a href="{{ route('salary.work-sites.index') }}">{{ __('کارگاه‌ها و شعب بیمه') }}</a></li>
                             @endcan
                             @can('salary.work-site-contracts.index')
-                                <li><a href="{{ route('salary.work-site-contracts.index') }}">{{ __('Work Site Contracts') }}</a></li>
+                                <li><a href="{{ route('salary.work-site-contracts.index') }}">{{ __('پیمان‌ها و قراردادهای کارگاهی') }}</a></li>
                             @endcan
                             @can('salary.public-holidays.index')
-                                <li><a href="{{ route('salary.public-holidays.index') }}">{{ __('Public Holidays') }}</a></li>
+                                <li><a href="{{ route('salary.public-holidays.index') }}">{{ __('تقویم تعطیلات رسمی') }}</a></li>
                             @endcan
                         </ul>
                     </details>
@@ -429,10 +458,10 @@
                             <summary>{{ __('ساختار سازمانی') }}</summary>
                             <ul>
                                 @can('hr.org-charts.index')
-                                    <li><a href="{{ route('hr.org-charts.index') }}">{{ __('Organization Chart') }}</a></li>
+                                    <li><a href="{{ route('hr.org-charts.index') }}">{{ __('چارت سازمانی تصویری') }}</a></li>
                                 @endcan
                                 @can('hr.organization-units.index')
-                                    <li><a href="{{ route('hr.organization-units.index') }}">{{ __('Organization Units') }}</a></li>
+                                    <li><a href="{{ route('hr.organization-units.index') }}">{{ __('واحدهای سازمانی') }}</a></li>
                                 @endcan
                             </ul>
                         </details>
@@ -443,80 +472,69 @@
     </li>
 @endcanany
 
-{{-- ۱۱. پخش مویرگی (Capillary distribution) --}}
+{{-- ۱۰. پخش مویرگی و ویزیتوری (Capillary distribution) --}}
 @canany(['distribution.index', 'distribution.routes.index', 'distribution.visitors.index', 'distribution.plans.index', 'distribution.promotions.index', 'distribution.settlements.index', 'field-operations-analytics.index'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary><x-menu-icon name="field" />{{ __('Capillary distribution') }}</summary>
+            <summary><x-menu-icon name="field" />{{ __('پخش مویرگی و ویزیتوری') }}</summary>
             <ul class="{{ $topDropdownContentClass }}">
                 @can('distribution.index')
-                    <li><a href="{{ route('distribution.index') }}">{{ __('Overview') }}</a></li>
+                    <li><a href="{{ route('distribution.index') }}">{{ __('داشبورد و شاخص‌های پخش') }}</a></li>
                 @endcan
                 @can('distribution.routes.index')
-                    <li><a href="{{ route('distribution.routes.index') }}">{{ __('Distribution routes') }}</a></li>
+                    <li><a href="{{ route('distribution.routes.index') }}">{{ __('مسیرها و مناطق توزیع') }}</a></li>
                 @endcan
                 @can('distribution.visitors.index')
-                    <li><a href="{{ route('distribution.visitors.index') }}">{{ __('Visitors') }}</a></li>
+                    <li><a href="{{ route('distribution.visitors.index') }}">{{ __('ویزیتورها و بازاریابان') }}</a></li>
                 @endcan
                 @can('distribution.plans.index')
-                    <li><a href="{{ route('distribution.plans.index') }}">{{ __('Visit plans') }}</a></li>
+                    <li><a href="{{ route('distribution.plans.index') }}">{{ __('برنامه‌ریزی تور ویزیت') }}</a></li>
                 @endcan
                 @can('distribution.promotions.index')
-                    <li><a href="{{ route('distribution.promotions.index') }}">{{ __('Promotions') }}</a></li>
+                    <li><a href="{{ route('distribution.promotions.index') }}">{{ __('آیین‌نامه‌ها و تخفیفات وزنی/تعدادی') }}</a></li>
                 @endcan
                 @can('distribution.settlements.index')
-                    <li><a href="{{ route('distribution.settlements.index') }}">{{ __('Daily settlements') }}</a></li>
+                    <li><a href="{{ route('distribution.settlements.index') }}">{{ __('تسویه روزانه ماموریت‌های پخش') }}</a></li>
                 @endcan
                 @can('field-operations-analytics.index')
-                    <li><a href="{{ route('field-operations-analytics.index') }}">{{ __('Field Operations Analytics') }}</a></li>
+                    <li><a href="{{ route('field-operations-analytics.index') }}">{{ __('تحلیل پیشرفته عملیات میدانی') }}</a></li>
                 @endcan
             </ul>
         </details>
     </li>
 @endcanany
 
-{{-- ۱۲. گزارش‌ها و هوش تجاری (BI & Reports) --}}
-@canany(['reports.company-overview', 'reports.cost-income', 'dashboards.cash-flow', 'dashboards.cheque-risk', 'dashboards.profitability-by-dimension', 'inventory-reports.valuation', 'inventory-reports.slow-moving', 'budgets.index'])
+{{-- ۱۱. گزارش‌ها و هوش تجاری (BI & Reports) --}}
+@canany(['reports.company-overview', 'reports.cost-income', 'dashboards.cash-flow', 'dashboards.cheque-risk', 'dashboards.profitability-by-dimension', 'inventory-reports.valuation', 'inventory-reports.slow-moving', 'budgets.index', 'reports.plain'])
     <li>
         <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
-            <summary><x-menu-icon name="reports" />{{ __('Reports') }}</summary>
+            <summary><x-menu-icon name="reports" />{{ __('گزارش‌ها و هوش تجاری') }}</summary>
             <ul class="{{ $scrollingTopDropdownContentClass }}">
+                <li><a href="{{ route('reports.plain') }}" class="font-bold text-primary">{{ __('وضعیت کسب‌وکار به زبان ساده (مدیریتی)') }}</a></li>
                 @can('reports.company-overview')
-                    <li><a href="{{ route('reports.company-overview') }}" class="font-bold">{{ __('Company overview') }}</a></li>
+                    <li><a href="{{ route('reports.company-overview') }}" class="font-bold">{{ __('گزارش جامع وضعیت شرکت') }}</a></li>
                 @endcan
-                <li><a href="{{ route('reports.plain') }}" class="font-bold text-primary">{{ __('وضعیت کسب‌وکار به زبان ساده') }}</a></li>
                 @can('reports.cost-income')
-                    <li><a href="{{ route('reports.cost-income') }}">{{ __('Cost and Income Dashboard') }}</a></li>
+                    <li><a href="{{ route('reports.cost-income') }}">{{ __('داشبورد درآمد و هزینه‌ها') }}</a></li>
                 @endcan
                 @can('dashboards.cash-flow')
-                    <li><a href="{{ route('dashboards.cash-flow') }}">{{ __('Cash flow') }}</a></li>
+                    <li><a href="{{ route('dashboards.cash-flow') }}">{{ __('جریان وجوه نقد (نقدینگی)') }}</a></li>
                 @endcan
                 @can('dashboards.cheque-risk')
-                    <li><a href="{{ route('dashboards.cheque-risk') }}">{{ __('Cheque risk') }}</a></li>
+                    <li><a href="{{ route('dashboards.cheque-risk') }}">{{ __('سنجش ریسک چک‌های دریافتی') }}</a></li>
                 @endcan
                 @can('dashboards.profitability-by-dimension')
-                    <li><a href="{{ route('dashboards.profitability-by-dimension') }}">{{ __('Profitability by dimension') }}</a></li>
-                @endcan
-                @can('inventory-reports.valuation')
-                    <li><a href="{{ route('inventory-reports.valuation') }}">{{ __('Inventory valuation') }}</a></li>
-                @endcan
-                @can('inventory-reports.slow-moving')
-                    <li><a href="{{ route('inventory-reports.slow-moving') }}">{{ __('Slow-moving stock') }}</a></li>
+                    <li><a href="{{ route('dashboards.profitability-by-dimension') }}">{{ __('سودآوری به تفکیک مراکز هزینه و پروژه‌ها') }}</a></li>
                 @endcan
                 @can('budgets.index')
-                    <li><a href="{{ route('budgets.index') }}">{{ __('Monthly Income and Expense Workbench') }}</a></li>
+                    <li><a href="{{ route('budgets.index') }}">{{ __('بودجه‌بندی ماهانه و انحراف بودجه') }}</a></li>
                 @endcan
             </ul>
         </details>
     </li>
 @endcanany
 
-{{-- ۱۳. پروفایل اصناف و بازار --}}
-@can('industry-profiles.index')
-    <li><a href="{{ route('industry-profiles.index') }}"><x-menu-icon name="industry" />{{ __('Industry Profiles') }}</a></li>
-@endcan
-
-{{-- ۱۴. مدیریت سیستم، قالب‌ها و یکپارچه‌سازی (System & Settings) --}}
+{{-- ۱۲. مدیریت سیستم، قالب‌ها و یکپارچه‌سازی (System & Settings) --}}
 <li>
     <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
         <summary><x-menu-icon name="settings" />{{ __('مدیریت و تنظیمات') }}</summary>
@@ -532,6 +550,9 @@
                 <li><a href="{{ route('roles.index') }}">{{ __('نقش‌ها و ماتریس دسترسی‌ها') }}</a></li>
             @endcan
             <li><a href="{{ route('account.edit') }}">{{ __('پروفایل و حساب کاربری من') }}</a></li>
+            @can('industry-profiles.index')
+                <li><a href="{{ route('industry-profiles.index') }}" class="flex items-center justify-between"><span>{{ __('تنظیمات اختصاصی صنف (طلا، موبایل، یدکی و...)') }}</span><span class="badge badge-accent badge-xs">اصناف</span></a></li>
+            @endcan
             <li><a href="{{ route('templates.index') }}">{{ __('طراح قالب‌های چاپ فاکتور') }}</a></li>
             <li><a href="{{ route('migration.index') }}" class="flex items-center justify-between text-info font-medium"><span>{{ __('مهاجرت از رقبا (هلو، سپیدار و...)') }}</span><span class="badge badge-info badge-xs">هوشمند</span></a></li>
             @can('configs.index')
@@ -544,14 +565,11 @@
             @canany(['access-super-admin-panel', 'activity-logs.index'])
                 <li><a href="{{ route('management.activity-logs.index') }}">{{ __('لاگ فعالیت‌ها و ردپای حسابرسی') }}</a></li>
             @endcanany
-            @can('integrations.connections.index')
-                <li><a href="{{ route('integrations.connections.index') }}" class="flex items-center justify-between font-medium"><span>{{ __('اتصال به فروشگاه آنلاین (ووکامرس)') }}</span><span class="badge badge-xs badge-accent">Webhooks</span></a></li>
-            @endcan
             @can('integrations.queue.index')
                 <li><a href="{{ route('integrations.queue.index') }}">{{ __('صف بازبینی سفارشات آنلاین') }}</a></li>
             @endcan
             @can('workflow-governance.edit')
-                <li><a href="{{ route('workflow-governance.edit') }}">{{ __('Workflow Governance') }}</a></li>
+                <li><a href="{{ route('workflow-governance.edit') }}">{{ __('حاکمیت فرآیندها (Workflow Governance)') }}</a></li>
             @endcan
             @can('backups.create')
                 <li>
