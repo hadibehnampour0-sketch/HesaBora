@@ -13,6 +13,16 @@
     </li>
 @endcan
 
+<li>
+    <a href="{{ route('market-intelligence.index') }}" class="flex items-center justify-between text-accent font-medium">
+        <div class="flex items-center gap-1.5">
+            <x-menu-icon name="currencies" />
+            <span>{{ __('قیمت آنلاین و تابلوی بازار') }}</span>
+        </div>
+        <span class="badge badge-accent badge-xs py-0.5 px-1 text-[9px]">LIVE</span>
+    </a>
+</li>
+
 @canany(['invoices.create', 'invoices.index'])
     <li>
         <details open>
@@ -24,6 +34,7 @@
                     <li><a href="{{ route('pc-pos.index') }}">{{ __('کارتخوان‌های متصل (PC-POS)') }}</a></li>
                     <li><a href="{{ route('trades.index') }}">{{ __('تهاتر و تبادل با همکاران') }}</a></li>
                     <li><a href="{{ route('price-quotes.index') }}">{{ __('استعلام و سابقه قیمت‌ها') }}</a></li>
+                    <li><a href="{{ route('market-intelligence.index', ['tab' => 'guild']) }}" class="flex items-center justify-between"><span>{{ __('قیمت عمده‌فروشان (B2B)') }}</span><span class="badge badge-xs badge-accent">عمده</span></a></li>
                 @endcan
                 @can('invoices.index')
                     <li><a href="{{ route('invoices.index', ['invoice_type' => 'sell']) }}">{{ __('My sales') }}</a></li>

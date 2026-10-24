@@ -43,8 +43,9 @@
                 </a>
             </li>
             <li>
-                <a href="{{ route('market-intelligence.index', ['tab' => 'guild']) }}">
-                    {{ __('نرخ‌های عمده‌فروشی شبکه هم‌صنفان') }}
+                <a href="{{ route('market-intelligence.index', ['tab' => 'guild']) }}" class="font-bold flex items-center justify-between">
+                    <span>{{ __('قیمت عمده‌فروشان و هم‌صنفان (B2B)') }}</span>
+                    <span class="badge badge-xs badge-accent">عمده‌فروشی</span>
                 </a>
             </li>
             <li>
@@ -101,6 +102,7 @@
                 </li>
                 <li><a href="{{ route('trades.index') }}" class="flex items-center justify-between"><span>{{ __('تهاتر و تبادل با همکاران') }}</span><span class="badge badge-xs badge-info">جدید</span></a></li>
                 <li><a href="{{ route('price-quotes.index') }}">{{ __('استعلام و سابقه قیمت‌ها') }}</a></li>
+                <li><a href="{{ route('market-intelligence.index', ['tab' => 'guild']) }}" class="flex items-center justify-between"><span>{{ __('قیمت عمده‌فروشان و همکاران') }}</span><span class="badge badge-xs badge-accent">B2B</span></a></li>
                 <li><a href="{{ route('financing.index') }}">{{ __('فروش اقساطی و تسهیلات') }}</a></li>
                 <li><a href="{{ route('templates.index') }}">{{ __('طراح قالب‌های چاپ فاکتور') }}</a></li>
                 @can('invoices.inactive')
