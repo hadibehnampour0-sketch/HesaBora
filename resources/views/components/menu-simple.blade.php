@@ -35,6 +35,9 @@
                     <li><a href="{{ route('trades.index') }}">{{ __('تهاتر و تبادل با همکاران') }}</a></li>
                     <li><a href="{{ route('price-quotes.index') }}">{{ __('استعلام و سابقه قیمت‌ها') }}</a></li>
                     <li><a href="{{ route('market-intelligence.index', ['tab' => 'guild']) }}" class="flex items-center justify-between"><span>{{ __('قیمت عمده‌فروشان (B2B)') }}</span><span class="badge badge-xs badge-accent">عمده</span></a></li>
+                    @can('integrations.connections.index')
+                        <li><a href="{{ route('integrations.connections.index') }}">{{ __('اتصال به فروشگاه آنلاین (ووکامرس)') }}</a></li>
+                    @endcan
                 @endcan
                 @can('invoices.index')
                     <li><a href="{{ route('invoices.index', ['invoice_type' => 'sell']) }}">{{ __('My sales') }}</a></li>

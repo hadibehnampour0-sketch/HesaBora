@@ -103,6 +103,14 @@
                 <li><a href="{{ route('trades.index') }}" class="flex items-center justify-between"><span>{{ __('تهاتر و تبادل با همکاران') }}</span><span class="badge badge-xs badge-info">جدید</span></a></li>
                 <li><a href="{{ route('price-quotes.index') }}">{{ __('استعلام و سابقه قیمت‌ها') }}</a></li>
                 <li><a href="{{ route('market-intelligence.index', ['tab' => 'guild']) }}" class="flex items-center justify-between"><span>{{ __('قیمت عمده‌فروشان و همکاران') }}</span><span class="badge badge-xs badge-accent">B2B</span></a></li>
+                @can('integrations.connections.index')
+                    <li>
+                        <a href="{{ route('integrations.connections.index') }}" class="flex items-center justify-between text-primary font-medium">
+                            <span>{{ __('اتصال به فروشگاه آنلاین (ووکامرس)') }}</span>
+                            <span class="badge badge-xs badge-primary">آنلاین</span>
+                        </a>
+                    </li>
+                @endcan
                 <li><a href="{{ route('financing.index') }}">{{ __('فروش اقساطی و تسهیلات') }}</a></li>
                 <li><a href="{{ route('templates.index') }}">{{ __('طراح قالب‌های چاپ فاکتور') }}</a></li>
                 @can('invoices.inactive')
@@ -537,10 +545,10 @@
                 <li><a href="{{ route('management.activity-logs.index') }}">{{ __('لاگ فعالیت‌ها و ردپای حسابرسی') }}</a></li>
             @endcanany
             @can('integrations.connections.index')
-                <li><a href="{{ route('integrations.connections.index') }}">{{ __('اتصال به فروشگاه‌ها و وب‌هوک') }}</a></li>
+                <li><a href="{{ route('integrations.connections.index') }}" class="flex items-center justify-between font-medium"><span>{{ __('اتصال به فروشگاه آنلاین (ووکامرس)') }}</span><span class="badge badge-xs badge-accent">Webhooks</span></a></li>
             @endcan
             @can('integrations.queue.index')
-                <li><a href="{{ route('integrations.queue.index') }}">{{ __('صف بازبینی یکپارچه‌سازی') }}</a></li>
+                <li><a href="{{ route('integrations.queue.index') }}">{{ __('صف بازبینی سفارشات آنلاین') }}</a></li>
             @endcan
             @can('workflow-governance.edit')
                 <li><a href="{{ route('workflow-governance.edit') }}">{{ __('Workflow Governance') }}</a></li>
