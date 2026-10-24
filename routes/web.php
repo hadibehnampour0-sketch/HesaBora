@@ -59,6 +59,8 @@ Route::middleware(['auth', 'ensure-feature-enabled:email_verification'])->group(
     Route::get('/account', [Controllers\AccountController::class, 'edit'])->name('account.edit');
     Route::put('/account', [Controllers\AccountController::class, 'update'])->name('account.update');
     Route::patch('/account/ui-mode', [Controllers\AccountController::class, 'updateUiMode'])->name('account.update-ui-mode');
+    Route::get('/settings/appearance', [Controllers\AppearanceController::class, 'index'])->name('settings.appearance');
+    Route::post('/settings/appearance', [Controllers\AppearanceController::class, 'update'])->name('settings.appearance.update');
 });
 
 Route::middleware(['auth', 'permission:access-super-admin-panel', 'ensure-feature-enabled:email_verification'])->prefix('management')->group(function () {
@@ -570,6 +572,7 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::post('installments/{installment}/payments', [Controllers\SettlementController::class, 'recordPayment'])->name('installments.record-payment');
     });
     Route::group(['prefix' => 'bank-reconciliation', 'as' => 'bank-reconciliation.'], function () {
+        Route::get('/', [Controllers\BankReconciliationController::class, 'landing'])->name('landing');
         Route::get('{bankAccount}', [Controllers\BankReconciliationController::class, 'index'])->name('index');
         Route::post('{bankAccount}/import', [Controllers\BankReconciliationController::class, 'import'])->name('import');
         Route::post('lines/{line}/match', [Controllers\BankReconciliationController::class, 'match'])->name('match');

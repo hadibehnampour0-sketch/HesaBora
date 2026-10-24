@@ -132,3 +132,14 @@
 @can('industry-profiles.index')
     <li><a href="{{ route('industry-profiles.index') }}"><x-menu-icon name="industry" />{{ __('Industry Profiles') }}</a></li>
 @endcan
+
+<li>
+    <details>
+        <summary><x-menu-icon name="settings" />{{ __('تنظیمات و پوسته') }}</summary>
+        <ul>
+            <li><a href="{{ route('settings.appearance') }}" class="font-bold text-primary">{{ __('تنظیمات ظاهری و پوسته') }}</a></li>
+            <li><a href="{{ route('account.edit') }}">{{ __('پروفایل و حساب کاربری') }}</a></li>
+            <li><a href="{{ route('about') }}">{{ __('درباره دخل') }}</a></li>
+        </ul>
+    </details>
+</li>

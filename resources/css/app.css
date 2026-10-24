@@ -82,6 +82,32 @@
   --sidebar-bg: #090e1a;
   --sidebar-border: #1e293b;
 }
+
+/* Specialized FinTech UI Themes: Google Flow, Linear Obsidian, Stripe Glass */
+[data-ui-theme='flow'] {
+  --color-primary: #06b6d4;
+  --color-secondary: #2563eb;
+  --color-accent: #10b981;
+}
+
+[data-ui-theme='linear'] {
+  --color-primary: #6366f1;
+  --color-secondary: #4f46e5;
+  --color-accent: #38bdf8;
+  font-feature-settings: 'tnum' 1, 'cv05' 1;
+}
+
+[data-ui-theme='stripe'] {
+  --color-primary: #8b5cf6;
+  --color-secondary: #ec4899;
+  --color-accent: #06b6d4;
+}
+
+[data-ui-density='compact'] .table :where(th, td) {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+  font-size: 0.75rem !important;
+}
 @import '@majidh1/jalalidatepicker/dist/jalalidatepicker.css' layer(base);
 @import './style.scss' layer(base);
 

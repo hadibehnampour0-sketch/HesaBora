@@ -13,6 +13,18 @@ class BankReconciliationController extends Controller
 {
     public function __construct(private readonly BankReconciliationService $service) {}
 
+    public function landing()
+    {
+        $account = BankAccount::first();
+
+        if (! $account) {
+            return redirect()->route('bank-accounts.index')
+                ->with('warning', __('لطفاً ابتدا حداقل یک حساب بانکی برای مغایرت‌گیری تعریف نمایید.'));
+        }
+
+        return redirect()->route('bank-reconciliation.index', $account);
+    }
+
     public function index(BankAccount $bankAccount)
     {
         $lines = $this->service->unmatchedLines($bankAccount);

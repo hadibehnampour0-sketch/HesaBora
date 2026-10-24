@@ -99,6 +99,8 @@
                     <li><a href="{{ route('quick-payment.create', 'receive') }}">{{ __('دریافت وجه (سریع)') }}</a></li>
                     <li><a href="{{ route('quick-payment.create', 'pay') }}">{{ __('پرداخت وجه (سریع)') }}</a></li>
                 @endcan
+                <li><a href="{{ route('bank-reconciliation.landing') }}" class="font-bold flex items-center justify-between text-info"><span>{{ __('مغایرت‌گیری بانکی هوشمند') }}</span><span class="badge badge-xs badge-info">اتوماتیک</span></a></li>
+                <li><a href="{{ route('cash-banks') }}">{{ __('مانده و گردش نقد و بانک‌ها') }}</a></li>
                 @can('cheques.index')
                     <li><a href="{{ route('cheques.index') }}" class="font-bold">{{ __('مدیریت چک‌ها و صیاد') }}</a></li>
                 @endcan
@@ -204,6 +206,7 @@
                 @endcan
                 @can('warehouses.index')
                     <li><a href="{{ route('warehouses.index') }}">{{ __('Warehouses') }}</a></li>
+                    <li><a href="{{ route('warehouses.transfer') }}">{{ __('انتقال و جابجایی بین انبارها') }}</a></li>
                 @endcan
                 @can('products.index')
                     <li><a href="{{ route('products.index') }}">{{ __('Products') }}</a></li>
@@ -471,17 +474,25 @@
     <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
         <summary><x-menu-icon name="settings" />{{ __('مدیریت و تنظیمات') }}</summary>
         <ul class="{{ $scrollingTopDropdownContentClass }}">
+            <li><a href="{{ route('settings.appearance') }}" class="font-bold text-primary flex items-center justify-between"><span>{{ __('تنظیمات ظاهری و پوسته سیستم') }}</span><span class="badge badge-primary badge-xs">Google Flow</span></a></li>
             @can('companies.index')
                 <li><a href="{{ route('companies.index') }}" class="font-bold">{{ __('شرکت‌ها و سال مالی') }}</a></li>
             @endcan
             @can('users.index')
                 <li><a href="{{ route('users.index') }}">{{ __('کاربران و سطوح دسترسی') }}</a></li>
             @endcan
+            <li><a href="{{ route('account.edit') }}">{{ __('پروفایل و حساب کاربری من') }}</a></li>
             <li><a href="{{ route('templates.index') }}">{{ __('طراح قالب‌های چاپ فاکتور') }}</a></li>
             <li><a href="{{ route('migration.index') }}" class="flex items-center justify-between text-info font-medium"><span>{{ __('مهاجرت از رقبا (هلو، سپیدار و...)') }}</span><span class="badge badge-info badge-xs">هوشمند</span></a></li>
             @can('configs.index')
                 <li><a href="{{ route('license.index') }}" class="flex items-center justify-between"><span>{{ __('مدیریت لایسنس و اشتراک') }}</span><span class="badge badge-primary badge-xs">Pro</span></a></li>
             @endcan
+            <li><a href="{{ route('api-tokens.index') }}">{{ __('کلیدها و توکن‌های API') }}</a></li>
+            @canany(['access-super-admin-panel', 'activity-logs.index'])
+                <li><a href="{{ route('management.activity-logs.index') }}">{{ __('لاگ فعالیت‌ها و ردپای حسابرسی') }}</a></li>
+            @endcanany
+            <li><a href="{{ route('sync-conflicts.index') }}">{{ __('مدیریت شعب و تعارضات آفلاین') }}</a></li>
+            <li><a href="{{ route('pricing') }}" class="flex items-center justify-between"><span>{{ __('تعرفه‌ها و بسته امکانات') }}</span><span class="badge badge-xs badge-outline">پلن‌ها</span></a></li>
             @can('integrations.connections.index')
                 <li><a href="{{ route('integrations.connections.index') }}">{{ __('اتصال به فروشگاه‌ها و وب‌هوک') }}</a></li>
             @endcan

@@ -12,8 +12,11 @@
     <script>
         try {
             document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') === 'dark' ? 'dark' : 'light');
+            var savedUiTheme = localStorage.getItem('ui_theme') || '{{ session('dakhl_ui_theme', request()->cookie('dakhl_ui_theme', 'flow')) }}';
+            document.documentElement.setAttribute('data-ui-theme', savedUiTheme);
         } catch (error) {
             document.documentElement.setAttribute('data-theme', 'light');
+            document.documentElement.setAttribute('data-ui-theme', 'flow');
         }
     </script>
     <title>{{ $title }}</title>

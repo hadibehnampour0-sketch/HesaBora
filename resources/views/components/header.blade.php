@@ -20,6 +20,50 @@
             <kbd class="px-1.5 py-0.5 rounded bg-base-300 text-base-content/80 text-[10px] font-mono font-bold">Ctrl + K</kbd>
         </button>
 
+        <!-- Fast Theme Switcher Dropdown -->
+        <div class="dropdown dropdown-end" x-data="{
+            current: localStorage.getItem('ui_theme') || 'flow',
+            setTheme(t) {
+                this.current = t;
+                localStorage.setItem('ui_theme', t);
+                document.documentElement.setAttribute('data-ui-theme', t);
+            }
+        }">
+            <button tabindex="0" class="btn btn-ghost btn-sm rounded-xl px-2.5 flex items-center gap-1.5 text-xs text-base-content/70 hover:text-base-content" title="{{ __('تغییر پوسته نرم‌افزار') }}">
+                <span class="text-sm">🎨</span>
+                <span class="hidden sm:inline font-medium" x-text="current === 'flow' ? 'Google Flow' : (current === 'linear' ? 'Linear' : 'Stripe')"></span>
+                <svg class="w-3 h-3 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+            </button>
+            <ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-2xl bg-base-100 rounded-2xl w-52 border border-base-300 mt-2 space-y-1 text-xs">
+                <li class="menu-title text-[10px] text-base-content/40 font-bold px-2 py-1">{{ __('انتخاب پوسته سیستم') }}</li>
+                <li>
+                    <button type="button" @click="setTheme('flow')" :class="current === 'flow' ? 'active font-bold text-cyan-500' : ''" class="flex items-center justify-between rounded-xl">
+                        <span class="flex items-center gap-2"><span>✨</span> Google Flow</span>
+                        <span x-show="current === 'flow'">✓</span>
+                    </button>
+                </li>
+                <li>
+                    <button type="button" @click="setTheme('linear')" :class="current === 'linear' ? 'active font-bold text-indigo-500' : ''" class="flex items-center justify-between rounded-xl">
+                        <span class="flex items-center gap-2"><span>📐</span> Linear Obsidian</span>
+                        <span x-show="current === 'linear'">✓</span>
+                    </button>
+                </li>
+                <li>
+                    <button type="button" @click="setTheme('stripe')" :class="current === 'stripe' ? 'active font-bold text-violet-500' : ''" class="flex items-center justify-between rounded-xl">
+                        <span class="flex items-center gap-2"><span>💎</span> Stripe Glass</span>
+                        <span x-show="current === 'stripe'">✓</span>
+                    </button>
+                </li>
+                <div class="divider my-1"></div>
+                <li>
+                    <a href="{{ route('settings.appearance') }}" class="text-[11px] text-primary flex items-center justify-between rounded-xl font-bold">
+                        <span>{{ __('تنظیمات پیشرفته پوسته...') }}</span>
+                        <span>⚙️</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
         <nav aria-label="{{ __('User menu') }}">
             <ul class="app-main-menu flex shrink-0 items-center menu menu-horizontal px-1" data-main-menu>
                 @can('access-super-admin-panel')
