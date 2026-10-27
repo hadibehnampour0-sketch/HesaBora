@@ -81,3 +81,64 @@
      - Core accounting and warehouse suites: 100% passed without regressions.
 
 
+
+---
+
+## Log Entry CR-D-01 — 2026-10-27T21:15:00+03:30
+- **Phase:** Phase D (Security & Financial Integrity Audit of Phases 17–30 / D1–D15)
+- **Actor/Role:** Lead Systems Architect & Senior Accountant (Auditor/Implementer/Verifier)
+- **Actions Executed:**
+  1. Remedied D1–D15 vulnerabilities across payment links, POS terminal concurrency, ESC/POS control character injection, attendance ADMS multi-tenant isolation, PII/API key encryption, and financing/loyalty document ledger balancing.
+  2. Documented full findings and evidence in `docs/audits/AUDIT_D_PHASES_17_30.md`.
+  3. Regenerated `docs/SECURITY_PERMISSION_MATRIX.md` covering 708 routes.
+  4. Unit-verified via `tests/Feature/PhaseDAuditSecurityTest.php` (13 passed, 56 assertions).
+  5. Git Commit: `890bec8d`.
+
+---
+
+## Log Entry CR-E-01 — 2026-10-27T22:30:00+03:30
+- **Phase:** Phase E (Document Reversal & One-Click Clerk Correction Flow — Decision D-127)
+- **Actor/Role:** Chief Systems Architect, Senior Accountant, Accounting Clerk (Architect/Implementer/Verifier)
+- **Actions Executed:**
+  1. Authored ADR-001 (`docs/decisions/ADR-001-D-127-document-reversal-and-correction-flow.md`) and recorded Decision D-127 in Decision Log.
+  2. Added migration `2026_10_27_230000_add_reversal_columns_to_documents_table.php` (`reverses_document_id`, `reversed_at`, `reversed_by_id`, `reversal_reason_code`, `reversal_reason`). Verified on MariaDB.
+  3. Built `App\Services\DocumentReversalService` enforcing non-destructive mirror reversals ($\sum \text{net} = 0$, concurrency lock, double-reversal prevention, and one-click clerk correction workflow).
+  4. Added permissions `documents.reverse`, `documents.correct`, `documents.reversal-preview`.
+  5. Built RTL Persian UI for document show view (`resources/views/documents/show.blade.php`) with confirmation modals.
+  6. Unit-verified via `tests/Feature/DocumentReversalAndCorrectionTest.php` (9 passed, 54 assertions).
+  7. Git Commit: `7d760696`.
+
+---
+
+## Log Entry CR-F-01 — 2026-10-27T23:15:00+03:30
+- **Phase:** Phase F (Period Close Lifecycle & Centralized Lock Guard — Decision D-128)
+- **Actor/Role:** Chief Systems Architect, Senior Accountant, Finance Manager (Architect/Implementer/Verifier)
+- **Actions Executed:**
+  1. Authored ADR-002 (`docs/decisions/ADR-002-D-128-period-close-lifecycle-and-lock-guard.md`) and recorded Decision D-128 in Decision Log.
+  2. Added migration `2026_10_27_233000_add_period_status_to_companies_table.php` (`period_status`, `locked_at`, `locked_by`, `reopened_at`, `reopened_by`, `reopen_reason`).
+  3. Created enum `App\Enums\PeriodStatus` (5 states: `OPEN`, `REVIEW`, `RECONCILED`, `CLOSED`, `LOCKED`).
+  4. Built `App\Services\PeriodChecklistService` evaluating 7 statutory pre-close points.
+  5. Built `App\Services\PeriodLockGuard`: single choke point protecting all accounting posting paths (`DocumentService`, `DocumentReversalService`, `PaymentService`, `ChequeService`, `InvoiceService`).
+  6. Enforced audited controlled reopening with `fiscal-year.reopen` permission.
+  7. Unit-verified via `tests/Feature/PeriodCloseWorkflowTest.php` (9 passed, 47 assertions).
+  8. Git Commit: `0c45fa12`.
+
+---
+
+## Log Entry CR-G-01 — 2026-10-27T23:32:00+03:30
+- **Phase:** Phase G (Documentation Consolidation: Master Context r15, CURRENT_STATE, DocLintTest)
+- **Actor/Role:** Lead Systems Architect & Senior Accountant (Verifier/Documenter)
+- **Actions Executed:**
+  1. Reconciled and generated `docs/project-context/Dakhl_MASTER_CONTEXT_AND_ROADMAP_2026-10-27-r15.md` with strictly sequential 55 sections.
+  2. Authored `docs/project-context/CURRENT_STATE.md` (78 lines $\le 400$).
+  3. Built `tools/doc_lint.py` and `tests/Feature/DocLintTest.php` (3 passed, 11 assertions).
+  4. Git Commit: `5263dd35`.
+
+---
+
+## Log Entry CR-H-01 — 2026-10-27T23:34:00+03:30
+- **Phase:** Phase H (Contradiction Register & Open Owner Decisions O-01 to O-05)
+- **Actor/Role:** All Seven Operational Roles
+- **Actions Executed:**
+  1. Authored `docs/project-context/OPEN_OWNER_DECISIONS.md` formalizing contradictions O-01 to O-05.
+  2. Git Commit: `31386a2d`.

@@ -2091,3 +2091,42 @@ Executed Phase F of Super Prompt r15/r16 and Decision D-128 / D-042:
 
 
 
+
+## Entry 119 — 2026-10-27 — Phase G: Documentation Consolidation (Master Context r15, CURRENT_STATE, DocLintTest)
+
+Executed Phase G of Super Prompt r15/r16:
+
+1. **Master Context r15 Authoring**:
+   - Reconciled against Super Prompt r15/r16, ADR-001 (D-127), ADR-002 (D-128), and full test suite.
+   - Fixed section numbering cascades: strictly renumbered all 55 top-level sections sequentially from 1 to 55 with zero duplicates and zero gaps.
+   - Marked Section 15 (Sync) as superseded/implemented per D-071–D-083.
+   - Cleansed proprietary ownership claims to reflect Dakhl's clean-room rebrand.
+   - Appended Section 55: Current Verified Override — 2026-10-27 (Super Prompt r15/r16 Hardening, Licensing & Clean-Room Milestone).
+   - Produced `docs/project-context/Dakhl_MASTER_CONTEXT_AND_ROADMAP_2026-10-27-r15.md` and archived r14 to `docs/project-context/archive/Dakhl_MASTER_CONTEXT_AND_ROADMAP_2026-09-20-r14.md`.
+2. **CURRENT_STATE.md Snapshot**:
+   - Authored concise executive summary `docs/project-context/CURRENT_STATE.md` (78 lines, strictly $\le 400$ lines budget).
+   - Contains system baseline, verification metrics, complete decision register (D-001 through D-128), UNIT-VERIFIED vs FIELD-VERIFIED classification, known debt, and immediate next actions.
+3. **Automated Documentation Linting**:
+   - Built standalone Python linter `tools/doc_lint.py`:
+     - Checks Master Context top-level section uniqueness.
+     - Enforces `CURRENT_STATE.md` line count budget ($\le 400$ lines).
+     - Validates decision reference integrity across Master Context, Decision Log, and Current State with range expansion.
+   - Built PHPUnit feature test `tests/Feature/DocLintTest.php` (3 tests, 11 assertions) running inside automated CI test suite.
+   - Verified: `Doc-lint: 100% SUCCESS` and PHPUnit `DocLintTest` passing 100%.
+4. **Git Commit**: `5263dd35` ("docs: Phase G documentation consolidation (Master Context r15, CURRENT_STATE, DocLintTest)").
+
+---
+
+## Entry 120 — 2026-10-27 — Phase H: Contradiction Register & Open Owner Decisions (O-01 to O-05)
+
+Executed Phase H of Super Prompt r15/r16:
+
+1. **Authored `docs/project-context/OPEN_OWNER_DECISIONS.md`**:
+   - Acted across all seven roles (Chief Systems Architect, Senior Accountant, Senior Backend Engineer, Senior Android Engineer, RTL UI/UX Designer, Accounting Clerk, Finance Manager).
+   - Identified and formalized five key contradictions requiring explicit owner decisions:
+     - **O-01 (Trade Architecture Boundaries / D-074):** Confirmed Trade remains purely documentation-only. Any future trade engine must act as an upstream layer producing standard approved Documents/Invoices rather than altering core double-entry posting rules.
+     - **O-02 (Installment Unsettlement / D-084 & D-127):** Identified `SettlementService::unsettleInstallment()` as an unwired method bypassing D-084. Recommended retaining it unwired until rewritten to use non-destructive mirror reversals.
+     - **O-03 (Clean-Room GPL Elimination & Closed-Source Distribution Gate / D-126):** Highlighted legal boundary: runtime dependencies are clean, but until clean-room Waves 2–6 and legal sign-off (CR-7) are completed, closed-source binary or proprietary customer distribution is legally withheld.
+     - **O-04 (Hardware & External Provider Verification Classification):** Formally distinguished UNIT-VERIFIED (mocks/CI) from FIELD-VERIFIED (physical Bixolon/Sewoo printers, ZKTeco ADMS biometrics, Iranian SMS gateways, and Shaparak IPGs) and recommended establishing a physical hardware testing lab.
+     - **O-05 (Licensing Tiers & Never Re-Gate Policy / D-026 & D-125):** Ratified 3-tier matrix (Basic, Pro, Enterprise) with `tax_moadian` permanently guaranteed in Basic, 14-day non-destructive grace period, and strictly offline key issuer isolation.
+2. **Git Commit**: `31386a2d` ("docs: Phase H open owner decisions and contradiction register (O-01 to O-05)").
