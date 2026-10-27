@@ -37,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->scoped(ActivityLogService::class);
+        $this->app->singleton('moadian', \App\Support\Moadian\MoadianManager::class);
         $this->app->bind(
             \App\Services\Inquiry\Contracts\InquiryProviderInterface::class,
             \App\Services\Inquiry\Providers\SandboxInquiryProvider::class

@@ -2,14 +2,12 @@
 
 namespace App\Support\Moadian;
 
+use JsonSerializable;
+
 /**
- * Clean-Room Moadian Invoice Aggregate DTO.
- *
- * Combines header, item rows, and payments for Moadian submission.
- *
- * License: MIT
+ * Composite Electronic Invoice Aggregate containing header, line items, and payment allocations.
  */
-class MoadianInvoice
+class MoadianInvoice implements JsonSerializable
 {
     /** @var InvoiceItem[] */
     public array $items = [];
@@ -19,27 +17,36 @@ class MoadianInvoice
 
     public function __construct(public InvoiceHeader $header) {}
 
-    public function addItem(InvoiceItem $item): void
+    public function addItem(InvoiceItem $item): self
     {
         $this->items[] = $item;
+
+        return $this;
     }
 
-    public function addPayment(Payment $payment): void
+    public function addPayment(Payment $payment): self
     {
         $this->payments[] = $payment;
+
+        return $this;
     }
 
     public function toArray(): array
     {
-        $result = [
+        $payload = [
             'header' => $this->header->toArray(),
             'body' => array_map(fn (InvoiceItem $item) => $item->toArray(), $this->items),
         ];
 
         if (! empty($this->payments)) {
-            $result['payments'] = array_map(fn (Payment $payment) => $payment->toArray(), $this->payments);
+            $payload['payments'] = array_map(fn (Payment $p) => $p->toArray(), $this->payments);
         }
 
-        return $result;
+        return $payload;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }

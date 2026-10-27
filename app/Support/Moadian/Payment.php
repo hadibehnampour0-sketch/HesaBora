@@ -2,15 +2,17 @@
 
 namespace App\Support\Moadian;
 
+use JsonSerializable;
+
 /**
- * Clean-Room Moadian Invoice Payment DTO.
- *
- * Implements the official INTA electronic invoice settlement / payment specification.
- *
- * License: MIT
+ * Electronic Invoice Settlement Payment Record (INTA Schema v2.x).
  */
-class Payment
+class Payment implements JsonSerializable
 {
+    public ?int $pmt = null;
+
+    public int|float|null $pv = null;
+
     public ?string $iinn = null;
 
     public ?string $acn = null;
@@ -21,19 +23,13 @@ class Payment
 
     public ?int $pdt = null;
 
-    public ?int $pmt = null;
-
-    public float|int|null $pv = null;
-
     public function toArray(): array
     {
-        $data = [];
-        foreach (get_object_vars($this) as $key => $value) {
-            if (! is_null($value)) {
-                $data[$key] = $value;
-            }
-        }
+        return array_filter(get_object_vars($this), fn ($v) => $v !== null);
+    }
 
-        return $data;
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }

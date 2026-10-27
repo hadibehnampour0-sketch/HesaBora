@@ -3,16 +3,13 @@
 namespace App\Support\Moadian;
 
 /**
- * Clean-Room Moadian API Response Wrapper.
- *
- * License: MIT
+ * Encapsulated Gateway HTTP response wrapper.
  */
 class MoadianResponse
 {
     public function __construct(
-        private array $body,
-        private int $statusCode = 200,
-        private bool $success = true,
+        private readonly array $body,
+        private readonly int $statusCode = 200
     ) {}
 
     public function getBody(): array
@@ -25,8 +22,8 @@ class MoadianResponse
         return $this->statusCode;
     }
 
-    public function isSuccessful(): bool
+    public function isSuccess(): bool
     {
-        return $this->success && $this->statusCode >= 200 && $this->statusCode < 300;
+        return $this->statusCode >= 200 && $this->statusCode < 300;
     }
 }

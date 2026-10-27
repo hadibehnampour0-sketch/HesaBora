@@ -3,58 +3,40 @@
 namespace App\Support\Moadian;
 
 use DateTimeInterface;
+use Illuminate\Support\Carbon;
 
 /**
- * Clean-Room Iranian Tax Administration (INTA) Unique Tax ID (شناسه یکتای صورتحساب مالیاتی) Generator.
- *
- * Generates the official 22-character unique tax ID as specified in the INTA electronic invoice standard:
- *   [Memory ID (6 chars)] + [Hex Date (5 chars)] + [Hex Serial (10 chars)] + [Verhoeff Checksum (1 char)]
- *
- * License: MIT
+ * Clean-room unique tax identifier generator for the Iranian Tax Authority (INTA).
+ * Generates official 22-character Tax IDs conforming to statutory e-invoicing standards.
  */
 class TaxIdGenerator
 {
-    private const CHAR_TO_NUM = [
-        'A' => 65, 'B' => 66, 'C' => 67, 'D' => 68, 'E' => 69, 'F' => 70, 'G' => 71, 'H' => 72, 'I' => 73,
-        'J' => 74, 'K' => 75, 'L' => 76, 'M' => 77, 'N' => 78, 'O' => 79, 'P' => 80, 'Q' => 81, 'R' => 82,
-        'S' => 83, 'T' => 84, 'U' => 85, 'V' => 86, 'W' => 87, 'X' => 88, 'Y' => 89, 'Z' => 90,
-    ];
-
-    public static function generate(string $clientId, DateTimeInterface $date, int $serialNumber): string
+    /**
+     * Generate an official 22-character unique Tax ID.
+     *
+     * @param  string  $memoryId  6-character unique fiscal memory ID
+     * @param  DateTimeInterface|string  $date  Invoice issuance date
+     * @param  int|string  $serial  Sequential invoice number
+     */
+    public static function generate(string $memoryId, DateTimeInterface|string $date, int|string $serial): string
     {
-        $clientId = trim($clientId);
-        $daysPastEpoch = (int) floor($date->getTimestamp() / 86400);
-
-        $daysPastEpochPadded = str_pad((string) $daysPastEpoch, 6, '0', STR_PAD_LEFT);
-        $hexDaysPastEpochPadded = str_pad(dechex($daysPastEpoch), 5, '0', STR_PAD_LEFT);
-
-        $numericClientId = self::clientIdToDigits($clientId);
-        $serialPadded = str_pad((string) $serialNumber, 12, '0', STR_PAD_LEFT);
-        $hexSerialPadded = str_pad(dechex($serialNumber), 10, '0', STR_PAD_LEFT);
-
-        $decimalString = $numericClientId.$daysPastEpochPadded.$serialPadded;
-        $checksum = Verhoeff::checkSum($decimalString);
-
-        return strtoupper($clientId.$hexDaysPastEpochPadded.$hexSerialPadded.$checksum);
-    }
-
-    public static function clientIdToDigits(string $clientId): string
-    {
-        $digits = '';
-        $upper = strtoupper($clientId);
-        $len = strlen($upper);
-
-        for ($i = 0; $i < $len; $i++) {
-            $char = $upper[$i];
-            if (is_numeric($char)) {
-                $digits .= $char;
-            } elseif (isset(self::CHAR_TO_NUM[$char])) {
-                $digits .= self::CHAR_TO_NUM[$char];
-            } else {
-                $digits .= ord($char);
-            }
+        $cleanMemoryId = strtoupper(trim($memoryId));
+        if (strlen($cleanMemoryId) !== 6) {
+            $cleanMemoryId = str_pad(substr($cleanMemoryId, 0, 6), 6, '0', STR_PAD_RIGHT);
         }
 
-        return $digits;
+        $invoiceDate = $date instanceof DateTimeInterface
+            ? Carbon::instance($date)
+            : Carbon::parse($date);
+
+        $daysPastEpoch = (int) floor($invoiceDate->getTimestamp() / 86400);
+        $hexDays = strtoupper(str_pad(dechex($daysPastEpoch), 5, '0', STR_PAD_LEFT));
+
+        $hexSerial = strtoupper(str_pad(dechex((int) $serial), 10, '0', STR_PAD_LEFT));
+
+        $body21 = $cleanMemoryId.$hexDays.$hexSerial;
+        $checkDigit = Verhoeff::checkDigit($body21);
+
+        return $body21.$checkDigit;
     }
 }

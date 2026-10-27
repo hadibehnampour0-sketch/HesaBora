@@ -3,33 +3,26 @@
 namespace App\Support\Moadian;
 
 use DateTimeInterface;
+use JsonSerializable;
 
 /**
- * Clean-Room Moadian Invoice Header DTO.
- *
- * Implements the official INTA electronic invoice header specification.
- *
- * License: MIT
+ * Electronic Invoice Header Data Transfer Object (INTA Schema v2.x).
  */
-class InvoiceHeader
+class InvoiceHeader implements JsonSerializable
 {
-    public ?string $clientId = null;
-
     public ?string $taxid = null;
+
+    public ?int $ins = null;
+
+    public ?int $inty = null;
+
+    public ?string $irtaxid = null;
 
     public ?int $indatim = null;
 
     public ?int $indati2m = null;
 
-    public ?int $inty = null;
-
-    public ?string $inno = null;
-
-    public ?string $irtaxid = null;
-
     public ?int $inp = null;
-
-    public ?int $ins = null;
 
     public ?string $tins = null;
 
@@ -41,72 +34,51 @@ class InvoiceHeader
 
     public ?string $bpc = null;
 
-    public ?string $bbc = null;
+    public int|float|null $tprdis = null;
 
-    public ?int $ft = null;
+    public int|float|null $tdis = null;
 
-    public ?string $bpn = null;
+    public int|float|null $tadis = null;
 
-    public ?string $scc = null;
+    public int|float|null $tvam = null;
 
-    public ?string $crn = null;
+    public int|float|null $todam = null;
 
-    public ?string $billid = null;
-
-    public float|int|null $tprdis = null;
-
-    public float|int|null $tdis = null;
-
-    public float|int|null $tadis = null;
-
-    public float|int|null $tvam = null;
-
-    public float|int|null $todam = null;
-
-    public float|int|null $tbill = null;
+    public int|float|null $tbill = null;
 
     public ?int $setm = null;
 
-    public float|int|null $cap = null;
+    public int|float|null $cap = null;
 
-    public float|int|null $insp = null;
+    public function __construct(public string $username = '') {}
 
-    public float|int|null $tvop = null;
-
-    public float|int|null $tax17 = null;
-
-    public ?string $cdcn = null;
-
-    public ?int $cdcd = null;
-
-    public ?int $tonw = null;
-
-    public ?int $torv = null;
-
-    public ?int $tocv = null;
-
-    public function __construct(?string $clientId = null)
+    /**
+     * Compute and assign the 22-character unique tax ID to the header.
+     */
+    public function setTaxID(DateTimeInterface|string $date, int|string $serial): self
     {
-        $this->clientId = $clientId;
+        $this->taxid = TaxIdGenerator::generate($this->username, $date, $serial);
+
+        return $this;
     }
 
-    public function setTaxID(DateTimeInterface $date, int $internalInvoiceId): string
-    {
-        $this->taxid = TaxIdGenerator::generate($this->clientId ?? '', $date, $internalInvoiceId);
-
-        return $this->taxid;
-    }
-
+    /**
+     * Export header properties to array, omitting null values.
+     */
     public function toArray(): array
     {
         $data = [];
-        foreach (get_object_vars($this) as $key => $value) {
-            if ($key === 'clientId' || is_null($value)) {
-                continue;
+        foreach (get_object_vars($this) as $key => $val) {
+            if ($key !== 'username' && $val !== null) {
+                $data[$key] = $val;
             }
-            $data[$key] = $value;
         }
 
         return $data;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }
