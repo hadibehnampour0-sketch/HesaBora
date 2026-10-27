@@ -32,8 +32,8 @@ Route::get('/pricing', [Controllers\LicenseController::class, 'publicPricing'])-
 Route::view('/logo-showcase', 'logo-showcase')->name('logo.showcase');
 Route::view('/pages-showcase', 'pages-showcase')->name('pages.showcase');
 
-// Phase 18.2: Customer Online Portal & Shaparak Payment Links
-Route::prefix('portal')->name('portal.')->group(function () {
+// Phase 18.2: Customer Online Portal & Shaparak Payment Links (D1: throttled)
+Route::prefix('portal')->name('portal.')->middleware('throttle:60,1')->group(function () {
     Route::get('invoice/{token}', [Controllers\CustomerPortalController::class, 'showInvoice'])->name('invoice.show');
     Route::post('invoice/{token}/pay', [Controllers\CustomerPortalController::class, 'initiatePayment'])->name('invoice.pay');
     Route::match(['get', 'post'], 'invoice/{token}/callback', [Controllers\CustomerPortalController::class, 'paymentCallback'])->name('invoice.callback');
@@ -319,7 +319,7 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::get('/', [Controllers\SmsController::class, 'index'])->name('index');
             Route::post('config', [Controllers\SmsController::class, 'updateConfig'])->name('config.update');
             Route::post('templates/{eventType}', [Controllers\SmsController::class, 'updateTemplate'])->name('template.update');
-            Route::post('test-send', [Controllers\SmsController::class, 'testSend'])->name('test-send');
+            Route::post('test-send', [Controllers\SmsController::class, 'testSend'])->middleware('throttle:10,1')->name('test-send');
         });
 
         // Phase 24 (Universal Competitor Migration & Accounting Health Check Engine).
@@ -394,8 +394,8 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         // Phase 19.2 (Desktop Caller ID & VoIP Integration - D-110).
         Route::prefix('telephony')->name('telephony.')->group(function () {
             Route::get('/', [TelephonyController::class, 'index'])->name('index');
-            Route::post('webhook', [TelephonyController::class, 'webhook'])->name('webhook');
-            Route::get('lookup', [TelephonyController::class, 'lookup'])->name('lookup');
+            Route::post('webhook', [TelephonyController::class, 'webhook'])->middleware('throttle:30,1')->name('webhook');
+            Route::get('lookup', [TelephonyController::class, 'lookup'])->middleware('throttle:30,1')->name('lookup');
             Route::post('logs/{log}/status', [TelephonyController::class, 'updateStatus'])->name('logs.status');
         });
 

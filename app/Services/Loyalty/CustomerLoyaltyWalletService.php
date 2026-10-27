@@ -2,7 +2,6 @@
 
 namespace App\Services\Loyalty;
 
-use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
 use App\Models\Customer;
 use App\Models\CustomerWallet;
@@ -10,7 +9,9 @@ use App\Models\CustomerWalletTransaction;
 use App\Models\Invoice;
 use App\Models\LoyaltySetting;
 use App\Models\Payment;
+use App\Models\Subject;
 use App\Models\User;
+use App\Services\DocumentService;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -43,6 +44,7 @@ class CustomerLoyaltyWalletService
     {
         $settings = $this->getSettings($companyId);
         $settings->update($data);
+
         return $settings->fresh();
     }
 
@@ -135,7 +137,7 @@ class CustomerLoyaltyWalletService
                 'points_after' => $wallet->points,
                 'reference_id' => $invoice->id,
                 'reference_type' => 'Invoice',
-                'description' => 'امتیاز وفاداری بابت فاکتور فروش شماره ' . $invoice->number,
+                'description' => 'امتیاز وفاداری بابت فاکتور فروش شماره '.$invoice->number,
             ]);
         });
     }
@@ -191,7 +193,7 @@ class CustomerLoyaltyWalletService
                 'points_change' => -$points,
                 'balance_after' => $wallet->balance,
                 'points_after' => $wallet->points,
-                'description' => "تبدیل {$points} امتیاز به " . number_format($creditRials) . ' ریال اعتبار کیف پول',
+                'description' => "تبدیل {$points} امتیاز به ".number_format($creditRials).' ریال اعتبار کیف پول',
                 'user_id' => $user?->id,
             ]);
         });
@@ -281,26 +283,62 @@ class CustomerLoyaltyWalletService
             $wallet->balance -= $amount;
             $wallet->save();
 
-            // Create Document and Payment row to maintain accounting integrity and invoice sync
-            $document = \App\Models\Document::create([
-                'company_id' => $invoice->company_id,
-                'number' => (\App\Models\Document::withoutGlobalScopes()->where('company_id', $invoice->company_id)->max('number') ?? 0) + 1,
-                'date' => now()->toDateString(),
-                'title' => 'تسویه از محل اعتبار کیف پول مشتری',
-                'creator_id' => $user?->id ?? $invoice->creator_id,
-                'approved_at' => now(),
-                'approver_id' => $user?->id ?? $invoice->creator_id,
-            ]);
+            // Create balanced double-entry Document and Payment row (D13: SUM(transactions.value) = 0)
+            $customer = $invoice->customer;
+            $customerSubjectId = $customer?->subject_id ?? $customer?->subject?->id ?? (int) (config('amir.cust_subject') ?? 1);
+
+            $walletSubject = Subject::withoutGlobalScopes()
+                ->where('company_id', $invoice->company_id)
+                ->where(function ($q) {
+                    $q->where('code', '20301')->orWhere('name', 'سپرده و بیعانه کیف پول مشتریان');
+                })
+                ->first();
+
+            if (! $walletSubject) {
+                $walletSubject = Subject::create([
+                    'company_id' => $invoice->company_id,
+                    'name' => 'سپرده و بیعانه کیف پول مشتریان',
+                    'code' => '20301',
+                    'parent_id' => null,
+                ]);
+            }
+
+            $desc = 'تسویه فاکتور '.$invoice->number.' از محل اعتبار کیف پول مشتری';
+            $transactions = [
+                [
+                    'subject_id' => $walletSubject->id,
+                    'desc' => $desc,
+                    'value' => -$amount, // Debit customer deposit liability (negative in Dakhl)
+                ],
+                [
+                    'subject_id' => $customerSubjectId,
+                    'desc' => $desc,
+                    'value' => $amount, // Credit trade receivable asset (positive in Dakhl)
+                ],
+            ];
+
+            $effectiveUser = $user ?? $invoice->creator ?? User::first();
+            $document = null;
+            if ($effectiveUser) {
+                $document = DocumentService::createDocument($effectiveUser, [
+                    'company_id' => $invoice->company_id,
+                    'number' => null,
+                    'date' => now()->toDateString(),
+                    'title' => $desc,
+                ], $transactions);
+
+                DocumentService::changeDocumentStatus($document, $effectiveUser, 'approved');
+            }
 
             Payment::create([
                 'invoice_id' => $invoice->id,
-                'document_id' => $document->id,
+                'document_id' => $document?->id,
                 'payer_id' => $invoice->customer_id,
                 'amount' => $amount,
                 'date' => now(),
-                'description' => 'تسویه از محل اعتبار کیف پول مشتری',
-                'reference_number' => 'WALLET-' . $wallet->id . '-' . time(),
-                'creator_id' => $user?->id,
+                'description' => $desc,
+                'reference_number' => 'WALLET-'.$wallet->id.'-'.time(),
+                'creator_id' => $effectiveUser?->id,
             ]);
 
             $this->paymentService->syncInvoiceStatus($invoice);
@@ -316,7 +354,7 @@ class CustomerLoyaltyWalletService
                 'points_after' => $wallet->points,
                 'reference_id' => $invoice->id,
                 'reference_type' => 'Invoice',
-                'description' => 'پرداخت فاکتور شماره ' . $invoice->number . ' از محل اعتبار کیف پول',
+                'description' => 'پرداخت فاکتور شماره '.$invoice->number.' از محل اعتبار کیف پول',
                 'user_id' => $user?->id,
             ]);
         });

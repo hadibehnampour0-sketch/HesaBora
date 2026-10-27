@@ -9,7 +9,9 @@ use App\Models\Product;
 use App\Models\ProductGroup;
 use App\Models\ProductMarketPrice;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\ValidationException;
 
@@ -144,7 +146,14 @@ class MarketIntelligenceService
                 ->pluck('value', 'key');
 
             $provider = $configs['market_data_provider'] ?? 'managed';
-            $apiKey = $configs['market_data_api_key'] ?? '';
+            $rawKey = $configs['market_data_api_key'] ?? '';
+            if (! empty($rawKey)) {
+                try {
+                    $apiKey = Crypt::decryptString($rawKey);
+                } catch (\Throwable) {
+                    $apiKey = $rawKey; // fallback
+                }
+            }
         }
 
         return [
@@ -200,9 +209,11 @@ class MarketIntelligenceService
             ['value' => $provider, 'category' => 'market', 'type' => 'string']
         );
 
+        // Security (D12): Encrypt market provider API key in storage
+        $storedKey = ! empty($apiKey) ? Crypt::encryptString($apiKey) : '';
         Config::updateOrCreate(
             ['key' => 'market_data_api_key', 'company_id' => $companyId],
-            ['value' => $apiKey, 'category' => 'market', 'type' => 'string']
+            ['value' => $storedKey, 'category' => 'market', 'type' => 'string']
         );
     }
 
@@ -247,6 +258,7 @@ class MarketIntelligenceService
 
                 if ($res->successful()) {
                     $usdtPrice = (float) $res->json('data.currencies.USDT.price');
+
                     return [
                         'success' => true,
                         'provider' => 'tetherland',
@@ -266,6 +278,7 @@ class MarketIntelligenceService
 
             if ($res->successful()) {
                 $usdPrice = (float) $res->json('price');
+
                 return [
                     'success' => true,
                     'provider' => $provider,
@@ -291,7 +304,7 @@ class MarketIntelligenceService
         } catch (\Throwable $e) {
             return [
                 'success' => false,
-                'message' => 'خطا در برقراری ارتباط با وب‌سرویس: ' . $e->getMessage(),
+                'message' => 'خطا در برقراری ارتباط با وب‌سرویس: '.$e->getMessage(),
             ];
         }
     }
@@ -328,7 +341,7 @@ class MarketIntelligenceService
             ];
 
             foreach ($map as $key => $sym) {
-                if (isset($responses[$key]) && $responses[$key] instanceof \Illuminate\Http\Client\Response && $responses[$key]->successful()) {
+                if (isset($responses[$key]) && $responses[$key] instanceof Response && $responses[$key]->successful()) {
                     $p = (float) ($responses[$key]->json('price') ?? 0);
                     if ($p > 1000) {
                         $rates[$sym] = $p;
@@ -337,7 +350,7 @@ class MarketIntelligenceService
             }
 
             // Crypto / Bitcoin calculation
-            if (isset($responses['crypto']) && $responses['crypto'] instanceof \Illuminate\Http\Client\Response && $responses['crypto']->successful()) {
+            if (isset($responses['crypto']) && $responses['crypto'] instanceof Response && $responses['crypto']->successful()) {
                 $btcusd = (float) ($responses['crypto']->json('bitcoin.usd') ?? 0);
                 $usdRate = $rates['USD'] ?? self::DEFAULT_SYMBOLS['USD']['price'];
                 if ($btcusd > 0) {
@@ -378,18 +391,42 @@ class MarketIntelligenceService
 
         if (isset($rates['USD'])) {
             $usd = $rates['USD'];
-            if (empty($rates['CAD'])) $rates['CAD'] = round($usd * 0.715);
-            if (empty($rates['AUD'])) $rates['AUD'] = round($usd * 0.703);
-            if (empty($rates['CHF'])) $rates['CHF'] = round($usd * 1.158);
-            if (empty($rates['CNY'])) $rates['CNY'] = round($usd * 0.150);
-            if (empty($rates['IQD'])) $rates['IQD'] = round($usd * 0.076);
-            if (empty($rates['KWD'])) $rates['KWD'] = round($usd * 3.255);
-            if (empty($rates['OMR'])) $rates['OMR'] = round($usd * 2.596);
-            if (empty($rates['QAR'])) $rates['QAR'] = round($usd * 0.274);
-            if (empty($rates['SAR'])) $rates['SAR'] = round($usd * 0.266);
-            if (empty($rates['INR'])) $rates['INR'] = round($usd * 0.0118);
-            if (empty($rates['AZN'])) $rates['AZN'] = round($usd * 0.588);
-            if (empty($rates['RUB'])) $rates['RUB'] = round($usd * 0.0103);
+            if (empty($rates['CAD'])) {
+                $rates['CAD'] = round($usd * 0.715);
+            }
+            if (empty($rates['AUD'])) {
+                $rates['AUD'] = round($usd * 0.703);
+            }
+            if (empty($rates['CHF'])) {
+                $rates['CHF'] = round($usd * 1.158);
+            }
+            if (empty($rates['CNY'])) {
+                $rates['CNY'] = round($usd * 0.150);
+            }
+            if (empty($rates['IQD'])) {
+                $rates['IQD'] = round($usd * 0.076);
+            }
+            if (empty($rates['KWD'])) {
+                $rates['KWD'] = round($usd * 3.255);
+            }
+            if (empty($rates['OMR'])) {
+                $rates['OMR'] = round($usd * 2.596);
+            }
+            if (empty($rates['QAR'])) {
+                $rates['QAR'] = round($usd * 0.274);
+            }
+            if (empty($rates['SAR'])) {
+                $rates['SAR'] = round($usd * 0.266);
+            }
+            if (empty($rates['INR'])) {
+                $rates['INR'] = round($usd * 0.0118);
+            }
+            if (empty($rates['AZN'])) {
+                $rates['AZN'] = round($usd * 0.588);
+            }
+            if (empty($rates['RUB'])) {
+                $rates['RUB'] = round($usd * 0.0103);
+            }
         }
 
         return $rates;

@@ -42,10 +42,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         ->name('api.companies.index');
 });
 
-// Biometric Clock Devices Direct Push & ADMS Protocol
+// Biometric Clock Devices Direct Push & ADMS Protocol (D4: throttled)
 Route::match(['get', 'post'], 'attendance/iclock', [\App\Http\Controllers\Api\AttendanceDeviceApiController::class, 'handleIclock'])
+    ->middleware('throttle:60,1')
     ->name('api.attendance.iclock');
 Route::post('attendance-devices/{device}/push', [\App\Http\Controllers\Api\AttendanceDeviceApiController::class, 'pushPunches'])
+    ->middleware('throttle:60,1')
     ->name('api.attendance.devices.push');
 
 Route::prefix('companies/{company}')->middleware(['auth:sanctum', 'api-company'])->group(function () {

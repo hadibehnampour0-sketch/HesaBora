@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Template;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoicePrintTemplate;
 use App\Services\Template\InvoicePrintTemplateService;
@@ -47,10 +48,13 @@ class InvoiceTemplateController extends Controller
             'columns_config' => ['nullable', 'array'],
             'footer_config' => ['nullable', 'array'],
             'watermark_text' => ['nullable', 'string', 'max:50'],
-            'custom_css' => ['nullable', 'string'],
+            'custom_css' => ['nullable', 'string', 'not_regex:/<\s*\/?\s*(style|script)/i'],
         ]);
 
         $validated['is_default'] = $request->boolean('is_default');
+        if (! empty($validated['custom_css'])) {
+            $validated['custom_css'] = preg_replace('/<\s*\/?\s*(style|script)[^>]*>/i', '', $validated['custom_css']);
+        }
 
         $this->templateService->saveTemplate($companyId, $validated);
 
@@ -59,12 +63,16 @@ class InvoiceTemplateController extends Controller
 
     public function edit(InvoicePrintTemplate $template)
     {
+        abort_unless($template->company_id === getActiveCompany(), 403);
+
         return view('templates.designer', compact('template'));
     }
 
     public function update(InvoicePrintTemplate $template, Request $request): RedirectResponse
     {
         $companyId = getActiveCompany();
+        abort_unless($template->company_id === $companyId, 403);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'paper_size' => ['required', 'string', 'in:A4_PORTRAIT,A4_LANDSCAPE,A5_PORTRAIT,A5_LANDSCAPE,THERMAL_80MM,THERMAL_58MM'],
@@ -73,10 +81,13 @@ class InvoiceTemplateController extends Controller
             'columns_config' => ['nullable', 'array'],
             'footer_config' => ['nullable', 'array'],
             'watermark_text' => ['nullable', 'string', 'max:50'],
-            'custom_css' => ['nullable', 'string'],
+            'custom_css' => ['nullable', 'string', 'not_regex:/<\s*\/?\s*(style|script)/i'],
         ]);
 
         $validated['is_default'] = $request->boolean('is_default');
+        if (! empty($validated['custom_css'])) {
+            $validated['custom_css'] = preg_replace('/<\s*\/?\s*(style|script)[^>]*>/i', '', $validated['custom_css']);
+        }
 
         $this->templateService->saveTemplate($companyId, $validated, $template);
 
@@ -85,6 +96,8 @@ class InvoiceTemplateController extends Controller
 
     public function destroy(InvoicePrintTemplate $template): RedirectResponse
     {
+        abort_unless($template->company_id === getActiveCompany(), 403);
+
         if ($template->is_default) {
             return back()->with('error', __('قالب پیش‌فرض سیستم قابل حذف نیست. ابتدا قالب دیگری را به عنوان پیش‌فرض انتخاب کنید.'));
         }
@@ -96,7 +109,9 @@ class InvoiceTemplateController extends Controller
 
     public function duplicate(InvoicePrintTemplate $template, Request $request): RedirectResponse
     {
-        $newName = $template->name . ' (' . __('کپی') . ')';
+        abort_unless($template->company_id === getActiveCompany(), 403);
+
+        $newName = $template->name.' ('.__('کپی').')';
         $this->templateService->duplicateTemplate($template, $newName);
 
         return redirect()->route('templates.index')->with('success', __('از روی قالب کپی جدید ایجاد شد.'));
@@ -104,6 +119,8 @@ class InvoiceTemplateController extends Controller
 
     public function setDefault(InvoicePrintTemplate $template): RedirectResponse
     {
+        abort_unless($template->company_id === getActiveCompany(), 403);
+
         $this->templateService->setDefault($template);
 
         return redirect()->route('templates.index')->with('success', __('قالب به عنوان پیش‌فرض این سایز کاغذ انتخاب شد.'));
@@ -124,7 +141,7 @@ class InvoiceTemplateController extends Controller
                 'vat' => 1125000,
                 'subtraction' => 500000,
             ]);
-            $invoice->setRelation('customer', new \App\Models\Customer([
+            $invoice->setRelation('customer', new Customer([
                 'name' => 'شرکت نمونه بازرگانی امید (پیش‌نمایش خریدار)',
                 'personal_code' => '10103456789',
                 'ecnmcs_code' => '411456789123',

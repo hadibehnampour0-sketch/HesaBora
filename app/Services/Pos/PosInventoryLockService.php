@@ -56,30 +56,36 @@ class PosInventoryLockService
         string $terminalId,
         int $ttlSeconds = 300
     ): bool {
-        $available = $this->getAvailableStock($companyId, $warehouseId, $productId, $terminalId);
+        // Concurrency (D3): Atomic lock to prevent overselling race under concurrent checkout
+        $lockKey = "pos_res_lock:{$companyId}:{$warehouseId}:{$productId}";
 
-        if ($quantity > $available) {
-            return false;
-        }
+        return Cache::lock($lockKey, 5)->block(3, function () use ($companyId, $warehouseId, $productId, $quantity, $terminalId, $ttlSeconds) {
+            $available = $this->getAvailableStock($companyId, $warehouseId, $productId, $terminalId);
 
-        $key = $this->makeKey($companyId, $warehouseId, $productId);
-        $reservations = Cache::get($key, []);
-
-        // Clean expired
-        foreach ($reservations as $tId => $info) {
-            if (($info['expires_at'] ?? 0) <= time()) {
-                unset($reservations[$tId]);
+            if ($quantity > $available) {
+                return false;
             }
-        }
 
-        $reservations[$terminalId] = [
-            'quantity' => $quantity,
-            'expires_at' => time() + $ttlSeconds,
-            'terminal_id' => $terminalId,
-        ];
+            $key = $this->makeKey($companyId, $warehouseId, $productId);
+            $reservations = Cache::get($key, []);
 
-        Cache::put($key, $reservations, $ttlSeconds);
-        return true;
+            // Clean expired
+            foreach ($reservations as $tId => $info) {
+                if (($info['expires_at'] ?? 0) <= time()) {
+                    unset($reservations[$tId]);
+                }
+            }
+
+            $reservations[$terminalId] = [
+                'quantity' => $quantity,
+                'expires_at' => time() + $ttlSeconds,
+                'terminal_id' => $terminalId,
+            ];
+
+            Cache::put($key, $reservations, $ttlSeconds);
+
+            return true;
+        });
     }
 
     public function releaseReservation(int $companyId, int $warehouseId, int $productId, string $terminalId): void

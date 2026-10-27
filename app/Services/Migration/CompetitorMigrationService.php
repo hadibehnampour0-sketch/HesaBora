@@ -162,10 +162,22 @@ class CompetitorMigrationService
             }
         }
 
-        // Sanitize phone numbers
+        // Sanitize phone numbers and prevent CSV/formula injection (D10)
         foreach ($payload->customers as $i => &$c) {
             if (! empty($c['mobile'])) {
                 $c['mobile'] = preg_replace('/[^0-9]/', '', $c['mobile']);
+            }
+            if (! empty($c['name']) && in_array(substr($c['name'], 0, 1), ['=', '+', '-', '@', "\t", "\r"], true)) {
+                $c['name'] = "'".$c['name'];
+                $repaired[] = 'نام مشتری اصلاح شد تا از تزریق فرمول جلوگیری شود.';
+            }
+        }
+
+        // Prevent formula injection in product names
+        foreach ($payload->products as $i => &$p) {
+            if (! empty($p['name']) && in_array(substr($p['name'], 0, 1), ['=', '+', '-', '@', "\t", "\r"], true)) {
+                $p['name'] = "'".$p['name'];
+                $repaired[] = 'نام کالا اصلاح شد تا از تزریق فرمول جلوگیری شود.';
             }
         }
 

@@ -116,6 +116,7 @@ class PaymentLinkService
 
         if ($link->isExpired()) {
             $link->update(['status' => PaymentLink::STATUS_EXPIRED]);
+
             return PaymentVerificationResult::failure('مهلت پرداخت این لینک منقضی شده است.');
         }
 
@@ -124,25 +125,39 @@ class PaymentLinkService
 
         if (! $verification->successful) {
             $link->update(['status' => PaymentLink::STATUS_FAILED]);
+
             return $verification;
         }
 
         return DB::transaction(function () use ($link, $verification, $systemUser) {
-            $invoice = $link->invoice;
+            // Concurrency (D1): lock the payment link row to prevent parallel callback double-payment race
+            $lockedLink = PaymentLink::withoutGlobalScopes()
+                ->where('id', $link->id)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $lockedLink || $lockedLink->isPaid()) {
+                return PaymentVerificationResult::success(
+                    referenceNumber: $lockedLink?->gateway_reference ?? 'ALREADY_PAID',
+                    cardPan: $lockedLink?->card_pan
+                );
+            }
+
+            $invoice = $lockedLink->invoice;
             if (! $invoice) {
                 return PaymentVerificationResult::failure('فاکتور متصل به این لینک یافت نشد.');
             }
 
             // Find settlement subject
-            $settlementSubjectId = $this->resolveSettlementSubjectId($link->company_id);
+            $settlementSubjectId = $this->resolveSettlementSubjectId($lockedLink->company_id);
 
-            $user = $systemUser ?? $link->creator ?? User::first();
+            $user = $systemUser ?? $lockedLink->creator ?? User::first();
             if (! $user) {
                 return PaymentVerificationResult::failure('کاربر ثبت‌کننده معتبر یافت نشد.');
             }
 
             $decision = $this->paymentService->createPayment($user, $invoice, [
-                'amount' => (float) $link->amount,
+                'amount' => (float) $lockedLink->amount,
                 'date' => Carbon::now()->toDateString(),
                 'subject_id' => $settlementSubjectId,
                 'reference_number' => $verification->referenceNumber,
@@ -151,7 +166,7 @@ class PaymentLinkService
 
             if ($decision->hasErrors()) {
                 return PaymentVerificationResult::failure(
-                    'خطا در ثبت سند حسابداری پرداخت: ' . $decision->messages->pluck('text')->implode(' - ')
+                    'خطا در ثبت سند حسابداری پرداخت: '.$decision->messages->pluck('text')->implode(' - ')
                 );
             }
 
@@ -161,7 +176,7 @@ class PaymentLinkService
                 ->latest()
                 ->first();
 
-            $link->update([
+            $lockedLink->update([
                 'status' => PaymentLink::STATUS_PAID,
                 'paid_at' => Carbon::now(),
                 'gateway_reference' => $verification->referenceNumber,

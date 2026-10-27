@@ -24,8 +24,8 @@ class OfficialInquiryLog extends Model
     ];
 
     protected $casts = [
-        'query_payload' => 'array',
-        'response_data' => 'array',
+        'query_payload' => 'encrypted:array',
+        'response_data' => 'encrypted:array',
         'is_matched' => 'boolean',
     ];
 

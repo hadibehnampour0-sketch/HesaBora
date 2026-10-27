@@ -2,6 +2,8 @@
 
 namespace App\Services\AiCopilot;
 
+use App\Http\Controllers\AiCopilot\FinancialCopilotController;
+use App\Models\Config;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -26,11 +28,17 @@ class GeminiFinancialChatEngine
             return $this->fallbackEngine->answer($companyId, $query);
         }
 
-        $companyApiKey = \App\Models\Config::withoutGlobalScopes()
+        // Security (D9 & D-040): Check explicit opt-in for external AI data transmission
+        $optIn = Config::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->where('key', 'gemini_api_key')
+            ->where('key', 'ai_data_sharing_opt_in')
             ->value('value');
 
+        if ($optIn === '0') {
+            return $this->fallbackEngine->answer($companyId, $query);
+        }
+
+        $companyApiKey = FinancialCopilotController::getDecryptedApiKey($companyId);
         $apiKey = $companyApiKey ?: (config('services.gemini.api_key') ?? env('GEMINI_API_KEY'));
 
         if (empty($apiKey)) {

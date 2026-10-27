@@ -122,7 +122,7 @@
             }
         }
 
-        {!! $template->custom_css ?? '' !!}
+        {!! str_ireplace(['</style', '<script', '</script'], '', $template->custom_css ?? '') !!}
     </style>
 </head>
 <body>

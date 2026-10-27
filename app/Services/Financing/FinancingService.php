@@ -2,12 +2,14 @@
 
 namespace App\Services\Financing;
 
+use App\Models\BankAccount;
 use App\Models\Customer;
 use App\Models\Document;
 use App\Models\FinancingPlan;
 use App\Models\InstallmentContract;
 use App\Models\InstallmentSchedule;
 use App\Models\User;
+use App\Services\DocumentService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -51,7 +53,7 @@ class FinancingService
         }
 
         return DB::transaction(function () use ($data, $companyId, $user, $totalPrice, $downPayment, $principal, $calc, $tenorMonths, $startDate, $plan) {
-            $contractNumber = $data['contract_number'] ?? ('INS-' . date('Ymd') . '-' . rand(1000, 9999));
+            $contractNumber = $data['contract_number'] ?? ('INS-'.date('Ymd').'-'.rand(1000, 9999));
 
             $contract = InstallmentContract::create([
                 'company_id' => $companyId,
@@ -98,8 +100,12 @@ class FinancingService
     /**
      * Record installment payment collection.
      */
-    public function payInstallment(InstallmentSchedule $schedule, int $amount, ?User $user = null): InstallmentSchedule
-    {
+    public function payInstallment(
+        InstallmentSchedule $schedule,
+        int $amount,
+        ?User $user = null,
+        ?int $receivedSubjectId = null
+    ): InstallmentSchedule {
         if ($amount <= 0) {
             throw ValidationException::withMessages([
                 'amount' => [__('مبلغ پرداختی قسط باید بیشتر از صفر باشد.')],
@@ -116,7 +122,7 @@ class FinancingService
             ]);
         }
 
-        return DB::transaction(function () use ($schedule, $amount, $user) {
+        return DB::transaction(function () use ($schedule, $amount, $user, $receivedSubjectId) {
             $schedule->paid_amount += $amount;
 
             if ($schedule->remainingAmount() <= 0) {
@@ -126,18 +132,43 @@ class FinancingService
                 $schedule->status = 'PARTIALLY_PAID';
             }
 
-            // Create balanced accounting Document for collection
-            $document = Document::create([
-                'company_id' => $schedule->company_id,
-                'number' => (Document::withoutGlobalScopes()->where('company_id', $schedule->company_id)->max('number') ?? 0) + 1,
-                'date' => now()->toDateString(),
-                'title' => "دریافت قسط شماره {$schedule->installment_number} قرارداد {$schedule->contract->contract_number}",
-                'creator_id' => $user?->id,
-                'approved_at' => now(),
-                'approver_id' => $user?->id,
-            ]);
+            // Create balanced accounting Document & Transactions (D7: SUM(transactions.value) = 0)
+            $customer = $schedule->contract->customer;
+            $customerSubjectId = $customer?->subject_id ?? $customer?->subject?->id ?? (int) (config('amir.cust_subject') ?? 1);
 
-            $schedule->document_id = $document->id;
+            $settlementSubjectId = $receivedSubjectId;
+            if (! $settlementSubjectId) {
+                $bankAccount = BankAccount::where('company_id', $schedule->company_id)->whereNotNull('subject_id')->first();
+                $settlementSubjectId = $bankAccount?->subject_id ?? (int) (config('amir.cash') ?? config('amir.bank') ?? 1);
+            }
+
+            $desc = "دریافت قسط شماره {$schedule->installment_number} قرارداد {$schedule->contract->contract_number}";
+            $transactions = [
+                [
+                    'subject_id' => $settlementSubjectId,
+                    'desc' => $desc,
+                    'value' => -$amount, // Debit Bank/Cash (negative in Dakhl convention)
+                ],
+                [
+                    'subject_id' => $customerSubjectId,
+                    'desc' => $desc,
+                    'value' => $amount, // Credit Customer (positive in Dakhl convention)
+                ],
+            ];
+
+            $effectiveUser = $user ?? $schedule->contract->creator ?? User::first();
+            if ($effectiveUser) {
+                $document = DocumentService::createDocument($effectiveUser, [
+                    'company_id' => $schedule->company_id,
+                    'number' => null,
+                    'date' => now()->toDateString(),
+                    'title' => $desc,
+                ], $transactions);
+
+                DocumentService::changeDocumentStatus($document, $effectiveUser, 'approved');
+                $schedule->document_id = $document->id;
+            }
+
             $schedule->save();
 
             // Check if all installments for this contract are now settled

@@ -14,6 +14,14 @@ class PaymentLinkController extends Controller
 
     public function store(Invoice $invoice, Request $request)
     {
+        // Security (D1): authorization and company scoping
+        $activeCompany = getActiveCompany();
+        abort_unless($invoice->company_id === $activeCompany, 403);
+        abort_unless(
+            $request->user()->can('invoices.show') || $request->user()->can('invoices.update') || $request->user()->can('invoices.store'),
+            403
+        );
+
         $validated = $request->validate([
             'amount' => 'nullable|numeric|min:1',
             'gateway' => 'nullable|string|in:sandbox,zarinpal,idpay',
@@ -36,7 +44,7 @@ class PaymentLinkController extends Controller
                 ]);
             }
 
-            return back()->with('success', 'لینک پرداخت آنلاین با موفقیت تولید شد: ' . $link->public_url);
+            return back()->with('success', 'لینک پرداخت آنلاین با موفقیت تولید شد: '.$link->public_url);
         } catch (\Throwable $e) {
             if ($request->wantsJson()) {
                 return response()->json(['success' => false, 'message' => $e->getMessage()], 422);

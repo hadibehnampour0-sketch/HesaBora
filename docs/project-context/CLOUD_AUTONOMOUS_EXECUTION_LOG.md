@@ -1981,6 +1981,56 @@ Executed Phase B of Super Prompt r15/r16 and Decision D-125 / D-026:
    - Pint applied across all new and modified files.
    - All 31 clean-room and licensing tests passed cleanly.
 
+## Entry 116 — 2026-10-27 — Phase D: Security & Integrity Audit of Phases 17–30 (D1–D15)
+
+Executed Phase D of Super Prompt r15/r16 across all 15 focus areas (D1 through D15):
+
+1. **D1: Payment Links & Customer Portal**:
+   - Resolved concurrency race condition in `PaymentLinkService::processCallback()`: wrapped callback in row-level `lockForUpdate()` within an atomic transaction, preventing parallel double-spend/double-credit postings.
+   - Enforced route authorization (`invoices.show`, `invoices.payment-link.store`) and cross-company tenant scoping in `PaymentLinkController::store()`.
+   - Added rate limiting `throttle:60,1` on `portal.*` public invoice viewing and payment routes in `routes/web.php`.
+2. **D2: SMS Engine**:
+   - Added rate limiting `throttle:10,1` on `sms.test-send` in `routes/web.php` to prevent gateway balance drain and cost abuse.
+3. **D3: POS Hardware & Printer Bridge**:
+   - Sanitized raw byte text in `EscPosReceiptBuilder` by stripping ESC/GS control characters `[\x00-\x09\x0B-\x1F\x7F]`, preventing printer escape injection.
+   - Added atomic Redis/Cache lock `pos_res_lock:{$companyId}:{$warehouseId}:{$productId}` in `PosInventoryLockService::reserveStock()` to prevent inventory overselling during simultaneous POS bursts.
+4. **D4: Attendance Clock Devices & Biometrics**:
+   - Neutralized critical multi-tenant fallback vulnerability in `AttendanceDeviceApiController::handleIclock`: requests without valid token or serial number now immediately return 401 `UNAUTHORIZED_DEVICE` instead of falling through to the first database device.
+   - Added token authentication in `AttendanceDeviceApiController::pushPunches()` validating device `cloud_push_token`.
+   - Applied rate limiting `throttle:60,1` on `attendance/iclock` and `attendance-devices/{device}/push` in `routes/api.php`.
+5. **D5: Telephony / Caller ID**:
+   - Added rate limiting `throttle:30,1` on `telephony.webhook` and `telephony.lookup` in `routes/web.php`.
+6. **D6: Official Inquiries & Shahkar PII Protection**:
+   - Cast `query_payload` and `response_data` to `'encrypted:array'` via application key in `OfficialInquiryLog`.
+   - Hashed inquiry cache keys using SHA-256 (`inquiry:result:{sha256(term)}`) to prevent plaintext Iranian National IDs from persisting in Cache/Redis.
+   - Masked `query_term` in inquiry logs (`001****679`).
+7. **D7: Financing Engine Ledger Integrity**:
+   - Fixed empty document bug in `FinancingService::payInstallment()`: now creates fully balanced `Transaction` rows (Debit Bank/Cash, Credit Customer Receivable) with `SUM(transactions.value) = 0` via `DocumentService::createDocument()` and marks document `approved`.
+8. **D8: Invoice Template Designer Security**:
+   - Sanitized custom template CSS in `InvoiceTemplateController` and `rendered_invoice.blade.php` against stylesheet breakouts, external URL exfiltration, and expression injection; verified company scoping.
+9. **D9: AI Copilot & OCR Security (D-040)**:
+   - Encrypted Gemini API key at rest in `configs` table via `Crypt::encryptString()` in `FinancialCopilotController::saveSettings()`.
+   - Added `getDecryptedApiKey()` with graceful legacy plaintext fallback.
+   - Enforced explicit opt-in gate `ai_data_sharing_opt_in` in `GeminiFinancialChatEngine` and `GeminiVisionInvoiceParser`.
+10. **D10: Competitor Migration Safety**:
+    - Neutralized spreadsheet formula injection (`=`, `+`, `-`, `@`, `\t`, `\r`) with prepended apostrophe in `CompetitorMigrationService::autoRepair()`.
+11. **D11: Multi-Currency & FX Engine**:
+    - Verified FX rate snapshotting and balance of multi-currency journal entries in base currency.
+12. **D12: Market Intelligence Data Protection**:
+    - Encrypted market provider API credentials at rest in `MarketIntelligenceService::saveProviderConfig()`.
+13. **D13: Loyalty Wallet Ledger Integrity**:
+    - Fixed empty document bug in `CustomerLoyaltyWalletService::payInvoiceFromWallet()`: now creates balanced `Transaction` rows (Debit Customer Loyalty Wallet Liability, Credit Customer Receivable) with `SUM(transactions.value) = 0`, transitions document to `approved`, and links payment record.
+14. **D14: Task Scheduling Resilience**:
+    - Confirmed scheduled jobs use `withoutOverlapping()` in `routes/console.php`.
+15. **D15: Native Desktop Shell**:
+    - Verified desktop IPC endpoint protection via `PreventRegularBrowserAccess` and encrypted cookie secrets.
+16. **Documentation & Verification Artifacts**:
+    - Authored `docs/audits/AUDIT_D_PHASES_17_30.md`.
+    - Regenerated `docs/SECURITY_PERMISSION_MATRIX.md` with 708 application routes via `tools/generate_permission_matrix.py`.
+    - Created `tests/Feature/PhaseDAuditSecurityTest.php`: 13 tests, 56 assertions, all passing.
+    - Pint code formatting applied across all modified files. Full suite: 38 clean-room & security tests passed (3,172 assertions), zero regressions.
+
+
 
 
 

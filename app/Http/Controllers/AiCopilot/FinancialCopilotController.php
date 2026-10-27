@@ -8,6 +8,7 @@ use App\Models\CopilotConversation;
 use App\Services\AiCopilot\FinancialCopilotService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
@@ -36,16 +37,14 @@ class FinancialCopilotController extends Controller
                 ->first();
         }
 
-        $companyApiKey = Config::withoutGlobalScopes()
-            ->where('company_id', $companyId)
-            ->where('key', 'gemini_api_key')
-            ->value('value');
+        $companyApiKey = self::getDecryptedApiKey($companyId);
         $envApiKey = config('services.gemini.api_key') ?? env('GEMINI_API_KEY');
 
         $activeKey = $companyApiKey ?: $envApiKey;
         $isConfigured = ! empty($activeKey);
         $apiKeySource = $companyApiKey ? 'company' : ($envApiKey ? 'env' : 'none');
-        $maskedKey = $isConfigured ? substr($activeKey, 0, 7) . '...' . substr($activeKey, -4) : '';
+        $maskedKey = $isConfigured ? substr($activeKey, 0, 7).'...'.substr($activeKey, -4) : '';
+        $optIn = Config::withoutGlobalScopes()->where('company_id', $companyId)->where('key', 'ai_data_sharing_opt_in')->value('value') ?? '1';
 
         return view('copilot.index', [
             'conversations' => $conversations,
@@ -53,6 +52,7 @@ class FinancialCopilotController extends Controller
             'isConfigured' => $isConfigured,
             'apiKeySource' => $apiKeySource,
             'maskedKey' => $maskedKey,
+            'optIn' => (bool) $optIn,
         ]);
     }
 
@@ -103,27 +103,58 @@ class FinancialCopilotController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public static function getDecryptedApiKey(?int $companyId): ?string
+    {
+        if (! $companyId) {
+            return null;
+        }
+
+        $val = Config::withoutGlobalScopes()
+            ->where('company_id', $companyId)
+            ->where('key', 'gemini_api_key')
+            ->value('value');
+
+        if (empty($val)) {
+            return null;
+        }
+
+        try {
+            return Crypt::decryptString($val);
+        } catch (\Throwable) {
+            return $val; // legacy plaintext fallback
+        }
+    }
+
     public function saveSettings(Request $request): JsonResponse
     {
         $this->authorizePermission('copilot.chat');
 
         $validated = $request->validate([
             'gemini_api_key' => 'nullable|string|max:500',
+            'ai_opt_in' => 'nullable|boolean',
         ]);
 
         $companyId = getActiveCompany();
         $key = trim($validated['gemini_api_key'] ?? '');
 
         if (! empty($key)) {
+            // Security (D9): Encrypt API key in storage
             Config::updateOrCreate(
                 ['company_id' => $companyId, 'key' => 'gemini_api_key'],
-                ['value' => $key, 'category' => 'ai', 'type' => 'string']
+                ['value' => Crypt::encryptString($key), 'category' => 'ai', 'type' => 'string']
             );
         } else {
             Config::withoutGlobalScopes()
                 ->where('company_id', $companyId)
                 ->where('key', 'gemini_api_key')
                 ->delete();
+        }
+
+        if ($request->has('ai_opt_in')) {
+            Config::updateOrCreate(
+                ['company_id' => $companyId, 'key' => 'ai_data_sharing_opt_in'],
+                ['value' => $request->boolean('ai_opt_in') ? '1' : '0', 'category' => 'ai', 'type' => 'boolean']
+            );
         }
 
         return response()->json([
@@ -145,7 +176,7 @@ class FinancialCopilotController extends Controller
         if ($request->has('api_key')) {
             $keyToTest = $inputKey;
         } else {
-            $keyToTest = Config::withoutGlobalScopes()->where('company_id', $companyId)->where('key', 'gemini_api_key')->value('value')
+            $keyToTest = self::getDecryptedApiKey($companyId)
                 ?: (config('services.gemini.api_key') ?? env('GEMINI_API_KEY'));
         }
 

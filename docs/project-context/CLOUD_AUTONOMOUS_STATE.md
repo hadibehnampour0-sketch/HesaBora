@@ -2843,6 +2843,24 @@ Branch `dakhl-foundation`, HEAD `0c808aa3`, working tree clean before these doc 
    - Core accounting and warehouse suites: 100% green.
 **Next Action:** Stage and commit Phase B & CR-2 (`git commit`), then proceed to Phase CR-3 / Wave 2 (Desktop Shell & Peripheral modules) according to r15/r16 prompts.
 
+---
+
+## §20 — 2026-10-27 Phase D: Security & Integrity Audit of Phases 17–30 (COMPLETE)
+
+**Status:** COMPLETE (D1 through D15 Remediated & Unit-Verified).
+**Substance:**
+1. **Concurrency Hardening**: Row-level locking `lockForUpdate()` on payment link callbacks (D1) preventing double-spend; atomic `Cache::lock()` on POS stock reservations (D3) preventing overselling.
+2. **Accounting Invariants Restored**: `FinancingService::payInstallment()` (D7) and `CustomerLoyaltyWalletService::payInvoiceFromWallet()` (D13) previously generated empty documents; both now post balanced transaction rows satisfying `SUM(transactions.value) = 0` via `DocumentService` and link payments to approved documents.
+3. **Multi-Tenant Boundary Fix**: Neutralized accidental tenant fallback in `AttendanceDeviceApiController::handleIclock` (D4) by immediately returning 401 `UNAUTHORIZED_DEVICE` when device credentials are missing. Push endpoint now authenticates `cloud_push_token`.
+4. **Data Protection & PII Shielding**: Inquiry logs (D6) cast payloads to `'encrypted:array'`; cache keys hashed with SHA-256; National IDs masked in logs. Gemini API keys (D9) and market credentials (D12) encrypted in `configs` via `Crypt::encryptString()`. Formula injection neutralized in competitor migrations (D10). Custom CSS sanitized against XSS (D8).
+5. **Rate Limiting Applied**: Protected portal callback/pay (`throttle:60,1`), attendance API (`throttle:60,1`), SMS test send (`throttle:10,1`), and telephony lookups (`throttle:30,1`).
+6. **Artifacts & Documentation**:
+   - `docs/audits/AUDIT_D_PHASES_17_30.md`: Full audit findings and UNIT-VERIFIED vs FIELD-VERIFIED classifications.
+   - `docs/SECURITY_PERMISSION_MATRIX.md`: Regenerated via `tools/generate_permission_matrix.py` (708 application routes).
+   - `tests/Feature/PhaseDAuditSecurityTest.php`: 13 tests, 56 assertions, 100% green.
+**Next Action:** Proceed to Phase E (Reversal & Correction Flow) per Super Prompt r15/r16.
+
+
 
 
 

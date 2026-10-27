@@ -2,6 +2,8 @@
 
 namespace App\Services\AiVision\Parsers;
 
+use App\Http\Controllers\AiCopilot\FinancialCopilotController;
+use App\Models\Config;
 use App\Services\AiVision\Contracts\InvoiceVisionParserInterface;
 use Exception;
 use Illuminate\Support\Facades\Http;
@@ -16,11 +18,18 @@ class GeminiVisionInvoiceParser implements InvoiceVisionParserInterface
     public function parseInvoiceFile(string $absolutePath, string $mimeType): array
     {
         $companyId = getActiveCompany();
-        $companyApiKey = $companyId ? \App\Models\Config::withoutGlobalScopes()
+
+        // Security (D9 & D-040): Check explicit opt-in for external AI data transmission
+        $optIn = $companyId ? Config::withoutGlobalScopes()
             ->where('company_id', $companyId)
-            ->where('key', 'gemini_api_key')
+            ->where('key', 'ai_data_sharing_opt_in')
             ->value('value') : null;
 
+        if ($optIn === '0') {
+            return $this->fallbackParser->parseInvoiceFile($absolutePath, $mimeType);
+        }
+
+        $companyApiKey = $companyId ? FinancialCopilotController::getDecryptedApiKey($companyId) : null;
         $apiKey = $companyApiKey ?: (config('services.gemini.api_key') ?? env('GEMINI_API_KEY'));
 
         if (empty($apiKey) || ! file_exists($absolutePath)) {

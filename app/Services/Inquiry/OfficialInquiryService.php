@@ -21,6 +21,7 @@ class OfficialInquiryService
     public function setProvider(InquiryProviderInterface $provider): self
     {
         $this->provider = $provider;
+
         return $this;
     }
 
@@ -29,12 +30,25 @@ class OfficialInquiryService
         return $this->provider;
     }
 
+    public function maskTerm(string $term): string
+    {
+        $len = mb_strlen($term);
+        if ($len <= 4) {
+            return str_repeat('*', $len);
+        }
+        $prefix = mb_substr($term, 0, 3);
+        $suffix = mb_substr($term, -3);
+
+        return $prefix.'****'.$suffix;
+    }
+
     /**
      * Perform Shahkar inquiry (National Code vs Mobile).
      */
     public function inquireShahkar(string $nationalCode, string $mobile, int $companyId, ?User $user = null): array
     {
-        $cacheKey = "inquiry:shahkar:{$nationalCode}:" . preg_replace('/\D/', '', $mobile);
+        // Security (D6): Hash cache keys to prevent raw PII in cache storage
+        $cacheKey = 'inquiry:shahkar:'.hash('sha256', "{$companyId}:{$nationalCode}:".preg_replace('/\D/', '', $mobile));
 
         try {
             $result = Cache::remember($cacheKey, 86400, function () use ($nationalCode, $mobile) {
@@ -45,7 +59,7 @@ class OfficialInquiryService
                 'company_id' => $companyId,
                 'user_id' => $user?->id,
                 'inquiry_type' => 'shahkar',
-                'query_term' => $nationalCode,
+                'query_term' => $this->maskTerm($nationalCode),
                 'query_payload' => ['national_code' => $nationalCode, 'mobile' => $mobile],
                 'is_matched' => (bool) ($result['matched'] ?? false),
                 'status' => $result['status'] ?? 'success',
@@ -58,7 +72,7 @@ class OfficialInquiryService
                 'company_id' => $companyId,
                 'user_id' => $user?->id,
                 'inquiry_type' => 'shahkar',
-                'query_term' => $nationalCode,
+                'query_term' => $this->maskTerm($nationalCode),
                 'query_payload' => ['national_code' => $nationalCode, 'mobile' => $mobile],
                 'is_matched' => false,
                 'status' => 'failed',
@@ -75,7 +89,7 @@ class OfficialInquiryService
     public function inquireSheba(string $sheba, int $companyId, ?User $user = null): array
     {
         $cleanSheba = strtoupper(preg_replace('/[^a-zA-Z0-9]/', '', $sheba));
-        $cacheKey = "inquiry:sheba:{$cleanSheba}";
+        $cacheKey = 'inquiry:sheba:'.hash('sha256', "{$companyId}:{$cleanSheba}");
 
         try {
             $result = Cache::remember($cacheKey, 86400, function () use ($cleanSheba) {
@@ -86,7 +100,7 @@ class OfficialInquiryService
                 'company_id' => $companyId,
                 'user_id' => $user?->id,
                 'inquiry_type' => 'sheba',
-                'query_term' => $cleanSheba,
+                'query_term' => $this->maskTerm($cleanSheba),
                 'query_payload' => ['sheba' => $cleanSheba],
                 'is_matched' => true,
                 'status' => 'success',
@@ -99,7 +113,7 @@ class OfficialInquiryService
                 'company_id' => $companyId,
                 'user_id' => $user?->id,
                 'inquiry_type' => 'sheba',
-                'query_term' => $cleanSheba,
+                'query_term' => $this->maskTerm($cleanSheba),
                 'query_payload' => ['sheba' => $cleanSheba],
                 'is_matched' => false,
                 'status' => 'failed',
@@ -116,7 +130,7 @@ class OfficialInquiryService
     public function inquireCard(string $cardNumber, int $companyId, ?User $user = null): array
     {
         $cleanCard = preg_replace('/\D/', '', $cardNumber);
-        $cacheKey = "inquiry:card:{$cleanCard}";
+        $cacheKey = 'inquiry:card:'.hash('sha256', "{$companyId}:{$cleanCard}");
 
         try {
             $result = Cache::remember($cacheKey, 86400, function () use ($cleanCard) {
@@ -127,7 +141,7 @@ class OfficialInquiryService
                 'company_id' => $companyId,
                 'user_id' => $user?->id,
                 'inquiry_type' => 'card',
-                'query_term' => $cleanCard,
+                'query_term' => $this->maskTerm($cleanCard),
                 'query_payload' => ['card_number' => $cleanCard],
                 'is_matched' => true,
                 'status' => 'success',
@@ -140,7 +154,7 @@ class OfficialInquiryService
                 'company_id' => $companyId,
                 'user_id' => $user?->id,
                 'inquiry_type' => 'card',
-                'query_term' => $cleanCard,
+                'query_term' => $this->maskTerm($cleanCard),
                 'query_payload' => ['card_number' => $cleanCard],
                 'is_matched' => false,
                 'status' => 'failed',
@@ -157,7 +171,7 @@ class OfficialInquiryService
     public function inquirePostalCode(string $postalCode, int $companyId, ?User $user = null): array
     {
         $cleanCode = preg_replace('/\D/', '', $postalCode);
-        $cacheKey = "inquiry:postal:{$cleanCode}";
+        $cacheKey = 'inquiry:postal:'.hash('sha256', "{$companyId}:{$cleanCode}");
 
         try {
             $result = Cache::remember($cacheKey, 86400, function () use ($cleanCode) {
@@ -168,7 +182,7 @@ class OfficialInquiryService
                 'company_id' => $companyId,
                 'user_id' => $user?->id,
                 'inquiry_type' => 'postal_code',
-                'query_term' => $cleanCode,
+                'query_term' => $this->maskTerm($cleanCode),
                 'query_payload' => ['postal_code' => $cleanCode],
                 'is_matched' => true,
                 'status' => 'success',
@@ -181,7 +195,7 @@ class OfficialInquiryService
                 'company_id' => $companyId,
                 'user_id' => $user?->id,
                 'inquiry_type' => 'postal_code',
-                'query_term' => $cleanCode,
+                'query_term' => $this->maskTerm($cleanCode),
                 'query_payload' => ['postal_code' => $cleanCode],
                 'is_matched' => false,
                 'status' => 'failed',
