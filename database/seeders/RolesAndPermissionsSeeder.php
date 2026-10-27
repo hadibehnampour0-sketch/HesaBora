@@ -63,6 +63,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 'print', 'duplicate', 'change-status', 'approve-all',
                 'search-account-balance', 'export', 'export.download', 'import', 'import.store',
                 'sort-numbers', 'sort-numbers.start', 'sort-numbers.process', 'transfer',
+                'reverse', 'correct', 'reversal-preview',
             ],
             'documents.files' => ['create', 'store', 'edit', 'update', 'destroy', 'view', 'download'],
 

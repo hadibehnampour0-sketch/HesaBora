@@ -2882,6 +2882,36 @@ Dakhl introduces a dedicated, touch-first, offline-capable Mobile Companion Web 
 2. **Progressive Web App (PWA) Standalone Shell:** Includes `/mobile/manifest.json` and `/mobile/sw.js` allowing one-tap "Add to Home Screen" on Android/iOS with standalone fullscreen app framing and offline asset caching.
 3. **Client-Side Offline Resilience:** Caches product catalogs and customer directories in `localStorage`, supporting offline catalog browsing and order drafting with online sync.
 
+---
+
+## D-127 — Reversal and Correction Architecture for Immutable Financial Documents (سند ابطال و اصلاح سند حسابداری) — 2026-10-27 — APPROVED & LOCKED
+
+*Implemented and verified on 2026-10-27 (Phase E). Full ADR in docs/decisions/ADR-001-D-127-document-reversal-and-correction-flow.md.*
+
+### 1. Decision
+Dakhl introduces a non-destructive accounting document reversal and correction engine. Instead of destructively modifying or deleting approved records (prohibited under D-084/D-086), errors are resolved through mirror reversal documents (`reverses_document_id`) that preserve full auditability and maintain `SUM(transactions.value) = 0` identically across all financial periods.
+
+### 2. Locked rules
+1. **Mirror Reversal Invariant:** Reversal creates a new approved `Document` whose transactions mirror the original document with negated signs (`value = -1 * original.value`). The net impact of original + reversal across every account ledger is mathematically zero.
+2. **Schema & Traceability:**
+   - Reversal document carries `reverses_document_id` pointing to the original document.
+   - Original document records `reversed_at`, `reversed_by_id`, `reversal_reason_code`, and `reversal_reason`.
+   - The UI displays explicit linkage: "ابطال شده با سند شماره X" on original, and "سند ابطال برای سند شماره Y" on the reversal.
+3. **Collision & State Guards:**
+   - Double-reversal is strictly prohibited: if `reversed_at !== null` or a reversal document already exists, the request fails with validation exception.
+   - Reversing a reversal document is prohibited.
+   - Reversing an unapproved draft is prohibited (drafts are directly edited or deleted).
+   - Atomic locking (`lockForUpdate()`) inside `DB::transaction()` prevents concurrent duplicate reversals.
+4. **"Correct This" One-Click Flow (اصلاح سند):**
+   - Atomically executes `reverseDocument()` on the original document, then generates a new unapproved draft document pre-populated with the original line items.
+   - The clerk is redirected to edit the draft, correct the mistake, and submit for review. Segregation of duties applies: clerk edits the draft, authorized approver approves it.
+5. **Period Close Alignment:**
+   - Reversals inside a Locked Period are blocked; correction entries must be dated in an open period.
+   - Reversals inside a Closed Period require elevated permission (`documents.reverse.closed-period`) and audit reasons.
+6. **Outbox / Sync Idempotency:**
+   - Reversal operations support deterministic replay with optional `operation_id`.
+
+
 
 
 

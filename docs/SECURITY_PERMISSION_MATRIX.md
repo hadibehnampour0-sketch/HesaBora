@@ -1,7 +1,7 @@
 # Security & Permission Matrix — Dakhl
 
 **Generated:** 2026-10-27 (Super Prompt r15/r16 Phase D audit & hardening), from `php artisan route:list --json`.
-**Scope:** every registered application route (708 total; 722 raw minus 14 framework/debug routes -- `_debugbar`, `_ignition`, `_native`, `_scramble`, `sanctum`).
+**Scope:** every registered application route (711 total; 725 raw minus 14 framework/debug routes -- `_debugbar`, `_ignition`, `_native`, `_scramble`, `sanctum`).
 
 ## How to read this matrix
 
@@ -315,7 +315,7 @@ The `Effective Permission` column is computed mechanically from each route's own
 | GET | `docs/api` | scramble.docs.ui | `Closure` | NONE — public/pre-auth |
 | GET | `docs/api.json` | scramble.docs.document | `Closure` | NONE — public/pre-auth |
 
-### `documents` (27 routes)
+### `documents` (30 routes)
 
 | Method | URI | Route Name | Controller@Action | Effective Permission |
 |---|---|---|---|---|
@@ -335,6 +335,7 @@ The `Effective Permission` column is computed mechanically from each route's own
 | GET | `documents/{document}` | documents.show | `DocumentController@show` | documents.show OR documents.* |
 | PUT|PATCH | `documents/{document}` | documents.update | `DocumentController@update` | documents.update OR documents.* |
 | POST | `documents/{document}/change-status` | documents.change-status | `DocumentController@changeStatus` | documents.change-status OR documents.* |
+| POST | `documents/{document}/correct` | documents.correct | `DocumentController@correct` | documents.correct OR documents.* |
 | GET | `documents/{document}/duplicate` | documents.duplicate | `DocumentController@duplicate` | documents.duplicate OR documents.* |
 | GET | `documents/{document}/edit` | documents.edit | `DocumentController@edit` | documents.edit OR documents.* |
 | GET | `documents/{document}/files/create` | documents.files.create | `DocumentFileController@create` | documents.files.create OR documents.files.* |
@@ -345,6 +346,8 @@ The `Effective Permission` column is computed mechanically from each route's own
 | GET | `documents/{document}/files/{documentFile}/edit` | documents.files.edit | `DocumentFileController@edit` | documents.files.edit OR documents.files.* |
 | GET | `documents/{document}/files/{documentFile}/view` | documents.files.view | `DocumentFileController@view` | documents.files.view OR documents.files.* |
 | GET | `documents/{document}/print` | documents.print | `DocumentController@print` | documents.print OR documents.* |
+| GET | `documents/{document}/reversal-preview` | documents.reversal-preview | `DocumentController@reversalPreview` | documents.reversal-preview OR documents.* |
+| POST | `documents/{document}/reverse` | documents.reverse | `DocumentController@reverse` | documents.reverse OR documents.* |
 | POST | `documents/{document}/transfer` | documents.transfer | `DocumentController@transfer` | documents.transfer OR documents.* |
 
 ### `employee-portal` (15 routes)

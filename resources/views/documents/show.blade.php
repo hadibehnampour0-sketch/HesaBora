@@ -56,11 +56,54 @@
                     </svg>
                     {{ $document->approved_at ? __('Approved') : __('unapproved') }}
                 </span>
+                @if ($document->isReversed())
+                    <span class="badge badge-lg badge-error gap-2">
+                        {{ __('ابطال شده') }}
+                    </span>
+                @elseif ($document->isReversal())
+                    <span class="badge badge-lg badge-info gap-2">
+                        {{ __('سند ابطال') }}
+                    </span>
+                @endif
             </div>
         </div>
 
         <div class="card-body space-y-8">
             <x-show-message-bags />
+
+            @if ($document->isReversed())
+                <div class="alert alert-error shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <div>
+                        <h3 class="font-bold">{{ __('این سند حسابداری ابطال گردیده است.') }}</h3>
+                        <div class="text-xs">
+                            {{ __('ابطال شده در تاریخ :date توسط :user', [
+                                'date' => formatDate($document->reversed_at),
+                                'user' => $document->reversedBy?->name ?? __('User'),
+                            ]) }}
+                            @if ($document->reversalDocument)
+                                — {{ __('سند معکوس/ابطال:') }} <a href="{{ route('documents.show', $document->reversalDocument) }}" class="underline font-bold">#{{ formatDocumentNumber($document->reversalDocument->number) }}</a>
+                            @endif
+                            @if ($document->reversal_reason)
+                                — {{ __('علت:') }} {{ $document->reversal_reason }}
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @elseif ($document->isReversal())
+                <div class="alert alert-info shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <div>
+                        <h3 class="font-bold">{{ __('این سند یک سند معکوس (ابطال‌کننده) است.') }}</h3>
+                        <div class="text-xs">
+                            {{ __('این سند جهت صفر نمودن اثر مالی سند شماره صادر شده است:', ['number' => $document->reversedDocument?->number]) }}
+                            @if ($document->reversedDocument)
+                                <a href="{{ route('documents.show', $document->reversedDocument) }}" class="underline font-bold">#{{ formatDocumentNumber($document->reversedDocument->number) }}</a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div
@@ -355,6 +398,26 @@
                         {{ __('Print PDF') }}
                     </a>
 
+                    @if ($document->canBeReversed())
+                        @can('documents.reverse')
+                            <button type="button" onclick="document.getElementById('doc-reverse-modal').showModal()" class="btn btn-warning gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                </svg>
+                                {{ __('ابطال سند') }}
+                            </button>
+                        @endcan
+
+                        @can('documents.correct')
+                            <button type="button" onclick="document.getElementById('doc-correct-modal').showModal()" class="btn btn-info gap-2 text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                {{ __('اصلاح سند') }}
+                            </button>
+                        @endcan
+                    @endif
+
                     @if ($document->documentable)
                         <span class="tooltip"
                             data-tip="{{ __('Cannot edit this document because it is linked to') . ' ' . __(class_basename($document->documentable_type)) . '.' }}">
@@ -455,4 +518,86 @@
             </dialog>
         @endif
     @endcan
+
+    @if ($document->canBeReversed())
+        @can('documents.reverse')
+            <dialog id="doc-reverse-modal" class="modal">
+                <div class="modal-box">
+                    <h3 class="font-bold text-lg text-error">{{ __('ابطال سند حسابداری') }}</h3>
+                    <p class="py-2 text-sm text-gray-500">
+                        {{ __('با تایید این عملیات، یک سند معکوس صادر شده و اثر کلیه ردیف‌های این سند در دفاتر صفر خواهد شد. این عملیات غیرقابل بازگشت است.') }}
+                    </p>
+                    <form action="{{ route('documents.reverse', $document) }}" method="POST" class="mt-4 space-y-4">
+                        @csrf
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text font-semibold">{{ __('علت ابطال') }} *</span>
+                            </label>
+                            <select name="reversal_reason_code" class="select select-bordered w-full" required>
+                                <option value="">{{ __('-- انتخاب علت ابطال --') }}</option>
+                                @foreach (\App\Services\DocumentReversalService::getReasonLabels() as $code => $label)
+                                    <option value="{{ $code }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text font-semibold">{{ __('توضیحات تکمیلی') }}</span>
+                            </label>
+                            <textarea name="reversal_reason" class="textarea textarea-bordered w-full" rows="3" placeholder="{{ __('شرح دلایل ابطال سند جهت درج در سوابق حسابرسی...') }}"></textarea>
+                        </div>
+
+                        <div class="modal-action">
+                            <button type="button" onclick="document.getElementById('doc-reverse-modal').close()" class="btn">{{ __('انصراف') }}</button>
+                            <button type="submit" class="btn btn-error text-white gap-2">{{ __('تایید و صدور سند ابطال') }}</button>
+                        </div>
+                    </form>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                    <button aria-label="{{ __('Close') }}"></button>
+                </form>
+            </dialog>
+        @endcan
+
+        @can('documents.correct')
+            <dialog id="doc-correct-modal" class="modal">
+                <div class="modal-box">
+                    <h3 class="font-bold text-lg text-info">{{ __('اصلاح سند حسابداری (جایگزینی سریع)') }}</h3>
+                    <p class="py-2 text-sm text-gray-500">
+                        {{ __('این فرآیند به طور خودکار سند فعلی را ابطال کرده و یک پیش‌نویس جدید با اقلام مشابه جهت اصلاح مقادیر یا سرفصل‌ها باز می‌کند.') }}
+                    </p>
+                    <form action="{{ route('documents.correct', $document) }}" method="POST" class="mt-4 space-y-4">
+                        @csrf
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text font-semibold">{{ __('علت اصلاح') }} *</span>
+                            </label>
+                            <select name="reversal_reason_code" class="select select-bordered w-full" required>
+                                <option value="">{{ __('-- انتخاب علت اصلاح --') }}</option>
+                                @foreach (\App\Services\DocumentReversalService::getReasonLabels() as $code => $label)
+                                    <option value="{{ $code }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text font-semibold">{{ __('توضیحات تکمیلی') }}</span>
+                            </label>
+                            <textarea name="reversal_reason" class="textarea textarea-bordered w-full" rows="3" placeholder="{{ __('شرح خطای رخ داده که نیاز به اصلاح دارد...') }}"></textarea>
+                        </div>
+
+                        <div class="modal-action">
+                            <button type="button" onclick="document.getElementById('doc-correct-modal').close()" class="btn">{{ __('انصراف') }}</button>
+                            <button type="submit" class="btn btn-info text-white gap-2">{{ __('ابطال و ایجاد پیش‌نویس اصلاحی') }}</button>
+                        </div>
+                    </form>
+                </div>
+                <form method="dialog" class="modal-backdrop">
+                    <button aria-label="{{ __('Close') }}"></button>
+                </form>
+            </dialog>
+        @endcan
+    @endif
 </x-app-layout>

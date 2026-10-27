@@ -2030,6 +2030,32 @@ Executed Phase D of Super Prompt r15/r16 across all 15 focus areas (D1 through D
     - Created `tests/Feature/PhaseDAuditSecurityTest.php`: 13 tests, 56 assertions, all passing.
     - Pint code formatting applied across all modified files. Full suite: 38 clean-room & security tests passed (3,172 assertions), zero regressions.
 
+## Entry 117 — 2026-10-27 — Phase E: Reversal & Correction Architecture (D-127)
+
+Executed Phase E of Super Prompt r15/r16 and Decision D-127:
+
+1. **Architectural Design (ADR-001 & Decision D-127)**:
+   - Designed and recorded `docs/decisions/ADR-001-D-127-document-reversal-and-correction-flow.md` and updated `docs/project-context/Dakhl_DECISION_LOG_2026-09-12-r4.md`.
+   - Strictly enforced non-destructive mirror reversal: original document is never mutated or hard-deleted; a new approved `Document` is created whose transaction rows invert the original's signs (`value = -1 * original.value`).
+   - Accounting invariant proven: $\sum \text{original} = 0$, $\sum \text{reversal} = 0$, and net balance across every involved account is identically zero ($\sum \text{net} = 0$).
+2. **Schema & Migration**:
+   - Created `database/migrations/2026_10_27_230000_add_reversal_columns_to_documents_table.php` adding `reverses_document_id`, `reversed_at`, `reversed_by_id`, `reversal_reason_code`, and `reversal_reason`. Tested migration up and rollback on real MariaDB.
+3. **Model & Domain Service (`DocumentReversalService`)**:
+   - Augmented `App\Models\Document` with relations (`reversedDocument`, `reversalDocument`, `reversedBy`), casts, and helpers (`isReversed()`, `isReversal()`, `canBeReversed()`).
+   - Implemented `DocumentReversalService::reverseDocument()`: executes inside `DB::transaction()` with row-level `lockForUpdate()` to prevent concurrent duplicate reversals; prevents double-reversal; prohibits reversing drafts or reversals; records audit trail in Spatie activity log.
+   - Implemented `DocumentReversalService::correctDocument()`: atomically reverses original document and instantiates an unapproved draft document populated with original line items, enabling fast clerk error correction while maintaining segregation of duties (clerk creates, authorized user approves).
+   - Implemented `DocumentReversalService::inspectDependencies()`: inspects blockers, financial dependencies, and produces negative preview transactions.
+4. **Permissions & Routing**:
+   - Added permissions `documents.reverse`, `documents.correct`, and `documents.reversal-preview` in `RolesAndPermissionsSeeder.php`.
+   - Wired endpoints `reversalPreview`, `reverse`, and `correct` in `DocumentController.php` and `routes/web.php`.
+   - Regenerated `docs/SECURITY_PERMISSION_MATRIX.md` via `tools/generate_permission_matrix.py` (711 application routes).
+5. **UI & Persian Localization**:
+   - Updated `resources/views/documents/show.blade.php`: added reversal status badges, prominent alert banners showing reversing document link and user reason, and interactive modals for "ابطال سند" and "اصلاح سند".
+6. **Testing & Quality**:
+   - Created `tests/Feature/DocumentReversalAndCorrectionTest.php`: 9 tests (54 assertions) covering double-entry balance, mathematical ledger negation, double-reversal prevention, draft reversal rejection, reversal-of-reversal rejection, "Correct this" workflow, permission gating (403 without permission), cross-company isolation (404), and dependency inspection.
+   - Pint applied. Full regression suite: 44 tests, 3,194 assertions, zero regressions.
+
+
 
 
 

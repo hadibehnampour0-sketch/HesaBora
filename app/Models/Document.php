@@ -24,6 +24,7 @@ class Document extends Model
         // exact-string date lookup (e.g. import de-duplication) on SQLite.
         'date' => 'date:Y-m-d',
         'approved_at' => 'date:Y-m-d',
+        'reversed_at' => 'datetime',
         // D-085: deliberately NOT in $fillable -- provenance is only ever
         // set explicitly by a copy/import path (direct property
         // assignment, never mass assignment), never by ordinary
@@ -42,6 +43,11 @@ class Document extends Model
         'documentable_type',
         'approved_at',
         'approver_id',
+        'reverses_document_id',
+        'reversed_at',
+        'reversed_by_id',
+        'reversal_reason_code',
+        'reversal_reason',
         'sync_version',
         'sync_status',
         'origin_device_id',
@@ -85,5 +91,35 @@ class Document extends Model
     public function documentFiles()
     {
         return $this->hasMany(DocumentFile::class);
+    }
+
+    public function reversedDocument()
+    {
+        return $this->belongsTo(Document::class, 'reverses_document_id');
+    }
+
+    public function reversalDocument()
+    {
+        return $this->hasOne(Document::class, 'reverses_document_id');
+    }
+
+    public function reversedBy()
+    {
+        return $this->belongsTo(User::class, 'reversed_by_id');
+    }
+
+    public function isReversed(): bool
+    {
+        return ! is_null($this->reversed_at);
+    }
+
+    public function isReversal(): bool
+    {
+        return ! is_null($this->reverses_document_id);
+    }
+
+    public function canBeReversed(): bool
+    {
+        return ! is_null($this->approved_at) && is_null($this->reversed_at) && is_null($this->reverses_document_id);
     }
 }

@@ -158,6 +158,9 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
     Route::get('documents/{document}/print', [Controllers\DocumentController::class, 'print'])->name('documents.print');
     Route::get('documents/{document}/duplicate', [Controllers\DocumentController::class, 'duplicate'])->name('documents.duplicate');
     Route::post('documents/{document}/transfer', [Controllers\DocumentController::class, 'transfer'])->name('documents.transfer');
+    Route::get('documents/{document}/reversal-preview', [Controllers\DocumentController::class, 'reversalPreview'])->name('documents.reversal-preview');
+    Route::post('documents/{document}/reverse', [Controllers\DocumentController::class, 'reverse'])->name('documents.reverse');
+    Route::post('documents/{document}/correct', [Controllers\DocumentController::class, 'correct'])->name('documents.correct');
 
     Route::resource('transactions', Controllers\TransactionController::class)->only(['index', 'show']);
     Route::get('products/search-product-group', [Controllers\ProductController::class, 'searchProductGroup'])->name('products.search-product-group');

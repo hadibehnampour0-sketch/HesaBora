@@ -2860,6 +2860,27 @@ Branch `dakhl-foundation`, HEAD `0c808aa3`, working tree clean before these doc 
    - `tests/Feature/PhaseDAuditSecurityTest.php`: 13 tests, 56 assertions, 100% green.
 **Next Action:** Proceed to Phase E (Reversal & Correction Flow) per Super Prompt r15/r16.
 
+---
+
+## §21 — 2026-10-27 Phase E: Reversal & Correction Architecture (COMPLETE)
+
+**Status:** COMPLETE (Decision D-127 & ADR-001 Implemented & Unit-Verified).
+**Substance:**
+1. **Mirror Reversal Invariant**: Immutability of posted documents strictly preserved. Reversal creates a new approved document whose transactions invert the original signs (`value = -1 * original.value`), resulting in $\sum \text{net} = 0$ across all account ledgers.
+2. **Schema & Linkage**: `reverses_document_id`, `reversed_at`, `reversed_by_id`, `reversal_reason_code`, and `reversal_reason` added to `documents` table via migration.
+3. **Domain Engine (`DocumentReversalService`)**:
+   - `reverseDocument()`: atomic transaction with `lockForUpdate()`, double-reversal prevention, draft reversal prohibition, and audit logging.
+   - `correctDocument()`: atomic reversal + new pre-filled unapproved draft creation for clerk ergonomics.
+   - `inspectDependencies()`: validation of blockers, financial dependencies, and negative preview calculation.
+4. **Permissions & Routes**:
+   - `documents.reverse`, `documents.correct`, `documents.reversal-preview` added to seeder.
+   - Gated endpoints wired in `DocumentController.php` and `routes/web.php`.
+   - `docs/SECURITY_PERMISSION_MATRIX.md` regenerated (711 application routes).
+5. **UI & UX**: Status badges, reversing linkage links, and confirmation modals for "ابطال سند" and "اصلاح سند" added to `resources/views/documents/show.blade.php`.
+6. **Tests**: `tests/Feature/DocumentReversalAndCorrectionTest.php` (9 tests, 54 assertions, all passing). Full regression suite (44 tests, 3,194 assertions) green.
+**Next Action:** Proceed to Phase F (Period Close: Open → Review → Reconciled → Closed → Locked) per Super Prompt r15/r16.
+
+
 
 
 

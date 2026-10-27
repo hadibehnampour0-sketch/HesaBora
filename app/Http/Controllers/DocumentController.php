@@ -11,6 +11,7 @@ use App\Models\Transaction;
 use App\Services\DocumentImportExport\DocumentImportExportService;
 use App\Services\DocumentImportExport\DocumentImportFormatRegistry;
 use App\Services\DocumentNumberService;
+use App\Services\DocumentReversalService;
 use App\Services\DocumentService;
 use App\Services\FiscalYearTransferService;
 use App\Services\ReportExportService;
@@ -479,5 +480,76 @@ class DocumentController extends Controller
         }
 
         return redirect()->route('documents.index')->with('success', $message);
+    }
+
+    public function reversalPreview(Document $document, DocumentReversalService $reversalService)
+    {
+        $inspection = $reversalService->inspectDependencies($document);
+        $inspection['reason_options'] = DocumentReversalService::getReasonLabels();
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json($inspection);
+        }
+
+        return view('documents.reversal_preview', [
+            'document' => $document,
+            'inspection' => $inspection,
+        ]);
+    }
+
+    public function reverse(Request $request, Document $document, DocumentReversalService $reversalService)
+    {
+        $validated = $request->validate([
+            'reversal_reason_code' => 'required|string',
+            'reversal_reason' => 'nullable|string|max:1000',
+            'operation_id' => 'nullable|string|max:64',
+        ]);
+
+        $reversalDoc = $reversalService->reverseDocument(
+            $document,
+            $request->user(),
+            $validated['reversal_reason_code'],
+            $validated['reversal_reason'] ?? null,
+            $validated['operation_id'] ?? null
+        );
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('Document reversed successfully.'),
+                'reversal_document_id' => $reversalDoc->id,
+                'reversal_document_number' => $reversalDoc->number,
+            ]);
+        }
+
+        return redirect()->route('documents.show', $document)
+            ->with('success', __('سند با موفقیت ابطال شد و سند معکوس شماره :number ثبت گردید.', ['number' => $reversalDoc->number ?? $reversalDoc->id]));
+    }
+
+    public function correct(Request $request, Document $document, DocumentReversalService $reversalService)
+    {
+        $validated = $request->validate([
+            'reversal_reason_code' => 'required|string',
+            'reversal_reason' => 'nullable|string|max:1000',
+        ]);
+
+        $result = $reversalService->correctDocument(
+            $document,
+            $request->user(),
+            $validated['reversal_reason_code'],
+            $validated['reversal_reason'] ?? null
+        );
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => __('Document corrected successfully.'),
+                'reversal_document_id' => $result['reversal']->id,
+                'draft_document_id' => $result['draft']->id,
+            ]);
+        }
+
+        return redirect()->route('documents.edit', $result['draft'])
+            ->with('success', __('سند اولیه با موفقیت ابطال شد. پیش‌نویس سند اصلاحی با اقلام قبلی ایجاد گردید؛ تغییرات لازم را اعمال کرده و جهت تایید ارسال کنید.'));
     }
 }
