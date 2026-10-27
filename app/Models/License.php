@@ -132,9 +132,13 @@ class License extends Model
     /**
      * Check if a specific module is entitled under this license.
      */
-    public function hasModule(string $moduleKey): bool
+    public function hasModule(string $moduleKey, bool $allowExpiredReadOnly = false): bool
     {
-        if (! $this->isValid()) {
+        if (! $this->is_active) {
+            return false;
+        }
+
+        if (! $allowExpiredReadOnly && ! $this->isValid()) {
             return false;
         }
 

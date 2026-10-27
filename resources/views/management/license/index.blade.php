@@ -26,7 +26,7 @@
                     <span>{{ __('پورتال تعرفه‌ها') }}</span>
                 </a>
 
-                @if (auth()->user()->isSuperAdmin() || app()->environment('local', 'testing'))
+                @if (! app()->isProduction() && (auth()->user()->isSuperAdmin() || app()->environment('local', 'testing')))
                     <button type="button" onclick="generator_modal.showModal()" class="btn btn-primary btn-sm rounded-xl text-xs gap-1 font-bold shadow-md shadow-primary/20">
                         <span>🛠️</span>
                         <span>{{ __('کارگاه صدور لایسنس و افزونه') }}</span>
@@ -158,10 +158,10 @@
                     <form action="{{ route('license.activate') }}" method="POST" class="space-y-4">
                         @csrf
                         <div class="space-y-1">
-                            <label class="block text-xs font-bold text-base-content/70">{{ __('کلید رمزنگاری لایسنس (DAKHL-LIC-v1...):') }}</label>
+                            <label class="block text-xs font-bold text-base-content/70">{{ __('کلید رمزنگاری لایسنس (DAKHL-LIC-v2...):') }}</label>
                             <textarea name="license_key"
                                       rows="3"
-                                      placeholder="DAKHL-LIC-v1.eyJlZGl0aW9uIjoicHJvZmVzc2lvbmFs...c4b2a8f..."
+                                      placeholder="DAKHL-LIC-v2.eyJraWQiOiJkYWtobC1yb290LTIwMjYiLCJ0aWVyIjoicHJvZmVzc2lvbmFs...c4b2a8f..."
                                       required
                                       class="textarea textarea-bordered w-full rounded-2xl font-mono text-xs focus:outline-primary bg-base-200/30 leading-relaxed dir-ltr"></textarea>
                         </div>
@@ -180,7 +180,7 @@
                     </form>
                 </div>
 
-                @if (auth()->user()->isSuperAdmin() || app()->environment('local', 'testing'))
+                @if (! app()->isProduction() && (auth()->user()->isSuperAdmin() || app()->environment('local', 'testing')))
                     <!-- Development / Admin Demo Quick Issuer -->
                     <div class="mt-6 pt-4 border-t border-dashed border-base-300">
                         <div class="flex items-center justify-between mb-2">
@@ -354,6 +354,7 @@
             </div>
         </div>
 
+        @if (! app()->isProduction() && (auth()->user()->isSuperAdmin() || app()->environment('local', 'testing')))
         <!-- License Generator & Add-on Studio Modal -->
         <dialog id="generator_modal" class="modal">
             <div class="modal-box max-w-3xl rounded-3xl p-6" x-data="{
@@ -555,6 +556,7 @@
                 </form>
             </div>
         </dialog>
+        @endif
 
     </div>
 

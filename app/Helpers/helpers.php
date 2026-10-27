@@ -1,10 +1,12 @@
 <?php
 
 use App\Models\Company;
+use App\Support\JalaliDate;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Morilog\Jalali\Jalalian;
 
 function getActiveCompany(): int
 {
@@ -410,5 +412,140 @@ if (! function_exists('model_route')) {
         }
 
         return $routeName.'.'.$action;
+    }
+}
+
+if (! function_exists('gregorian_to_jalali')) {
+    /**
+     * Convert Gregorian date to Jalali date array or formatted string.
+     */
+    function gregorian_to_jalali($gy, $gm, $gd, $mod = '')
+    {
+        $res = JalaliDate::toJalali((int) $gy, (int) $gm, (int) $gd);
+
+        return $mod === '' ? $res : sprintf('%04d%s%02d%s%02d', $res[0], $mod, $res[1], $mod, $res[2]);
+    }
+}
+
+if (! function_exists('jalali_to_gregorian')) {
+    /**
+     * Convert Jalali date to Gregorian date array or formatted string.
+     */
+    function jalali_to_gregorian($jy, $jm, $jd, $mod = '')
+    {
+        $res = JalaliDate::toGregorian((int) $jy, (int) $jm, (int) $jd);
+
+        return $mod === '' ? $res : sprintf('%04d%s%02d%s%02d', $res[0], $mod, $res[1], $mod, $res[2]);
+    }
+}
+
+if (! function_exists('jcheckdate')) {
+    /**
+     * Check if a Jalali date is valid.
+     */
+    function jcheckdate($jm, $jd, $jy)
+    {
+        return JalaliDate::checkDate((int) $jm, (int) $jd, (int) $jy);
+    }
+}
+
+if (! function_exists('jdate')) {
+    /**
+     * Format a timestamp into Jalali date string or return a Jalalian instance.
+     */
+    function jdate($format = '', $timestamp = '', $none = '', $time_zone = 'Asia/Tehran', $tr_num = 'fa')
+    {
+        if (empty($format) || $format === null) {
+            return class_exists(Jalalian::class) ? Jalalian::now() : JalaliDate::format('Y/m/d');
+        }
+
+        if (is_string($format) && preg_match('/^\d{4}[\-\/]\d{1,2}[\-\/]\d{1,2}/', $format) && class_exists(Jalalian::class)) {
+            return Jalalian::forge($format);
+        }
+
+        return JalaliDate::format($format, $timestamp ?: null, $tr_num);
+    }
+}
+
+if (! function_exists('justDate')) {
+    function justDate($date = '')
+    {
+        if ($date instanceof Carbon || $date instanceof DateTimeInterface) {
+            $date = $date->format('Y/m/d');
+        }
+        $timeStr = explode(' ', (string) $date);
+
+        return $timeStr[0] ?? (string) $date;
+    }
+}
+
+if (! function_exists('jalali_to_gregorian_date')) {
+    function jalali_to_gregorian_date($date, $str = '/', $dateExplodeStr = '/')
+    {
+        if ($date instanceof Carbon || $date instanceof DateTimeInterface) {
+            $date = $date->format('Y/m/d');
+        }
+        $parts = explode(' ', (string) $date);
+        $dateOnly = $parts[0] ?? '';
+
+        if (str_contains($dateOnly, '-') && ! str_contains($dateOnly, '/')) {
+            $dateExplodeStr = '-';
+        }
+
+        $dateStr = explode($dateExplodeStr, $dateOnly);
+        if (count($dateStr) < 3 || (int) $dateStr[0] < 1) {
+            return '';
+        }
+
+        return jalali_to_gregorian((int) $dateStr[0], (int) $dateStr[1], (int) $dateStr[2], $str);
+    }
+}
+
+if (! function_exists('gregorian_to_jalali_date')) {
+    function gregorian_to_jalali_date($date, $str = '/', $dateExplodeStr = '/')
+    {
+        if ($date instanceof Carbon || $date instanceof DateTimeInterface) {
+            $date = $date->format('Y/m/d');
+        }
+        $parts = explode(' ', (string) $date);
+        $dateOnly = $parts[0] ?? '';
+
+        if (str_contains($dateOnly, '-') && ! str_contains($dateOnly, '/')) {
+            $dateExplodeStr = '-';
+        }
+
+        $dateStr = explode($dateExplodeStr, $dateOnly);
+        if (count($dateStr) < 3 || (int) $dateStr[0] < 1) {
+            return '';
+        }
+
+        return gregorian_to_jalali((int) $dateStr[0], (int) $dateStr[1], (int) $dateStr[2], $str);
+    }
+}
+
+if (! function_exists('gregorian_to_jalali_datetime')) {
+    function gregorian_to_jalali_datetime($date, $str = '/', $dateExplodeStr = '-')
+    {
+        if ($date instanceof Carbon || $date instanceof DateTimeInterface) {
+            $date = $date->format('Y-m-d H:i:s');
+        }
+        $timeStr = explode(' ', (string) $date);
+        $dateOnly = $timeStr[0] ?? '';
+
+        if (str_contains($dateOnly, '/') && ! str_contains($dateOnly, '-')) {
+            $dateExplodeStr = '/';
+        }
+
+        $dateStr = explode($dateExplodeStr, $dateOnly);
+        if (count($dateStr) < 3 || (int) $dateStr[0] < 1) {
+            return '';
+        }
+
+        $dateTime = gregorian_to_jalali((int) $dateStr[0], (int) $dateStr[1], (int) $dateStr[2], $str);
+        if (count($timeStr) === 2 && ! empty($timeStr[1])) {
+            $dateTime .= ' '.$timeStr[1];
+        }
+
+        return $dateTime;
     }
 }

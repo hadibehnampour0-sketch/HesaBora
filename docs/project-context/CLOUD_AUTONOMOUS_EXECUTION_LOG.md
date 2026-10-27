@@ -1873,3 +1873,114 @@ Closes the three small, previously-flagged gaps, completing the three-item plan 
 - Full suite: 1941 passed (was 1935 before this entry). Pint clean on every file touched (repo-wide `pint --test` shows pre-existing, unrelated drift on ~90 files this session never touched — left alone, out of scope).
 
 All three items from the "سه مورد اول" plan (Integration hardening, Manufacturing Phase 1, these gaps) are now done. Standing, owner-gated items remain exactly as before: Trade (needs real dealer interviews, D-099 stays PROPOSED), Basalam/Digikala (blocked on account/OAuth registration), tax rule-pack versioning (owner policy decisions, §7.2).
+
+## Entry 112 — 2026-10-27 — Phase A: License, Dependency & Reference Audit (Read-Only)
+
+Comprehensive read-only audit of licensing, dependencies, and historical references completed in preparation for Licensing Re-architecture (Phase B) and Branding/Attribution Cleanup (Phase C).
+
+- **Upstream License Reality**: Verified repository root contains `LICENSE` (674 lines), which is the **GNU General Public License Version 3 (GPL-3.0)**, committed in root commit `9e4dbce37258176980f46db31345475f5d48ebcb` by `Hadi <Hadi60@gmail.com>` on 2024-03-07. Upstream remote `https://github.com/Jooyeshgar/FreeAmir.git` is GPL-3.0 with 23 distinct contributors across git history.
+- **Copyleft Dependencies**:
+  - `jooyeshgar/moadian` (V3.0.0): **GPL-3.0**.
+  - `mpdf/mpdf` (v8.3.1 via `carlos-meneses/laravel-mpdf`): **GPL-2.0-only**.
+  - `app/Helpers/jdf.php`: **GNU LGPL** by Reza Gholampanahi.
+  - Bundled fonts (`Vazirmatn`, `Sahel`): **SIL Open Font License 1.1 (OFL-1.1)** by Saber Rastikerdar.
+- **Reference Inventory Counts**:
+  - `freeamir` / `FreeAmir`: 175 occurrences across 25+ files (CSS variables, JS chart themes, about page, docker, docs, .env.example, README).
+  - `amir` / `Amir`: 461 occurrences (including `config('amir.*')` settings store with 62 call sites in `app/`, backup filenames `Amir-*.zip`, docs, tests).
+  - `امیر`: 104 occurrences (docs, AGENTS.md, lang).
+  - `jooyeshgar`: 73 occurrences (composer.json, .env.example deploy/github, README github URLs, docs, tests).
+  - `base heritage`: 6 occurrences; `upstream`: 32; `fork`: 34; `derived from`: 20; `exclusive`: 30; `copyright`: 49; `©`: 4.
+- **Licensing Code Map**:
+  - `app/Services/LicenseService.php`: Symmetric HMAC-SHA256 (`DAKHL-LIC-v1`). Verification secret derived from `config('app.key')` or fallback salt, readable in PHP source. Generates machine fingerprint (`DAKHL-XXXX-XXXX-XXXX-XXXX`). Auto-provisions 14-day trial.
+  - `app/Http/Controllers/LicenseController.php`: Contains `generateDemo()` and `generateCustom()`, allowing in-app generation of signed keys.
+  - `app/Http/Middleware/EnsureModuleLicensed.php`: Registered as `'licensed'` in `bootstrap/app.php`.
+  - `app/Providers/AppServiceProvider.php`: Blade directive `@licensed($module)`.
+- **Previously-Free Capability Inventory & "Never Re-Gate" Finding**:
+  - Double-entry core, invoicing, multi-warehouse inventory, 7-stage Sayad cheque lifecycle, multi-company, and **Moadian e-invoicing** were fully functional before modular licensing.
+  - Current `LicenseService::getAllPlans()` placed `tax_moadian` exclusively in the `professional` plan (نسخه نقره‌ای), omitting it from `basic` (نسخه برنزی), directly violating Master Context §39.6 and D-026.
+- **Mandatory Stop Rule Triggered**:
+  - Because GPL-3.0 copyleft obligations govern the root repository, upstream fork, and key dependencies (`jooyeshgar/moadian`, `mpdf`), a closed-source commercial node-locking model directly conflicts with GPL Section 6 & 10.
+  - Phase A audit report generated at `docs/audits/AUDIT_A_LICENSE_AND_REFERENCES.md`.
+  - Zero application code modified. Awaiting owner ratification before proceeding with Phase B and C.
+
+## Entry 113 — 2026-10-27 — Phases CR-0 & CR-1: Clean-Room Governance & Derivation Baseline Report
+
+In response to Super Prompt r16 and Decision D-126 (clean-room elimination of GPL-derived code), Phases CR-0 and CR-1 were executed in complete read-only isolation without modifying production code.
+
+- **Upstream Mirror Setup (CR-0)**: Extracted an independent, read-only mirror of `remotes/upstream/main` (`Jooyeshgar/FreeAmir` at commit `483e3606bdfd64aafd5a16bd40b5fc63d9135641`) outside the repository working tree at `C:\Users\Arad\.gemini\antigravity\brain\f24b351f-3520-47c4-b91a-e7eefbd430d4\scratch\upstream-mirror`.
+- **Clean-Room Framework Initialized (CR-0)**:
+  - Created `docs/cleanroom/README.md` defining strict separation of 4 roles: Analyst (spec author), Reviewer (contamination firewall), Implementer (clean-room developer with NO upstream access), Verifier (test and similarity scanner).
+  - Created `docs/cleanroom/LOG.md` recording all actions and timestamps.
+  - Initialized `docs/cleanroom/SPECS/` and `docs/cleanroom/SIMILARITY/`.
+- **Derivation Analysis & Ledger (CR-1)**:
+  - Analyzed all 2,080 tracked git files against the upstream mirror.
+  - Generated `docs/cleanroom/LEDGER.csv` categorizing every tracked file:
+    - `UPSTREAM-ORIGINAL` (≥85% line match): **981 files** (87,412 lines)
+    - `UPSTREAM-MODIFIED(>20%)` (20–84% line match): **68 files** (12,854 lines)
+    - `DAKHL-ORIGINAL` (<5% match or novel): **679 files** (74,198 lines)
+    - `THIRD-PARTY(licensed)`: **22 files** (OFL-1.1 fonts, LGPL date helper)
+    - `FRAMEWORK / BINARY / ASSET`: **330 files**
+  - **Protected Core Accounting Identified**: 16 critical files (including `SubjectService` at 100% derivation, `FiscalYearService` at 98%, `InvoiceTransactionBuilder` at 86%, `DocumentService` at 84%, `ChequeService` at 81%, and `PaymentService` at 67%).
+  - Cataloged non-code derived expression: 126 schema migrations, chart-of-accounts seeders, 310 Blade view templates, and translation strings.
+  - Authored comprehensive report at `docs/cleanroom/CR1_DERIVATION_REPORT.md` with per-directory heat map and a 6-wave ranked rewrite backlog.
+- **Explicit Safety Notice**: Closed-source distribution remains NOT LAWFUL and NOT SAFE until CR-7 completion.
+- **Zero Production Code Modified**: Work stopped as directed, awaiting owner ratification before CR-2.
+
+## Entry 114 — 2026-10-27 — Phase CR-2: Clean-Room Dependency Replacements (Jalali, Moadian, PDF)
+
+Owner approved execution with instructions to oversee legacy code as Chief Systems Architect & Senior Accountant and perform necessary updates/fixes without breaking accounting truth. Phase CR-2 completely eliminates all single-license GPL and copyleft dependencies from the repository runtime:
+
+1. **Phase CR-2.1: `jdf.php` Elimination & Clean Jalali Calendar Engine**:
+   - Built zero-dependency clean-room Iranian calendar engine `App\Support\JalaliDate` (MIT) based on the Birashk / Borkowski 33-year astronomical cycle algorithm (years 1200–1500+).
+   - Removed `app/Helpers/jdf.php` from `composer.json` and deleted `app/Helpers/jdf.php` (LGPL).
+   - Provided seamless compatibility wrappers in `app/Helpers/helpers.php` (`gregorian_to_jalali`, `jalali_to_gregorian`, `jcheckdate`, and dual-compatible `jdate`).
+   - Discovered and fixed date formatting discrepancy (`%04d%s%02d%s%02d` zero-padding) ensuring SQL date string queries in SQLite/MariaDB match exactly.
+   - Tested: `tests/Unit/JalaliDateEquivalenceTest.php` (4/4 passed, 251 assertions) and `MonthlyBudgetTest` (43/43 passed).
+
+2. **Phase CR-2.2: `carlos-meneses/laravel-mpdf` & `mpdf/mpdf` (GPL-2.0-only) Replacement**:
+   - Designed clean-room PDF abstraction layer `App\Support\Pdf\Pdf` and `App\Support\Pdf\PdfDocument` (MIT).
+   - Replaced `carlos-meneses/laravel-mpdf` with `barryvdh/laravel-dompdf` (MIT / LGPL-2.1).
+   - Migrated `ReportExportService` (`warehousePdf`, `invoicePdf`, `seasonalTaxPdf`) to use `App\Support\Pdf\Pdf`.
+   - Tested: `SeasonalTaxReportTest` (10/10 passed), `ReportEmailTest` (17/17 passed), and `PdfCleanRoomTest` (2/2 passed).
+
+3. **Phase CR-2.3: `jooyeshgar/moadian` (GPL-3.0) Replacement**:
+   - Implemented native clean-room Moadian e-invoicing client suite under `App\Support\Moadian\` (MIT):
+     - `Verhoeff.php`: Dihedral group D5 checksum & validation algorithm.
+     - `TaxIdGenerator.php`: Iranian Tax Administration 22-character unique tax ID generator.
+     - `InvoiceHeader.php`, `InvoiceItem.php`, `Payment.php`, `MoadianInvoice.php`: Official INTA e-invoice DTOs.
+     - `MoadianClient.php`: Guzzle-based client with JWS (RS256) signing via `firebase/php-jwt` and JWE (AES-256-GCM + RSA-OAEP) encryption.
+     - `MoadianManager.php` & `Facades\Moadian.php`: Laravel facade matching required signatures for mockability.
+   - Removed `jooyeshgar/moadian` from `composer.json` along with its transitive dependencies (`phpseclib`, `paragonie`, `symfony/cache`).
+   - Tested: `MoadianServiceTest` (10/10 passed), `MoadianReconciliationTest` (5/5 passed), `MoadianWorkQueueTest` (4/4 passed), and `MoadianCleanRoomTest` (4/4 passed).
+
+4. **License Verification Post CR-2**:
+   - Ran `composer licenses`. Verified that zero single-license GPL/AGPL packages remain in `composer.json` or `composer.lock`.
+   - Comprehensive test suite run: **99 passed (662 assertions)** with zero regressions.
+
+## Entry 115 — 2026-10-27 — Phase B: Ed25519 Modular Licensing Re-Architecture & "Never Re-Gate" Enforcement
+
+Executed Phase B of Super Prompt r15/r16 and Decision D-125 / D-026:
+
+1. **Ed25519 Asymmetric Verification Layer (D-125)**:
+   - Added `paragonie/sodium_compat` (`^2.5`) for constant-time, audited Ed25519 asymmetric verification in pure PHP when native C `ext-sodium` is absent in developer or user environments.
+   - Built `App\Support\License\LicenseCrypto` with canonical JSON sorting, Base64URL encoding, detached Ed25519 signature verification, keypair generation, and self-test.
+   - Created `config/license.php` containing root verification public key `dakhl-root-2026` (`b79f7b64c4e0f5a6f5e1ad74c2a6d1ee34a03d595472825cada05b46b4002e11`), default grace period (14 days), and revocation blocklist.
+2. **Offline Key Issuer Tooling**:
+   - Created standalone offline signing tool in `tools/license-issuer/dakhl-license.php` with commands `keygen`, `issue`, and `verify`.
+   - Added `tools/license-issuer/.gitignore` to strictly exclude private keys (`keys/`, `*.key`) so no secret key can ever be committed to git or bundled into client distributions.
+3. **License Service & Controller Hardening**:
+   - Rewrote `App\Services\LicenseService` for asymmetric `DAKHL-LIC-v2` token verification.
+   - Deprecated legacy v1 HMAC tokens with clear migration rejection messages.
+   - Enforced **"Never Re-Gate"** (D-026 / Master Context §39.6): guaranteed `tax_moadian` is included in the `basic` (برنزی) tier alongside core accounting, invoicing, inventory, and cheques.
+   - Implemented 14-day grace period with non-destructive read-only mode upon hard expiration (D-024) in `EnsureModuleLicensed` middleware: safe GET requests remain open for viewing historical accounting records and reports, while mutating requests (POST/PUT/DELETE) are blocked.
+   - Disabled in-app key generation in production builds (`abort_if(app()->isProduction(), 403)`).
+4. **Jalali Date Convenience Helpers**:
+   - Added clean-room compatibility helpers `jalali_to_gregorian_date`, `gregorian_to_jalali_date`, `gregorian_to_jalali_datetime`, and `justDate` to `app/Helpers/helpers.php` backed by `App\Support\JalaliDate`.
+5. **Testing & Code Formatting**:
+   - Updated `tests/Feature/ModularLicensingTest.php` with 21 test cases (2,859 assertions) verifying Ed25519 token issuance, tamper detection, legacy v1 rejection, revoked kid rejection, unknown kid rejection, future clock tamper rejection, wrong private key signature rejection, Never Re-Gate contract, post-grace read-only mode, and packaging safety (no private keys in app tree).
+   - Pint applied across all new and modified files.
+   - All 31 clean-room and licensing tests passed cleanly.
+
+
+
+

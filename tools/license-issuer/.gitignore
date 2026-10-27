@@ -1,0 +1,6 @@
+# Never commit private signing keys or sensitive offline certificates
+keys/
+*.key
+*.pem
+*.secret
+*.sig

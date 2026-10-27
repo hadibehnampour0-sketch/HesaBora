@@ -74,6 +74,7 @@ class LicenseController extends Controller
      */
     public function generateDemo(Request $request): RedirectResponse
     {
+        abort_if(app()->isProduction(), 403, 'Key generation is restricted to offline tooling in production.');
         abort_unless(
             auth()->user()->isSuperAdmin() || app()->environment('local', 'testing'),
             403,
@@ -98,7 +99,7 @@ class LicenseController extends Controller
             'max_devices' => 5,
             'issued_at' => now()->timestamp,
             'expires_at' => now()->addDays($validDays)->timestamp,
-            'grace_period_days' => 7,
+            'grace_days' => 14,
         ]);
 
         $result = $this->licenseService->activateLicenseKey($key);
@@ -112,6 +113,7 @@ class LicenseController extends Controller
      */
     public function generateCustom(Request $request): RedirectResponse
     {
+        abort_if(app()->isProduction(), 403, 'Key generation is restricted to offline tooling in production.');
         abort_unless(
             auth()->user()->isSuperAdmin() || app()->environment('local', 'testing'),
             403,
@@ -159,7 +161,7 @@ class LicenseController extends Controller
             'add_devices' => (int) $request->input('add_devices', 0),
             'issued_at' => now()->timestamp,
             'expires_at' => $expiresAt,
-            'grace_period_days' => 7,
+            'grace_days' => 14,
         ];
 
         $key = $this->licenseService->issueLicenseKey($data);

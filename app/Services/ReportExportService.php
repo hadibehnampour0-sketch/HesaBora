@@ -14,6 +14,7 @@ use App\Models\Subject;
 use App\Models\Transaction;
 use App\Models\Warehouse;
 use App\Services\DocumentImportExport\DocumentImportExportService;
+use App\Support\Pdf\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -21,7 +22,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use PDF;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -142,7 +142,7 @@ class ReportExportService
         $config = ['format' => 'A4', 'orientation' => $data['portrait'] ? 'P' : 'L', 'directionality' => 'rtl',
             'margin_top' => 28, 'margin_bottom' => 18, 'margin_header' => 6, 'margin_footer' => 6, 'defaultPageNumStyle' => 'persian'];
 
-        return ['content' => PDF::loadView('warehouse.report-pdf', $data, [], $config)->output(),
+        return ['content' => Pdf::loadView('warehouse.report-pdf', $data, [], $config)->output(),
             'filename' => 'warehouse-report.pdf', 'mime' => 'application/pdf'];
     }
 
@@ -327,7 +327,7 @@ class ReportExportService
             throw ValidationException::withMessages(['invoice_id' => __('Only approved and paid invoices can be emailed as PDF.')]);
         }
 
-        return ['content' => PDF::loadView('invoices.print', compact('invoice'))->output(),
+        return ['content' => Pdf::loadView('invoices.print', compact('invoice'))->output(),
             'filename' => 'invoice-'.formatDocumentNumber($invoice->number ?? $invoice->id).'.pdf', 'mime' => 'application/pdf'];
     }
 
@@ -366,7 +366,7 @@ class ReportExportService
         $config = ['format' => 'A4', 'orientation' => 'P', 'directionality' => 'rtl',
             'margin_top' => 28, 'margin_bottom' => 18, 'margin_header' => 6, 'margin_footer' => 6, 'defaultPageNumStyle' => 'persian'];
 
-        return ['content' => PDF::loadView('tax.seasonal.report-pdf', compact('report'), [], $config)->output(),
+        return ['content' => Pdf::loadView('tax.seasonal.report-pdf', compact('report'), [], $config)->output(),
             'filename' => "seasonal-tax-{$report['jalali_year']}-q{$report['quarter']}.pdf", 'mime' => 'application/pdf'];
     }
 

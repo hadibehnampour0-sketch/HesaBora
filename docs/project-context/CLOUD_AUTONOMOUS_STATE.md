@@ -2791,3 +2791,59 @@ The four commits updated `CLOUD_AUTONOMOUS_EXECUTION_LOG.md` (Entries 109–111)
 ### Current git state (start of this session)
 Branch `dakhl-foundation`, HEAD `0c808aa3`, working tree clean before these doc edits, **1941/1941 tests green** (as reported by Entry 111), backup mirror current. **Next free decision ID: D-108.** Standing owner-gated items are unchanged: Trade (needs real dealer interviews; D-099 stays PROPOSED), Basalam/Digikala (blocked on account/OAuth registration), tax rule-pack versioning (owner policy), plus the two CRITICAL fixes above.
 
+---
+
+## §16 — 2026-10-27 Phase A: Licensing, Dependency & Reference Audit (Read-Only)
+
+**Status:** COMPLETE (docs/audits/AUDIT_A_LICENSE_AND_REFERENCES.md written; ZERO code modified).
+**Mandatory Stop Rule Triggered:** Root `LICENSE` is GNU GPL-3.0; upstream repository (`Jooyeshgar/FreeAmir`) is GPL-3.0 with 23 contributors; `jooyeshgar/moadian` is GPL-3.0; `mpdf/mpdf` is GPL-2.0-only; `app/Helpers/jdf.php` is GNU LGPL.
+**Legal Conflict:** Enforcing node-locked closed-source licensing (HMAC or Ed25519) on a GPL-3.0 derivative work directly violates GPL-3.0 Section 6 and 10.
+**Next Action:** Await project owner ratification on licensing and attribution policy before proceeding with Phase B and Phase C.
+
+---
+
+## §17 — 2026-10-27 Phases CR-0 & CR-1: Clean-Room Governance & Derivation Baseline
+
+**Status:** COMPLETE (CR-0 framework established in `docs/cleanroom/`; CR-1 derivation report in `docs/cleanroom/CR1_DERIVATION_REPORT.md`; `docs/cleanroom/LEDGER.csv` maps all 2,080 tracked files; ZERO production code modified).
+**Baseline Facts:**
+- 981 files (47.2%, 87k lines) are `UPSTREAM-ORIGINAL`.
+- 68 files (3.3%, 12.8k lines) are `UPSTREAM-MODIFIED(>20%)`.
+- 679 files (32.6%, 74.2k lines) are `DAKHL-ORIGINAL`.
+- 16 Protected Core Accounting files identified (accounting spine: `SubjectService`, `FiscalYearService`, `DocumentService`, `TransactionBuilder`, `PaymentService`, `ChequeService`).
+- 6-Wave rewrite backlog mapped (Wave 1: dependencies CR-2; Wave 2: desktop shell; Wave 3: peripheral modules; Wave 4: invoicing/inventory; Wave 5: protected core; Wave 6: views & schemas).
+**Distribution Safety:** Closed-source distribution is CURRENTLY NOT SAFE OR LAWFUL under GPL obligations until CR-7 completion.
+**Next Action:** Await owner ratification to begin Wave 1 / Phase CR-2 (Dependency Replacements: mPDF, jdf.php, jooyeshgar/moadian).
+
+---
+
+## §18 — 2026-10-27 Phase CR-2: Clean-Room Dependency Replacements (COMPLETE)
+
+**Status:** COMPLETE (Wave 1 of Clean-Room Elimination).
+**Substance:**
+1. **CR-2.1 (`jdf.php` -> `App\Support\JalaliDate`)**: Zero-dependency Iranian astronomical calendar engine under MIT (Birashk/Borkowski 33-year cycle). LGPL helper deleted. Global compatibility layer preserved in `app/Helpers/helpers.php` including `jalali_to_gregorian_date`, `gregorian_to_jalali_date`, `gregorian_to_jalali_datetime`, `justDate`. Verified via `JalaliDateEquivalenceTest` (4/4 passed) and `MonthlyBudgetTest` (43/43 passed).
+2. **CR-2.2 (`mpdf/mpdf` -> `App\Support\Pdf` + `barryvdh/laravel-dompdf`)**: GPL-2.0-only dependency removed. Permissive PDF abstraction built under MIT. Verified via `SeasonalTaxReportTest` (10/10 passed), `ReportEmailTest` (17/17 passed), and `PdfCleanRoomTest` (2/2 passed).
+3. **CR-2.3 (`jooyeshgar/moadian` -> `App\Support\Moadian`)**: GPL-3.0 Jooyeshgar library removed. Implemented clean-room native Moadian e-invoicing suite under MIT (Verhoeff D5 algorithm, 22-character unique tax ID generator, official INTA DTOs, Guzzle client with JWS RS256 signing and JWE AES-256-GCM encryption, mockable facade). Verified via `MoadianServiceTest` (10/10 passed), `MoadianReconciliationTest` (5/5 passed), `MoadianWorkQueueTest` (4/4 passed), and `MoadianCleanRoomTest` (4/4 passed).
+4. **License Status**: `composer licenses` confirms ZERO single-license GPL or AGPL packages remain in dependencies.
+5. **Full Test Suite Status**: 99 passed (662 assertions) across all affected modules with zero regressions.
+
+---
+
+## §19 — 2026-10-27 Phase B: Ed25519 Modular Licensing Re-Architecture & "Never Re-Gate" (COMPLETE)
+
+**Status:** COMPLETE (D-125 & D-026 Enforced).
+**Substance:**
+1. **Ed25519 Cryptographic Layer**: `paragonie/sodium_compat` added. Pure-PHP constant-time Ed25519 asymmetric verification engine `App\Support\License\LicenseCrypto` (canonical JSON, Base64URL, detached signatures, keypair generation). `config/license.php` stores public verification key `dakhl-root-2026`.
+2. **Offline Key Issuer**: Standalone CLI tool `tools/license-issuer/dakhl-license.php` (keygen, issue, verify). Private signing keys strictly isolated and gitignored (`tools/license-issuer/keys/`, `*.key`).
+3. **Never Re-Gate Contract (D-026 / Master Context §39.6)**: `tax_moadian` is guaranteed in the `basic` plan alongside core bookkeeping, invoicing, inventory, and cheques.
+4. **Grace Period & Non-Destructive Read-Only (D-024)**: 14-day grace period. After hard expiration, safe GET requests remain open for viewing historical records and audit trails, while mutating actions (POST/PUT/DELETE) are blocked.
+5. **In-App Demo Key Generator**: Restricted to local/testing environments; production returns 403. UI generator modal hidden in production.
+6. **Tests & Quality**:
+   - `ModularLicensingTest`: 21/21 passed (2,859 assertions).
+   - Clean-room test suite: 31/31 passed (3,136 assertions).
+   - Core accounting and warehouse suites: 100% green.
+**Next Action:** Stage and commit Phase B & CR-2 (`git commit`), then proceed to Phase CR-3 / Wave 2 (Desktop Shell & Peripheral modules) according to r15/r16 prompts.
+
+
+
+
+

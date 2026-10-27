@@ -11,18 +11,18 @@
     "require": {
         "php": "^8.2",
         "barryvdh/laravel-debugbar": "^3.13",
-        "carlos-meneses/laravel-mpdf": "^2.1",
+        "barryvdh/laravel-dompdf": "^3.1",
         "dedoc/scramble": "*",
         "doctrine/dbal": "^3.10",
         "fakerphp/faker": "^1.9.1",
         "guzzlehttp/guzzle": "^7.2",
-        "jooyeshgar/moadian": "^3.0",
         "kasraghoreyshi/persian-faker": "^1.04",
         "lab404/laravel-impersonate": "^1.7",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.2",
         "laravel/tinker": "^2.10",
         "nativephp/desktop": "^2.2",
+        "paragonie/sodium_compat": "^2.5",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-permission": "^6.4"
     },
@@ -44,7 +44,6 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/jdf.php",
             "app/Helpers/helpers.php",
             "app/Helpers/NumberToWordHelper.php"
         ]

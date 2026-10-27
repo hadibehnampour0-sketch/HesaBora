@@ -6,17 +6,17 @@ use App\Jobs\SyncMoadianStatusJob;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
+use App\Models\Invoice;
 use App\Models\MoadianHistory;
 use App\Models\ProductGroup;
 use App\Models\TaxReadinessLog;
 use App\Models\User;
 use App\Services\MoadianReconciliationService;
 use App\Services\TaxRuleService;
+use App\Support\Moadian\Facades\Moadian;
 use Cookie;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
-use Jooyeshgar\Moadian\Facades\Moadian;
 use Mockery;
 use Tests\Helpers\InvoiceTestHelper;
 use Tests\Helpers\SeederHelper;
@@ -83,7 +83,7 @@ class MoadianReconciliationTest extends TestCase
         parent::tearDown();
     }
 
-    private function invoiceWithPendingHistory(): \App\Models\Invoice
+    private function invoiceWithPendingHistory(): Invoice
     {
         $product = $this->createProduct();
         $this->buy([$this->productItem($product, 5, 50)], true, ++$this->nextInvoiceNumber);

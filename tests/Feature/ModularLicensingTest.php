@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\License;
 use App\Models\User;
 use App\Services\LicenseService;
+use App\Support\License\LicenseCrypto;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
@@ -80,18 +81,19 @@ class ModularLicensingTest extends TestCase
         ];
 
         $key = $this->licenseService->issueLicenseKey($payload);
-        $this->assertStringStartsWith('DAKHL-LIC-v1.', $key);
+        $this->assertStringStartsWith('DAKHL-LIC-v2.', $key);
 
         // Verification of untampered key should succeed
         $result = $this->licenseService->verifyLicenseKey($key, null, false);
         $this->assertTrue($result['valid']);
-        $this->assertEquals('professional', $result['payload']['edition']);
-        $this->assertEquals('فروشگاه آذرخش', $result['payload']['customer_name']);
+        $this->assertEquals('professional', $result['payload']['tier']);
+        $this->assertEquals('فروشگاه آذرخش', $result['payload']['org']);
 
         // Tampering with payload should fail verification
         $parts = explode('.', $key);
-        $tamperedPayload = base64_encode(json_encode(['edition' => 'enterprise', 'modules' => ['*']]));
-        $tamperedKey = "DAKHL-LIC-v1.{$tamperedPayload}.{$parts[2]}";
+        $tamperedJson = json_encode(['tier' => 'enterprise', 'modules' => ['*'], 'kid' => 'dakhl-root-2026']);
+        $tamperedPayload = LicenseCrypto::base64UrlEncode($tamperedJson);
+        $tamperedKey = "DAKHL-LIC-v2.{$tamperedPayload}.{$parts[2]}";
 
         $tamperedResult = $this->licenseService->verifyLicenseKey($tamperedKey, null, false);
         $this->assertFalse($tamperedResult['valid']);
@@ -420,5 +422,176 @@ class ModularLicensingTest extends TestCase
             ->assertSee('نسخه نقره‌ای')
             ->assertSee('نسخه طلایی')
             ->assertSee('۱۶ ماژول قدرتمند دخل', false);
+    }
+
+    public function test_legacy_v1_license_token_rejection_with_migration_notice(): void
+    {
+        $v1Token = 'DAKHL-LIC-v1.eyJlZGl0aW9uIjoiZW50ZXJwcmlzZSJ9.mock_signature_12345';
+
+        $verify = $this->licenseService->verifyLicenseKey($v1Token);
+        $this->assertFalse($verify['valid']);
+        $this->assertStringContainsString('منسوخ شده است', $verify['reason']);
+        $this->assertStringContainsString('Ed25519', $verify['reason']);
+
+        $activate = $this->licenseService->activateLicenseKey($v1Token);
+        $this->assertFalse($activate['success']);
+        $this->assertStringContainsString('منسوخ شده است', $activate['message']);
+    }
+
+    public function test_revoked_kid_rejection(): void
+    {
+        config(['license.revoked_kids' => ['dakhl-compromised-2025']]);
+
+        $payload = [
+            'edition' => 'enterprise',
+            'customer_name' => 'شرکت تست باطل',
+            'modules' => ['*'],
+        ];
+
+        // Sign with compromised kid
+        $key = $this->licenseService->issueLicenseKey($payload, null, 'dakhl-compromised-2025');
+
+        $result = $this->licenseService->verifyLicenseKey($key);
+        $this->assertFalse($result['valid']);
+        $this->assertStringContainsString('باطل شده است', $result['reason']);
+    }
+
+    public function test_unknown_kid_rejection(): void
+    {
+        $payload = [
+            'edition' => 'enterprise',
+            'customer_name' => 'شرکت کلید ناشناس',
+            'modules' => ['*'],
+        ];
+
+        $key = $this->licenseService->issueLicenseKey($payload, null, 'unknown-untrusted-key');
+
+        $result = $this->licenseService->verifyLicenseKey($key);
+        $this->assertFalse($result['valid']);
+        $this->assertStringContainsString('کلید عمومی برای شناسه', $result['reason']);
+    }
+
+    public function test_future_issued_at_clock_tamper_rejection(): void
+    {
+        $payload = [
+            'edition' => 'enterprise',
+            'customer_name' => 'شرکت آینده‌نگر',
+            'modules' => ['*'],
+            'issued_at' => now()->addDays(5)->timestamp,
+        ];
+
+        $key = $this->licenseService->issueLicenseKey($payload);
+
+        $result = $this->licenseService->verifyLicenseKey($key);
+        $this->assertFalse($result['valid']);
+        $this->assertStringContainsString('آینده است', $result['reason']);
+    }
+
+    public function test_wrong_private_key_signature_fails(): void
+    {
+        // Generate an arbitrary untrusted keypair
+        $kp = LicenseCrypto::generateKeypair();
+        $untrustedSecretKeyHex = bin2hex($kp['secret_key']);
+
+        $payload = [
+            'edition' => 'enterprise',
+            'customer_name' => 'جاعل لایسنس',
+            'modules' => ['*'],
+        ];
+
+        // Issue using the legitimate kid 'dakhl-root-2026' but signed by rogue key
+        $rogueKey = $this->licenseService->issueLicenseKey($payload, $untrustedSecretKeyHex, 'dakhl-root-2026');
+
+        $result = $this->licenseService->verifyLicenseKey($rogueKey);
+        $this->assertFalse($result['valid']);
+        $this->assertStringContainsString('امضای دیجیتال لایسنس نامعتبر یا دستکاری شده است', $result['reason']);
+    }
+
+    public function test_never_re_gate_contract_tax_moadian_in_basic_plan(): void
+    {
+        $plans = $this->licenseService->getAllPlans();
+
+        $this->assertArrayHasKey('basic', $plans);
+        $basicModules = $plans['basic']['modules'];
+
+        // Enforce Decision D-026 & Master Context §39.6
+        $this->assertContains(LicenseService::MODULE_CORE_ACCOUNTING, $basicModules);
+        $this->assertContains(LicenseService::MODULE_SALES_PURCHASE, $basicModules);
+        $this->assertContains(LicenseService::MODULE_INVENTORY, $basicModules);
+        $this->assertContains(LicenseService::MODULE_CHEQUES_TREASURY, $basicModules);
+        $this->assertContains(LicenseService::MODULE_TAX_MOADIAN, $basicModules, 'Moadian MUST remain in Basic tier per Never Re-Gate (D-026)');
+    }
+
+    public function test_ensure_module_licensed_enforces_read_only_post_grace(): void
+    {
+        $middleware = app(EnsureModuleLicensed::class);
+
+        License::query()->update(['is_active' => false]);
+        License::create([
+            'license_key' => 'key_expired_post_grace',
+            'license_hash' => hash('sha256', 'key_expired_post_grace'),
+            'edition' => 'basic',
+            'customer_name' => 'شرکت منقضی',
+            'modules' => [LicenseService::MODULE_CORE_ACCOUNTING],
+            'issued_at' => now()->subMonths(14),
+            'expires_at' => now()->subDays(20), // 20 days ago > 14 days grace
+            'grace_period_days' => 14,
+            'is_active' => true,
+            'signature' => 'sig',
+        ]);
+        $this->licenseService->flushCache();
+
+        // Safe GET request: allowed in read-only mode
+        $safeGet = Request::create('/accounting/reports', 'GET');
+        $getResponse = $middleware->handle($safeGet, function () {
+            return new Response('VIEW_REPORTS_ALLOWED', 200);
+        }, LicenseService::MODULE_CORE_ACCOUNTING);
+        $this->assertEquals(200, $getResponse->getStatusCode());
+        $this->assertEquals('VIEW_REPORTS_ALLOWED', $getResponse->getContent());
+
+        // Mutating POST request via JSON: blocked with 403
+        $mutatingPostJson = Request::create('/accounting/documents', 'POST', [], [], [], ['HTTP_ACCEPT' => 'application/json']);
+        $postResponseJson = $middleware->handle($mutatingPostJson, function () {
+            return new Response('CREATED', 201);
+        }, LicenseService::MODULE_CORE_ACCOUNTING);
+        $this->assertEquals(403, $postResponseJson->getStatusCode());
+        $data = json_decode($postResponseJson->getContent(), true);
+        $this->assertEquals('license_expired_read_only', $data['error']);
+
+        // Mutating POST request via Web: redirects to license index with warning
+        $mutatingPostWeb = Request::create('/accounting/documents', 'POST');
+        $postResponseWeb = $middleware->handle($mutatingPostWeb, function () {
+            return new Response('CREATED', 201);
+        }, LicenseService::MODULE_CORE_ACCOUNTING);
+        $this->assertTrue($postResponseWeb->isRedirection());
+        $this->assertEquals(route('license.index'), $postResponseWeb->headers->get('Location'));
+    }
+
+    public function test_packaging_safety_no_private_keys_in_app_tree(): void
+    {
+        $appPath = base_path('app');
+        $configPath = base_path('config');
+        $publicPath = base_path('public');
+        $resourcesPath = base_path('resources');
+
+        $paths = [$appPath, $configPath, $publicPath, $resourcesPath];
+
+        foreach ($paths as $path) {
+            $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+            foreach ($files as $file) {
+                if ($file->isFile()) {
+                    $ext = strtolower($file->getExtension());
+                    $this->assertNotEquals('key', $ext, "Private key file found in distribution path: {$file->getPathname()}");
+                    $this->assertNotEquals('pem', $ext, "PEM file found in distribution path: {$file->getPathname()}");
+                }
+            }
+        }
+
+        // Verify tools/license-issuer/keys/ is ignored by git
+        $gitignorePath = base_path('tools/license-issuer/.gitignore');
+        $this->assertFileExists($gitignorePath);
+        $gitignoreContent = file_get_contents($gitignorePath);
+        $this->assertStringContainsString('keys/', $gitignoreContent);
+        $this->assertStringContainsString('*.key', $gitignoreContent);
     }
 }
