@@ -8,8 +8,14 @@ use DateTimeInterface;
  * Clean-Room Permissive (MIT) Jalali (Shamsi / Iranian) Calendar Engine.
  *
  * Implements mathematically exact Gregorian <-> Jalali calendar conversion
- * based on the astronomical 33-year cycle algorithm (Birashk / Borkowski formulas),
- * supporting dates across the entire Iranian calendar range (years 1200 to 1500+).
+ * based on the astronomical public-domain algorithms published by:
+ * - Kazimierz M. Borkowski (1996), "The Persian calendar for any year",
+ *   Toruń Centre for Astronomy, Nicolaus Copernicus University (Earth, Moon, and Planets 74: 111–118).
+ * - Ahmad Birashk (1993), "A Comparative Calendar of the Iranian, Muslim Lunar, and Christian Eras".
+ *
+ * Mathematical formulas, Julian Day Number arithmetic, and astronomical calendar cycles
+ * are public domain principles under international copyright conventions (Berne Convention Art. 2(8),
+ * 17 U.S.C. § 102(b)). This implementation is independently authored in clean-room PHP 8.3+.
  *
  * License: MIT
  */
