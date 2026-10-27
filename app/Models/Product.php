@@ -122,4 +122,14 @@ class Product extends Model
     {
         return $this->hasMany(WarehouseProductStock::class);
     }
+
+    public function lots(): HasMany
+    {
+        return $this->hasMany(ProductLot::class);
+    }
+
+    public function serialNumbers(): HasMany
+    {
+        return $this->hasMany(ProductSerialNumber::class);
+    }
 }

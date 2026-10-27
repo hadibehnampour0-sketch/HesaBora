@@ -47,6 +47,96 @@ class TodayDashboardService
             $data['blocks']['cheques'] = $this->chequeBlock();
         }
 
+        if ($user->can('documents.show') || $user->can('bank-accounts.index')) {
+            $cashBookSubjectId = config('amir.cash_book');
+            $bankSubjectId = config('amir.bank');
+
+            $cashBalance = $cashBookSubjectId ? abs(SubjectService::sumSubject($cashBookSubjectId, true, false, true)) : 0.0;
+            $bankBalance = $bankSubjectId ? abs(SubjectService::sumSubject($bankSubjectId, true, false, true)) : 0.0;
+
+            $data['blocks']['liquidity'] = [
+                'cash' => $cashBalance,
+                'bank' => $bankBalance,
+                'total' => $cashBalance + $bankBalance,
+            ];
+        }
+
+        $alerts = [];
+
+        // Cheque alerts
+        if ($user->can('cheques.index')) {
+            $chequeData = $data['blocks']['cheques'] ?? $this->chequeBlock();
+            if (($chequeData['receivable']['bounced']['count'] ?? 0) > 0) {
+                $alerts[] = [
+                    'type' => 'bounced_cheque',
+                    'severity' => 'error',
+                    'title' => 'چک‌های برگشتی نیازمند اقدام فوری',
+                    'count' => $chequeData['receivable']['bounced']['count'],
+                    'amount' => $chequeData['receivable']['bounced']['amount'],
+                    'url' => route('cheques.index'),
+                ];
+            }
+            if (($chequeData['receivable']['overdue']['count'] ?? 0) > 0) {
+                $alerts[] = [
+                    'type' => 'overdue_cheque',
+                    'severity' => 'warning',
+                    'title' => 'چک‌های دریافتی سررسید گذشته',
+                    'count' => $chequeData['receivable']['overdue']['count'],
+                    'amount' => $chequeData['receivable']['overdue']['amount'],
+                    'url' => route('cheques.index'),
+                ];
+            }
+            if (($chequeData['payable']['overdue']['count'] ?? 0) > 0) {
+                $alerts[] = [
+                    'type' => 'payable_overdue_cheque',
+                    'severity' => 'warning',
+                    'title' => 'چک‌های پرداختی سررسید گذشته',
+                    'count' => $chequeData['payable']['overdue']['count'],
+                    'amount' => $chequeData['payable']['overdue']['amount'],
+                    'url' => route('cheques.index'),
+                ];
+            }
+        }
+
+        // Low stock alert
+        if ($user->can('products.index')) {
+            $lowStockProducts = Product::query()
+                ->whereColumn('quantity', '<=', 'quantity_warning')
+                ->where('quantity_warning', '>', 0)
+                ->count();
+
+            if ($lowStockProducts > 0) {
+                $alerts[] = [
+                    'type' => 'low_stock',
+                    'severity' => 'warning',
+                    'title' => 'کالاهای دارای کسری یا در مرز اتمام موجودی',
+                    'count' => $lowStockProducts,
+                    'url' => route('products.index'),
+                ];
+            }
+        }
+
+        // Pending invoices alert
+        if ($user->can('invoices.index')) {
+            $pendingInvoicesCount = Invoice::query()
+                ->where('status', InvoiceStatus::PENDING)
+                ->count();
+
+            if ($pendingInvoicesCount > 0) {
+                $alerts[] = [
+                    'type' => 'pending_invoices',
+                    'severity' => 'info',
+                    'title' => 'فاکتورهای تایید نشده و در انتظار بررسی',
+                    'count' => $pendingInvoicesCount,
+                    'url' => route('invoices.index', ['invoice_type' => 'sell']),
+                ];
+            }
+        }
+
+        if ($alerts !== []) {
+            $data['blocks']['alerts'] = $alerts;
+        }
+
         $quickStart = $this->quickStartBlock($user);
 
         if ($quickStart !== []) {

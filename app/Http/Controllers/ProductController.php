@@ -129,7 +129,10 @@ class ProductController extends Controller
             })
             ->paginate(20);
 
-        return view('products.show', compact('product', 'historyItems'));
+        $product->loadMissing(['lots.warehouse', 'serialNumbers.warehouse', 'serialNumbers.invoice']);
+        $warehouses = Warehouse::orderBy('name')->get();
+
+        return view('products.show', compact('product', 'historyItems', 'warehouses'));
     }
 
     public function recalculateQuantity(Product $product): RedirectResponse

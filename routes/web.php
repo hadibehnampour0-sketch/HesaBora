@@ -24,6 +24,8 @@ Route::post('/impersonation/leave', [Controllers\Management\UserController::clas
 // only credentials -- a real platform cannot log in). Throttled against abuse/probing.
 Route::post('/integrations/woocommerce/webhook/{token}', [Controllers\IntegrationWebhookController::class, 'woocommerce'])
     ->middleware('throttle:60,1')->name('integrations.woocommerce.webhook');
+Route::post('/integrations/digikala/webhook/{token}', [Controllers\IntegrationWebhookController::class, 'digikala'])
+    ->middleware('throttle:60,1')->name('integrations.digikala.webhook');
 
 // Public Pricing, Product Capabilities & Online License Ordering Portal
 Route::get('/pricing', [Controllers\LicenseController::class, 'publicPricing'])->name('pricing');
@@ -54,6 +56,7 @@ Route::get('/verify/{id}/{hash}', [Controllers\Auth\RegisterController::class, '
 
 Route::middleware(['auth', 'ensure-feature-enabled:email_verification'])->group(function () {
     Route::get('/about', [Controllers\AboutController::class, 'index'])->name('about');
+    Route::get('/guide', [Controllers\GuideController::class, 'index'])->name('guide.index');
     Route::get('/registered-user/company', [Controllers\CompanyController::class, 'createCompanyForRegisteredUser'])->name('registered-user.company.create');
     Route::post('/registered-user/company', [Controllers\CompanyController::class, 'storeCompanyForRegisteredUser'])->name('registered-user.company.store');
     Route::get('/account', [Controllers\AccountController::class, 'edit'])->name('account.edit');
@@ -61,7 +64,22 @@ Route::middleware(['auth', 'ensure-feature-enabled:email_verification'])->group(
     Route::patch('/account/ui-mode', [Controllers\AccountController::class, 'updateUiMode'])->name('account.update-ui-mode');
     Route::get('/settings/appearance', [Controllers\AppearanceController::class, 'index'])->name('settings.appearance');
     Route::post('/settings/appearance', [Controllers\AppearanceController::class, 'update'])->name('settings.appearance.update');
+
+    // Mobile Companion for Field Distribution and WMS Barcode Operations
+    Route::prefix('mobile')->name('mobile.')->group(function () {
+        Route::get('', [Controllers\Mobile\MobileCompanionController::class, 'index'])->name('index');
+        Route::get('api/catalog', [Controllers\Mobile\MobileCompanionController::class, 'catalog'])->name('catalog');
+        Route::get('api/visits', [Controllers\Mobile\MobileCompanionController::class, 'visits'])->name('visits');
+        Route::post('api/orders', [Controllers\Mobile\MobileCompanionController::class, 'storeOrder'])->name('orders.store');
+        Route::get('api/scan', [Controllers\Mobile\MobileCompanionController::class, 'scanBarcode'])->name('scan');
+        Route::post('api/stock-count', [Controllers\Mobile\MobileCompanionController::class, 'recordStockCount'])->name('stock-count');
+        Route::post('api/settlement', [Controllers\Mobile\MobileCompanionController::class, 'submitSettlement'])->name('settlement.submit');
+    });
 });
+
+// PWA Shell Assets (manifest and service worker)
+Route::get('/mobile/manifest.json', [Controllers\Mobile\MobileCompanionController::class, 'manifest'])->name('mobile.manifest');
+Route::get('/mobile/sw.js', [Controllers\Mobile\MobileCompanionController::class, 'serviceWorker'])->name('mobile.sw');
 
 Route::middleware(['auth', 'permission:access-super-admin-panel', 'ensure-feature-enabled:email_verification'])->prefix('management')->group(function () {
     Route::get('/', [Controllers\HomeController::class, 'managementDashboard'])->name('management.dashboard');
@@ -271,6 +289,7 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::put('connections/{connection}', [Controllers\IntegrationConnectionController::class, 'update'])->name('connections.update');
             Route::delete('connections/{connection}', [Controllers\IntegrationConnectionController::class, 'destroy'])->name('connections.destroy');
             Route::post('connections/{connection}/push-inventory', [Controllers\IntegrationConnectionController::class, 'pushInventory'])->name('connections.push-inventory');
+            Route::post('connections/{connection}/test', [Controllers\IntegrationConnectionController::class, 'testConnection'])->name('connections.test');
             Route::get('connections/{connection}/mappings', [Controllers\IntegrationProductMappingController::class, 'index'])->name('connections.mappings.index');
             Route::post('connections/{connection}/mappings', [Controllers\IntegrationProductMappingController::class, 'store'])->name('connections.mappings.store');
 
@@ -398,6 +417,8 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::post('chat', [FinancialCopilotController::class, 'chat'])->name('chat');
             Route::get('conversations/{conversation}', [FinancialCopilotController::class, 'show'])->name('show');
             Route::delete('conversations/{conversation}', [FinancialCopilotController::class, 'destroy'])->name('destroy');
+            Route::post('settings', [FinancialCopilotController::class, 'saveSettings'])->name('settings');
+            Route::post('test-connection', [FinancialCopilotController::class, 'testConnection'])->name('test-connection');
         });
 
         // Peer Store Trade & Consignment (تهاتر و تبادل کالا با همکاران)

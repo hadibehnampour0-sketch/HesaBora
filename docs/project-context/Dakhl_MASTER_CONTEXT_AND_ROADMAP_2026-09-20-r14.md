@@ -2642,4 +2642,116 @@ To ensure maximum commercial velocity and fast business return, the implementati
 4. **Modern Device Management UI:** Central hub at `/attendance/devices` featuring live connection ping test, manual one-click sync, cloud push URL generator, device status pills, and test punch simulation.
 5. **Verification & Test Suite:** Verified via `tests/Feature/AttendanceDeviceSyncTest.php` (8/8 tests passed, 36 assertions).
 
+---
+
+# 46. Current Verified Override — 2026-10-22 (Phase 26 — Peer Store Barter Exchange, Quick Price Quotes Scratchpad & Conversational Action Cards)
+## Status: IMPLEMENTED & VERIFIED (Decision D-119)
+
+### 46.1 Architectural Highlights
+1. **Trade Exchange Ledger (`TradeExchange` & `TradeExchangeItem`):** Tracks informal peer-to-peer bazaar exchanges (`GIVE`, `TAKE`, `RETURN`) with colleagues and neighboring shops.
+2. **Double-Entry Settlement Invariant:** Automatic creation of a balanced accounting `Document` upon trade financial settlement, seamlessly mapping trade differences to partner sub-ledgers and warehouse accounts.
+3. **Conversational Price Quote Memory Recall (`PriceQuote` & `PriceQuoteService`):** Fast memory recall for customer and competitor price quotes via Copilot and dedicated UI scratchpad (`/price-quotes`).
+4. **Interactive Action Cards:** Conversational financial commands (e.g. "۲۰۰ تومن دادم علی") generate interactive action cards in the Copilot stream for one-click double-entry posting.
+5. **Verification & Test Suite:** Verified via `tests/Feature/TradeAndCopilotActionTest.php` (6/6 tests passed, 57 assertions).
+
+---
+
+# 47. Current Verified Override — 2026-10-23 (Phase 27 — Real-Time Market Intelligence Engine, High-Speed Financial Live Streams & B2B Guild Network)
+## Status: IMPLEMENTED & VERIFIED (Decision D-120)
+
+### 47.1 Architectural Highlights
+1. **Parallel Resilient Market Rate Streams:** Integration with TGJU Edge, TetherLand, Navasan, Bonbast, and Nobitex with automated fallback, zero-downtime caching, and latency measurement across 29 market assets.
+2. **Dual Toman & Rial Calibration:** Interactive UI toggle allowing real-time currency unit switching across all market tickers, calculators, and rate displays.
+3. **Inventory Replacement Valuation:** Live connection between warehouse stock items and market benchmarks (USD, Gold 18K, Emami Coin) calculating replacement costs and true economic margins.
+4. **B2B Guild Wholesale Network:** Direct wholesale price boards for trade unions and verified supplier networks.
+
+---
+
+# 48. Current Verified Override — 2026-10-24 (Brand Identity Evolution, Exclusive Ownership Legal Protection & Clean Architecture Alignment)
+## Status: IMPLEMENTED & VERIFIED (Decision D-121)
+
+### 48.1 Architectural Highlights
+1. **Elimination of Legacy Upstream References:** All external repository URLs and legacy open-source references removed from the user interface, About screen (`/about`), and bilingual language files.
+2. **Exclusive Licensing Registration:** Formal legal notice, copyright, and publishing rights registered under **هادی بهنام‌پور (Hadi Behnampour)**.
+3. **Official Logo Evolution (Google Flow Helix GF-01):** Unified visual logo asset across desktop packaging, web front controller, favicons, login layout, and navigation drawers.
+4. **Navigation Domain Boundary Enforcement:** Management/platform routes (e.g. `roles.index`) strictly isolated from company workspace menus.
+5. **Verification & Test Suite:** Verified via `tests/Feature/AuthLifecycleTest.php` (50/50 passed) and `tests/Feature/ActivityLogTest.php` (30/30 passed).
+
+---
+
+# 49. Current Verified Override — 2026-10-24 (Phase 28 — Illustrated Software Manual & In-App Contextual Help Architecture)
+## Status: IMPLEMENTED & VERIFIED (Decision D-122)
+
+### 49.1 Architectural Highlights
+1. **8 Comprehensive Illustrated Topics (`GuideController` at `/guide`):**
+   - Overview & Quickstart (`overview`)
+   - Sales, Invoicing & POS (`sales`)
+   - Treasury & 7-Stage Cheque Lifecycle (`treasury`)
+   - Warehouse, Lot & Serial Tracking (`warehouse`)
+   - Double-Entry Accounting Core (`accounting`)
+   - Moadian Tax OS & Electronic Invoicing (`tax`)
+   - AI Copilot & Market Quotes (`copilot`)
+   - Keyboard Shortcuts & Fast Tools (`shortcuts`)
+2. **Interactive Micro-Guidance Components:**
+   - `<x-info-hint>`: Floating interactive tooltip popover with `ℹ️` icon explaining domain terminology directly in forms.
+   - `<x-page-quick-tip>`: Collapsible key tips card on critical financial views (`invoices/show`, `cheques/show`, `products/show`, `trade/show`).
+3. **Zero Network Dependency:** All manual chapters, diagrams, and tips render 100% offline from blade templates without external web assets.
+4. **Verification & Test Suite:** Verified via `tests/Feature/GuideAndContextualHelpTest.php` (5/5 tests passed, 24 assertions).
+
+---
+
+# 50. Current Verified Override — 2026-10-24 (Phase 29 — Multi-Theme Personalization System & Interactive Visual Sandbox)
+## Status: IMPLEMENTED & VERIFIED (Decision D-123)
+
+### 50.1 Architectural Highlights
+1. **3 Core Visual Themes (`data-ui-theme`):**
+   - **Google Flow (Quantum FinTech):** Smooth rounded corners (`--radius-box: 1.25rem`), neon gradients, fluid cards.
+   - **Linear Obsidian (Swiss Precision):** Strict tabular figures (`font-variant-numeric: tabular-nums`), sharp geometric corners (`--radius-box: 0.5rem`), hairline 1px borders, deep obsidian dark surfaces.
+   - **Stripe Glass (Glassmorphism):** Frosted glassmorphism (`backdrop-filter: blur(12px)`), rich purple/violet gradients, luxury corporate aesthetic.
+2. **5 Customizable Accent Colors (`data-accent`):** Cyan (`#06b6d4`), Emerald (`#10b981`), Indigo (`#4f46e5`), Violet (`#8b5cf6`), Slate (`#475569`) dynamically controlling primary buttons, active rings, and indicator badges via CSS variables.
+3. **UI Density Controls (`data-ui-density`):** Compact (`compact`) reduces table row padding and form heights for high-density accounting data entry; Comfortable (`comfortable`) provides generous touch-friendly spacing.
+4. **Interactive Live Sandbox & Instant Sync:** Real-time visual sandbox on `/settings/appearance` reflects changes instantly on click. Synchronized bi-directionally between `localStorage`, permanent 1-year cookies, and server sessions.
+5. **Verification & Test Suite:** Verified via `tests/Feature/AppearanceTest.php` (5/5 tests passed, 32 assertions).
+
+---
+
+# 51. Current Verified Override — 2026-10-24 (Phase 30 — In-App AI API Key Management & Live Cloud Connection Testing)
+## Status: IMPLEMENTED & VERIFIED (Decision D-124)
+
+### 51.1 Architectural Highlights
+1. **100% Offline Core Guarantee:** The local deterministic engine parses financial commands, calculates sales/cheques/debtors, and creates accounting action cards completely offline without internet or API key.
+2. **Company-Scoped Cloud Key Storage:** Merchants can configure their Google Gemini API key directly from the UI (`/copilot`) saved securely in the `configs` table per company, eliminating the need to edit server `.env` files.
+3. **Live Connectivity & Latency Ping Test:** Endpoint `copilot.test-connection` tests the key directly against Google AI Studio, measuring latency (ms) and confirming model availability (Gemini 2.5 Flash) with transparent error messages.
+4. **Seamless Graceful Fallback:** If internet is disconnected, Google APIs are throttled, or the key is absent, the system silently and instantly falls back to the deterministic local engine without user interruption or application errors.
+5. **Integrated Free Tier Tutorial:** In-app modal and Guide Chapter 7 provide a 4-step walkthrough for obtaining the free Google AI Studio key with DNS anti-sanction guidance for Iranian IPs.
+6. **Verification & Test Suite:** Verified via `tests/Feature/FinancialCopilotTest.php` (13/13 tests passed, 53 assertions).
+
+---
+
+# 52. Current Verified Override — 2026-10-27 (Phase 31 — E-Commerce Two-Way Marketplace Integration Engine: WooCommerce & Digikala Seller Open API)
+## Status: IMPLEMENTED & VERIFIED (Decision D-125)
+
+### 52.1 Architectural Highlights
+1. **Digikala Seller Open API Adapter (`DigikalaAdapter`):** Normalizes Digikala marketplace order payloads into canonical `CanonicalEvent` instances (`ORDER_CREATED`, `ORDER_CANCELLED`), mapping seller variant IDs (`variant_id`), line items, prices, and customer data.
+2. **Two-Way Stock Synchronization:** Dakhl's warehouse stock ledger is the single authoritative source of truth. When stock changes, `IntegrationInventoryPushService` automatically pushes available quantities to Digikala via `PUT /open-api/v1/variants/{id}/` (`seller_stock`) and WooCommerce via `PUT /wp-json/wc/v3/products/{id}` (`stock_quantity`).
+3. **Automated Order-to-Invoice Ingestion with Review Safety Valve:** Unambiguous orders automatically generate and approve official Sell invoices via `InvoiceService` with stock decrement. Orders with unmapped variants, price mismatches beyond tolerance, or insufficient stock are safely held in the visual review queue (`/integrations/queue`) without data loss.
+4. **Live Connection Testing & Verification:** Dedicated endpoint `integrations.connections.test` executes live HTTP pings against WooCommerce and Digikala Seller APIs to verify API credentials and report latency before activating synchronization.
+5. **Verification & Test Suite:** Verified via `tests/Feature/IntegrationDigikalaTest.php` (8/8 tests passed, 23 assertions) and `tests/Feature/IntegrationConnectionsAndQueueTest.php` (14/14 tests passed, 37 assertions).
+
+---
+
+# 53. Current Verified Override — 2026-10-27 (Phase 32 — Mobile Companion App for Field Distribution & Intelligent WMS Barcode Operations)
+## Status: IMPLEMENTED & VERIFIED (Decision D-126)
+
+### 53.1 Architectural Highlights
+1. **Four Ergonomic Mobile Workspaces (`/mobile`):**
+   - **مسیر ویزیت (Visits & Routes):** View daily visit plans (`VisitPlan`), route customers ordered by priority, GPS addresses, and one-tap phone dialing.
+   - **فروش و فاکتور (Touch Order / Van Sales):** Touch-friendly product catalog with visual cards, live warehouse stock badges, +/- steppers, customer selection, payment terms (Cash, POS, Cheque, Credit), instant invoice generation, and printable ESC/POS receipt data.
+   - **انبارداری و بارکدخوان (WMS Scanner):** Real-time HTML5 camera barcode/QR scanner and hardware scanner input, instant product/variant lookup, multi-warehouse stock breakdown, and on-the-spot physical cycle counting with variance calculation.
+   - **تسویه شیفت (Daily Shift Settlement):** One-tap aggregation of daily sales and cash/POS/cheque collection submission to cashier (`DailySettlement`).
+2. **Progressive Web App (PWA) Standalone Shell:** Includes `/mobile/manifest.json` and `/mobile/sw.js` allowing one-tap "Add to Home Screen" on Android/iOS with standalone fullscreen app framing and offline asset caching.
+3. **Client-Side Offline Resilience:** Caches product catalogs and customer directories in `localStorage`, supporting offline catalog browsing and order drafting with online sync.
+4. **Verification & Test Suite:** Verified via `tests/Feature/MobileFieldCompanionTest.php` (10/10 tests passed, 43 assertions).
+
+
 

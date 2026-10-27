@@ -47,6 +47,8 @@ class FinancialCopilotTest extends TestCase
         $this->user->givePermissionTo(Permission::firstOrCreate(['name' => 'copilot.chat']));
         $this->user->givePermissionTo(Permission::firstOrCreate(['name' => 'copilot.index']));
         $this->user->givePermissionTo(Permission::firstOrCreate(['name' => 'copilot.destroy']));
+        $this->user->givePermissionTo(Permission::firstOrCreate(['name' => 'copilot.settings']));
+        $this->user->givePermissionTo(Permission::firstOrCreate(['name' => 'copilot.test-connection']));
 
         $this->service = app(FinancialCopilotService::class);
     }
@@ -233,5 +235,63 @@ class FinancialCopilotTest extends TestCase
             ->assertJson(['success' => true]);
 
         $this->assertDatabaseMissing('copilot_conversations', ['id' => $conv->id]);
+    }
+
+    public function test_user_can_save_and_clear_company_gemini_api_key(): void
+    {
+        $this->actingAs($this->user);
+
+        // 1. Save valid key
+        $response = $this->postJson(route('copilot.settings'), [
+            'gemini_api_key' => 'AIzaSyTestApiKeyForCompany12345',
+        ]);
+
+        $response->assertOk()
+            ->assertJson(['success' => true, 'is_configured' => true]);
+
+        $this->assertDatabaseHas('configs', [
+            'company_id' => $this->company->id,
+            'key' => 'gemini_api_key',
+            'value' => 'AIzaSyTestApiKeyForCompany12345',
+        ]);
+
+        // 2. Clear key
+        $responseClear = $this->postJson(route('copilot.settings'), [
+            'gemini_api_key' => '',
+        ]);
+
+        $responseClear->assertOk()
+            ->assertJson(['success' => true]);
+
+        $this->assertDatabaseMissing('configs', [
+            'company_id' => $this->company->id,
+            'key' => 'gemini_api_key',
+        ]);
+    }
+
+    public function test_copilot_test_connection_endpoint_validates_and_pings_api(): void
+    {
+        $this->actingAs($this->user);
+
+        // 1. Fails when key is empty
+        $responseEmpty = $this->postJson(route('copilot.test-connection'), [
+            'api_key' => '',
+        ]);
+        $responseEmpty->assertStatus(422)
+            ->assertJson(['success' => false]);
+
+        // 2. Succeeds when mocked Google API responds with model
+        \Illuminate\Support\Facades\Http::fake([
+            'generativelanguage.googleapis.com/*' => \Illuminate\Support\Facades\Http::response([
+                'displayName' => 'Gemini 2.5 Flash',
+            ], 200),
+        ]);
+
+        $responseValid = $this->postJson(route('copilot.test-connection'), [
+            'api_key' => 'AIzaSyValidDummyKey',
+        ]);
+
+        $responseValid->assertOk()
+            ->assertJson(['success' => true, 'model' => 'Gemini 2.5 Flash']);
     }
 }

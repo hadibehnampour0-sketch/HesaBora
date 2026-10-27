@@ -22,6 +22,7 @@ class TradeExchange extends Model
         'settled_at',
         'created_by',
         'notes',
+        'document_id',
     ];
 
     protected $casts = [
@@ -35,6 +36,11 @@ class TradeExchange extends Model
         static::creating(function (TradeExchange $exchange) {
             $exchange->company_id ??= getActiveCompany();
         });
+    }
+
+    public function document(): BelongsTo
+    {
+        return $this->belongsTo(Document::class);
     }
 
     public function company(): BelongsTo

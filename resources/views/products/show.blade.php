@@ -110,6 +110,130 @@
                 </div>
             @endif
 
+            <div class="divider text-lg font-semibold">{{ __('ردیابی سریال و لات (بچ کالا)') }}</div>
+
+            <x-page-quick-tip :title="__('راهنمای ردیابی سریال‌های یکتا و بچ ساخت (Lot)')">
+                <ul class="list-disc list-inside space-y-1">
+                    <li><b>{{ __('شماره سریال (Serial):') }}</b> {{ __('مخصوص اقلامی با کد منحصر‌به‌فرد (مانند IMEI موبایل، قطعات دارای کد گارانتی یا پلاک).') }}</li>
+                    <li><b>{{ __('لات و سری ساخت (Lot):') }}</b> {{ __('مخصوص اقلام دارای تاریخ انقضا و سری تولید (مانند مواد شیمیایی، رنگ، دارویی یا خوراکی).') }}</li>
+                    <li>{{ __('هنگام صدور فاکتور فروش، سریال تحویل‌شده به مشتری ثبت شده و در کارت گارانتی فاکتور درج می‌گردد.') }}</li>
+                </ul>
+            </x-page-quick-tip>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                {{-- Serial Numbers Card --}}
+                <div class="card bg-base-200/60 shadow-sm border border-base-300">
+                    <div class="card-body p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-base flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                                </svg>
+                                {{ __('شماره سریال‌های کالا') }}
+                                <span class="badge badge-sm badge-ghost">{{ $product->serialNumbers->count() }}</span>
+                            </h3>
+                            <button type="button" onclick="document.getElementById('add-serial-modal').showModal()" class="btn btn-sm btn-primary btn-outline gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                                {{ __('ثبت شماره سریال') }}
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto max-h-60 overflow-y-auto">
+                            <table class="table table-xs w-full">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('شماره سریال') }}</th>
+                                        <th>{{ __('انبار') }}</th>
+                                        <th>{{ __('وضعیت') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($product->serialNumbers as $serial)
+                                        <tr class="hover">
+                                            <td class="font-mono font-bold">{{ $serial->serial_number }}</td>
+                                            <td>{{ $serial->warehouse?->name ?? '-' }}</td>
+                                            <td>
+                                                @if ($serial->status === \App\Enums\SerialNumberStatus::IN_STOCK)
+                                                    <span class="badge badge-success badge-xs gap-1">{{ __('موجود در انبار') }}</span>
+                                                @else
+                                                    <span class="badge badge-neutral badge-xs gap-1">
+                                                        {{ __('فروخته شده') }}
+                                                        @if ($serial->invoice_id)
+                                                            <a href="{{ route('invoices.show', $serial->invoice_id) }}" class="link link-hover">#{{ $serial->invoice_id }}</a>
+                                                        @endif
+                                                    </span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="3" class="text-center py-4 text-gray-500">{{ __('هیچ شماره سریالی برای این کالا ثبت نشده است.') }}</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Lots / Batches Card --}}
+                <div class="card bg-base-200/60 shadow-sm border border-base-300">
+                    <div class="card-body p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="font-bold text-base flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                </svg>
+                                {{ __('لات و سری ساخت (بچ)') }}
+                                <span class="badge badge-sm badge-ghost">{{ $product->lots->count() }}</span>
+                            </h3>
+                            <button type="button" onclick="document.getElementById('add-lot-modal').showModal()" class="btn btn-sm btn-secondary btn-outline gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                                {{ __('ثبت لات جدید') }}
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto max-h-60 overflow-y-auto">
+                            <table class="table table-xs w-full">
+                                <thead>
+                                    <tr>
+                                        <th>{{ __('شماره لات') }}</th>
+                                        <th>{{ __('موجودی') }}</th>
+                                        <th>{{ __('انبار') }}</th>
+                                        <th>{{ __('تاریخ انقضا') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($product->lots as $lot)
+                                        <tr class="hover">
+                                            <td class="font-mono font-bold">{{ $lot->lot_number }}</td>
+                                            <td class="font-bold text-primary">{{ formatNumber($lot->quantity) }}</td>
+                                            <td>{{ $lot->warehouse?->name ?? '-' }}</td>
+                                            <td>
+                                                @if ($lot->expiry_date)
+                                                    <span class="{{ $lot->expiry_date->isPast() ? 'text-error font-bold' : '' }}">
+                                                        {{ formatDate($lot->expiry_date) }}
+                                                    </span>
+                                                @else
+                                                    <span class="text-gray-400">-</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="text-center py-4 text-gray-500">{{ __('هیچ لات یا سری ساختی ثبت نشده است.') }}</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="divider text-lg font-semibold">{{ __('Transaction History') }}</div>
             <div class="overflow-x-auto ">
                 <table class="table w-full mt-4 overflow-auto">
@@ -273,4 +397,93 @@
             </div>
         </div>
     </div>
+
+    {{-- Modal Add Serial Number --}}
+    <dialog id="add-serial-modal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                </svg>
+                {{ __('ثبت شماره سریال جدید') }}
+            </h3>
+            <form action="{{ route('product-serial-numbers.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                
+                <div class="form-control mb-3">
+                    <label class="label"><span class="label-text font-semibold">{{ __('انتخاب انبار') }}</span></label>
+                    <select name="warehouse_id" class="select select-bordered w-full" required>
+                        @foreach ($warehouses as $wh)
+                            <option value="{{ $wh->id }}">{{ $wh->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-control mb-4">
+                    <label class="label"><span class="label-text font-semibold">{{ __('شماره سریال') }}</span></label>
+                    <input type="text" name="serial_number" class="input input-bordered w-full font-mono" placeholder="مثال: SN-98421045" required maxlength="150">
+                </div>
+
+                <div class="modal-action">
+                    <button type="button" onclick="document.getElementById('add-serial-modal').close()" class="btn btn-ghost">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-primary">{{ __('ثبت شماره سریال') }}</button>
+                </div>
+            </form>
+        </div>
+        <form method="dialog" class="modal-backdrop"><button>{{ __('Close') }}</button></form>
+    </dialog>
+
+    {{-- Modal Add Lot --}}
+    <dialog id="add-lot-modal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg mb-4 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                {{ __('ثبت لات و سری ساخت (بچ)') }}
+            </h3>
+            <form action="{{ route('product-lots.store') }}" method="POST">
+                @csrf
+                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                
+                <div class="form-control mb-3">
+                    <label class="label"><span class="label-text font-semibold">{{ __('انتخاب انبار') }}</span></label>
+                    <select name="warehouse_id" class="select select-bordered w-full" required>
+                        @foreach ($warehouses as $wh)
+                            <option value="{{ $wh->id }}">{{ $wh->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-semibold">{{ __('شماره لات / بچ') }}</span></label>
+                        <input type="text" name="lot_number" class="input input-bordered w-full font-mono" placeholder="مثال: LOT-2026-A1" required maxlength="100">
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-semibold">{{ __('تعداد ورود') }}</span></label>
+                        <input type="number" step="any" min="0.0001" name="quantity" class="input input-bordered w-full" placeholder="1" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-semibold">{{ __('تاریخ دریافت') }}</span></label>
+                        <input type="date" name="received_date" value="{{ date('Y-m-d') }}" class="input input-bordered w-full" required>
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-semibold">{{ __('تاریخ انقضا (اختیاری)') }}</span></label>
+                        <input type="date" name="expiry_date" class="input input-bordered w-full">
+                    </div>
+                </div>
+
+                <div class="modal-action">
+                    <button type="button" onclick="document.getElementById('add-lot-modal').close()" class="btn btn-ghost">{{ __('Cancel') }}</button>
+                    <button type="submit" class="btn btn-secondary">{{ __('ثبت لات') }}</button>
+                </div>
+            </form>
+        </div>
+        <form method="dialog" class="modal-backdrop"><button>{{ __('Close') }}</button></form>
+    </dialog>
 </x-app-layout>

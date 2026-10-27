@@ -102,7 +102,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'tax-center' => ['index', 'audit-pack', 'prepare', 'calendar', 'calendar.mark-filed'],
 
             // Integration Hub screens (Dakhl_INTEGRATION_PLATFORMS_AND_POLICY_PLAN_2026-09-28.md).
-            'integrations.connections' => ['index', 'store', 'update', 'destroy', 'push-inventory'],
+            'integrations.connections' => ['index', 'store', 'update', 'destroy', 'push-inventory', 'test'],
             'integrations.connections.mappings' => ['index', 'store'],
             'integrations.queue' => ['index', 'retry', 'map-product'],
             'tax-readiness' => ['index', 'recalculate'],
@@ -288,7 +288,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'migration' => ['index', 'preview', 'execute'],
 
             // Phase AI (Conversational Financial Copilot)
-            'copilot' => ['chat', 'index', 'destroy'],
+            'copilot' => ['chat', 'index', 'destroy', 'settings', 'test-connection'],
 
             // Employee portal
             'employee-portal' => [

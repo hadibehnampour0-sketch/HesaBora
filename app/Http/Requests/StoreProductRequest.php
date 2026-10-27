@@ -26,7 +26,7 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'code' => ['nullable', Rule::unique('products', 'code')->where('company_id', getActiveCompany())],
-            'name' => 'required|max:20|string|regex:/^[\w\d\s\-\:\.]*$/u',
+            'name' => 'required|max:60|string|regex:/^[\w\d\s\-\:\.\(\)\/،]*$/u',
             'group' => 'required|exists:product_groups,id|integer',
             'location' => 'nullable|max:50|string|regex:/^[\w\d\s]*$/u',
             'quantity' => [

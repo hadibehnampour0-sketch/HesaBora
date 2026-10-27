@@ -6,6 +6,8 @@
              conversationId: {{ $activeConversation ? $activeConversation->id : 'null' }},
              initialMessages: {{ json_encode($activeConversation ? $activeConversation->messages : []) }},
              chatUrl: '{{ route('copilot.chat') }}',
+             saveSettingsUrl: '{{ route('copilot.settings') }}',
+             testConnectionUrl: '{{ route('copilot.test-connection') }}',
              csrf: '{{ csrf_token() }}'
          })">
 
@@ -54,20 +56,38 @@
         <!-- Main Chat Area -->
         <div class="flex-1 flex flex-col bg-base-100 rounded-2xl shadow-sm border border-base-200 overflow-hidden">
             <!-- Chat Header -->
-            <div class="p-3.5 border-b border-base-200 flex items-center justify-between bg-base-200/50">
+            <div class="p-3.5 border-b border-base-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-base-200/50">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-primary-content shadow-sm">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center text-primary-content shadow-sm shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
                             <h1 class="font-bold text-sm md:text-base">{{ __('دستیار مالی و اقتصادی دخل (Dakhl Copilot)') }}</h1>
-                            <span class="badge badge-primary badge-xs py-2 px-2 text-[10px] font-mono">{{ __('AI Grounded') }}</span>
+                            @if(!empty($isConfigured))
+                                <span class="badge badge-success badge-xs py-1.5 px-2 text-[10px] font-mono gap-1 text-white">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                                    {{ __('Gemini Cloud Active') }}
+                                </span>
+                            @else
+                                <span class="badge badge-warning badge-xs py-1.5 px-2 text-[10px] font-mono gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-800"></span>
+                                    {{ __('Offline Engine Active') }}
+                                </span>
+                            @endif
                         </div>
                         <p class="text-xs text-base-content/60">{{ __('پاسخ‌دهی بر مبنای حقیقت قطعی دفاتر مالی، اسناد دوبل و قوانین مالیاتی ایران') }}</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1.5 w-full sm:w-auto justify-end flex-wrap">
+                    <button type="button" @click="openKeyModal = true" class="btn btn-outline btn-xs rounded-xl text-xs gap-1 border-base-300">
+                        <span>⚙️</span>
+                        <span>{{ __('تنظیم کلید هوش مصنوعی') }}</span>
+                    </button>
+                    <a href="{{ route('guide.index', ['topic' => 'copilot']) }}" target="_blank" class="btn btn-ghost btn-xs text-xs gap-1 text-primary">
+                        <span>📖</span>
+                        <span>{{ __('آموزش دریافت کلید') }}</span>
+                    </a>
                     <a href="{{ route('home.today') }}" class="btn btn-ghost btn-xs text-xs gap-1">
                         {{ __('داشبورد امروز') }}
                     </a>
@@ -261,6 +281,160 @@
                 </form>
             </div>
         </div>
+
+        <!-- AI Key Settings & Tutorial Modal -->
+        <div x-show="openKeyModal"
+             x-transition.opacity
+             class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4"
+             style="display: none;">
+            <div @click.away="openKeyModal = false"
+                 class="bg-base-100 rounded-3xl border border-base-300 shadow-2xl max-w-2xl w-full p-6 space-y-5 text-right relative overflow-hidden max-h-[90vh] overflow-y-auto">
+
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between border-b border-base-200 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl shrink-0">
+                            🔑
+                        </div>
+                        <div>
+                            <h3 class="font-black text-base text-base-content">{{ __('تنظیم و آموزش کلید هوش مصنوعی (Gemini API)') }}</h3>
+                            <p class="text-xs text-base-content/60">{{ __('فعال‌سازی مشاوره‌های تحلیلی زایشی در کنار محاسبات ۱۰۰٪ آفلاین') }}</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="openKeyModal = false" class="btn btn-ghost btn-sm btn-circle text-base-content/50 hover:text-base-content">
+                        ✕
+                    </button>
+                </div>
+
+                <!-- Current Status Card -->
+                <div class="p-4 rounded-2xl border border-base-300 bg-base-200/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+                    <div>
+                        <div class="font-bold text-base-content flex items-center gap-2">
+                            <span>وضعیت فعلی:</span>
+                            @if(!empty($isConfigured))
+                                <span class="badge badge-success badge-sm text-white font-bold">🟢 هوش ابری Gemini متصل</span>
+                            @else
+                                <span class="badge badge-warning badge-sm font-bold">⚡ حالت آفلاین محلی (بدون کلید)</span>
+                            @endif
+                        </div>
+                        <div class="text-[11px] text-base-content/60 mt-1 font-mono">
+                            <span>کلید فعال:</span>
+                            <strong>{{ $maskedKey ?: 'هیچ کلیدی وارد نشده است' }}</strong>
+                            <span class="mr-2 opacity-70">({{ $apiKeySource === 'company' ? 'تنظیمات شرکت' : ($apiKeySource === 'env' ? 'فایل .env سرور' : 'پیش‌فرض لوکال') }})</span>
+                        </div>
+                    </div>
+                    <a href="{{ route('guide.index', ['topic' => 'copilot']) }}" target="_blank" class="btn btn-ghost btn-xs text-xs text-primary gap-1">
+                        <span>📖</span> {{ __('مشاهده راهنمای کامل') }}
+                    </a>
+                </div>
+
+                <!-- 4-Step Tutorial -->
+                <div class="space-y-3">
+                    <h4 class="font-bold text-xs text-base-content flex items-center gap-1.5">
+                        <span>💡</span>
+                        <span>{{ __('گام‌های دریافت رایگان کلید از گوگل استودیو (Free Google AI Studio):') }}</span>
+                    </h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                        <div class="p-3 rounded-xl border border-base-200 bg-base-100 space-y-1">
+                            <span class="badge badge-primary badge-xs font-mono font-bold">۱. ورود با جیمیل</span>
+                            <p class="text-[11px] text-base-content/70 leading-relaxed">
+                                وارد لینک روبه‌رو شوید:
+                                <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="link link-primary font-mono text-[10px] block mt-0.5 dir-ltr text-left font-bold">
+                                    aistudio.google.com/apikey ↗
+                                </a>
+                            </p>
+                        </div>
+
+                        <div class="p-3 rounded-xl border border-base-200 bg-base-100 space-y-1">
+                            <span class="badge badge-info badge-xs font-mono font-bold text-white">۲. ساخت کلید</span>
+                            <p class="text-[11px] text-base-content/70 leading-relaxed">
+                                روی کلید آبی‌رنگ <strong class="text-base-content">Create API key</strong> کلیک کرده و یک پروژه پیش‌فرض ایجاد یا انتخاب کنید.
+                            </p>
+                        </div>
+
+                        <div class="p-3 rounded-xl border border-base-200 bg-base-100 space-y-1">
+                            <span class="badge badge-accent badge-xs font-mono font-bold">۳. کپی کلید</span>
+                            <p class="text-[11px] text-base-content/70 leading-relaxed">
+                                کلید تولید شده که با عبارت <code class="font-mono text-primary font-bold">AIzaSy...</code> شروع می‌شود را کپی نمایید.
+                            </p>
+                        </div>
+
+                        <div class="p-3 rounded-xl border border-base-200 bg-base-100 space-y-1">
+                            <span class="badge badge-success badge-xs font-mono font-bold text-white">۴. پیست و ذخیره</span>
+                            <p class="text-[11px] text-base-content/70 leading-relaxed">
+                                کلید را در فیلد زیر درج کرده و روی «ذخیره و فعال‌سازی» کلیک کنید.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input & Action Bar -->
+                <div class="space-y-3 pt-2">
+                    <label class="block text-xs font-bold text-base-content">
+                        {{ __('کلید API اختصاصی شرکت (Gemini API Key):') }}
+                    </label>
+
+                    <div class="relative">
+                        <input type="text"
+                               x-model="inputApiKey"
+                               placeholder="AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                               dir="ltr"
+                               class="input input-bordered w-full font-mono text-xs pl-4 pr-10 rounded-2xl focus:input-primary">
+                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-base opacity-40">🔑</span>
+                    </div>
+
+                    <!-- Feedback message -->
+                    <template x-if="saveResult">
+                        <div class="alert text-xs rounded-2xl p-3 flex items-center justify-between"
+                             :class="saveResult.success ? 'alert-success text-white' : 'alert-error text-white'">
+                            <span x-text="saveResult.message"></span>
+                        </div>
+                    </template>
+
+                    <template x-if="testResult">
+                        <div class="alert text-xs rounded-2xl p-3 flex items-center justify-between"
+                             :class="testResult.success ? 'alert-success text-white' : 'alert-error text-white'">
+                            <span x-text="testResult.message"></span>
+                            <span x-show="testResult.latency_ms" class="badge badge-xs font-mono" x-text="testResult.latency_ms + 'ms'"></span>
+                        </div>
+                    </template>
+
+                    <!-- DNS Note for Iran -->
+                    <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-base-content/80 leading-relaxed">
+                        🛡️ <strong>نکته ویژه کاربران داخل ایران:</strong> جهت اتصال مستقیم سرور یا رایانه شما به API گوگل، تنظیم DNS رفع تحریم مانند <strong class="text-primary font-mono">Shecan (178.22.122.100)</strong> یا <strong class="text-primary font-mono">403</strong> ضروری است.
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2 border-t border-base-200">
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <button type="button"
+                                    @click="testKey()"
+                                    :disabled="testingKey"
+                                    class="btn btn-outline btn-sm rounded-xl text-xs gap-1.5 w-full sm:w-auto">
+                                <span x-show="!testingKey">🔍</span>
+                                <span x-show="testingKey" class="loading loading-spinner loading-xs"></span>
+                                <span>{{ __('تست اتصال به هوش مصنوعی') }}</span>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <button type="button" @click="openKeyModal = false" class="btn btn-ghost btn-sm rounded-xl text-xs">
+                                {{ __('بستن') }}
+                            </button>
+                            <button type="button"
+                                    @click="saveKey()"
+                                    :disabled="savingKey"
+                                    class="btn btn-primary btn-sm rounded-xl text-xs px-5 font-bold gap-1.5 shadow-md shadow-primary/20 w-full sm:w-auto">
+                                <span x-show="!savingKey">💾</span>
+                                <span x-show="savingKey" class="loading loading-spinner loading-xs"></span>
+                                <span>{{ __('ذخیره و اعمال کلید') }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
 
     <!-- Alpine Chat Logic -->
@@ -272,7 +446,65 @@
                 inputQuery: '',
                 loading: false,
                 chatUrl: config.chatUrl,
+                saveSettingsUrl: config.saveSettingsUrl,
+                testConnectionUrl: config.testConnectionUrl,
                 csrf: config.csrf,
+                openKeyModal: false,
+                inputApiKey: '',
+                savingKey: false,
+                testingKey: false,
+                saveResult: null,
+                testResult: null,
+
+                async saveKey() {
+                    this.savingKey = true;
+                    this.saveResult = null;
+                    this.testResult = null;
+
+                    try {
+                        const res = await fetch(this.saveSettingsUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': this.csrf
+                            },
+                            body: JSON.stringify({ gemini_api_key: this.inputApiKey })
+                        });
+                        const data = await res.json();
+                        this.savingKey = false;
+                        this.saveResult = data;
+                        if (data.success) {
+                            setTimeout(() => { window.location.reload(); }, 1200);
+                        }
+                    } catch (e) {
+                        this.savingKey = false;
+                        this.saveResult = { success: false, message: 'خطا در ثبت کلید.' };
+                    }
+                },
+
+                async testKey() {
+                    this.testingKey = true;
+                    this.testResult = null;
+
+                    try {
+                        const res = await fetch(this.testConnectionUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': this.csrf
+                            },
+                            body: JSON.stringify({ api_key: this.inputApiKey })
+                        });
+                        const data = await res.json();
+                        this.testingKey = false;
+                        this.testResult = data;
+                    } catch (e) {
+                        this.testingKey = false;
+                        this.testResult = { success: false, message: 'خطا در برقراری ارتباط با سرور تست.' };
+                    }
+                },
 
                 init() {
                     this.scrollToBottom();

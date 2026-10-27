@@ -52,6 +52,38 @@ class IntegrationWebhookController extends Controller
         }
     }
 
+    public function digikala(Request $request, string $token): Response
+    {
+        $connection = IntegrationConnection::withoutGlobalScopes()
+            ->where('webhook_token', $token)
+            ->where('source_system', 'digikala')
+            ->where('is_active', true)
+            ->first();
+
+        if (! $connection) {
+            return response('', 404);
+        }
+
+        $previousActiveCompany = config('active-company-id');
+        config(['active-company-id' => $connection->company_id]);
+
+        try {
+            $adapter = new \App\Services\Integration\Adapters\DigikalaAdapter($connection);
+            $events = $adapter->normalize($request->all(), $this->flattenHeaders($request), $request->getContent());
+
+            $hub = $this->hubFactory->make();
+            foreach ($events as $event) {
+                $hub->ingest($event);
+            }
+
+            return response('', 200);
+        } catch (InvalidArgumentException $e) {
+            return response($e->getMessage(), 422);
+        } finally {
+            config(['active-company-id' => $previousActiveCompany]);
+        }
+    }
+
     /** @return array<string, string> lower-cased single-value header map, matching what the adapter expects */
     private function flattenHeaders(Request $request): array
     {

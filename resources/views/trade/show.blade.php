@@ -2,6 +2,14 @@
     <x-show-message-bags />
 
 <div class="container mx-auto px-4 py-6 max-w-6xl space-y-6" x-data="{ showAddItemModal: false, showReturnModal: false, showSettleModal: false, returnItemId: null, returnItemName: '', maxReturnQty: 1 }">
+    <x-page-quick-tip :title="__('راهنمای پرونده تهاتر و تبادل اقلام با همکاران')">
+        <ul class="list-disc list-inside space-y-1">
+            <li><b>{{ __('اقلام تحویلی (دادن کالا):') }}</b> {{ __('کالاهایی که از انبار شما خارج و تحویل همکار شده است.') }}</li>
+            <li><b>{{ __('اقلام دریافتی (گرفتن کالا):') }}</b> {{ __('کالاهایی که در ازای آن از همکار تحویل گرفته و به انبار اضافه شده است.') }}</li>
+            <li><b>{{ __('تسویه حساب خودکار:') }}</b> {{ __('در زمان تسویه، سیستم مابه‌التفاوت ارزش اقلام را محاسبه کرده و سند دوبل متوازن صادر می‌کند.') }}</li>
+        </ul>
+    </x-page-quick-tip>
+
     <!-- Header -->
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b pb-4">
         <div>
@@ -73,6 +81,14 @@
                     <div class="text-emerald-400 font-bold">✓ پرونده با موفقیت تسویه شده است</div>
                     <div class="text-slate-300">شیوه تسویه: {{ $exchange->settlement_notes }}</div>
                     <div class="text-slate-500 font-mono">{{ $exchange->settled_at?->format('Y/m/d H:i') }}</div>
+                    @if($exchange->document_id)
+                        <div class="pt-1">
+                            <a href="{{ route('documents.show', $exchange->document_id) }}" class="btn btn-xs btn-outline btn-success gap-1 text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                مشاهده سند حسابداری دوبل (#{{ $exchange->document_id }})
+                            </a>
+                        </div>
+                    @endif
                 </div>
             @endif
         </div>

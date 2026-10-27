@@ -480,6 +480,7 @@
             <ul class="{{ $topDropdownContentClass }}">
                 @can('distribution.index')
                     <li><a href="{{ route('distribution.index') }}">{{ __('داشبورد و شاخص‌های پخش') }}</a></li>
+                    <li><a href="{{ route('mobile.index') }}" target="_blank" class="text-cyan-400 font-bold flex items-center justify-between"><span>📱 {{ __('اپلیکیشن همراه ویزیتور و انبار') }}</span><span class="badge badge-xs badge-info">PWA</span></a></li>
                 @endcan
                 @can('distribution.routes.index')
                     <li><a href="{{ route('distribution.routes.index') }}">{{ __('مسیرها و مناطق توزیع') }}</a></li>
@@ -546,9 +547,6 @@
             @can('users.index')
                 <li><a href="{{ route('users.index') }}">{{ __('کاربران و پرسنل سیستم') }}</a></li>
             @endcan
-            @can('roles.index')
-                <li><a href="{{ route('roles.index') }}">{{ __('نقش‌ها و ماتریس دسترسی‌ها') }}</a></li>
-            @endcan
             <li><a href="{{ route('account.edit') }}">{{ __('پروفایل و حساب کاربری من') }}</a></li>
             @can('industry-profiles.index')
                 <li><a href="{{ route('industry-profiles.index') }}" class="flex items-center justify-between"><span>{{ __('تنظیمات اختصاصی صنف (طلا، موبایل، یدکی و...)') }}</span><span class="badge badge-accent badge-xs">اصناف</span></a></li>
@@ -585,6 +583,7 @@
             @can('configs.index')
                 <li><a href="{{ route('configs.index') }}">{{ __('تنظیمات عمومی سامانه') }}</a></li>
             @endcan
+            <li><a href="{{ route('guide.index') }}" class="font-bold text-primary flex items-center justify-between"><span>{{ __('راهنمای جامع و مصور نرم‌افزار') }}</span><span class="badge badge-primary badge-xs">آموزش</span></a></li>
             <li><a href="{{ route('about') }}">{{ __('درباره سامانه دخل') }}</a></li>
         </ul>
     </details>

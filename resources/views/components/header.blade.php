@@ -27,6 +27,16 @@
                 this.current = t;
                 localStorage.setItem('ui_theme', t);
                 document.documentElement.setAttribute('data-ui-theme', t);
+                if (t === 'linear' && (!localStorage.getItem('dakhl_accent_color') || localStorage.getItem('dakhl_accent_color') === 'cyan')) {
+                    localStorage.setItem('dakhl_accent_color', 'indigo');
+                    document.documentElement.setAttribute('data-accent', 'indigo');
+                } else if (t === 'stripe' && (!localStorage.getItem('dakhl_accent_color') || localStorage.getItem('dakhl_accent_color') === 'cyan')) {
+                    localStorage.setItem('dakhl_accent_color', 'violet');
+                    document.documentElement.setAttribute('data-accent', 'violet');
+                } else if (t === 'flow' && (localStorage.getItem('dakhl_accent_color') === 'indigo' || localStorage.getItem('dakhl_accent_color') === 'violet')) {
+                    localStorage.setItem('dakhl_accent_color', 'cyan');
+                    document.documentElement.setAttribute('data-accent', 'cyan');
+                }
             }
         }">
             <button tabindex="0" class="btn btn-ghost btn-sm rounded-xl px-2.5 flex items-center gap-1.5 text-xs text-base-content/70 hover:text-base-content" title="{{ __('تغییر پوسته نرم‌افزار') }}">
@@ -63,6 +73,25 @@
                 </li>
             </ul>
         </div>
+
+        <!-- Mobile Companion Quick Link -->
+        <a href="{{ route('mobile.index') }}"
+           target="_blank"
+           class="btn btn-ghost btn-sm text-cyan-500 hover:text-cyan-400 rounded-xl px-2.5 flex items-center gap-1.5 text-xs bg-cyan-500/10 border border-cyan-500/20"
+           title="{{ __('نسخه همراه موبایل (پخش مویرگی و بارکدخوان انبار)') }}">
+            <span class="text-sm">📱</span>
+            <span class="hidden sm:inline font-bold">{{ __('نسخه همراه') }}</span>
+        </a>
+
+        <!-- Help & Guide Quick Link -->
+        <a href="{{ route('guide.index') }}"
+           class="btn btn-ghost btn-square btn-sm text-base-content/70 hover:text-primary rounded-xl"
+           title="{{ __('راهنمای جامع و مصور نرم‌افزار') }}"
+           aria-label="{{ __('راهنما') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" width="16" height="16" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </a>
 
         <nav aria-label="{{ __('User menu') }}">
             <ul class="app-main-menu flex shrink-0 items-center menu menu-horizontal px-1" data-main-menu>

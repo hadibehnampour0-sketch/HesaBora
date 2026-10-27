@@ -26,7 +26,12 @@ class GeminiFinancialChatEngine
             return $this->fallbackEngine->answer($companyId, $query);
         }
 
-        $apiKey = config('services.gemini.api_key') ?? env('GEMINI_API_KEY');
+        $companyApiKey = \App\Models\Config::withoutGlobalScopes()
+            ->where('company_id', $companyId)
+            ->where('key', 'gemini_api_key')
+            ->value('value');
+
+        $apiKey = $companyApiKey ?: (config('services.gemini.api_key') ?? env('GEMINI_API_KEY'));
 
         if (empty($apiKey)) {
             return $this->fallbackEngine->answer($companyId, $query);

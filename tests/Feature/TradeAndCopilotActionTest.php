@@ -130,6 +130,39 @@ class TradeAndCopilotActionTest extends TestCase
         $this->assertNotNull($settled->settled_at);
     }
 
+    public function test_trade_exchange_settlement_creates_balanced_accounting_document(): void
+    {
+        $exchange = $this->tradeService->createExchange(
+            companyId: $this->company->id,
+            customerId: $this->counterparty->id,
+            title: 'تهاتر نقدی با موبایل رضا',
+            createdBy: $this->user->id,
+            items: [
+                ['direction' => 'out', 'item_name' => 'لوازم جانبی', 'quantity' => 1, 'unit_price' => 5000000],
+                ['direction' => 'in', 'item_name' => 'قطعات تعمیری', 'quantity' => 1, 'unit_price' => 2000000],
+            ]
+        );
+
+        // Net: 5,000,000 - 2,000,000 = +3,000,000
+        $settled = $this->tradeService->settleExchange(
+            exchange: $exchange,
+            user: $this->user,
+            settlementType: 'ledger',
+            notes: 'انتقال مانده تهاتر ۳ میلیون ریال به دفتر حساب مشتری'
+        );
+
+        $this->assertEquals('settled', $settled->status);
+        $this->assertNotNull($settled->document_id);
+
+        $document = $settled->document;
+        $this->assertNotNull($document);
+        $this->assertNotNull($document->approved_at);
+        $this->assertCount(2, $document->transactions);
+
+        // Accounting Invariant: Sum of transactions must be zero!
+        $this->assertEquals(0.0, (float) $document->transactions->sum('value'));
+    }
+
     public function test_price_quote_service_and_storage(): void
     {
         // Ali asks for glass price -> told 40,000 Tomans

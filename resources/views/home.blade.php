@@ -37,7 +37,7 @@
 
     <x-show-message-bags />
 
-    <div class="home-dashboard pb-6">
+    <div class="home-dashboard pb-6 space-y-4">
         @include('home._header', compact('homeVariant'))
 
         @include('home._market-ticker')
@@ -47,8 +47,6 @@
         @else
             @include('home._financial-values')
         @endif
-
-        @include('home._access-sections')
     </div>
 
     @push('scripts')

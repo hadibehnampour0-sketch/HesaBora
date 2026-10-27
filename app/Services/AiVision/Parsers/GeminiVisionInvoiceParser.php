@@ -15,7 +15,13 @@ class GeminiVisionInvoiceParser implements InvoiceVisionParserInterface
 
     public function parseInvoiceFile(string $absolutePath, string $mimeType): array
     {
-        $apiKey = config('services.gemini.api_key') ?? env('GEMINI_API_KEY');
+        $companyId = getActiveCompany();
+        $companyApiKey = $companyId ? \App\Models\Config::withoutGlobalScopes()
+            ->where('company_id', $companyId)
+            ->where('key', 'gemini_api_key')
+            ->value('value') : null;
+
+        $apiKey = $companyApiKey ?: (config('services.gemini.api_key') ?? env('GEMINI_API_KEY'));
 
         if (empty($apiKey) || ! file_exists($absolutePath)) {
             return $this->fallbackParser->parseInvoiceFile($absolutePath, $mimeType);

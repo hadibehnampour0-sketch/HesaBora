@@ -6,6 +6,7 @@ use App\Models\Customer;
 use App\Models\TradeExchange;
 use App\Models\TradeExchangeItem;
 use App\Models\User;
+use App\Services\DocumentService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -115,9 +116,9 @@ class TradeExchangeService
         ?float $agreedCashAmount = null,
         ?string $notes = null
     ): TradeExchange {
-        return DB::transaction(function () use ($exchange, $settlementType, $agreedCashAmount, $notes) {
+        return DB::transaction(function () use ($exchange, $user, $settlementType, $agreedCashAmount, $notes) {
             $summary = $exchange->calculateValuationSummary();
-            $netValuation = $agreedCashAmount !== null ? $agreedCashAmount : $summary['net_valuation'];
+            $netValuation = $agreedCashAmount !== null ? $agreedCashAmount : (float) $summary['net_valuation'];
 
             $settlementNotes = $notes ?: match ($settlementType) {
                 'cash' => 'تسویه ریالی/نقدی تفاضل ارزش اقلام تهاتر شده به مبلغ '.number_format(abs($netValuation)).' ریال',
@@ -126,11 +127,56 @@ class TradeExchangeService
                 default => 'تسویه تبادل اقلام با همکار',
             };
 
+            $documentId = null;
+
+            // Generate double-entry accounting document when there is financial movement (ledger or cash)
+            if (abs($netValuation) > 0.005 && in_array($settlementType, ['ledger', 'cash'])) {
+                $customer = $exchange->customer;
+                $customerSubjectId = $customer?->subject_id ?? $customer?->subject?->id;
+                if (! $customerSubjectId) {
+                    $customerSubjectId = (int) (config('amir.cust_subject') ?? 1);
+                }
+
+                if ($settlementType === 'cash') {
+                    $counterpartSubjectId = (int) (config('amir.cash') ?? config('amir.cash_book') ?? $customerSubjectId);
+                } else {
+                    $counterpartSubjectId = $netValuation > 0
+                        ? (int) (config('amir.income') ?? config('amir.sales_revenue') ?? $customerSubjectId)
+                        : (int) (config('amir.sundry_cost') ?? config('amir.cost') ?? $customerSubjectId);
+                }
+
+                $amount = abs($netValuation);
+                $transactions = [
+                    [
+                        'subject_id' => $customerSubjectId,
+                        'desc' => $settlementNotes,
+                        'value' => $netValuation > 0 ? -$amount : $amount,
+                    ],
+                    [
+                        'subject_id' => $counterpartSubjectId,
+                        'desc' => $settlementNotes,
+                        'value' => $netValuation > 0 ? $amount : -$amount,
+                    ],
+                ];
+
+                $document = DocumentService::createDocument($user, [
+                    'date' => now()->toDateString(),
+                    'title' => 'سند تسویه تهاتر تبادل کالا #'.$exchange->id.' ('.$exchange->title.')',
+                    'number' => null,
+                    'company_id' => $exchange->company_id,
+                    'documentable' => $exchange,
+                ], $transactions);
+
+                DocumentService::changeDocumentStatus($document, $user, 'approved');
+                $documentId = $document->id;
+            }
+
             $exchange->update([
                 'status' => 'settled',
                 'settlement_type' => $settlementType,
                 'settlement_notes' => $settlementNotes,
                 'settled_at' => Carbon::now(),
+                'document_id' => $documentId,
             ]);
 
             return $exchange;

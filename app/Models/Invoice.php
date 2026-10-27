@@ -139,6 +139,21 @@ class Invoice extends Model
         return $this->morphMany(TaxEvidence::class, 'evidenceable');
     }
 
+    public function goodsReceipt()
+    {
+        return $this->hasOne(GoodsReceipt::class);
+    }
+
+    public function deliveryNote()
+    {
+        return $this->hasOne(DeliveryNote::class);
+    }
+
+    public function serialNumbers()
+    {
+        return $this->hasMany(ProductSerialNumber::class);
+    }
+
     public function latestMoadianHistory()
     {
         // P12.1 hardening: latestOfMany() defaults to ordering by

@@ -316,6 +316,9 @@ class InvoiceController extends Controller
             'payments.creator',
             'payments.cheque',
             'taxEvidences',
+            'goodsReceipt.user',
+            'deliveryNote.user',
+            'serialNumbers.product',
         ]);
 
         $paymentDecision = $paymentService->validateInvoicePayment($invoice);
@@ -340,7 +343,18 @@ class InvoiceController extends Controller
             ->first();
         $paymentTerms = $settlementObligation ? collect() : PaymentTerm::where('is_active', true)->orderBy('code')->get();
 
-        return view('invoices.show', compact('invoice', 'changeStatusValidation', 'isServiceBuy', 'isReturnServiceBuy', 'isMoadianSendable', 'paymentDecision', 'settlementSubjects', 'paidAmount', 'remainingAmount', 'chequeDirection', 'chequeBanks', 'chequeBankAccounts', 'chequebooks', 'fiscalYears', 'canCreateAncillaryCost', 'settlementObligation', 'paymentTerms'));
+        $availableSerialNumbers = collect();
+        if ($invoice->invoice_type === InvoiceType::SELL) {
+            $productIds = $invoice->items->where('itemable_type', Product::class)->pluck('itemable_id')->all();
+            if (! empty($productIds)) {
+                $availableSerialNumbers = \App\Models\ProductSerialNumber::whereIn('product_id', $productIds)
+                    ->where('status', \App\Enums\SerialNumberStatus::IN_STOCK)
+                    ->with(['product', 'warehouse'])
+                    ->get();
+            }
+        }
+
+        return view('invoices.show', compact('invoice', 'changeStatusValidation', 'isServiceBuy', 'isReturnServiceBuy', 'isMoadianSendable', 'paymentDecision', 'settlementSubjects', 'paidAmount', 'remainingAmount', 'chequeDirection', 'chequeBanks', 'chequeBankAccounts', 'chequebooks', 'fiscalYears', 'canCreateAncillaryCost', 'settlementObligation', 'paymentTerms', 'availableSerialNumbers'));
     }
 
     public function print(Invoice $invoice, ReportExportService $reportExportService)

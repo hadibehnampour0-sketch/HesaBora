@@ -90,6 +90,7 @@ class IntegrationInventoryPushService
     {
         return match ($connection->source_system) {
             'woocommerce' => new WooCommerceAdapter($connection),
+            'digikala' => new \App\Services\Integration\Adapters\DigikalaAdapter($connection),
             default => throw new \InvalidArgumentException("No adapter for source system: {$connection->source_system}"),
         };
     }

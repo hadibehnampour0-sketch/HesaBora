@@ -99,6 +99,7 @@
             selectedIndex: 0,
             items: [
                 // Invoices & Sales
+                { title: 'راهنمای جامع و مصور نرم‌افزار', category: 'آموزش و دانشنامه', icon: '📖', url: '{{ route('guide.index') }}' },
                 { title: 'صدور فاکتور فروش جدید', category: 'فروش و درآمد', icon: '📝', url: '{{ route('invoices.create', ['invoice_type' => 'sell']) }}' },
                 { title: 'صندوق فروشگاهی سریع (POS)', category: 'فروش خرده‌فروشی', icon: '🛒', url: '{{ route('pos.terminal') }}' },
                 { title: 'کارتخوان‌های متصل به سیستم (PC-POS)', category: 'سخت‌افزار و پرداخت', icon: '💳', url: '{{ route('pc-pos.index') }}' },

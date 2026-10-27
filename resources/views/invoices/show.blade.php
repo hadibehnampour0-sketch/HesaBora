@@ -82,6 +82,14 @@
         <div class="card-body space-y-8">
             <x-show-message-bags />
 
+            <x-page-quick-tip :title="__('راهنمای کاربردی گردش کار فاکتور')">
+                <ul class="list-disc list-inside space-y-1">
+                    <li><b>{{ __('تایید فاکتور:') }}</b> {{ __('با تایید فاکتور، سند حسابداری دوبل صادر شده و موجودی انبار به طور قطعی کسر می‌گردد.') }}</li>
+                    <li><b>{{ __('تسویه و خزانه‌داری:') }}</b> {{ __('می‌توانید با دکمه ثبت پرداخت، واریز نقدی، پوز یا چک را ثبت و به مانده این فاکتور اختصاص دهید.') }}</li>
+                    <li><b>{{ __('ارسال مودیان:') }}</b> {{ __('پس از تایید، امکان امضای دیجیتال و ارسال خودکار صورتحساب به سامانه مودیان فراهم است.') }}</li>
+                </ul>
+            </x-page-quick-tip>
+
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div
                     class="stats shadow bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200/60 dark:from-slate-800 dark:to-sky-950/40 dark:border-sky-500/20 dark:shadow-none dark:ring-1 dark:ring-white/5">
@@ -1126,6 +1134,198 @@
                     @endPushOnce
                 @endcan
             </div>
+
+            {{-- Goods Receipt & Delivery Note & Serial Numbers Tracking --}}
+            @if ($invoice->invoice_type === App\Enums\InvoiceType::BUY && !$isServiceBuy)
+                <div class="divider text-lg font-semibold">{{ __('رسید انبار و ورود کالا (Goods Receipt)') }}</div>
+                @if ($invoice->goodsReceipt)
+                    <div class="alert alert-success shadow-sm flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <div>
+                                <span class="font-bold">{{ __('رسید ورود کالا به انبار ثبت گردیده است.') }}</span>
+                                <div class="text-xs opacity-90 mt-1 flex flex-wrap gap-4">
+                                    <span>{{ __('تاریخ دریافت') }}: {{ formatDate($invoice->goodsReceipt->received_date) }}</span>
+                                    @if ($invoice->goodsReceipt->reference)
+                                        <span>{{ __('شماره مرجع') }}: {{ $invoice->goodsReceipt->reference }}</span>
+                                    @endif
+                                    @if ($invoice->goodsReceipt->user)
+                                        <span>{{ __('تحویل گیرنده') }}: {{ $invoice->goodsReceipt->user->name }}</span>
+                                    @endif
+                                    @if ($invoice->goodsReceipt->note)
+                                        <span>{{ __('یادداشت') }}: {{ $invoice->goodsReceipt->note }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="bg-base-200/50 p-4 rounded-xl border border-base-300 flex justify-between items-center mb-4">
+                        <div>
+                            <h4 class="font-bold text-sm">{{ __('رسید ورود به انبار ثبت نشده است') }}</h4>
+                            <p class="text-xs text-gray-500 mt-0.5">{{ __('جهت تایید تحویل فیزیکی اقلام فاکتور خرید توسط انباردار می‌توانید رسید ثبت کنید.') }}</p>
+                        </div>
+                        <button type="button" onclick="document.getElementById('goods-receipt-modal').showModal()" class="btn btn-sm btn-success gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                            {{ __('ثبت رسید ورود به انبار') }}
+                        </button>
+                    </div>
+
+                    <dialog id="goods-receipt-modal" class="modal">
+                        <div class="modal-box">
+                            <h3 class="font-bold text-lg mb-3">{{ __('ثبت رسید تحویل و ورود کالا به انبار') }}</h3>
+                            <form action="{{ route('invoices.goods-receipt.store', $invoice) }}" method="POST">
+                                @csrf
+                                <div class="form-control mb-3">
+                                    <label class="label"><span class="label-text">{{ __('تاریخ دریافت') }}</span></label>
+                                    <input type="date" name="received_date" value="{{ date('Y-m-d') }}" class="input input-bordered w-full" required>
+                                </div>
+                                <div class="form-control mb-3">
+                                    <label class="label"><span class="label-text">{{ __('شماره مرجع بارنامه / رسید انبار') }}</span></label>
+                                    <input type="text" name="reference" placeholder="مثال: WH-REC-890" class="input input-bordered w-full">
+                                </div>
+                                <div class="form-control mb-4">
+                                    <label class="label"><span class="label-text">{{ __('یادداشت انباردار') }}</span></label>
+                                    <textarea name="note" rows="2" class="textarea textarea-bordered w-full" placeholder="توضیحات بسته‌بندی یا بررسی سلامت اقلام"></textarea>
+                                </div>
+                                <div class="modal-action">
+                                    <button type="button" onclick="document.getElementById('goods-receipt-modal').close()" class="btn btn-ghost">{{ __('Cancel') }}</button>
+                                    <button type="submit" class="btn btn-success">{{ __('تایید و ثبت رسید') }}</button>
+                                </div>
+                            </form>
+                        </div>
+                        <form method="dialog" class="modal-backdrop"><button>{{ __('Close') }}</button></form>
+                    </dialog>
+                @endif
+            @elseif ($invoice->invoice_type === App\Enums\InvoiceType::SELL)
+                <div class="divider text-lg font-semibold">{{ __('حواله تحویل کالا و سریال‌ها') }}</div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                    {{-- Delivery Note --}}
+                    <div class="card bg-base-200/50 border border-base-300">
+                        <div class="card-body p-4">
+                            <h4 class="font-bold text-sm flex items-center justify-between">
+                                <span>{{ __('برگه و حواله تحویل به مشتری (Delivery Note)') }}</span>
+                                @if ($invoice->deliveryNote)
+                                    <span class="badge badge-success badge-sm">{{ __('ثبت شده') }}</span>
+                                @endif
+                            </h4>
+                            @if ($invoice->deliveryNote)
+                                <div class="text-xs space-y-1 mt-2 text-gray-600 dark:text-gray-300">
+                                    <div>{{ __('تاریخ تحویل') }}: <span class="font-semibold">{{ formatDate($invoice->deliveryNote->delivered_date) }}</span></div>
+                                    @if ($invoice->deliveryNote->reference)
+                                        <div>{{ __('کد رهگیری / مرجع') }}: <span class="font-mono">{{ $invoice->deliveryNote->reference }}</span></div>
+                                    @endif
+                                    @if ($invoice->deliveryNote->user)
+                                        <div>{{ __('مسئول تحویل') }}: <span>{{ $invoice->deliveryNote->user->name }}</span></div>
+                                    @endif
+                                    @if ($invoice->deliveryNote->note)
+                                        <div>{{ __('توضیحات') }}: <span>{{ $invoice->deliveryNote->note }}</span></div>
+                                    @endif
+                                </div>
+                            @else
+                                <p class="text-xs text-gray-500 mt-2">{{ __('هنوز برگه تحویل فیزیکی کالا برای این فاکتور ثبت نشده است.') }}</p>
+                                <div class="mt-3">
+                                    <button type="button" onclick="document.getElementById('delivery-note-modal').showModal()" class="btn btn-xs btn-primary gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                                        {{ __('ثبت برگه تحویل کالا') }}
+                                    </button>
+                                </div>
+
+                                <dialog id="delivery-note-modal" class="modal">
+                                    <div class="modal-box">
+                                        <h3 class="font-bold text-lg mb-3">{{ __('ثبت برگه تحویل کالا به مشتری') }}</h3>
+                                        <form action="{{ route('invoices.delivery-note.store', $invoice) }}" method="POST">
+                                            @csrf
+                                            <div class="form-control mb-3">
+                                                <label class="label"><span class="label-text">{{ __('تاریخ تحویل') }}</span></label>
+                                                <input type="date" name="delivered_date" value="{{ date('Y-m-d') }}" class="input input-bordered w-full" required>
+                                            </div>
+                                            <div class="form-control mb-3">
+                                                <label class="label"><span class="label-text">{{ __('شماره مرجع یا بیجک باربری') }}</span></label>
+                                                <input type="text" name="reference" placeholder="مثال: DLV-9012" class="input input-bordered w-full">
+                                            </div>
+                                            <div class="form-control mb-4">
+                                                <label class="label"><span class="label-text">{{ __('یادداشت تحویل') }}</span></label>
+                                                <textarea name="note" rows="2" class="textarea textarea-bordered w-full" placeholder="نام راننده یا امضا کننده رسید"></textarea>
+                                            </div>
+                                            <div class="modal-action">
+                                                <button type="button" onclick="document.getElementById('delivery-note-modal').close()" class="btn btn-ghost">{{ __('Cancel') }}</button>
+                                                <button type="submit" class="btn btn-primary">{{ __('ثبت حواله تحویل') }}</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <form method="dialog" class="modal-backdrop"><button>{{ __('Close') }}</button></form>
+                                </dialog>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Serial Numbers linked to this invoice --}}
+                    <div class="card bg-base-200/50 border border-base-300">
+                        <div class="card-body p-4">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="font-bold text-sm">{{ __('شماره سریال‌های ثبت‌شده برای این فاکتور') }}</h4>
+                                @if (isset($availableSerialNumbers) && $availableSerialNumbers->isNotEmpty())
+                                    <button type="button" onclick="document.getElementById('assign-serial-modal').showModal()" class="btn btn-xs btn-outline btn-primary gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                                        {{ __('تخصیص سریال') }}
+                                    </button>
+                                @endif
+                            </div>
+                            <div class="overflow-x-auto max-h-36 overflow-y-auto">
+                                <table class="table table-xs w-full">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ __('کالا') }}</th>
+                                            <th>{{ __('شماره سریال') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($invoice->serialNumbers as $serial)
+                                            <tr>
+                                                <td>{{ $serial->product?->name }}</td>
+                                                <td class="font-mono font-bold">{{ $serial->serial_number }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="2" class="text-center py-2 text-gray-400 text-xs">{{ __('شماره سریالی به این فاکتور متصل نشده است.') }}</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            @if (isset($availableSerialNumbers) && $availableSerialNumbers->isNotEmpty())
+                                <dialog id="assign-serial-modal" class="modal">
+                                    <div class="modal-box">
+                                        <h3 class="font-bold text-lg mb-3">{{ __('تخصیص شماره سریال کالای فروخته‌شده') }}</h3>
+                                        <form id="assign-serial-form" method="POST" onsubmit="event.preventDefault(); const sel = document.getElementById('serial_select'); const action = sel.options[sel.selectedIndex].dataset.action; this.action = action; this.submit();">
+                                            @csrf
+                                            <input type="hidden" name="invoice_id" value="{{ $invoice->id }}">
+                                            <div class="form-control mb-4">
+                                                <label class="label"><span class="label-text">{{ __('انتخاب سریال موجود در انبار') }}</span></label>
+                                                <select id="serial_select" class="select select-bordered w-full" required>
+                                                    <option value="">{{ __('-- انتخاب سریال --') }}</option>
+                                                    @foreach ($availableSerialNumbers as $avail)
+                                                        <option value="{{ $avail->id }}" data-action="{{ route('product-serial-numbers.sell', $avail) }}">
+                                                            {{ $avail->product?->name }} - سریال: {{ $avail->serial_number }} (انبار: {{ $avail->warehouse?->name }})
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="modal-action">
+                                                <button type="button" onclick="document.getElementById('assign-serial-modal').close()" class="btn btn-ghost">{{ __('Cancel') }}</button>
+                                                <button type="submit" class="btn btn-primary">{{ __('تخصیص به این فاکتور') }}</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <form method="dialog" class="modal-backdrop"><button>{{ __('Close') }}</button></form>
+                                </dialog>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             <div class="card-actions justify-between mt-4">
                 <a href="{{ route('invoices.index', ['invoice_type' => $invoice->invoice_type, 'service_buy' => $isServiceBuy]) }}"
