@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\PeriodStatus;
+use App\Models\Company;
 use App\Models\Document;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -116,7 +118,16 @@ class DocumentReversalService
                 ->lockForUpdate()
                 ->firstOrFail();
 
-            PeriodLockGuard::assertMutable($document->company_id, 'ابطال سند حسابداری');
+            PeriodLockGuard::assertMutable($document->company_id, 'ابطال سند حسابداری', $user);
+
+            $company = Company::find($document->company_id);
+            $isClosed = $company && ($company->period_status === PeriodStatus::CLOSED || ($company->period_status === null && $company->closed_at !== null));
+
+            if ($isClosed && empty(trim($reason ?? ''))) {
+                throw ValidationException::withMessages([
+                    'reason' => ['ابطال سند در دوره مالی بسته شده مستلزم درج توضیحات و دلیل تفصیلی اجباری است.'],
+                ]);
+            }
 
             if (is_null($document->approved_at)) {
                 throw ValidationException::withMessages([
@@ -187,8 +198,9 @@ class DocumentReversalService
                         'reason_code' => $reasonCode,
                         'reason' => $reason,
                         'operation_id' => $operationId,
+                        'closed_period_override' => $isClosed,
                     ])
-                    ->log('accounting.document.reversed');
+                    ->log($isClosed ? 'accounting.document.reversed_in_closed_period' : 'accounting.document.reversed');
             }
 
             return $reversalDoc;

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\PeriodStatus;
 use App\Models\Company;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -20,7 +21,7 @@ class PeriodLockGuard
      *
      * @throws ValidationException
      */
-    public static function assertMutable(int|Company|null $company, ?string $action = null): void
+    public static function assertMutable(int|Company|null $company, ?string $action = null, ?User $user = null): void
     {
         if (is_null($company)) {
             $companyId = getActiveCompany();
@@ -51,8 +52,8 @@ class PeriodLockGuard
         }
 
         if ($status === PeriodStatus::CLOSED) {
-            $user = Auth::user();
-            $hasOverride = $user && ($user->can('access-super-admin-panel') || $user->can('fiscal-year.closed-period-override'));
+            $effectiveUser = $user ?? Auth::user();
+            $hasOverride = $effectiveUser && ($effectiveUser->can('access-super-admin-panel') || $effectiveUser->can('fiscal-year.closed-period-override'));
 
             if (! $hasOverride) {
                 $msg = 'این دوره مالی بسته شده است (Closed) و ثبت یا تغییر تراکنش در آن نیازمند مجوز ارشد است.';

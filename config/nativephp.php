@@ -90,6 +90,9 @@ return [
         'content',
         'node_modules',
         '*/tests',
+        'scratch*',
+        'docs/cleanroom*',
+        'tools/license-issuer/keys*',
     ],
 
     /**

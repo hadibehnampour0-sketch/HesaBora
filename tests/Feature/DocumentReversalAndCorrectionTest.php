@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\PeriodStatus;
 use App\Models\Company;
 use App\Models\Document;
 use App\Models\Subject;
@@ -63,6 +64,7 @@ class DocumentReversalAndCorrectionTest extends TestCase
         Permission::firstOrCreate(['name' => 'documents.reverse']);
         Permission::firstOrCreate(['name' => 'documents.correct']);
         Permission::firstOrCreate(['name' => 'documents.reversal-preview']);
+        Permission::firstOrCreate(['name' => 'fiscal-year.closed-period-override']);
     }
 
     private function createSampleApprovedDocument(float $amount = 500000.00): Document
@@ -334,5 +336,73 @@ class DocumentReversalAndCorrectionTest extends TestCase
         $this->assertEquals(-320000.00, $inspection['preview_transactions'][0]['reversal_value']);
         // Second transaction preview should be +320000
         $this->assertEquals(320000.00, $inspection['preview_transactions'][1]['reversal_value']);
+    }
+
+    public function test_reversal_in_closed_period_is_rejected_without_override_permission(): void
+    {
+        $original = $this->createSampleApprovedDocument(100000.00);
+
+        // Close the period
+        $this->company->update(['period_status' => PeriodStatus::CLOSED]);
+
+        $this->expectException(ValidationException::class);
+        $this->reversalService->reverseDocument(
+            $original,
+            $this->user,
+            DocumentReversalService::REASON_CLERICAL_ERROR,
+            'دلیل اصلاح'
+        );
+    }
+
+    public function test_reversal_in_closed_period_is_rejected_without_mandatory_reason(): void
+    {
+        $original = $this->createSampleApprovedDocument(100000.00);
+        $this->company->update(['period_status' => PeriodStatus::CLOSED]);
+        $this->user->givePermissionTo('fiscal-year.closed-period-override');
+
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('ابطال سند در دوره مالی بسته شده مستلزم درج توضیحات و دلیل تفصیلی اجباری است.');
+
+        $this->reversalService->reverseDocument(
+            $original,
+            $this->user,
+            DocumentReversalService::REASON_CLERICAL_ERROR,
+            '' // empty explanation
+        );
+    }
+
+    public function test_reversal_in_closed_period_succeeds_with_override_and_mandatory_reason_and_logs_audit(): void
+    {
+        $original = $this->createSampleApprovedDocument(100000.00);
+        $this->company->update(['period_status' => PeriodStatus::CLOSED]);
+        $this->user->givePermissionTo('fiscal-year.closed-period-override');
+
+        $reversal = $this->reversalService->reverseDocument(
+            $original,
+            $this->user,
+            DocumentReversalService::REASON_CLERICAL_ERROR,
+            'اصلاح اشتباه ثبتی در دوره مالی با تایید مدیر مالی'
+        );
+
+        $this->assertNotNull($reversal);
+        $this->assertTrue($original->fresh()->isReversed());
+        $this->assertSame('اصلاح اشتباه ثبتی در دوره مالی با تایید مدیر مالی', $original->fresh()->reversal_reason);
+    }
+
+    public function test_reversal_in_locked_period_is_unconditionally_blocked_even_with_override(): void
+    {
+        $original = $this->createSampleApprovedDocument(100000.00);
+        $this->company->update(['period_status' => PeriodStatus::LOCKED]);
+        $this->user->givePermissionTo('fiscal-year.closed-period-override');
+
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('قفل قطعی (Locked)');
+
+        $this->reversalService->reverseDocument(
+            $original,
+            $this->user,
+            DocumentReversalService::REASON_CLERICAL_ERROR,
+            'توضیحات اضطراری'
+        );
     }
 }

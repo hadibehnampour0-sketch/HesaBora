@@ -23,3 +23,7 @@ yarn-error.log
 script/*.sql*
 script/*/*.sql*
 storage/*.sqlite*
+/scratch/
+scratch/
+tools/license-issuer/keys/
+*.key
