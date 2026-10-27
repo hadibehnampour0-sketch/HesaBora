@@ -113,6 +113,8 @@ class PaymentService
      */
     public function createPayment(User $user, Invoice $invoice, array $data): InvoiceStatusDecision
     {
+        PeriodLockGuard::assertMutable($invoice->company_id, 'ثبت پرداخت فاکتور');
+
         return DB::transaction(function () use ($user, $invoice, $data) {
             $locked = Invoice::query()->lockForUpdate()->findOrFail($invoice->id);
             $invoice->setRawAttributes($locked->getAttributes(), true);
@@ -230,6 +232,8 @@ class PaymentService
 
     public function createCreditPayment(User $user, Customer $customer, array $data): Payment
     {
+        PeriodLockGuard::assertMutable($customer->company_id, 'ثبت دریافت/پرداخت مشتری');
+
         return DB::transaction(function () use ($user, $customer, $data) {
             $customerSubjectId = (int) ($customer->subject?->id ?? 0);
             if (! $customerSubjectId) {
@@ -307,6 +311,8 @@ class PaymentService
     {
         return DB::transaction(function () use ($user, $payment, $allocatable, $amount, $reference) {
             $lockedPayment = Payment::query()->lockForUpdate()->findOrFail($payment->id);
+
+            PeriodLockGuard::assertMutable($lockedPayment->company_id, 'تخصیص وجه پرداخت');
 
             if ($lockedPayment->invoice_id) {
                 throw ValidationException::withMessages([

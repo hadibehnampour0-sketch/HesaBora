@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Enums\FiscalYearSection;
+use App\Enums\PeriodStatus;
 use App\Models\Company;
 use App\Models\Document;
 use App\Models\DocumentFile;
 use App\Models\User;
 use App\Models\Warehouse;
 use App\Services\FiscalYearService;
+use App\Services\PeriodChecklistService;
 use Cookie;
 use Database\Seeders\BankSeeder;
 use Database\Seeders\ConfigSeeder;
@@ -600,5 +602,110 @@ class CompanyController extends Controller
 
         return redirect()->route('companies.index')
             ->with('success', __('Fiscal year closed successfully.'));
+    }
+
+    public function periodChecklist(Company $company, PeriodChecklistService $checklistService)
+    {
+        $checklist = $checklistService->getPreCloseChecklist($company);
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json([
+                'company_id' => $company->id,
+                'period_status' => $company->period_status?->value ?? 'open',
+                'checklist' => $checklist,
+            ]);
+        }
+
+        return view('companies.period_checklist', [
+            'company' => $company,
+            'checklist' => $checklist,
+        ]);
+    }
+
+    public function updatePeriodStatus(Request $request, Company $company, PeriodChecklistService $checklistService)
+    {
+        $validated = $request->validate([
+            'status' => 'required|string|in:open,review,reconciled,closed,locked,reopen',
+            'reopen_reason' => 'required_if:status,reopen|nullable|string|min:5|max:1000',
+        ]);
+
+        $targetStatus = $validated['status'];
+        $user = $request->user();
+
+        if ($targetStatus === 'reopen') {
+            abort_unless($user->can('fiscal-year.reopen') || $user->can('companies.reopen') || $user->can('access-super-admin-panel'), 403, 'مجوز بازگشایی دوره مالی الزامی است.');
+
+            $company->period_status = PeriodStatus::OPEN;
+            $company->reopened_at = now();
+            $company->reopened_by = $user->id;
+            $company->reopen_reason = $validated['reopen_reason'];
+            $company->save();
+
+            if (function_exists('activity')) {
+                activity()
+                    ->performedOn($company)
+                    ->causedBy($user)
+                    ->withProperties(['reason' => $validated['reopen_reason']])
+                    ->log('fiscal_year.period_reopened');
+            }
+
+            $message = 'دوره مالی با موفقیت بازگشایی شد و وضعیت آن به دوره باز تغییر یافت.';
+        } elseif ($targetStatus === 'locked') {
+            abort_unless($user->can('fiscal-year.period-status') || $user->can('companies.period-status') || $user->can('access-super-admin-panel'), 403);
+
+            $checklist = $checklistService->getPreCloseChecklist($company);
+            if (! $checklist['can_close']) {
+                throw ValidationException::withMessages([
+                    'period_status' => ['قفل قطعی دوره مالی امکان‌پذیر نیست زیرا موارد مسدودکننده (مانند اسناد پیش‌نویس یا تراز نشده) وجود دارند.'],
+                ]);
+            }
+
+            $company->period_status = PeriodStatus::LOCKED;
+            $company->locked_at = now();
+            $company->locked_by = $user->id;
+            $company->save();
+
+            if (function_exists('activity')) {
+                activity()
+                    ->performedOn($company)
+                    ->causedBy($user)
+                    ->log('fiscal_year.period_locked');
+            }
+
+            $message = 'دوره مالی با موفقیت در وضعیت قفل قطعی (Locked) قرار گرفت و تغییر اسناد در آن مسدود شد.';
+        } elseif ($targetStatus === 'closed') {
+            abort_unless($user->can('fiscal-year.period-status') || $user->can('companies.period-status') || $user->can('access-super-admin-panel'), 403);
+
+            $checklist = $checklistService->getPreCloseChecklist($company);
+            if (! $checklist['can_close']) {
+                throw ValidationException::withMessages([
+                    'period_status' => ['بستن دوره مالی امکان‌پذیر نیست زیرا اسناد پیش‌نویس یا تراز نشده در سیستم وجود دارد.'],
+                ]);
+            }
+
+            $company->period_status = PeriodStatus::CLOSED;
+            $company->closed_at ??= now();
+            $company->closed_by ??= $user->id;
+            $company->save();
+
+            $message = 'وضعیت دوره مالی به بسته شده (Closed) تغییر یافت.';
+        } else {
+            abort_unless($user->can('fiscal-year.period-status') || $user->can('companies.period-status') || $user->can('access-super-admin-panel'), 403);
+
+            $company->period_status = PeriodStatus::from($targetStatus);
+            $company->save();
+
+            $message = 'وضعیت دوره مالی با موفقیت به‌روزرسانی شد.';
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'period_status' => $company->period_status->value,
+            ]);
+        }
+
+        return redirect()->back()->with('success', $message);
     }
 }

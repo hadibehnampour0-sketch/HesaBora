@@ -260,6 +260,8 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
     Route::post('invoices/{invoice}/transfer', [Controllers\InvoiceController::class, 'transfer'])->name('invoices.transfer');
     Route::group(['prefix' => 'management'], function () {
         Route::resource('companies', Controllers\CompanyController::class);
+        Route::get('companies/{company}/period-checklist', [Controllers\CompanyController::class, 'periodChecklist'])->name('companies.period-checklist');
+        Route::post('companies/{company}/period-status', [Controllers\CompanyController::class, 'updatePeriodStatus'])->name('companies.period-status');
         Route::post('companies/close-fiscal-year/{company}', [Controllers\CompanyController::class, 'closeFiscalYear'])->name('companies.close-fiscal-year');
         Route::get('companies/{company}/closing-wizard', [Controllers\CompanyController::class, 'closingWizard'])->name('companies.closing-wizard');
         Route::post('companies/{company}/closing-wizard/step1', [Controllers\CompanyController::class, 'closingWizardStep1'])->name('companies.closing-wizard.step1');

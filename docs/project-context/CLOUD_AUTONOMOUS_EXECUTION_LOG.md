@@ -2055,6 +2055,37 @@ Executed Phase E of Super Prompt r15/r16 and Decision D-127:
    - Created `tests/Feature/DocumentReversalAndCorrectionTest.php`: 9 tests (54 assertions) covering double-entry balance, mathematical ledger negation, double-reversal prevention, draft reversal rejection, reversal-of-reversal rejection, "Correct this" workflow, permission gating (403 without permission), cross-company isolation (404), and dependency inspection.
    - Pint applied. Full regression suite: 44 tests, 3,194 assertions, zero regressions.
 
+## Entry 118 — 2026-10-27 — Phase F: Period Close Lifecycle & Centralized Lock Guard (D-128)
+
+Executed Phase F of Super Prompt r15/r16 and Decision D-128 / D-042:
+
+1. **Architectural Design (ADR-002 & Decision D-128)**:
+   - Designed and recorded `docs/decisions/ADR-002-D-128-period-close-lifecycle-and-lock-guard.md` and updated `docs/project-context/Dakhl_DECISION_LOG_2026-09-12-r4.md`.
+   - Replaced binary closing flag with an auditable 5-state lifecycle: `OPEN` (دوره باز), `REVIEW` (درحال انطباق), `RECONCILED` (مغایرت‌گیری شده), `CLOSED` (بسته شده با صدور اسناد سود/زیان و اختتامیه), and `LOCKED` (قفل قطعی و بایگانی مالیاتی).
+2. **Schema & Migration**:
+   - Created `database/migrations/2026_10_27_233000_add_period_status_to_companies_table.php` adding `period_status`, `locked_at`, `locked_by`, `reopened_at`, `reopened_by`, and `reopen_reason`. Tested migration up and rollback on MariaDB.
+3. **Period State & Checklist Engines**:
+   - Created enum `App\Enums\PeriodStatus` with state labels, badge styling, and mutability indicators.
+   - Built `App\Services\PeriodChecklistService` executing a 7-point statutory pre-close audit (draft documents blocker, unbalanced documents blocker, pending invoices warning, in-transit cheques warning, unreconciled bank items warning, Moadian e-invoices warning, and 0–100% tax readiness score).
+4. **Centralized Choke-Point Guard (`PeriodLockGuard`)**:
+   - Implemented `App\Services\PeriodLockGuard`: single choke point guarding accounting posting paths against closed and locked periods.
+   - Choke-points guarded:
+     - `DocumentService::createDocument()`, `updateDocument()`, `deleteDocument()`, `changeDocumentStatus()`.
+     - `DocumentReversalService::reverseDocument()`.
+     - `PaymentService::createPayment()`, `createCreditPayment()`, `allocate()`.
+     - `ChequeService::register()`.
+     - `InvoiceService::updateInvoice()`, `changeInvoiceStatus()`.
+5. **Audited Controlled Reopening**:
+   - Reopening from `CLOSED` or `LOCKED` strictly requires elevated permission `fiscal-year.reopen`, a mandatory justification string, and timestamps `reopened_at`, `reopened_by`, and `reopen_reason` with activity log recording.
+6. **Controller & Routing**:
+   - Added permissions `fiscal-year.period-status`, `fiscal-year.reopen`, `fiscal-year.closed-period-override`, `companies.period-checklist`, and `companies.period-status` in `RolesAndPermissionsSeeder.php`.
+   - Wired `companies.period-checklist` and `companies.period-status` endpoints in `CompanyController.php` and `routes/web.php`.
+   - Regenerated `docs/SECURITY_PERMISSION_MATRIX.md` via `tools/generate_permission_matrix.py` (713 application routes).
+7. **Testing & Quality**:
+   - Created `tests/Feature/PeriodCloseWorkflowTest.php`: 9 tests (47 assertions) covering state machine transitions, draft blocker detection, transition to locked, strict posting rejection in locked state, payment allocation blocking, reopening permission gating with audit trail, and JSON checklist API.
+   - Pint applied. Combined Phase E + F suite: 18 tests (101 assertions). Total regression suite: 53 tests, 3,241 assertions, zero regressions.
+
+
 
 
 

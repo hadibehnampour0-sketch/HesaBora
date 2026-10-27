@@ -87,6 +87,7 @@ class RolesAndPermissionsSeeder extends Seeder
                 ...self::CRUD,
                 'close-fiscal-year',
                 'closing-wizard', 'closing-wizard.step1', 'closing-wizard.step3',
+                'period-checklist', 'period-status',
             ],
 
             // P6 (API v1 Platform): outbound webhook registrations.
@@ -312,6 +313,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'change-company',
             'update-global-configs',
             'report',
+            'fiscal-year.period-status',
+            'fiscal-year.reopen',
+            'fiscal-year.closed-period-override',
         ];
 
         $permissions = $extras;

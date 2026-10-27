@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\ChequeType;
 use App\Enums\InvoiceType;
+use App\Events\ChequeStatusChanged;
 use App\Models\BankAccount;
 use App\Models\Cheque;
 use App\Models\Chequebook;
@@ -46,6 +47,8 @@ class ChequeService
 
     public function register(User $user, array $data): Cheque
     {
+        PeriodLockGuard::assertMutable(getActiveCompany(), 'ثبت چک صیادی');
+
         return DB::transaction(function () use ($user, $data) {
             $direction = ChequeType::from((int) $data['direction']);
             $purpose = ChequeType::from((int) $data['purpose']);
@@ -252,7 +255,7 @@ class ChequeService
         // P6 (API v1 Platform): fired only after the transaction commits,
         // mirroring InvoiceService::changeInvoiceStatus()'s own event.
         if ($result->status !== $previousStatus) {
-            event(new \App\Events\ChequeStatusChanged($result, $previousStatus, $result->status, $action));
+            event(new ChequeStatusChanged($result, $previousStatus, $result->status, $action));
         }
 
         return $result;

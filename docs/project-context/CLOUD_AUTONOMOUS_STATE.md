@@ -2880,6 +2880,24 @@ Branch `dakhl-foundation`, HEAD `0c808aa3`, working tree clean before these doc 
 6. **Tests**: `tests/Feature/DocumentReversalAndCorrectionTest.php` (9 tests, 54 assertions, all passing). Full regression suite (44 tests, 3,194 assertions) green.
 **Next Action:** Proceed to Phase F (Period Close: Open → Review → Reconciled → Closed → Locked) per Super Prompt r15/r16.
 
+---
+
+## §22 — 2026-10-27 Phase F: Period Close Lifecycle & Centralized Lock Guard (COMPLETE)
+
+**Status:** COMPLETE (Decision D-128 & ADR-002 Implemented & Unit-Verified).
+**Substance:**
+1. **5-Stage Period State Machine**: `PeriodStatus` enum (`OPEN`, `REVIEW`, `RECONCILED`, `CLOSED`, `LOCKED`) added.
+2. **Schema & History**: `period_status`, `locked_at`, `locked_by`, `reopened_at`, `reopened_by`, `reopen_reason` added to `companies` table via migration.
+3. **Statutory Pre-Close Checklist (`PeriodChecklistService`)**: 7-point pre-close inspection (draft documents blocker, unbalanced documents blocker, pending invoices, in-transit cheques, bank reconciliation, Moadian e-invoices, and tax readiness score).
+4. **Centralized Choke-Point Guard (`PeriodLockGuard`)**: Single choke point guarding all accounting posting paths (`DocumentService`, `DocumentReversalService`, `PaymentService`, `ChequeService`, `InvoiceService`) against closed/locked periods.
+5. **Elevated Reopen Control**: Reopening requires `fiscal-year.reopen`, justification reason, and audit logging.
+6. **Routes & Matrix**:
+   - `companies.period-checklist` and `companies.period-status` wired in `CompanyController.php`.
+   - `docs/SECURITY_PERMISSION_MATRIX.md` regenerated (713 application routes).
+7. **Tests**: `tests/Feature/PeriodCloseWorkflowTest.php` (9 tests, 47 assertions). Full regression suite (53 tests, 3,241 assertions) green.
+**Next Action:** Proceed to Phase G (Documentation Consolidation: Master Context r15 + CURRENT_STATE.md) per Super Prompt r15/r16.
+
+
 
 
 

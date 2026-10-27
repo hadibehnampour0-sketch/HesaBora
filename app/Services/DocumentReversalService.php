@@ -116,6 +116,8 @@ class DocumentReversalService
                 ->lockForUpdate()
                 ->firstOrFail();
 
+            PeriodLockGuard::assertMutable($document->company_id, 'ابطال سند حسابداری');
+
             if (is_null($document->approved_at)) {
                 throw ValidationException::withMessages([
                     'document' => ['فقط اسناد تایید شده و نهایی قابلیت ابطال دارند.'],

@@ -1,7 +1,7 @@
 # Security & Permission Matrix — Dakhl
 
 **Generated:** 2026-10-27 (Super Prompt r15/r16 Phase D audit & hardening), from `php artisan route:list --json`.
-**Scope:** every registered application route (711 total; 725 raw minus 14 framework/debug routes -- `_debugbar`, `_ignition`, `_native`, `_scramble`, `sanctum`).
+**Scope:** every registered application route (713 total; 727 raw minus 14 framework/debug routes -- `_debugbar`, `_ignition`, `_native`, `_scramble`, `sanctum`).
 
 ## How to read this matrix
 
@@ -537,7 +537,7 @@ The `Effective Permission` column is computed mechanically from each route's own
 |---|---|---|---|---|
 | GET | `logout` | logout | `Auth\LoginController@logout` | NONE — public/pre-auth |
 
-### `management` (202 routes)
+### `management` (204 routes)
 
 | Method | URI | Route Name | Controller@Action | Effective Permission |
 |---|---|---|---|---|
@@ -563,6 +563,8 @@ The `Effective Permission` column is computed mechanically from each route's own
 | POST | `management/companies/{company}/closing-wizard/step1` | companies.closing-wizard.step1 | `CompanyController@closingWizardStep1` | companies.closing-wizard.step1 OR companies.closing-wizard.* |
 | POST | `management/companies/{company}/closing-wizard/step3` | companies.closing-wizard.step3 | `CompanyController@closingWizardStep3` | companies.closing-wizard.step3 OR companies.closing-wizard.* |
 | GET | `management/companies/{company}/edit` | companies.edit | `CompanyController@edit` | companies.edit OR companies.* |
+| GET | `management/companies/{company}/period-checklist` | companies.period-checklist | `CompanyController@periodChecklist` | companies.period-checklist OR companies.* |
+| POST | `management/companies/{company}/period-status` | companies.period-status | `CompanyController@updatePeriodStatus` | companies.period-status OR companies.* |
 | GET | `management/configs` | configs.index | `ConfigController@index` | configs.index OR configs.* |
 | PUT|PATCH | `management/configs/{config}` | configs.update | `ConfigController@update` | configs.update OR configs.* |
 | GET | `management/configs/{config}/edit` | configs.edit | `ConfigController@edit` | configs.edit OR configs.* |

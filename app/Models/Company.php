@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\FinancialProvenance;
+use App\Enums\PeriodStatus;
 use Carbon\Carbon;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,6 +19,13 @@ class Company extends Model
     public $timestamps = false;
 
     protected $guarded = [];
+
+    protected $casts = [
+        'period_status' => PeriodStatus::class,
+        'locked_at' => 'datetime',
+        'reopened_at' => 'datetime',
+        'closed_at' => 'datetime',
+    ];
 
     /**
      * D-085: provenance-aware Company deletion. A Company may be deleted
@@ -138,5 +146,30 @@ class Company extends Model
     public function closingDocument()
     {
         return $this->belongsTo(Document::class, 'closing_document_id');
+    }
+
+    public function lockedBy()
+    {
+        return $this->belongsTo(User::class, 'locked_by');
+    }
+
+    public function reopenedBy()
+    {
+        return $this->belongsTo(User::class, 'reopened_by');
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->period_status === PeriodStatus::LOCKED;
+    }
+
+    public function isClosed(): bool
+    {
+        return $this->period_status === PeriodStatus::CLOSED || ! is_null($this->closed_at);
+    }
+
+    public function isMutable(): bool
+    {
+        return $this->period_status?->isMutable() ?? true;
     }
 }

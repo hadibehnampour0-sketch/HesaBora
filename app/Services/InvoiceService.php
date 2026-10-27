@@ -5,6 +5,7 @@ namespace App\Services;
 use App\DTO\InvoiceStatusDecision;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
+use App\Events\InvoiceStatusChanged;
 use App\Models\AncillaryCost;
 use App\Models\Cheque;
 use App\Models\Invoice;
@@ -126,6 +127,7 @@ class InvoiceService
     public static function updateInvoice(int $invoiceId, array $invoiceData, array $items = [], bool $approved = false): array
     {
         $invoice = Invoice::findOrFail($invoiceId);
+        PeriodLockGuard::assertMutable($invoice->company_id, 'ویرایش فاکتور');
         $wasApproved = $invoice->status->isApprovedOrSettled();
         $oldItems = $wasApproved ? $invoice->items->toArray() : [];
 
@@ -458,6 +460,8 @@ class InvoiceService
      */
     public function changeInvoiceStatus(Invoice $invoice, string $status): void
     {
+        PeriodLockGuard::assertMutable($invoice->company_id, 'تغییر وضعیت فاکتور');
+
         $statusChange = null;
 
         DB::transaction(function () use ($invoice, $status, &$statusChange) {
@@ -482,7 +486,7 @@ class InvoiceService
         // an idempotent no-op re-approve/re-reject, and only after the
         // transaction commits so listeners see committed state.
         if ($statusChange !== null) {
-            event(new \App\Events\InvoiceStatusChanged($invoice->fresh(), $statusChange, $invoice->status));
+            event(new InvoiceStatusChanged($invoice->fresh(), $statusChange, $invoice->status));
         }
     }
 

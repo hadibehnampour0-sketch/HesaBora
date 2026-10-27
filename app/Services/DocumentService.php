@@ -49,6 +49,8 @@ class DocumentService
         $data['creator_id'] = $user->id;
         $data['company_id'] = isset($data['company_id']) ? $data['company_id'] : getActiveCompany();
 
+        PeriodLockGuard::assertMutable($data['company_id'], 'ایجاد سند حسابداری');
+
         $document = null;
         DB::transaction(function () use (&$data, $transactions, $user, &$document) {
             if (empty($data['number'])) {
@@ -138,6 +140,8 @@ class DocumentService
      */
     public static function updateDocument(Document $document, array $data)
     {
+        PeriodLockGuard::assertMutable($document->company_id, 'ویرایش سند حسابداری');
+
         $validator = Validator::make($data, [
             'number' => 'nullable|decimal:0,2',
             'title' => 'nullable|string|min:3|max:255',
@@ -234,6 +238,11 @@ class DocumentService
 
     public static function deleteDocument(int $documentId): void
     {
+        $doc = Document::withoutGlobalScopes()->find($documentId);
+        if ($doc) {
+            PeriodLockGuard::assertMutable($doc->company_id, 'حذف سند حسابداری');
+        }
+
         $documentFileService = new DocumentFileService;
         DB::transaction(function () use ($documentId, $documentFileService) {
             $documentFiles = DocumentFile::where('document_id', $documentId)->get();
@@ -248,6 +257,8 @@ class DocumentService
 
     public static function changeDocumentStatus(Document $document, User $user, string $status): void
     {
+        PeriodLockGuard::assertMutable($document->company_id, 'تغییر وضعیت سند حسابداری');
+
         DB::transaction(function () use ($document, $user, $status) {
             match ($status) {
                 'approved' => self::approveDocument($user, $document),

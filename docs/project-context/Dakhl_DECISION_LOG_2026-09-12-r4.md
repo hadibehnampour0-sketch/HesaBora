@@ -2911,6 +2911,31 @@ Dakhl introduces a non-destructive accounting document reversal and correction e
 6. **Outbox / Sync Idempotency:**
    - Reversal operations support deterministic replay with optional `operation_id`.
 
+---
+
+## D-128 — Period Close Lifecycle & Centralized Lock Guard Architecture (چرخه بستن دوره مالی و گارد قفل دفاتر) — 2026-10-27 — APPROVED & LOCKED
+
+*Implemented and verified on 2026-10-27 (Phase F). Full ADR in docs/decisions/ADR-002-D-128-period-close-lifecycle-and-lock-guard.md.*
+
+### 1. Decision
+Dakhl upgrades fiscal-year closing into an auditable 5-state lifecycle (`OPEN` -> `REVIEW` -> `RECONCILED` -> `CLOSED` -> `LOCKED`) backed by a 7-point statutory pre-close checklist and a centralized `PeriodLockGuard` protecting all posting choke-points against mutations in locked/closed fiscal periods.
+
+### 2. Locked rules
+1. **5-Stage State Machine (`PeriodStatus`):**
+   - `OPEN`: standard day-to-day operations.
+   - `REVIEW`: internal audit review phase; pre-close checklist active.
+   - `RECONCILED`: bank statements and ledgers matched; zero unbalanced or draft documents.
+   - `CLOSED`: closing entries (سند سود و زیان و سند اختتامیه) posted; opening document generated in successor year. New transactions blocked unless authorized with `fiscal-year.closed-period-override`.
+   - `LOCKED`: statutory tax lock; zero financial mutations, edits, deletions, or reversals permitted. Any retroactive adjustment must be recorded as an opening-balance correction in the current open year.
+2. **Pre-Close Checklist (7-Point Statutory Audit):**
+   - Draft documents and unbalanced documents are strict BLOCKERS preventing transition to `CLOSED` or `LOCKED`.
+   - In-transit cheques, pending draft invoices, unreconciled bank lines, and Moadian pending e-invoices are monitored with warnings and contribute to a 0–100% Tax Readiness Score.
+3. **Centralized Choke-Point Guard (`PeriodLockGuard`):**
+   - Unconditionally blocks mutations in `DocumentService` (create, update, delete, changeStatus), `DocumentReversalService` (reverse), `PaymentService` (createPayment, createCreditPayment, allocate), and `ChequeService` (register).
+4. **Controlled Reopening with Audit Trail:**
+   - Reopening a `CLOSED` or `LOCKED` period requires elevated permission `fiscal-year.reopen`, a mandatory justification string, and records `reopened_at`, `reopened_by`, and `reopen_reason`.
+
+
 
 
 
