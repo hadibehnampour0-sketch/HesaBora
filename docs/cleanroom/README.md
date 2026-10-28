@@ -62,10 +62,15 @@ flowchart LR
 
 ---
 
-## 4. DIRECTORY STRUCTURE
+## 4. DIRECTORY STRUCTURE & UPSTREAM MIRROR ISOLATION
 - `README.md`: This governance guide.
 - `LOG.md`: Chronological audit log of all clean-room operations, participants, and session access boundaries.
 - `LEDGER.csv`: Comprehensive, per-file provenance tracking database for all tracked files.
 - `SPECS/`: Sanitized behavioral specifications produced by the Analyst and approved by the Reviewer.
 - `SIMILARITY/`: Output logs from token similarity and clone-detection scans verifying clean replacements.
 - `CR1_DERIVATION_REPORT.md`: Initial comprehensive baseline report measuring derivation across all modules.
+
+> [!IMPORTANT]
+> **Strict Upstream Mirror Isolation:**  
+> The read-only reference archive of upstream GPL components (FreeAmir and `jooyeshgar/moadian` v3.0.0) is stored strictly outside the repository workspace at `C:\Reference\upstream-mirror`.  
+> No upstream source code or mirror files may reside within `c:\Projects\HesaBora` or be packaged into distribution builds.
