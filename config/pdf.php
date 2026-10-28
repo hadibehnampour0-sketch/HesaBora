@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'driver' => env('PDF_DRIVER', 'dompdf'),
+    'chromium_binary' => env('CHROMIUM_BINARY', null),
     'custom_font_dir' => base_path('resources/fonts/'),
     'custom_font_data' => [
         'sahel' => [

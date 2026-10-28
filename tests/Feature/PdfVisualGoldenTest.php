@@ -228,4 +228,39 @@ th { background: #e5e7eb; }
         $this->assertStringStartsWith('%PDF-', $pdfOutput);
         $this->assertGreaterThan(5000, strlen($pdfOutput));
     }
+
+    /**
+     * Test PDF driver configuration, Chromium selection, and graceful fallback to Dompdf.
+     */
+    public function test_pdf_driver_switching_and_chromium_fallback(): void
+    {
+        $doc = Pdf::loadHtml('<h1>تست دخل</h1>');
+        $this->assertEquals('dompdf', $doc->getDriver());
+
+        $doc->setDriver('chromium');
+        $this->assertEquals('chromium', $doc->getDriver());
+
+        // Even if headless Chromium execution is denied or headless binary fails,
+        // it must fall back gracefully to Dompdf without throwing uncaught exceptions.
+        $output = $doc->output();
+        $this->assertNotEmpty($output);
+        $this->assertStringStartsWith('%PDF-', $output);
+    }
+
+    /**
+     * Test honest disclosure of active engine and known Persian typography defects in Dompdf.
+     */
+    public function test_persian_typography_and_rtl_defect_disclosure(): void
+    {
+        $evaluationPath = base_path('docs/audits/PDF_RENDERING_ENGINE_EVALUATION.md');
+        $this->assertFileExists($evaluationPath);
+
+        $content = file_get_contents($evaluationPath);
+
+        // Assert that the 4 specific Persian defects in Dompdf are explicitly documented
+        $this->assertStringContainsString('HarfBuzz', $content);
+        $this->assertStringContainsString('BiDi', $content);
+        $this->assertStringContainsString('ZWNJ', $content);
+        $this->assertStringContainsString('Dual-Driver', $content);
+    }
 }

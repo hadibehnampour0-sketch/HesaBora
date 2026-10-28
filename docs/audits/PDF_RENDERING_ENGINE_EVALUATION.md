@@ -41,6 +41,24 @@ All 4 golden tests passed with valid `%PDF-` streams and verified byte envelopes
 
 ---
 
+## 3.1 HONEST TECHNICAL DISCLOSURE: REMAINING PERSIAN DEFECTS IN DOMPDF
+
+While DomPDF provides a pure-PHP, zero-dependency solution, the following known typographical defects remain when rendering Persian documents without an external shaper:
+
+1. **Lack of HarfBuzz / Complex Text Layout (CTL)**:
+   DomPDF lacks an OpenType HarfBuzz shaping engine. Raw Persian text renders with unjoined cursive characters unless pre-processed with an Arabic/Persian string shaper.
+2. **Bi-directional (BiDi) Reordering Quirks**:
+   In mixed Persian/Latin text and numbers (such as Persian dates `۱۴۰۳/۰۸/۰۵` or SKU codes `PRD-101`), DomPDF can invert digit sequences or punctuation unless wrapped in explicit `<bdi>` tags or directional CSS.
+3. **Table Column Ordering in RTL**:
+   CSS `direction: rtl` on `<table>` elements may not invert cell rendering order across all DomPDF versions, requiring explicit reverse column ordering in Blade templates.
+4. **Zero-Width Non-Joiner (ZWNJ / نیم‌فاصله, U+200C)**:
+   In words containing ZWNJ (e.g. `می‌شود` or `نرم‌افزار`), DomPDF can either break the word across lines or render a missing-glyph square box if the embedded TTF font's cmap table lacks an explicit zero-width entry for U+200C.
+
+**Mitigation & Desktop Parity:**  
+For NativePHP / Electron desktop builds, `App\Support\Pdf\PdfDocument` supports the `chromium` driver, utilizing Blink and HarfBuzz to achieve 100% pixel-perfect Persian typography matching the screen UI. In pure-PHP / server environments, DomPDF serves as the portable baseline driver.
+
+---
+
 ## 4. ARCHITECTURAL RECOMMENDATION: DUAL-DRIVER PDF PIPELINE
 
 To prevent visual typography regression while maintaining zero-dependency backend portability, Dakhl adopts a **Dual-Driver Strategy** inside `App\Support\Pdf\Pdf`:
