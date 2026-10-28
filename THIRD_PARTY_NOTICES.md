@@ -35,14 +35,60 @@ Dakhl bundles Persian open-source typefaces for user interface display and PDF d
 
 ---
 
-## 3. Core Permissive Dependencies
+## 3. Runtime PHP Dependencies (`composer licenses`)
 
-Runtime dependencies utilized by Dakhl are verified permissive open-source libraries:
+The following libraries are included via Composer in the runtime environment:
 
-| Package | Version | License | Copyright / Notice |
-|---|---|---|---|
-| `paragonie/sodium_compat` | `^2.5` | **MIT** | Copyright (c) 2017-2024 Paragon Initiative Enterprises |
-| `firebase/php-jwt` | `^7.1` | **BSD-3-Clause** | Copyright (c) 2011, Neuman Vong, Google LLC |
-| `barryvdh/laravel-dompdf` | `^3.1` | **MIT** | Copyright (c) 2013-2024 Barry vd. Heuvel |
-| `spatie/laravel-permission` | `^6.4` | **MIT** | Copyright (c) Spatie bvba |
-| `laravel/sanctum` | `^4.2` | **MIT** | Copyright (c) Taylor Otwell |
+### 3.1 LGPL Licensed Components (Dynamic Linking)
+- **`dompdf/dompdf`** (v3.1.6)
+  - **License:** **LGPL-2.1**
+  - **Copyright:** Copyright (c) 2004-2024 The Dompdf Team
+  - **Notice:** Licensed under the GNU Lesser General Public License version 2.1. Dakhl links to DomPDF as an external, un-modified library through Composer.
+- **`dompdf/php-font-lib`** (v1.0.2)
+  - **License:** **LGPL-2.1-or-later**
+  - **Copyright:** Copyright (c) 2011-2024 Fabien Ménager
+- **`dompdf/php-svg-lib`** (v1.0.2)
+  - **License:** **LGPL-3.0-or-later**
+  - **Copyright:** Copyright (c) 2014-2024 Fabien Ménager
+
+### 3.2 MIT Licensed Components
+- **`barryvdh/laravel-dompdf`** (v3.1.2) — MIT, Barry vd. Heuvel
+- **`paragonie/sodium_compat`** (v2.5.0) — MIT, Paragon Initiative Enterprises
+- **`laravel/framework`** (v12.x) — MIT, Taylor Otwell
+- **`laravel/sanctum`** (v4.2.x) — MIT, Taylor Otwell
+- **`spatie/laravel-permission`** (v6.4.x) — MIT, Spatie bvba
+- **`guzzlehttp/guzzle`** (v7.15.5) — MIT, Michael Dowling
+- **`doctrine/dbal`** (v3.10.5) — MIT, Doctrine Project
+- **`carbonphp/carbon-doctrine-types`** (v2.1.0) — MIT, CarbonPHP
+- **`brick/math`** (v0.14.8) — MIT, Benjamin Morel
+
+### 3.3 BSD-3-Clause Licensed Components
+- **`firebase/php-jwt`** (v7.1.0) — BSD-3-Clause, Neuman Vong, Google LLC
+- **`google/gax`** (v1.43.2) — BSD-3-Clause, Google LLC
+- **`google/protobuf`** (v5.35.1) — BSD-3-Clause, Google LLC
+- **`tijsverkoyen/css-to-inline-styles`** (v2.4.0) — BSD-3-Clause, Tijs Verkoyen
+- **`vlucas/phpdotenv`** (v5.6.3) — BSD-3-Clause, Vance Lucas
+
+### 3.4 Apache-2.0 Licensed Components
+- **`google/auth`** (v1.52.0) — Apache-2.0, Google LLC
+- **`google/cloud-core`** (v1.72.3) — Apache-2.0, Google LLC
+- **`google/cloud-translate`** (v1.21.0) — Apache-2.0, Google LLC
+- **`grpc/grpc`** (v1.81.0) — Apache-2.0, gRPC Authors
+
+---
+
+## 4. Frontend Client Dependencies (`npm license-checker`)
+
+Front-end asset pipeline libraries bundled via Vite:
+
+| Package | Version | License |
+|---|---|---|
+| `alpinejs` | `^3.14.8` | **MIT** |
+| `chart.js` | `^4.5.1` | **MIT** |
+| `chartjs-plugin-datalabels` | `^2.2.0` | **MIT** |
+| `@majidh1/jalalidatepicker` | `^0.9.4` | **MIT** |
+| `tailwindcss` / `@tailwindcss/vite` | `^4.2.4` | **MIT** |
+| `daisyui` | `^5.5.19` | **MIT** |
+| `axios` | `^1.11.0` | **MIT** |
+| `vite` | `^7.0.7` | **MIT** |
+| `sass` | `^1.77.0` | **MIT** |
