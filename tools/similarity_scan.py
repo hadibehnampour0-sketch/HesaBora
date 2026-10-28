@@ -110,18 +110,18 @@ def main():
         f.write("| Target File | Closest Upstream File | 4-Gram Shingle Sim | Line Overlap | Token Sim | Composite Score | Result |\n")
         f.write("|---|---|---|---|---|---|---|\n")
 
-        high_risk_count = 0
+        tainted_count = 0
         for r in results:
             target = r['target_file']
             upstream = r['closest_upstream'] or 'None'
             m = r['metrics']
             comp = m.get('composite_score', 0.0)
-            status = "🔴 TAINTED / HIGH" if comp > 40 else ("🟡 MEDIUM" if comp > 20 else "🟢 CLEAN (<20%)")
-            if comp > 40:
-                high_risk_count += 1
+            status = "🔴 TAINTED / MUST REWRITE (>=20%)" if comp >= 20.0 else "🟢 CLEAN (<20%)"
+            if comp >= 20.0:
+                tainted_count += 1
             f.write(f"| `{target}` | `{upstream}` | {m.get('shingle_4gram_sim', 0)}% | {m.get('line_sim', 0)}% | {m.get('token_sim', 0)}% | **{comp}%** | {status} |\n")
 
-        f.write(f"\n**High Risk / Tainted Files (>40% similarity):** {high_risk_count} / {len(results)}\n")
+        f.write(f"\n**Tainted Files (>=20% similarity):** {tainted_count} / {len(results)}\n")
 
     print(f"Report written to {report_path}")
 
