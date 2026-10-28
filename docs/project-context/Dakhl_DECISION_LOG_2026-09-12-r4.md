@@ -2935,6 +2935,41 @@ Dakhl upgrades fiscal-year closing into an auditable 5-state lifecycle (`OPEN` -
 4. **Controlled Reopening with Audit Trail:**
    - Reopening a `CLOSED` or `LOCKED` period requires elevated permission `fiscal-year.reopen`, a mandatory justification string, and records `reopened_at`, `reopened_by`, and `reopen_reason`.
 
+---
+
+## D-129 — Asymmetric Ed25519 Modular Licensing & Tier Enforcement Architecture (معماری لایسنس ماژولار و امضای نامتقارن Ed25519) — 2026-10-28 — APPROVED & LOCKED
+
+*Implemented and verified on 2026-10-28 (Phase B amendments / Super Prompt r15 & r16).*
+
+### 1. Decision
+Dakhl formalizes an asymmetric, mathematically unforgeable offline licensing system utilizing Ed25519 (`libsodium` via `ParagonIE_Sodium_Compat`). The legacy symmetric HMAC format (`DAKHL-LIC-v1`) is completely dropped without migration windows (as no commercial version was ever released). Private signing keys reside strictly offline outside the application workspace and build trees.
+
+### 2. Locked Rules
+1. **Cryptographic Engine & Format (`DAKHL-LIC-v2`):**
+   - Format: `DAKHL-LIC-v2.{base64url(canonicalJson)}.{base64url(ed25519_signature)}`.
+   - The payload contains canonical JSON with mandatory `kid` (key identifier), `issued_at`, `expires_at`, `grace_days`, `modules`, `limits`, and `fingerprint`.
+   - Verification uses only public keys registered in `config/license.php`. Key rotation and revocation are enforced via `kid` matching and `revoked_kids` blocklist.
+2. **Boot Self-Test & Extension Verification:**
+   - On application boot (`AppServiceProvider::boot`), `LicenseCrypto::selfTest()` performs a detached sign/verify roundtrip. If cryptographic verification fails, boot is halted.
+   - In NativePHP desktop builds, `ext-sodium` availability is verified with fallback to `ParagonIE_Sodium_Compat`.
+3. **Packaging & Security Isolation:**
+   - Private keys and the offline issuer tool (`tools/license-issuer`) MUST NEVER reside in production distribution builds or the application source tree.
+   - `config/nativephp.php` excludes `tools*`, `tools/license-issuer*`, and `*.key` from desktop installer packaging. Enforced via automated packaging test.
+4. **Non-Destructive Expiration & 14-Day Grace Period (D-024):**
+   - Licenses include a 14-day grace period from the signed payload.
+   - Upon hard expiration past grace, the database is NEVER wiped or crippled. The system transitions into an immutable, non-destructive read-only mode (`EnsureModuleLicensed` allows safe GET/HEAD requests, while blocking POST/PUT/DELETE mutations).
+5. **Anti-Tampering & Clock Rollback Detection:**
+   - If `issued_at` or `not_before` is in the future ($> now + 300$), the license is rejected.
+   - If database timestamps in `licenses` or financial records are ahead of system time ($> now + 300$), the license is rejected with clock rollback detection.
+6. **Node-Locking, Benign Drift & Signed Re-Bind Flow:**
+   - Node-locking binds the license to a hardware fingerprint (`DAKHL-XXXX-XXXX-XXXX-XXXX`).
+   - Benign drift tolerance: variations in hostname on identical hardware (same OS, CPU architecture, family, and machine-id) are tolerated.
+   - Hardware transfer is supported via an offline-signed re-bind token (`DAKHL-LIC-REBIND-v2`) updating the hardware fingerprint without data loss.
+7. **"Never Re-Gate" Contract Guarantee (D-026):**
+   - Iranian tax compliance (`tax_moadian`), core accounting (`core_accounting`), sales/invoices (`sales_purchase`), inventory (`inventory_warehouse`), and cheques (`cheques_treasury`) are guaranteed in the `BASIC` (برنزی) tier and may NEVER be re-gated into premium tiers.
+8. **Clean-Room Legal Notice:**
+   - While upstream GPL-derived code remains in Dakhl during the clean-room migration, commercial license enforcement is a convenience and scaffolding mechanism only. No closed-source build, installer, or update may be distributed before CR-7 is completed and approved by legal counsel.
+
 
 
 

@@ -92,7 +92,10 @@ return [
         '*/tests',
         'scratch*',
         'docs/cleanroom*',
-        'tools/license-issuer/keys*',
+        'tools*',
+        'tools/license-issuer*',
+        '*.key',
+        '*.pub',
     ],
 
     /**

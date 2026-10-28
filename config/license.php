@@ -43,15 +43,4 @@ return [
     |
     */
     'grace_period_days' => 14,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Legacy v1 (HMAC) Support
-    |--------------------------------------------------------------------------
-    |
-    | v1 licenses used symmetric HMAC-SHA256 whose shared secret was compromised.
-    | They are rejected in favor of the asymmetric v2 standard.
-    |
-    */
-    'allow_legacy_v1' => false,
 ];

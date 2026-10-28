@@ -68,6 +68,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Cryptographic self-test for licensing verification engine (Phase B / D-129)
+        if (! \App\Support\License\LicenseCrypto::selfTest()) {
+            throw new \RuntimeException('Cryptographic self-test failed: Ed25519 sodium engine is malfunctioning.');
+        }
+
+        if (env('NATIVEPHP_RUNNING') && ! extension_loaded('sodium')) {
+            \Illuminate\Support\Facades\Log::warning('NativePHP desktop environment is missing native ext-sodium extension. Falling back to pure-PHP ParagonIE Sodium Compat.');
+        }
+
         if (env('NATIVEPHP_RUNNING')) {
             config([
                 'database.default' => 'sqlite',

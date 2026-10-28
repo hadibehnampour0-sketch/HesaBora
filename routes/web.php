@@ -276,8 +276,6 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         // Phase 16: Modular Licensing & Subscription Entitlements
         Route::get('license', [Controllers\LicenseController::class, 'index'])->name('license.index');
         Route::post('license/activate', [Controllers\LicenseController::class, 'activate'])->name('license.activate');
-        Route::post('license/generate-demo', [Controllers\LicenseController::class, 'generateDemo'])->name('license.generate-demo');
-        Route::post('license/generate-custom', [Controllers\LicenseController::class, 'generateCustom'])->name('license.generate-custom');
         Route::get('license/status', [Controllers\LicenseController::class, 'status'])->name('license.status');
         Route::get('workflow-governance', [Controllers\WorkflowGovernanceController::class, 'edit'])->name('workflow-governance.edit');
         Route::put('workflow-governance', [Controllers\WorkflowGovernanceController::class, 'update'])->name('workflow-governance.update');

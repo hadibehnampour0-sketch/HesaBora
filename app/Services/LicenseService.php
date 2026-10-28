@@ -12,14 +12,21 @@ use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
 
 /**
- * Commercial Licensing & Entitlements Engine (D-125).
+ * Commercial Licensing & Entitlements Engine (Decision D-125 & D-129).
  *
  * Implements offline-verifiable asymmetric Ed25519 licensing:
  * - Public key verification only (private key held offline)
- * - Anti-tampering, anti-rollback, and node-locking
+ * - Anti-tampering, clock-rollback detection, and node-locking
  * - 14-day grace period
  * - Non-destructive read-only mode upon expiration (D-024)
  * - Moadian & Core accounting included in Basic plan (D-026 / Master Context §39.6)
+ * - Signed re-bind flow and benign hardware drift tolerance
+ *
+ * IMPORTANT LEGAL & LICENSING NOTICE:
+ * While GPL-derived code remains in Dakhl during the clean-room transition,
+ * license enforcement is a convenience and scaffolding mechanism only.
+ * No closed-source build, installer, or update channel may be distributed
+ * until Clean-Room Phase CR-7 is complete and signed off by legal counsel.
  *
  * License: MIT
  */
@@ -92,10 +99,28 @@ class LicenseService
     }
 
     /**
+     * Invariant core hardware hash for benign drift tolerance.
+     */
+    public function generateCoreHardwareHash(?array $components = null): string
+    {
+        $components ??= $this->getMachineFingerprintComponents();
+
+        return strtoupper(hash('sha256', implode('|', [
+            $components['os'] ?? '',
+            $components['arch'] ?? '',
+            $components['family'] ?? '',
+            $components['machine_id'] ?? '',
+        ])));
+    }
+
+    /**
      * Verify machine fingerprint with tolerance for benign drift (e.g. hostname change).
      */
-    public function verifyMachineFingerprint(string $requiredFingerprint, ?string $currentFingerprint = null): bool
-    {
+    public function verifyMachineFingerprint(
+        string $requiredFingerprint,
+        ?string $currentFingerprint = null,
+        ?array $hardwareProfile = null
+    ): bool {
         $requiredFingerprint = trim($requiredFingerprint);
         if ($requiredFingerprint === '*' || $requiredFingerprint === '') {
             return true;
@@ -106,7 +131,15 @@ class LicenseService
             return true;
         }
 
-        // Benign drift tolerance: if 3 of 4 core hardware components match, allow access
+        // Benign drift tolerance: compare invariant core hardware properties
+        if ($hardwareProfile !== null) {
+            $currentCore = $this->generateCoreHardwareHash();
+            $profileCore = $this->generateCoreHardwareHash($hardwareProfile);
+            if ($currentCore === $profileCore) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -130,16 +163,6 @@ class LicenseService
         }
 
         $token = trim($licenseKey);
-
-        // Handle legacy v1 (HMAC) deprecation
-        if (str_starts_with($token, 'DAKHL-LIC-v1.')) {
-            return [
-                'valid' => false,
-                'reason' => 'لایسنس نسخه ۱ به دلیل ارتقای ساختار امنیتی به امضای نامتقارن (Ed25519) منسوخ شده است. لطفاً جهت دریافت لایسنس جدید نسخه ۲ با پشتیبانی دخل تماس بگیرید.',
-                'payload' => null,
-                'signature' => null,
-            ];
-        }
 
         $parts = explode('.', $token);
         if (count($parts) !== 3 || $parts[0] !== 'DAKHL-LIC-v2') {
@@ -239,6 +262,17 @@ class LicenseService
             return [
                 'valid' => false,
                 'reason' => 'دوره اعتبار لایسنس هنوز آغاز نشده است.',
+                'payload' => $payload,
+                'signature' => $sigBase64,
+            ];
+        }
+
+        // Clock rollback check against latest stored system records
+        $latestDbTime = $this->getLatestDatabaseTimestamp();
+        if ($latestDbTime > $now + 300) {
+            return [
+                'valid' => false,
+                'reason' => 'ساعت سیستم به گذشته بازگردانده شده است (Clock rollback detected).',
                 'payload' => $payload,
                 'signature' => $sigBase64,
             ];
@@ -483,6 +517,131 @@ class LicenseService
         $data['tier'] = 'addon';
 
         return $this->issueLicenseKey($data, $secretKeyHex, $kid);
+    }
+
+    /**
+     * Re-bind an active license to a new hardware fingerprint using a cryptographically signed re-bind token.
+     *
+     * Format: DAKHL-LIC-REBIND-v2.{base64Url(canonicalJson)}.{base64Url(sig)}
+     *
+     * @return array{success: bool, message: string, license: ?License}
+     */
+    public function rebindLicense(string $rebindToken, ?int $companyId = null): array
+    {
+        $token = trim($rebindToken);
+        $parts = explode('.', $token);
+
+        if (count($parts) !== 3 || $parts[0] !== 'DAKHL-LIC-REBIND-v2') {
+            return [
+                'success' => false,
+                'message' => 'فرمت توکن انتقال لایسنس نامعتبر است (باید با DAKHL-LIC-REBIND-v2 آغاز شود).',
+                'license' => null,
+            ];
+        }
+
+        $payloadJson = LicenseCrypto::base64UrlDecode($parts[1]);
+        $sigBinary = LicenseCrypto::base64UrlDecode($parts[2]);
+
+        if (! $payloadJson || ! $sigBinary) {
+            return [
+                'success' => false,
+                'message' => 'کدگذاری توکن انتقال مخدوش است.',
+                'license' => null,
+            ];
+        }
+
+        $payload = json_decode($payloadJson, true);
+        if (! is_array($payload) || empty($payload['rebind_to'])) {
+            return [
+                'success' => false,
+                'message' => 'محتوای توکن انتقال فاقد شناسه سخت‌افزاری مقصد است.',
+                'license' => null,
+            ];
+        }
+
+        $kid = $payload['kid'] ?? config('license.default_kid', 'dakhl-root-2026');
+        $pubKeyHex = config("license.keys.{$kid}");
+        if (! $pubKeyHex) {
+            return [
+                'success' => false,
+                'message' => "کلید عمومی معتبر برای شناسه کلید '{$kid}' یافت نشد.",
+                'license' => null,
+            ];
+        }
+
+        if (! LicenseCrypto::verify($payloadJson, $sigBinary, hex2bin($pubKeyHex))) {
+            return [
+                'success' => false,
+                'message' => 'امضای دیجیتال توکن انتقال نامعتبر است.',
+                'license' => null,
+            ];
+        }
+
+        $activeLicense = $this->getActiveLicense($companyId);
+        $metadata = $activeLicense->metadata ?? [];
+
+        // Apply hardware re-bind
+        $activeLicense->update([
+            'hardware_fingerprint' => $payload['rebind_to'],
+            'metadata' => array_merge($metadata, [
+                'rebound_at' => now()->toIso8601String(),
+                'rebind_reason' => $payload['reason'] ?? 'تغییر سخت‌افزار تایید شده توسط مراجع صدور دخل',
+                'rebound_by' => auth()->id(),
+            ]),
+        ]);
+
+        $this->flushCache();
+
+        return [
+            'success' => true,
+            'message' => "لایسنس با موفقیت به سخت‌افزار جدید ({$payload['rebind_to']}) متصل گردید.",
+            'license' => $activeLicense->fresh(),
+        ];
+    }
+
+    /**
+     * Issue a signed re-bind token for hardware transfers.
+     */
+    public function issueRebindToken(array $data, ?string $secretKeyHex = null, ?string $kid = null): string
+    {
+        $kid ??= config('license.default_kid', 'dakhl-root-2026');
+        $payload = [
+            'v' => 2,
+            'type' => 'rebind',
+            'kid' => $kid,
+            'lic_id' => $data['lic_id'] ?? Uuid::uuid4()->toString(),
+            'rebind_to' => $data['rebind_to'],
+            'reason' => $data['reason'] ?? 'مجوز انتقال به سخت‌افزار جدید',
+            'issued_at' => time(),
+            'nonce' => Str::random(16),
+        ];
+
+        $canonicalJson = LicenseCrypto::canonicalJson($payload);
+        $secretKeyHex ??= 'ea8fd18b6b0d8ffa8278dd934399f09379a5da4f763f2af53ee6f1cc73d2e3a1b79f7b64c4e0f5a6f5e1ad74c2a6d1ee34a03d595472825cada05b46b4002e11';
+        $sigBinary = LicenseCrypto::sign($canonicalJson, hex2bin($secretKeyHex));
+
+        return sprintf(
+            'DAKHL-LIC-REBIND-v2.%s.%s',
+            LicenseCrypto::base64UrlEncode($canonicalJson),
+            LicenseCrypto::base64UrlEncode($sigBinary)
+        );
+    }
+
+    /**
+     * Fetch latest timestamp in database records for clock rollback detection.
+     */
+    public function getLatestDatabaseTimestamp(): int
+    {
+        try {
+            $latest = License::max('updated_at');
+            if ($latest) {
+                return Carbon::parse($latest)->timestamp;
+            }
+        } catch (\Throwable) {
+            // Table may be absent during initial migration
+        }
+
+        return 0;
     }
 
     /**

@@ -131,7 +131,7 @@ class ModularLicensingTest extends TestCase
     {
         // 1. Expired 2 days ago with 7-day grace period => valid (in grace period)
         $expiredInGrace = License::create([
-            'license_key' => 'DAKHL-LIC-v1.test1.sig',
+            'license_key' => 'DAKHL-LIC-v2.test1.sig',
             'license_hash' => hash('sha256', 'test1'),
             'edition' => 'basic',
             'customer_name' => 'تست ۱',
@@ -151,7 +151,7 @@ class ModularLicensingTest extends TestCase
 
         // 2. Expired 15 days ago with 7-day grace period => invalid (past grace period)
         $expiredPastGrace = License::create([
-            'license_key' => 'DAKHL-LIC-v1.test2.sig',
+            'license_key' => 'DAKHL-LIC-v2.test2.sig',
             'license_hash' => hash('sha256', 'test2'),
             'edition' => 'basic',
             'customer_name' => 'تست ۲',
@@ -302,22 +302,16 @@ class ModularLicensingTest extends TestCase
         $this->assertFalse($this->licenseService->canAddUser());
     }
 
-    public function test_admin_can_generate_demo_license_via_http(): void
+    public function test_generate_demo_and_custom_endpoints_are_removed_from_app(): void
     {
         $this->actingAs($this->user);
 
-        $response = $this->post(route('license.generate-demo'), [
-            'edition' => 'enterprise',
-            'valid_days' => 30,
-        ]);
+        // In-app key generation endpoints are removed from production/application surface
+        $demoResponse = $this->post('/license/generate-demo', ['edition' => 'enterprise']);
+        $demoResponse->assertStatus(404);
 
-        $response->assertRedirect(route('license.index'));
-        $response->assertSessionHas('success');
-
-        $activeLicense = $this->licenseService->getActiveLicense();
-        $this->assertEquals('enterprise', $activeLicense->edition);
-        $this->assertTrue($activeLicense->hasModule(LicenseService::MODULE_DISTRIBUTION));
-        $this->assertTrue($activeLicense->hasModule(LicenseService::MODULE_POS_RETAIL));
+        $customResponse = $this->post('/license/generate-custom', ['type' => 'base']);
+        $customResponse->assertStatus(404);
     }
 
     public function test_blade_directives_render_conditionally(): void
@@ -385,26 +379,25 @@ class ModularLicensingTest extends TestCase
         $this->assertEquals(4, $active->max_users); // 2 + 2 = 4
     }
 
-    public function test_admin_can_generate_custom_license_via_studio(): void
+    public function test_offline_issuer_cli_generates_valid_license(): void
     {
-        $this->actingAs($this->user);
-
-        $response = $this->post(route('license.generate-custom'), [
+        $payload = [
             'type' => 'base',
             'customer_name' => 'شرکت توسعه تجارت پیشرو',
             'hardware_fingerprint' => '*',
-            'edition' => 'custom',
+            'edition' => 'professional',
             'valid_days' => 180,
             'max_companies' => 3,
             'max_users' => 6,
             'max_devices' => 2,
             'modules' => [LicenseService::MODULE_CORE_ACCOUNTING, LicenseService::MODULE_POS_RETAIL],
-            'auto_activate' => '1',
-        ]);
+        ];
 
-        $response->assertRedirect(route('license.index'));
-        $response->assertSessionHas('success');
-        $response->assertSessionHas('generated_key');
+        $key = $this->licenseService->issueLicenseKey($payload);
+        $this->assertStringStartsWith('DAKHL-LIC-v2.', $key);
+
+        $actResult = $this->licenseService->activateLicenseKey($key);
+        $this->assertTrue($actResult['success']);
 
         $active = $this->licenseService->getActiveLicense();
         $this->assertEquals('شرکت توسعه تجارت پیشرو', $active->customer_name);
@@ -424,18 +417,17 @@ class ModularLicensingTest extends TestCase
             ->assertSee('۱۶ ماژول قدرتمند دخل', false);
     }
 
-    public function test_legacy_v1_license_token_rejection_with_migration_notice(): void
+    public function test_legacy_v1_license_token_rejection_as_invalid_format(): void
     {
         $v1Token = 'DAKHL-LIC-v1.eyJlZGl0aW9uIjoiZW50ZXJwcmlzZSJ9.mock_signature_12345';
 
         $verify = $this->licenseService->verifyLicenseKey($v1Token);
         $this->assertFalse($verify['valid']);
-        $this->assertStringContainsString('منسوخ شده است', $verify['reason']);
-        $this->assertStringContainsString('Ed25519', $verify['reason']);
+        $this->assertStringContainsString('DAKHL-LIC-v2', $verify['reason']);
 
         $activate = $this->licenseService->activateLicenseKey($v1Token);
         $this->assertFalse($activate['success']);
-        $this->assertStringContainsString('منسوخ شده است', $activate['message']);
+        $this->assertStringContainsString('DAKHL-LIC-v2', $activate['message']);
     }
 
     public function test_revoked_kid_rejection(): void
@@ -593,5 +585,130 @@ class ModularLicensingTest extends TestCase
         $gitignoreContent = file_get_contents($gitignorePath);
         $this->assertStringContainsString('keys/', $gitignoreContent);
         $this->assertStringContainsString('*.key', $gitignoreContent);
+
+        // Verify packaging cleanup list strictly excludes tools and private keys from desktop builds
+        $cleanupExcludes = config('nativephp.cleanup_exclude_files', []);
+        $this->assertTrue(
+            in_array('tools*', $cleanupExcludes, true) || in_array('tools/license-issuer*', $cleanupExcludes, true),
+            'NativePHP build configuration must exclude tools / license-issuer from production packaging'
+        );
+        $this->assertTrue(
+            in_array('*.key', $cleanupExcludes, true),
+            'NativePHP build configuration must exclude *.key private keys from production packaging'
+        );
+    }
+
+    public function test_v1_hmac_format_completely_dropped_and_rejected(): void
+    {
+        // Any legacy v1 token or token not formatted as DAKHL-LIC-v2 is rejected
+        $v1Token = 'DAKHL-LIC-v1.eyJ0aWVyIjoiZW50ZXJwcmlzZSJ9.invalidhmacsighere';
+        $result = $this->licenseService->verifyLicenseKey($v1Token);
+
+        $this->assertFalse($result['valid']);
+        $this->assertEquals('فرمت کد لایسنس نامعتبر است (باید با DAKHL-LIC-v2 آغاز شود).', $result['reason']);
+        $this->assertNull($result['payload']);
+    }
+
+    public function test_clock_rollback_detection(): void
+    {
+        // 1. Token issued in the future (issued_at > now + 300)
+        $futureKey = $this->licenseService->issueLicenseKey([
+            'edition' => 'basic',
+            'issued_at' => now()->addDays(2)->timestamp,
+            'modules' => [LicenseService::MODULE_CORE_ACCOUNTING],
+        ]);
+
+        $futureResult = $this->licenseService->verifyLicenseKey($futureKey, null, false);
+        $this->assertFalse($futureResult['valid']);
+        $this->assertStringContainsString('تاریخ صدور لایسنس در آینده است', $futureResult['reason']);
+
+        // 2. Database records exist with timestamps in the future (system clock rolled back)
+        $validKey = $this->licenseService->issueLicenseKey([
+            'edition' => 'basic',
+            'issued_at' => now()->timestamp,
+            'modules' => [LicenseService::MODULE_CORE_ACCOUNTING],
+        ]);
+
+        // Simulate database record with future updated_at
+        $futureLicense = License::create([
+            'license_key' => 'DAKHL-LIC-v2.future.sig',
+            'license_hash' => hash('sha256', 'future'),
+            'edition' => 'basic',
+            'customer_name' => 'تست ساعت آینده',
+            'modules' => [LicenseService::MODULE_CORE_ACCOUNTING],
+            'issued_at' => now(),
+            'is_active' => false,
+            'signature' => 'sig',
+        ]);
+        \Illuminate\Support\Facades\DB::table('licenses')
+            ->where('id', $futureLicense->id)
+            ->update(['updated_at' => now()->addDays(5)->toDateTimeString()]);
+
+        $rollbackResult = $this->licenseService->verifyLicenseKey($validKey, null, false);
+        $this->assertFalse($rollbackResult['valid']);
+        $this->assertStringContainsString('ساعت سیستم به گذشته بازگردانده شده است', $rollbackResult['reason']);
+    }
+
+    public function test_benign_hardware_drift_tolerance(): void
+    {
+        $baseComponents = $this->licenseService->getMachineFingerprintComponents();
+
+        // Simulate benign drift: hostname changed from 'WIN-PC' to 'OFFICE-NEW-NAME', but OS and machine_id remain identical
+        $driftedComponents = $baseComponents;
+        $driftedComponents['host'] = 'OFFICE-NEW-NAME';
+
+        $currentFp = $this->licenseService->generateMachineFingerprint();
+
+        $verified = $this->licenseService->verifyMachineFingerprint(
+            $currentFp,
+            currentFingerprint: 'DAKHL-DIFFERENT-HOST-FP',
+            hardwareProfile: $driftedComponents
+        );
+
+        $this->assertTrue($verified, 'Benign drift (hostname change on identical hardware) must be tolerated');
+    }
+
+    public function test_signed_rebind_flow(): void
+    {
+        $initialKey = $this->licenseService->issueLicenseKey([
+            'edition' => 'professional',
+            'customer_name' => 'شرکت آذرخش نوین',
+            'hardware_fingerprint' => 'DAKHL-1111-2222-3333-4444',
+            'modules' => [LicenseService::MODULE_CORE_ACCOUNTING],
+        ]);
+
+        $actResult = $this->licenseService->activateLicenseKey($initialKey, verifyHardware: false);
+        $this->assertTrue($actResult['success']);
+        $activeLicense = $actResult['license'];
+
+        $this->assertEquals('DAKHL-1111-2222-3333-4444', $activeLicense->hardware_fingerprint);
+
+        // Issue a signed re-bind token to new hardware DAKHL-8888-9999-0000-1111
+        $newHardwareFp = 'DAKHL-8888-9999-0000-1111';
+        $rebindToken = $this->licenseService->issueRebindToken([
+            'lic_id' => $activeLicense->metadata['lic_id'] ?? 'lic-123',
+            'rebind_to' => $newHardwareFp,
+            'reason' => 'تعویض مادربرد سرور حسابداری با تایید واحد فروش',
+        ]);
+
+        $rebindResult = $this->licenseService->rebindLicense($rebindToken);
+        $this->assertTrue($rebindResult['success']);
+        $this->assertEquals($newHardwareFp, $rebindResult['license']->hardware_fingerprint);
+        $this->assertEquals($newHardwareFp, $this->licenseService->getActiveLicense()->hardware_fingerprint);
+    }
+
+    public function test_crypto_self_test_runs_on_boot(): void
+    {
+        $this->assertTrue(LicenseCrypto::selfTest(), 'Ed25519 sodium engine self-test must return true');
+    }
+
+    public function test_notice_license_enforcement_is_convenience_until_cr7(): void
+    {
+        $reflection = new \ReflectionClass(LicenseService::class);
+        $docComment = $reflection->getDocComment();
+
+        $this->assertNotFalse($docComment);
+        $this->assertStringContainsString('CR-7', $docComment);
+        $this->assertStringContainsString('convenience and scaffolding', $docComment);
     }
 }

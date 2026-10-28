@@ -25,10 +25,13 @@ $options = getopt('', [
     'action:',
     'keygen',
     'issue',
+    'rebind',
     'verify',
     'key:',
     'pubkey:',
     'kid:',
+    'lic_id:',
+    'rebind_to:',
     'tier:',
     'org:',
     'nid:',
@@ -52,6 +55,8 @@ if (isset($options['keygen'])) {
     $action = 'keygen';
 } elseif (isset($options['issue'])) {
     $action = 'issue';
+} elseif (isset($options['rebind'])) {
+    $action = 'rebind';
 } elseif (isset($options['verify'])) {
     $action = 'verify';
 } else {
@@ -65,6 +70,9 @@ switch ($action) {
     case 'issue':
         runIssue($options);
         break;
+    case 'rebind':
+        runRebind($options);
+        break;
     case 'verify':
         runVerify($options);
         break;
@@ -72,6 +80,7 @@ switch ($action) {
         echo "Usage:\n";
         echo "  php dakhl-license.php keygen [--out=keys/] [--kid=name]\n";
         echo "  php dakhl-license.php issue --key=path.key --kid=id --tier=basic|professional|enterprise --org=\"Name\" [--days=365] [--fingerprint=*]\n";
+        echo "  php dakhl-license.php rebind --key=path.key --kid=id --lic_id=UUID --rebind_to=DAKHL-...\n";
         echo "  php dakhl-license.php verify --token=DAKHL-LIC-v2... [--pubkey=path.pub]\n";
         exit(1);
 }
@@ -242,4 +251,45 @@ function runVerify(array $options): void
         echo "[FAILED] Digital signature is INVALID or corrupted.\n";
         exit(1);
     }
+}
+
+function runRebind(array $options): void
+{
+    if (empty($options['key']) || ! file_exists($options['key'])) {
+        exit("Error: Private key file not found. Provide --key=path.key\n");
+    }
+
+    if (empty($options['lic_id'])) {
+        exit("Error: Target license ID is required. Provide --lic_id=UUID\n");
+    }
+
+    if (empty($options['rebind_to'])) {
+        exit("Error: Target hardware fingerprint is required. Provide --rebind_to=DAKHL-...\n");
+    }
+
+    $secretKeyHex = trim((string) file_get_contents($options['key']));
+    $kid = $options['kid'] ?? basename($options['key'], '.key');
+
+    $payload = [
+        'v' => 2,
+        'type' => 'rebind',
+        'kid' => $kid,
+        'lic_id' => $options['lic_id'],
+        'rebind_to' => $options['rebind_to'],
+        'reason' => $options['reason'] ?? 'مجوز انتقال به سخت‌افزار جدید',
+        'issued_at' => time(),
+        'nonce' => bin2hex(random_bytes(8)),
+    ];
+
+    $canonicalJson = LicenseCrypto::canonicalJson($payload);
+    $signature = LicenseCrypto::sign($canonicalJson, hex2bin($secretKeyHex));
+
+    $token = sprintf(
+        'DAKHL-LIC-REBIND-v2.%s.%s',
+        LicenseCrypto::base64UrlEncode($canonicalJson),
+        LicenseCrypto::base64UrlEncode($signature)
+    );
+
+    echo "\n=== ISSUED DAKHL REBIND TOKEN ===\n";
+    echo $token."\n\n";
 }
