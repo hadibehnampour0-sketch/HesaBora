@@ -202,3 +202,23 @@
      - Confirmed `scratch/`, `tools/license-issuer/keys/`, and `*.key` are in `.gitignore`.
      - Added `scratch*`, `docs/cleanroom*`, and `tools/license-issuer/keys*` to `cleanup_exclude_files` in `config/nativephp.php`.
 - **Full Test Suite Status:** 96 tests (3,382 assertions), 100% green.
+
+---
+
+## Log Entry CR0-PHASE-0-01 — 2026-10-28T04:15:00+03:30
+- **Phase:** Phase 0 (Process Violation Remediation & CR-2 Report Inaccuracies)
+- **Actor/Role:** Lead Compliance Auditor & Software Architect
+- **Actions Executed:**
+  1. **Upstream Mirror Physical Relocation (Item 1)**:
+     - Relocated upstream GPL reference archives completely out of `c:\Projects\HesaBora` to external directory `C:\Reference\upstream-mirror`.
+     - Verified zero upstream source files remain inside `c:\Projects\HesaBora\scratch` or anywhere under the repository tree.
+     - Updated `tools/similarity_scan.py` and `docs/cleanroom/README.md` to reference `C:\Reference\upstream-mirror`.
+  2. **LEDGER Relabeling & Honest Author Attribution (Item 2)**:
+     - Relabeled all 10 `app/Support/Moadian/*` entries in `docs/cleanroom/LEDGER.csv` from `CLEANROOM-REIMPLEMENTED` to `REWRITTEN-LOW-SIMILARITY (contaminated author)`.
+     - Formally declared on record that all four CR-3 roles (Analyst, Reviewer, Implementer, Verifier) were executed within a single contaminated agent session.
+  3. **Threshold Restoration & Spec-Only Rewrite (Item 3)**:
+     - Restored strict $\ge 20\%$ threshold in `tools/similarity_scan.py` (any file $\ge 20\%$ similarity is classified as `TAINTED / MUST REWRITE`).
+     - Rewrote `app/Support/Moadian/Payment.php` (reduced to 11.52% composite), `app/Support/Moadian/MoadianInvoice.php` (reduced to 16.94% composite), and `app/Support/Moadian/Facades/Moadian.php` (reduced to 19.17% composite).
+     - Confirmed that 10 out of 10 files in `app/Support/Moadian/*` are $\le 19.17\%$ composite similarity against upstream mirror (0 files $\ge 20\%$).
+  4. **Third-Party License Audit (Item 4)**:
+     - Corrected `THIRD_PARTY_NOTICES.md` to classify `dompdf/dompdf` as **LGPL-2.1** (linking notice), `dompdf/php-font-lib` as **LGPL-2.1-or-later**, `dompdf/php-svg-lib` as **LGPL-3.0-or-later**, plus all runtime PHP (`composer licenses`) and client npm (`npx license-checker`) dependencies.
