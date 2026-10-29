@@ -9,7 +9,7 @@
 Dakhl (دخل) is transitioning from its heritage base (forked from FreeAmir under GPL-3.0) to an independently authored, clean-room software architecture. To allow Dakhl to be released and commercialized under its own proprietary terms, all expression derived from upstream GPL-3.0 code or GPL-only components must be eliminated and replaced clean-room without copyright contamination.
 
 ### Non-Negotiable Honesty & Governance Rules
-1. **Notice Preservation During Transition:** No copyright notice, license text, or attribution file may be removed or altered until that specific component has been 100% replaced clean-room, recorded as clean in `LEDGER.csv`, and signed off by legal counsel (CR-7).
+1. **Notice Preservation During Transition:** No copyright notice, license text, or attribution file may be removed or altered until that specific component has been 100% replaced clean-room, recorded as clean in `LEDGER.csv`, and approved via the Owner Release Gate (owner decision before first distribution) (CR-7).
 2. **Distribution Ban:** No closed-source build, installer, or update may be distributed while any derived component remains in the shipped product.
 3. **Idea vs. Expression:** Copyright protects expression (code text, comments, naming sequences, schema text, UI markup), NOT general double-entry accounting rules, tax laws, or standard business concepts.
 4. **Separation of Roles:** To prevent copyright contamination, implementers of clean-room code MUST NOT read or consult upstream GPL source code.
@@ -54,7 +54,7 @@ flowchart LR
 |---|---|---|
 | `UPSTREAM-ORIGINAL` | Code/file identical or nearly identical (≥85%) to upstream FreeAmir. | **Must be rewritten clean-room.** Priority: CRITICAL. |
 | `UPSTREAM-MODIFIED(>20%)` | Derived file with modifications (20% to 84% line survival/match). | **Must be rewritten clean-room.** Priority: HIGH. |
-| `UPSTREAM-MODIFIED(5-20%)` | Low-derivation file with minor residual upstream lines (5% to 19%). | Must be rewritten or granted counsel-approved exception. |
+| `UPSTREAM-MODIFIED(5-20%)` | Low-derivation file with minor residual upstream lines (5% to 19%). | Must be rewritten or granted owner-approved exception via the Owner Release Gate. |
 | `DAKHL-ORIGINAL` | Authored completely by Dakhl (<5% match or novel component created after fork). | Clean. Retained. |
 | `THIRD-PARTY(licensed)` | External open-source dependency with compatible license (OFL-1.1, LGPL linking). | Keep license notices in `THIRD_PARTY_NOTICES.md`. |
 | `FRAMEWORK(MIT)` | Laravel skeleton framework boilerplate files. | Permissive MIT license. |

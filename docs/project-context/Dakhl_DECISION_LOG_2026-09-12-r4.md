@@ -2968,7 +2968,7 @@ Dakhl formalizes an asymmetric, mathematically unforgeable offline licensing sys
 7. **"Never Re-Gate" Contract Guarantee (D-026):**
    - Iranian tax compliance (`tax_moadian`), core accounting (`core_accounting`), sales/invoices (`sales_purchase`), inventory (`inventory_warehouse`), and cheques (`cheques_treasury`) are guaranteed in the `BASIC` (برنزی) tier and may NEVER be re-gated into premium tiers.
 8. **Clean-Room Legal Notice:**
-   - While upstream GPL-derived code remains in Dakhl during the clean-room migration, commercial license enforcement is a convenience and scaffolding mechanism only. No closed-source build, installer, or update may be distributed before CR-7 is completed and approved by legal counsel.
+   - While upstream GPL-derived code remains in Dakhl during the clean-room migration, commercial license enforcement is a convenience and scaffolding mechanism only. No closed-source build, installer, or update may be distributed before CR-7 is completed and approved via the Owner Release Gate (owner decision before first distribution).
 
 
 

@@ -29,6 +29,10 @@ class LicenseCrypto
         }
 
         try {
+            if (function_exists('sodium_crypto_sign_verify_detached')) {
+                return sodium_crypto_sign_verify_detached($signatureBinary, $payloadJson, $publicKeyBinary);
+            }
+
             return ParagonIE_Sodium_Compat::crypto_sign_verify_detached($signatureBinary, $payloadJson, $publicKeyBinary);
         } catch (\Throwable) {
             return false;
@@ -43,6 +47,10 @@ class LicenseCrypto
     {
         if (strlen($secretKeyBinary) !== 64) {
             throw new RuntimeException('Invalid secret key length; Ed25519 secret key must be 64 bytes.');
+        }
+
+        if (function_exists('sodium_crypto_sign_detached')) {
+            return sodium_crypto_sign_detached($payloadJson, $secretKeyBinary);
         }
 
         return ParagonIE_Sodium_Compat::crypto_sign_detached($payloadJson, $secretKeyBinary);
@@ -82,6 +90,18 @@ class LicenseCrypto
      */
     public static function generateKeypair(): array
     {
+        if (function_exists('sodium_crypto_sign_keypair')
+            && function_exists('sodium_crypto_sign_publickey')
+            && function_exists('sodium_crypto_sign_secretkey')) {
+            $keypair = sodium_crypto_sign_keypair();
+
+            return [
+                'keypair' => $keypair,
+                'public_key' => sodium_crypto_sign_publickey($keypair),
+                'secret_key' => sodium_crypto_sign_secretkey($keypair),
+            ];
+        }
+
         $keypair = ParagonIE_Sodium_Compat::crypto_sign_keypair();
 
         return [
@@ -97,11 +117,28 @@ class LicenseCrypto
     public static function selfTest(): bool
     {
         try {
+            if (function_exists('sodium_crypto_sign_keypair')
+                && function_exists('sodium_crypto_sign_publickey')
+                && function_exists('sodium_crypto_sign_secretkey')
+                && function_exists('sodium_crypto_sign_detached')
+                && function_exists('sodium_crypto_sign_verify_detached')) {
+                $keypair = sodium_crypto_sign_keypair();
+                $publicKey = sodium_crypto_sign_publickey($keypair);
+                $secretKey = sodium_crypto_sign_secretkey($keypair);
+
+                $message = 'dakhl-selftest-native-'.hrtime(true);
+                $sig = sodium_crypto_sign_detached($message, $secretKey);
+
+                if (sodium_crypto_sign_verify_detached($sig, $message, $publicKey)) {
+                    return true;
+                }
+            }
+
             $keypair = ParagonIE_Sodium_Compat::crypto_sign_keypair();
             $publicKey = ParagonIE_Sodium_Compat::crypto_sign_publickey($keypair);
             $secretKey = ParagonIE_Sodium_Compat::crypto_sign_secretkey($keypair);
 
-            $message = 'dakhl-selftest-'.hrtime(true);
+            $message = 'dakhl-selftest-compat-'.hrtime(true);
             $sig = ParagonIE_Sodium_Compat::crypto_sign_detached($message, $secretKey);
 
             return ParagonIE_Sodium_Compat::crypto_sign_verify_detached($sig, $message, $publicKey);

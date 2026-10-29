@@ -438,12 +438,12 @@ app/Services/CustomerService.php,UPSTREAM-ORIGINAL,100,192,151,CRITICAL,Exact or
 app/Services/DailySettlementService.php,DAKHL-ORIGINAL,0,84,0,LOW,Created newly in Dakhl
 app/Services/DevicePairingService.php,DAKHL-ORIGINAL,0,109,0,LOW,Created newly in Dakhl
 app/Services/DocumentFileService.php,UPSTREAM-ORIGINAL,100,88,67,CRITICAL,Exact or nearly identical upstream code (100% line match)
-app/Services/DocumentImportExport/DocumentImportExportService.php,CLEANROOM-REIMPLEMENTED,0,64,0,LOW,"Clean-room rewritten in Wave 2 (composite similarity 11.50% vs upstream, MIT)"
-app/Services/DocumentImportExport/DocumentImportFormat.php,CLEANROOM-REIMPLEMENTED,0,154,0,LOW,"Clean-room rewritten in Wave 2 (composite similarity 16.21% vs upstream, MIT)"
-app/Services/DocumentImportExport/DocumentImportFormatRegistry.php,CLEANROOM-REIMPLEMENTED,0,111,0,LOW,"Clean-room rewritten in Wave 2 (composite similarity 15.94% vs upstream, MIT)"
-app/Services/DocumentImportExport/FreeAmirImportFormat.php,CLEANROOM-REIMPLEMENTED,0,28,0,LOW,"Clean-room rewritten in Wave 2 (composite similarity 13.37% vs upstream, MIT)"
-app/Services/DocumentImportExport/ImportSubjectResolver.php,CLEANROOM-REIMPLEMENTED,0,496,0,LOW,"Clean-room rewritten in Wave 2 (composite similarity 14.98% vs upstream, MIT)"
-app/Services/DocumentImportExport/ParsianImportFormat.php,CLEANROOM-REIMPLEMENTED,0,368,0,LOW,"Clean-room rewritten in Wave 2 (composite similarity 18.48% vs upstream, MIT)"
+app/Services/DocumentImportExport/DocumentImportExportService.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,64,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 11.50% vs upstream, MIT)"
+app/Services/DocumentImportExport/DocumentImportFormat.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,154,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 16.21% vs upstream, MIT)"
+app/Services/DocumentImportExport/DocumentImportFormatRegistry.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,111,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 15.94% vs upstream, MIT)"
+app/Services/DocumentImportExport/FreeAmirImportFormat.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,28,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 13.37% vs upstream, MIT)"
+app/Services/DocumentImportExport/ImportSubjectResolver.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,496,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 14.98% vs upstream, MIT)"
+app/Services/DocumentImportExport/ParsianImportFormat.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,368,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 18.48% vs upstream, MIT)"
 app/Services/DocumentNumberService.php,UPSTREAM-ORIGINAL,100,249,202,CRITICAL,Exact or nearly identical upstream code (100% line match)
 app/Services/DocumentService.php,UPSTREAM-MODIFIED(>20%),84,292,208,CORE-PROTECTED,Derived from upstream with modifications (84% line match) [PROTECTED CORE]
 app/Services/Financing/FinancingService.php,DAKHL-ORIGINAL,0,227,0,LOW,Created newly in Dakhl
@@ -1024,74 +1024,74 @@ lang/fa/auth.php,UPSTREAM-ORIGINAL,100,8,6,CRITICAL,Exact or nearly identical up
 lang/fa/pagination.php,UPSTREAM-ORIGINAL,100,7,5,CRITICAL,Exact or nearly identical upstream code (100% line match)
 lang/fa/passwords.php,UPSTREAM-ORIGINAL,100,10,8,CRITICAL,Exact or nearly identical upstream code (100% line match)
 lang/fa/validation.php,UPSTREAM-ORIGINAL,100,395,393,CRITICAL,Exact or nearly identical upstream code (100% line match)
-nativephp/electron/.env.development,THIRD-PARTY(licensed),0,2,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/.gitignore,THIRD-PARTY(licensed),0,7,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/.prettierignore,THIRD-PARTY(licensed),0,6,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/.prettierrc,THIRD-PARTY(licensed),0,9,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/build/entitlements.mac.plist,THIRD-PARTY(licensed),0,13,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
+nativephp/electron/.env.development,THIRD-PARTY(licensed),0,2,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/.gitignore,THIRD-PARTY(licensed),0,7,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/.prettierignore,THIRD-PARTY(licensed),0,6,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/.prettierrc,THIRD-PARTY(licensed),0,9,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/build/entitlements.mac.plist,THIRD-PARTY(licensed),0,13,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
 nativephp/electron/build/icon.png,BINARY/ASSET,0,0,0,LOW,Binary or media asset
-nativephp/electron/build/notarize.js,THIRD-PARTY(licensed),0,46,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-builder.mjs,THIRD-PARTY(licensed),0,153,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/.gitignore,THIRD-PARTY(licensed),0,26,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/.stylelintrc,THIRD-PARTY(licensed),0,16,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/__mocks__/electron.ts,THIRD-PARTY(licensed),0,18,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/babel.config.js,THIRD-PARTY(licensed),0,4,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/index.ts,THIRD-PARTY(licensed),0,294,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/libs/menubar/Menubar.ts,THIRD-PARTY(licensed),0,304,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/libs/menubar/ambient.d.ts,THIRD-PARTY(licensed),0,9,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/libs/menubar/index.ts,THIRD-PARTY(licensed),0,28,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/libs/menubar/types.ts,THIRD-PARTY(licensed),0,101,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/libs/menubar/util/cleanOptions.ts,THIRD-PARTY(licensed),0,64,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/libs/menubar/util/getWindowPosition.ts,THIRD-PARTY(licensed),0,101,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/libs/positioner/README.md,THIRD-PARTY(licensed),0,6,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/libs/positioner/index.ts,THIRD-PARTY(licensed),0,134,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/preload/index.mts,THIRD-PARTY(licensed),0,81,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/preload/livewire-dispatcher.js,THIRD-PARTY(licensed),0,41,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/ProcessResult.ts,THIRD-PARTY(licensed),0,7,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api.ts,THIRD-PARTY(licensed),0,83,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/alert.ts,THIRD-PARTY(licensed),0,32,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/app.ts,THIRD-PARTY(licensed),0,114,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/autoUpdater.ts,THIRD-PARTY(licensed),0,116,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/broadcasting.ts,THIRD-PARTY(licensed),0,14,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/childProcess.ts,THIRD-PARTY(licensed),0,313,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/clipboard.ts,THIRD-PARTY(licensed),0,86,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/contextMenu.ts,THIRD-PARTY(licensed),0,37,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/debug.ts,THIRD-PARTY(licensed),0,14,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/dialog.ts,THIRD-PARTY(licensed),0,64,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/dock.ts,THIRD-PARTY(licensed),0,62,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/globalShortcut.ts,THIRD-PARTY(licensed),0,36,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/helper/index.ts,THIRD-PARTY(licensed),0,82,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/menu.ts,THIRD-PARTY(licensed),0,20,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/menuBar.ts,THIRD-PARTY(licensed),0,241,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/middleware.ts,THIRD-PARTY(licensed),0,10,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/notification.ts,THIRD-PARTY(licensed),0,121,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/powerMonitor.ts,THIRD-PARTY(licensed),0,106,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/process.ts,THIRD-PARTY(licensed),0,15,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/progressBar.ts,THIRD-PARTY(licensed),0,16,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/screen.ts,THIRD-PARTY(licensed),0,29,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/settings.ts,THIRD-PARTY(licensed),0,38,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/shell.ts,THIRD-PARTY(licensed),0,51,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/system.ts,THIRD-PARTY(licensed),0,143,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/api/window.ts,THIRD-PARTY(licensed),0,429,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/childProcess.ts,THIRD-PARTY(licensed),0,33,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/index.ts,THIRD-PARTY(licensed),0,36,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/php.ts,THIRD-PARTY(licensed),0,545,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/state.ts,THIRD-PARTY(licensed),0,72,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/utils.ts,THIRD-PARTY(licensed),0,57,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/src/server/webPreferences.ts,THIRD-PARTY(licensed),0,24,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/tests/api.test.ts,THIRD-PARTY(licensed),0,74,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/tests/mocking.test.ts,THIRD-PARTY(licensed),0,30,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/tests/setup.ts,THIRD-PARTY(licensed),0,216,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/tests/utils.test.ts,THIRD-PARTY(licensed),0,27,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/tsconfig.json,THIRD-PARTY(licensed),0,20,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron-plugin/vitest.config.mts,THIRD-PARTY(licensed),0,8,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/electron.vite.config.mjs,THIRD-PARTY(licensed),0,31,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/eslint.config.js,THIRD-PARTY(licensed),0,61,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/package-lock.json,THIRD-PARTY(licensed),0,13872,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/package.json,THIRD-PARTY(licensed),0,112,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/php.js,THIRD-PARTY(licensed),0,84,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/src/main/index.js,THIRD-PARTY(licensed),0,39,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
-nativephp/electron/src/main/splash.js,THIRD-PARTY(licensed),0,71,0,LOW,"NativePHP electron scaffolding (Marcel Pociot & Simon Hamp, MIT)"
+nativephp/electron/build/notarize.js,THIRD-PARTY(licensed),0,46,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-builder.mjs,THIRD-PARTY(licensed),0,153,0,LOW,NativePHP MIT template with build configuration (SHA-256 diff vs vendor)
+nativephp/electron/electron-plugin/.gitignore,THIRD-PARTY(licensed),0,26,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/.stylelintrc,THIRD-PARTY(licensed),0,16,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/__mocks__/electron.ts,THIRD-PARTY(licensed),0,18,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/babel.config.js,THIRD-PARTY(licensed),0,4,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/index.ts,THIRD-PARTY(licensed),0,294,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/libs/menubar/Menubar.ts,THIRD-PARTY(licensed),0,304,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/libs/menubar/ambient.d.ts,THIRD-PARTY(licensed),0,9,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/libs/menubar/index.ts,THIRD-PARTY(licensed),0,28,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/libs/menubar/types.ts,THIRD-PARTY(licensed),0,101,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/libs/menubar/util/cleanOptions.ts,THIRD-PARTY(licensed),0,64,0,LOW,NativePHP MIT template with build configuration (SHA-256 diff vs vendor)
+nativephp/electron/electron-plugin/src/libs/menubar/util/getWindowPosition.ts,THIRD-PARTY(licensed),0,101,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/libs/positioner/README.md,THIRD-PARTY(licensed),0,6,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/libs/positioner/index.ts,THIRD-PARTY(licensed),0,134,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/preload/index.mts,THIRD-PARTY(licensed),0,81,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/preload/livewire-dispatcher.js,THIRD-PARTY(licensed),0,41,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/ProcessResult.ts,THIRD-PARTY(licensed),0,7,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api.ts,THIRD-PARTY(licensed),0,83,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/alert.ts,THIRD-PARTY(licensed),0,32,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/app.ts,THIRD-PARTY(licensed),0,114,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/autoUpdater.ts,THIRD-PARTY(licensed),0,116,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/broadcasting.ts,THIRD-PARTY(licensed),0,14,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/childProcess.ts,THIRD-PARTY(licensed),0,313,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/clipboard.ts,THIRD-PARTY(licensed),0,86,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/contextMenu.ts,THIRD-PARTY(licensed),0,37,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/debug.ts,THIRD-PARTY(licensed),0,14,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/dialog.ts,THIRD-PARTY(licensed),0,64,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/dock.ts,THIRD-PARTY(licensed),0,62,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/globalShortcut.ts,THIRD-PARTY(licensed),0,36,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/helper/index.ts,THIRD-PARTY(licensed),0,82,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/menu.ts,THIRD-PARTY(licensed),0,20,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/menuBar.ts,THIRD-PARTY(licensed),0,241,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/middleware.ts,THIRD-PARTY(licensed),0,10,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/notification.ts,THIRD-PARTY(licensed),0,121,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/powerMonitor.ts,THIRD-PARTY(licensed),0,106,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/process.ts,THIRD-PARTY(licensed),0,15,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/progressBar.ts,THIRD-PARTY(licensed),0,16,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/screen.ts,THIRD-PARTY(licensed),0,29,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/settings.ts,THIRD-PARTY(licensed),0,38,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/shell.ts,THIRD-PARTY(licensed),0,51,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/system.ts,THIRD-PARTY(licensed),0,143,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/api/window.ts,THIRD-PARTY(licensed),0,429,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/childProcess.ts,THIRD-PARTY(licensed),0,33,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/index.ts,THIRD-PARTY(licensed),0,36,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/php.ts,THIRD-PARTY(licensed),0,545,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/state.ts,THIRD-PARTY(licensed),0,72,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/utils.ts,THIRD-PARTY(licensed),0,57,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/src/server/webPreferences.ts,THIRD-PARTY(licensed),0,24,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/tests/api.test.ts,THIRD-PARTY(licensed),0,74,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/tests/mocking.test.ts,THIRD-PARTY(licensed),0,30,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/tests/setup.ts,THIRD-PARTY(licensed),0,216,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/tests/utils.test.ts,THIRD-PARTY(licensed),0,27,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/tsconfig.json,THIRD-PARTY(licensed),0,20,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron-plugin/vitest.config.mts,THIRD-PARTY(licensed),0,8,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/electron.vite.config.mjs,THIRD-PARTY(licensed),0,31,0,LOW,NativePHP MIT template with build configuration (SHA-256 diff vs vendor)
+nativephp/electron/eslint.config.js,THIRD-PARTY(licensed),0,61,0,LOW,Bit-for-bit identical to official NativePHP desktop MIT template (SHA-256 verified)
+nativephp/electron/package-lock.json,THIRD-PARTY(licensed),0,13872,0,LOW,NativePHP MIT template with build configuration (SHA-256 diff vs vendor)
+nativephp/electron/package.json,THIRD-PARTY(licensed),0,112,0,LOW,NativePHP MIT template with build configuration (SHA-256 diff vs vendor)
+nativephp/electron/php.js,THIRD-PARTY(licensed),0,84,0,LOW,NativePHP MIT template with build configuration (SHA-256 diff vs vendor)
+nativephp/electron/src/main/index.js,THIRD-PARTY(licensed),0,39,0,LOW,NativePHP MIT template with build configuration (SHA-256 diff vs vendor)
+nativephp/electron/src/main/splash.js,UPSTREAM-ORIGINAL,100,71,71,MEDIUM,Custom splash screen authored by FreeAmir; absent from official NativePHP templates
 package-lock.json,UPSTREAM-ORIGINAL,94,2789,2617,CRITICAL,Exact or nearly identical upstream code (94% line match)
 package.json,UPSTREAM-ORIGINAL,100,28,27,CRITICAL,Exact or nearly identical upstream code (100% line match)
 phpunit.xml,FRAMEWORK(MIT),0,0,0,LOW,Laravel skeleton framework file
@@ -2089,14 +2089,14 @@ app/Support/Moadian/MoadianResponse.php,REWRITTEN-LOW-SIMILARITY (contaminated a
 app/Support/Moadian/Payment.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,115,0,LOW,Contaminated session authoring; composite similarity 11.52% (<20%)
 app/Support/Moadian/TaxIdGenerator.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,38,0,LOW,Contaminated session authoring; composite similarity 9.57% (<20%)
 app/Support/Moadian/Verhoeff.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,78,0,LOW,Contaminated session authoring; composite similarity 12.13% (<20%)
-app/Services/DocumentImportExport/AccountingFileSchema.php,CLEANROOM-REIMPLEMENTED,0,87,0,LOW,"Clean-room companion authored in Wave 2 (composite similarity 9.54% vs upstream, MIT)"
-app/Services/DocumentImportExport/CsvExportStreamer.php,CLEANROOM-REIMPLEMENTED,0,92,0,LOW,"Clean-room companion authored in Wave 2 (composite similarity 16.33% vs upstream, MIT)"
-app/Services/DocumentImportExport/DakhlStandardImportFormat.php,CLEANROOM-REIMPLEMENTED,0,87,0,LOW,"Clean-room companion authored in Wave 2 (composite similarity 14.55% vs upstream, MIT)"
-app/Services/DocumentImportExport/DocumentExportRowTransformer.php,CLEANROOM-REIMPLEMENTED,0,60,0,LOW,"Clean-room companion authored in Wave 2 (composite similarity 9.62% vs upstream, MIT)"
-app/Services/DocumentImportExport/DocumentFilterQueryBuilder.php,CLEANROOM-REIMPLEMENTED,0,98,0,LOW,"Clean-room companion authored in Wave 2 (composite similarity 11.57% vs upstream, MIT)"
-app/Services/DocumentImportExport/DocumentImportExportValidator.php,CLEANROOM-REIMPLEMENTED,0,51,0,LOW,"Clean-room companion authored in Wave 2 (composite similarity 16.43% vs upstream, MIT)"
-app/Services/DocumentImportExport/DocumentImportPipeline.php,CLEANROOM-REIMPLEMENTED,0,82,0,LOW,"Clean-room companion authored in Wave 2 (composite similarity 11.78% vs upstream, MIT)"
-app/Services/DocumentImportExport/ImportFeedbackFormatter.php,CLEANROOM-REIMPLEMENTED,0,96,0,LOW,"Clean-room companion authored in Wave 2 (composite similarity 10.44% vs upstream, MIT)"
-app/Services/DocumentImportExport/ParsianRootCatalogue.php,CLEANROOM-REIMPLEMENTED,0,74,0,LOW,"Clean-room companion authored in Wave 2 (composite similarity 11.36% vs upstream, MIT)"
-app/Services/DocumentImportExport/ParsianTransactionIngestor.php,CLEANROOM-REIMPLEMENTED,0,212,0,LOW,"Clean-room companion authored in Wave 2 (composite similarity 15.26% vs upstream, MIT)"
-app/Services/DocumentImportExport/StandardJournalIngestor.php,CLEANROOM-REIMPLEMENTED,0,348,0,LOW,"Clean-room companion authored in Wave 2 (composite similarity 17.60% vs upstream, MIT)"
+app/Services/DocumentImportExport/AccountingFileSchema.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,87,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 9.54% vs upstream, MIT)"
+app/Services/DocumentImportExport/CsvExportStreamer.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,92,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 16.33% vs upstream, MIT)"
+app/Services/DocumentImportExport/DakhlStandardImportFormat.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,87,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 14.55% vs upstream, MIT)"
+app/Services/DocumentImportExport/DocumentExportRowTransformer.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,60,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 9.62% vs upstream, MIT)"
+app/Services/DocumentImportExport/DocumentFilterQueryBuilder.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,98,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 11.57% vs upstream, MIT)"
+app/Services/DocumentImportExport/DocumentImportExportValidator.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,51,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 16.43% vs upstream, MIT)"
+app/Services/DocumentImportExport/DocumentImportPipeline.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,82,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 11.78% vs upstream, MIT)"
+app/Services/DocumentImportExport/ImportFeedbackFormatter.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,96,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 10.44% vs upstream, MIT)"
+app/Services/DocumentImportExport/ParsianRootCatalogue.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,74,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 11.36% vs upstream, MIT)"
+app/Services/DocumentImportExport/ParsianTransactionIngestor.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,212,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 15.26% vs upstream, MIT)"
+app/Services/DocumentImportExport/StandardJournalIngestor.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,348,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 17.60% vs upstream, MIT)"

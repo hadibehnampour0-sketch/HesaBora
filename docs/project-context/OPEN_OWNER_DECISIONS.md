@@ -37,7 +37,7 @@ While code-level integrity has been hardened to 100% green tests (3,386 assertio
 ### Item 3: Clean-Room GPL Elimination & Closed-Source Distribution Policy (D-126)
 - **Background:** Phase A audit revealed that upstream base (FreeAmir) is licensed under GPL-3.0. Owner Decision **D-126** mandates a full clean-room rewrite (Phases CR-0 through CR-7) to enable commercial proprietary distribution. Wave 1 (CR-2: dependencies `jdf.php`, `mpdf`, `moadian`) is complete.
 - **Legal Reality:** While runtime dependencies are now 100% MIT/LGPL-compliant, historical source code files derived from the upstream repository remain in the codebase until Waves 2 through 6 are completed.
-- **Legal & Governance Rule:** Under GPL-3.0, any compiled binary or distributed copy of the software in its current state must provide full corresponding source code under GPL-3.0. Distributing closed-source installers (e.g. NativePHP desktop binaries or private SaaS enterprise builds) before Clean-Room Wave 7 (legal counsel sign-off) would constitute copyright infringement.
+- **Legal & Governance Rule:** Under GPL-3.0, any compiled binary or distributed copy of the software in its current state must provide full corresponding source code under GPL-3.0. Distributing closed-source installers (e.g. NativePHP desktop binaries or private SaaS enterprise builds) before Clean-Room Wave 7 (Owner Release Gate) would constitute copyright infringement.
 - **Owner Question 3:** *Do you confirm that no closed-source binary, packaged desktop installer, or proprietary customer delivery will occur until Clean-Room Phase CR-7 is formally signed off?*
 
 ---

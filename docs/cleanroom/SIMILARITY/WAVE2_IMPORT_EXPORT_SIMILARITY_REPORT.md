@@ -1,27 +1,49 @@
-# Clean-Room Similarity Audit Report
+# Clean-Room Dual-Measure Similarity Audit Report
 
 **Target Directory:** `app\Services\DocumentImportExport`  
 **Upstream Mirror:** `C:\Reference\upstream-mirror\app\Services\DocumentImportExport`  
-**Scan Method:** Token Jaccard + 4-gram Shingle Cloning + Semantic Line Overlap
 
-| Target File | Closest Upstream File | 4-Gram Shingle Sim | Line Overlap | Token Sim | Composite Score | Result |
-|---|---|---|---|---|---|---|
-| `AccountingFileSchema.php` | `FreeAmirImportFormat.php` | 4.64% | 3.35% | 31.06% | **9.54%** | 🟢 CLEAN (<20%) |
-| `CsvExportStreamer.php` | `DocumentImportExportService.php` | 13.38% | 9.86% | 33.43% | **16.33%** | 🟢 CLEAN (<20%) |
-| `DakhlStandardImportFormat.php` | `DocumentImportFormat.php` | 8.28% | 8.77% | 38.89% | **14.55%** | 🟢 CLEAN (<20%) |
-| `DocumentExportRowTransformer.php` | `DocumentImportFormatRegistry.php` | 2.76% | 9.8% | 26.5% | **9.62%** | 🟢 CLEAN (<20%) |
-| `DocumentFilterQueryBuilder.php` | `DocumentImportExportService.php` | 10.39% | 9.86% | 22.32% | **12.62%** | 🟢 CLEAN (<20%) |
-| `DocumentImportExportService.php` | `DocumentImportFormat.php` | 4.08% | 10.0% | 32.38% | **11.52%** | 🟢 CLEAN (<20%) |
-| `DocumentImportExportValidator.php` | `DocumentImportExportService.php` | 12.66% | 13.4% | 30.41% | **16.43%** | 🟢 CLEAN (<20%) |
-| `DocumentImportFormat.php` | `DocumentImportFormat.php` | 10.36% | 10.31% | 40.0% | **16.27%** | 🟢 CLEAN (<20%) |
-| `DocumentImportFormatRegistry.php` | `DocumentImportFormatRegistry.php` | 11.7% | 10.99% | 33.58% | **15.86%** | 🟢 CLEAN (<20%) |
-| `DocumentImportPipeline.php` | `DocumentImportExportService.php` | 9.63% | 5.58% | 26.43% | **11.78%** | 🟢 CLEAN (<20%) |
-| `FreeAmirImportFormat.php` | `DocumentImportFormatRegistry.php` | 3.07% | 13.79% | 38.46% | **13.37%** | 🟢 CLEAN (<20%) |
-| `ImportFeedbackFormatter.php` | `DocumentImportExportService.php` | 8.87% | 4.8% | 22.8% | **10.44%** | 🟢 CLEAN (<20%) |
-| `ImportSubjectResolver.php` | `ImportSubjectResolver.php` | 13.21% | 3.88% | 36.07% | **14.98%** | 🟢 CLEAN (<20%) |
-| `ParsianImportFormat.php` | `ParsianImportFormat.php` | 16.32% | 9.64% | 37.16% | **18.48%** | 🟢 CLEAN (<20%) |
-| `ParsianRootCatalogue.php` | `ParsianImportFormat.php` | 9.33% | 3.42% | 28.35% | **11.36%** | 🟢 CLEAN (<20%) |
-| `ParsianTransactionIngestor.php` | `ParsianImportFormat.php` | 12.52% | 5.24% | 37.15% | **15.26%** | 🟢 CLEAN (<20%) |
-| `StandardJournalIngestor.php` | `FreeAmirImportFormat.php` | 17.18% | 4.83% | 37.82% | **17.6%** | 🟢 CLEAN (<20%) |
+### Evaluation Methodology
+1. **Measure 1 — Lexical / Literal Token Cloning:** Evaluates literal identifier reuse, exact token sequences, and raw line overlap:
+   $$\text{M1} = (0.50 \times \text{Shingle}_{\text{4-gram}}) + (0.30 \times \text{Line Overlap}) + (0.20 \times \text{Token Jaccard})$$
+2. **Measure 2 — Syntactic / Structural AST Cloning:** Evaluates underlying control-flow and grammar patterns by normalizing all variable identifiers (`$VAR`), strings (`_STR_`), and numbers (`_NUM_`):
+   $$\text{M2} = (0.60 \times \text{AST Shingle}_{\text{6-gram}}) + (0.40 \times \text{Structural Line Pattern})$$
 
-**Tainted Files (>=20% similarity):** 0 / 17
+| Target File | Closest Upstream File | Measure 1 (Literal) | Measure 2 (AST Struct) | Max Score | Status |
+|---|---|:---:|:---:|:---:|:---:|
+| `AccountingFileSchema.php` | `FreeAmirImportFormat.php` | 9.54% | 3.8% | **9.54%** | 🟢 CLEAN (<15%) |
+| `CsvExportStreamer.php` | `DocumentImportExportService.php` | 16.33% | 16.37% | **16.37%** | 🟡 ELEVATED (>=15%) |
+| `DakhlStandardImportFormat.php` | `FreeAmirImportFormat.php` | 12.08% | 16.17% | **16.17%** | 🟡 ELEVATED (>=15%) |
+| `DocumentExportRowTransformer.php` | `DocumentImportFormatRegistry.php` | 9.62% | 6.19% | **9.62%** | 🟢 CLEAN (<15%) |
+| `DocumentFilterQueryBuilder.php` | `DocumentImportExportService.php` | 12.62% | 12.53% | **12.62%** | 🟢 CLEAN (<15%) |
+| `DocumentImportExportService.php` | `DocumentImportFormat.php` | 11.52% | 5.77% | **11.52%** | 🟢 CLEAN (<15%) |
+| `DocumentImportExportValidator.php` | `DocumentImportExportService.php` | 16.43% | 6.1% | **16.43%** | 🟡 ELEVATED (>=15%) |
+| `DocumentImportFormat.php` | `DocumentImportFormat.php` | 16.27% | 13.0% | **16.27%** | 🟡 ELEVATED (>=15%) |
+| `DocumentImportFormatRegistry.php` | `DocumentImportFormatRegistry.php` | 15.86% | 18.34% | **18.34%** | 🟡 ELEVATED (>=15%) |
+| `DocumentImportPipeline.php` | `DocumentImportExportService.php` | 11.78% | 16.85% | **16.85%** | 🟡 ELEVATED (>=15%) |
+| `FreeAmirImportFormat.php` | `DocumentImportFormatRegistry.php` | 13.37% | 6.81% | **13.37%** | 🟢 CLEAN (<15%) |
+| `ImportFeedbackFormatter.php` | `DocumentImportExportService.php` | 10.44% | 4.94% | **10.44%** | 🟢 CLEAN (<15%) |
+| `ImportSubjectResolver.php` | `ImportSubjectResolver.php` | 14.98% | 17.32% | **17.32%** | 🟡 ELEVATED (>=15%) |
+| `ParsianImportFormat.php` | `ParsianImportFormat.php` | 18.48% | 21.35% | **21.35%** | 🔴 TAINTED (>=20%) |
+| `ParsianRootCatalogue.php` | `ParsianImportFormat.php` | 11.36% | 5.47% | **11.36%** | 🟢 CLEAN (<15%) |
+| `ParsianTransactionIngestor.php` | `ParsianImportFormat.php` | 15.26% | 25.61% | **25.61%** | 🔴 TAINTED (>=20%) |
+| `StandardJournalIngestor.php` | `FreeAmirImportFormat.php` | 17.6% | 22.63% | **22.63%** | 🔴 TAINTED (>=20%) |
+
+- **Files with >= 20% in either measure:** 3 / 17
+- **Files with >= 15% in either measure:** 10 / 17
+
+### Comprehensive Listing of Files >= 15% (Audit Action List)
+In accordance with the clean-room governance protocol, all files with $\ge 15\%$ in either measure are listed below with their specific metric breakdown:
+
+| File | Closest Upstream File | M1 (Literal) | M2 (AST Struct) | Max Score | Remediation Status |
+|---|---|:---:|:---:|:---:|---|
+| `ParsianTransactionIngestor.php` | `ParsianImportFormat.php` | 15.26% | 25.61% | **25.61%** | Pending true clean-room isolated session re-implementation |
+| `StandardJournalIngestor.php` | `FreeAmirImportFormat.php` | 17.6% | 22.63% | **22.63%** | Pending true clean-room isolated session re-implementation |
+| `ParsianImportFormat.php` | `ParsianImportFormat.php` | 18.48% | 21.35% | **21.35%** | Pending true clean-room isolated session re-implementation |
+| `DocumentImportFormatRegistry.php` | `DocumentImportFormatRegistry.php` | 15.86% | 18.34% | **18.34%** | Committed as low-similarity rewritten; flagged for future refactoring |
+| `ImportSubjectResolver.php` | `ImportSubjectResolver.php` | 14.98% | 17.32% | **17.32%** | Committed as low-similarity rewritten; flagged for future refactoring |
+| `DocumentImportPipeline.php` | `DocumentImportExportService.php` | 11.78% | 16.85% | **16.85%** | Committed as low-similarity rewritten; flagged for future refactoring |
+| `DocumentImportExportValidator.php` | `DocumentImportExportService.php` | 16.43% | 6.1% | **16.43%** | Committed as low-similarity rewritten; flagged for future refactoring |
+| `CsvExportStreamer.php` | `DocumentImportExportService.php` | 16.33% | 16.37% | **16.37%** | Committed as low-similarity rewritten; flagged for future refactoring |
+| `DocumentImportFormat.php` | `DocumentImportFormat.php` | 16.27% | 13.0% | **16.27%** | Committed as low-similarity rewritten; flagged for future refactoring |
+| `DakhlStandardImportFormat.php` | `FreeAmirImportFormat.php` | 12.08% | 16.17% | **16.17%** | Committed as low-similarity rewritten; flagged for future refactoring |

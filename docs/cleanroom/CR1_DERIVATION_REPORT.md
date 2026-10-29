@@ -155,7 +155,7 @@ flowchart TD
 > [!CAUTION]
 > **EXPLICIT DISTRIBUTION SAFETY DECLARATION:**  
 > **Commercial distribution of Dakhl in binary, installer, or closed-source form is CURRENTLY NOT SAFE AND NOT LAWFUL under the existing GPL-3.0 obligations of the codebase.**  
-> Until Phase CR-7 is fully complete and signed off by open-source legal counsel, any distribution of Dakhl must either be released with complete source code under GPL-3.0 or must be paused.
+> Until Phase CR-7 is fully complete and approved via the Owner Release Gate (owner decision before first distribution), any distribution of Dakhl must either be released with complete source code under GPL-3.0 or must be paused.
 
 ### Next Action:
 1. Present this report (`docs/cleanroom/CR1_DERIVATION_REPORT.md`) and the complete ledger (`docs/cleanroom/LEDGER.csv`) to the owner for formal ratification.

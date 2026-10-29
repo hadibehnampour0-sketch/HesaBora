@@ -26,7 +26,7 @@ use Ramsey\Uuid\Uuid;
  * While GPL-derived code remains in Dakhl during the clean-room transition,
  * license enforcement is a convenience and scaffolding mechanism only.
  * No closed-source build, installer, or update channel may be distributed
- * until Clean-Room Phase CR-7 is complete and signed off by legal counsel.
+ * until Clean-Room Phase CR-7 is complete and approved via the Owner Release Gate (owner decision before first distribution).
  *
  * License: MIT
  */

@@ -634,8 +634,6 @@ The `Effective Permission` column is computed mechanically from each route's own
 | POST | `management/integrations/queue/{event}/retry` | integrations.queue.retry | `IntegrationQueueController@retry` | integrations.queue.retry OR integrations.queue.* |
 | GET | `management/license` | license.index | `LicenseController@index` | license.index OR license.* |
 | POST | `management/license/activate` | license.activate | `LicenseController@activate` | license.activate OR license.* |
-| POST | `management/license/generate-custom` | license.generate-custom | `LicenseController@generateCustom` | license.generate-custom OR license.* |
-| POST | `management/license/generate-demo` | license.generate-demo | `LicenseController@generateDemo` | license.generate-demo OR license.* |
 | GET | `management/license/status` | license.status | `LicenseController@status` | license.status OR license.* |
 | GET | `management/loyalty` | loyalty.index | `Loyalty\CustomerLoyaltyController@index` | loyalty.index OR loyalty.* |
 | GET | `management/loyalty/customers/{customer}` | loyalty.customers.wallet | `Loyalty\CustomerLoyaltyController@customerWallet` | loyalty.customers.wallet OR loyalty.customers.* |
