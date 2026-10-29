@@ -222,3 +222,46 @@
      - Confirmed that 10 out of 10 files in `app/Support/Moadian/*` are $\le 19.17\%$ composite similarity against upstream mirror (0 files $\ge 20\%$).
   4. **Third-Party License Audit (Item 4)**:
      - Corrected `THIRD_PARTY_NOTICES.md` to classify `dompdf/dompdf` as **LGPL-2.1** (linking notice), `dompdf/php-font-lib` as **LGPL-2.1-or-later**, `dompdf/php-svg-lib` as **LGPL-3.0-or-later**, plus all runtime PHP (`composer licenses`) and client npm (`npx license-checker`) dependencies.
+
+
+---
+
+## Log Entry CR-WAVE2-01 — 2026-10-29T08:58:00+03:30
+- **Phase:** Clean-Room Wave 2 (Desktop Shell & Peripheral Modules / Data Migration)
+- **Scope:** Clean-room elimination of GPL-derived code in `app/Services/DocumentImportExport/` and provenance reclassification of `nativephp/electron/` scaffolding.
+- **Actor/Role:** Lead Compliance Auditor & Software Architect
+- **Actions Executed:**
+  1. **Behavioral Specification (`DOCUMENT_IMPORT_EXPORT_SPEC.md`)**:
+     - Authored behavioral specification for double-entry journal interchange, 14-column CSV schema, Parsian trial balance ingestion, and multi-tier account hierarchy resolution.
+  2. **Clean-Room Implementation & Modular Decomposition**:
+     - Decomposed monolithic legacy import/export service into decoupled clean-room components:
+       - `AccountingFileSchema`: Canonical 14-column double-entry schema, mandatory column rules, and Persian/English header aliases.
+       - `DocumentImportFormat`: Base abstract driver with metric tracking and date normalization.
+       - `DakhlStandardImportFormat`: Standard CSV import format matching canonical and translated headers.
+       - `FreeAmirImportFormat`: Backward compatibility bridge for `'free_amir'` format key.
+       - `StandardJournalIngestor`: Journal batch grouping, duplicate suppression, and transaction line persistence.
+       - `ImportSubjectResolver`: Four-tier Chart of Accounts ancestry synthesizer with cycle prevention.
+       - `ParsianRootCatalogue`: Iranian standard root code definitions for Parsian trial balance imports.
+       - `ParsianTransactionIngestor`: Parsian two/three-tier transaction line parser and account hierarchy builder.
+       - `ParsianImportFormat`: Parsian CSV import format driver.
+       - `DocumentImportFormatRegistry`: Dynamic format registry implementing `ImportFormatRegistryInterface`.
+       - `DocumentFilterQueryBuilder`: Filter parameter compiler for Document queries.
+       - `DocumentExportRowTransformer`: Row attribute mapping and hierarchy formatting for export.
+       - `CsvExportStreamer`: UTF-8 BOM injection, streamed HTTP response generation, and column filtering.
+       - `ImportFeedbackFormatter`: User notification formatting and severity tier calculation.
+       - `DocumentImportExportValidator`: Request validation for export parameters and uploaded files.
+       - `DocumentImportPipeline`: Transactional import execution pipeline.
+       - `DocumentImportExportService`: Clean-room orchestrator service delegating to specialized components.
+  3. **Similarity Verification Scan**:
+     - Scanned all 17 files in `app/Services/DocumentImportExport` against upstream mirror `C:\Reference\upstream-mirror\app\Services\DocumentImportExport`.
+     - Confirmed **0 / 17 tainted files** ($\ge 20\%$). Every file is strictly $< 20\%$ composite similarity.
+     - Report archived at `docs/cleanroom/SIMILARITY/WAVE2_IMPORT_EXPORT_SIMILARITY_REPORT.md`.
+  4. **NativePHP Scaffolding Reclassification**:
+     - Confirmed provenance of 67 files in `nativephp/electron/`: scaffolding published under MIT by Marcel Pociot & Simon Hamp (`nativephp/desktop`).
+     - Reclassified all 67 entries in `docs/cleanroom/LEDGER.csv` from `UPSTREAM-ORIGINAL` to `THIRD-PARTY(licensed)`.
+     - Documented NativePHP notices in `THIRD_PARTY_NOTICES.md` §5.
+  5. **Test Suite Verification**:
+     - `tests/Feature/DocumentImportExportTest.php`: **60 / 60 passed (218 assertions)**.
+     - Backward compatibility verified for `'free_amir'` and `'parsian'` format keys, round-trip export/import, and column alias recognition.
+  6. **Legal & Compliance Status**:
+     - **Non-Distribution Mandate (Decision D-126)**: In accordance with Rule 2 of Super Prompt r16, no closed-source build, installer, or update channel may be distributed to customers until all GPL-derived modules are replaced (Phase CR-7) and legal counsel signs off.
