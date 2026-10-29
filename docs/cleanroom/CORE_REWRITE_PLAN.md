@@ -156,41 +156,28 @@ interface ChequeServiceInterface
    - `cheques` $\to$ `cheque_instruments`
    - `payments` $\to$ `treasury_payments`
 
-### 5.2 Mapping Table: Old Upstream Schema $\to$ New Dakhl Baseline
+### 5.2 Target Dakhl Baseline Schema (Quarantine & Clean-Room Rule)
 
-| Old Upstream Table / Column | New Dakhl Baseline Table / Column | Type / Constraints | Design Rationale & Accounting Invariant |
-|---|---|---|---|
-| `documents.id` | `accounting_vouchers.id` | `BIGINT UNSIGNED AUTO_INCREMENT` | Internal primary key. |
-| `documents.number` | `accounting_vouchers.voucher_number` | `BIGINT UNSIGNED, UNIQUE(company, year, number)` | Sequential voucher number; immutable once posted. |
-| `documents.date` | `accounting_vouchers.voucher_date` | `DATE NOT NULL` | Gregorian posting date. |
-| `documents.title` | `accounting_vouchers.description` | `VARCHAR(255) NULL` | Voucher header narrative / memo. |
-| `documents.status` | `accounting_vouchers.status` | `ENUM('draft', 'approved', 'reversed')` | Document lifecycle state machine. |
-| `documents.type` | `accounting_vouchers.voucher_type` | `VARCHAR(50) NOT NULL DEFAULT 'general'` | Classification: general, invoice, payment, closing. |
-| `documents.provenance` | `accounting_vouchers.provenance` | `ENUM('native', 'baseline', 'reversal')` | Audit trail origin tracking (D-085). |
-| `documents.uuid` | `accounting_vouchers.uuid` | `CHAR(36) UNIQUE NOT NULL` | Sync aggregate root identifier (D-071, D-073). |
-| `transactions.id` | `voucher_lines.id` | `BIGINT UNSIGNED AUTO_INCREMENT` | Line item primary key. |
-| `transactions.document_id` | `voucher_lines.voucher_id` | `FOREIGN KEY $\to$ accounting_vouchers(id) ON DELETE RESTRICT` | Parent voucher reference; deletion blocked. |
-| `transactions.subject_id` | `voucher_lines.account_id` | `FOREIGN KEY $\to$ accounts(id) ON DELETE RESTRICT` | Target Chart of Accounts node. |
-| `transactions.value` | `voucher_lines.debit_amount` / `credit_amount` | `DECIMAL(18, 4) DEFAULT 0.0000` | Replaces signed float with explicit non-negative debit and credit amounts. |
-| `transactions.desc` | `voucher_lines.line_memo` | `TEXT NULL` | Detailed item description. |
-| `subjects.id` | `accounts.id` | `BIGINT UNSIGNED AUTO_INCREMENT` | Chart of Accounts primary key. |
-| `subjects.code` | `accounts.account_code` | `VARCHAR(32) NOT NULL` | Structured hierarchical code (e.g. `011001001`). |
-| `subjects.name` | `accounts.title` | `VARCHAR(255) NOT NULL` | Standard account title. |
-| `subjects.parent_id` | `accounts.parent_id` | `FOREIGN KEY $\to$ accounts(id) ON DELETE RESTRICT` | Recursive parent account reference. |
-| `subjects.type` | `accounts.financial_nature` | `ENUM('debtor', 'creditor', 'both')` | Balance nature (بدهکار / بستانکار). |
-| `subjects.is_permanent` | `accounts.is_permanent` | `BOOLEAN NOT NULL DEFAULT TRUE` | Balance sheet permanent vs temporary income statement. |
-| `invoices.id` | `invoices.id` | `BIGINT UNSIGNED AUTO_INCREMENT` | Commercial invoice primary key. |
-| `invoices.number` | `invoices.invoice_number` | `BIGINT UNSIGNED, UNIQUE(company, type, number)` | Official sequence number (D-075). |
-| `invoices.status` | `invoices.status` | `ENUM('draft', 'approved', 'rejected', 'paid')` | Status workflow (D-076, D-086–D-089). |
-| `payments.id` | `treasury_payments.id` | `BIGINT UNSIGNED AUTO_INCREMENT` | Treasury cash/bank receipt & payment primary key. |
-| `payments.uuid` | `treasury_payments.financial_event_uuid` | `CHAR(36) UNIQUE NOT NULL` | Canonical economic event UUID (D-078/D-079). |
-| `payment_allocations.id` | `payment_allocations.id` | `BIGINT UNSIGNED AUTO_INCREMENT` | Allocation primary key. |
-| `cheques.id` | `cheque_instruments.id` | `BIGINT UNSIGNED AUTO_INCREMENT` | Commercial paper primary key (D-070). |
-| `cheques.status` | `cheque_instruments.status` | `ENUM(8 states)` | 8-state independent cheque lifecycle (D-070). |
+> [!IMPORTANT]
+> **Clean-Room Isolation Rule for Database Schema:**  
+> The old-to-new mapping table contains derived legacy structures and is strictly quarantined in `docs/cleanroom/RESTRICTED_UPSTREAM_MAPPING.md`.  
+> In accordance with CR-3 governance, **Implementer sessions must never receive `RESTRICTED_UPSTREAM_MAPPING.md` or any legacy schema definitions**.  
+> The Implementer receives **EXCLUSIVELY** the new target Dakhl schema definition, sanitized behavioral specifications, and black-box tests.
+
+#### Target Dakhl Baseline Schema Summary
+- **`companies`**: Multi-tenant company context and configuration.
+- **`fiscal_periods`**: 5-state fiscal calendar cycles (`OPEN`, `REVIEW`, `RECONCILED`, `CLOSED`, `LOCKED`).
+- **`accounts`**: 3-tier Chart of Accounts (Root $\to$ Moeen $\to$ Tafsili), financial balance nature (`debtor`/`creditor`), and permanence flag.
+- **`accounting_vouchers`**: Universal double-entry journal vouchers with immutable numbers, posting provenance (`native`, `baseline`, `reversal`), and sync UUID.
+- **`voucher_lines`**: Journal lines with explicit non-negative `debit_amount` and `credit_amount` (`DECIMAL(18, 4)`), target `account_id`, and foreign key constraint (`ON DELETE RESTRICT`).
+- **`invoices` & `invoice_lines`**: Commercial sales, purchases, and return invoices with sequential leasing (D-075) and mutation boundary enforcement (D-086–D-089).
+- **`treasury_payments`**: Cash, bank, and electronic payments carrying canonical `financial_event_uuid` (D-078/D-079) and posting immutability (D-084).
+- **`payment_allocations`**: Invoice settlement allocation records linking payments to invoice installments (D-081).
+- **`cheque_instruments`**: Independent 8-state commercial paper instrument register (D-070).
 
 ---
 
-## 5.3 Mermaid Schema Relationship Diagram
+### 5.3 Mermaid Schema Relationship Diagram
 
 ```mermaid
 erDiagram
@@ -219,6 +206,46 @@ erDiagram
 
 ---
 
+### 5.4 Schema Decision ADR Proposals (Submitted for Owner Approval)
+
+To avoid ad-hoc design decisions during the core rewrite, four fundamental schema questions are structured as formal Architecture Decision Records (ADRs) for explicit Owner sign-off:
+
+#### ADR Proposal A: Signed Single `value` vs Explicit Dual `debit_amount` / `credit_amount`
+- **Context:** Upstream FreeAmir stored transaction amounts in a single signed `value` column (positive for debit, negative for credit). While mathematically compact ($\sum \text{value} = 0$), signed storage creates subtle sign-flipping bugs in queries, complicates financial statements (trial balances, balance sheets), and conflicts with standard accounting audit trails.
+- **Option 1 (Recommended): Explicit Dual Columns (`debit_amount`, `credit_amount` `DECIMAL(18, 4) UNSIGNED DEFAULT 0.0000`).**
+  - *Pros:* Fully standard in ERP/accounting software; balance invariant is $\sum \text{debit} = \sum \text{credit}$; database CHECK constraint `(debit_amount = 0 OR credit_amount = 0)` prevents conflicting entries; trivial SQL generation for balance sheets.
+  - *Cons:* Slightly larger row size (+8 bytes per line).
+- **Option 2: Single Signed Decimal (`amount DECIMAL(18, 4)`).**
+- **Recommendation:** **Option 1 (Explicit Dual Columns)**.
+
+#### ADR Proposal B: Monetary Representation & Quantity Precision
+- **Context:** Iranian accounting operates natively in Iranian Rials (IRR) or Tomans. Upstream used floating-point or integer values without strict sub-unit rules, risking IEEE 754 precision loss. Additionally, precious metals (طلا و جواهر) and specialized inventory require sub-unit decimal weights.
+- **Monetary Representation:**
+  - *Rial Currency:* `DECIMAL(18, 0)` or `BIGINT` (since Rial has no fractional dinars in active commerce). However, for multi-currency operations and international trade (USD/EUR conversions), fractional amounts occur before final rounding.
+  - *Recommended:* `DECIMAL(18, 4)` for ledger lines, rounding to integer Rial via half-even (`ROUND_HALF_EVEN` / Banker's Rounding) upon voucher posting.
+- **Quantity Precision:**
+  - *Standard Inventory:* `DECIMAL(12, 3)` (supports grams, milliliters, fractional kilograms).
+  - *Precious Metals / Gold Ledger:* `DECIMAL(12, 4)` (mandated 4-decimal precision for gold grams: $0.0001 \text{ g}$).
+- **Recommendation:** **Adopt `DECIMAL(18, 4)` for financial amounts with explicit Banker's Rounding, and `DECIMAL(12, 4)` for precious/weighed quantity metrics.**
+
+#### ADR Proposal C: Primary Key Strategy (UUIDv7 vs BIGINT + Secondary Sync UUID)
+- **Context:** Phase 2 (Offline/Online Sync, D-071) requires globally unique identifiers across distributed devices. We must select the primary clustering key on MariaDB/InnoDB.
+- **Option 1 (Recommended): Sequential `BIGINT UNSIGNED AUTO_INCREMENT` as Clustered Primary Key + `CHAR(36) / BINARY(16) uuid` Unique Secondary Key.**
+  - *Pros:* Optimal MariaDB InnoDB B-tree page compaction; avoids secondary index bloat; fastest local join performance for local desktop app; zero fragmentation during high-throughput local postings.
+  - *Cons:* Two identifier fields per entity.
+- **Option 2: Pure UUIDv7 (Time-Ordered 128-bit) as Clustered Primary Key.**
+  - *Pros:* Single identifier across local database and sync payloads; naturally sortable by creation time.
+  - *Cons:* 16-byte binary primary key inflates every secondary index on MariaDB; slightly higher memory footprint.
+- **Recommendation:** **Option 1 (`BIGINT` Clustered PK + Indexed UUIDv7/UUID Sync Key)**.
+
+#### ADR Proposal D: Relational Foreign Key Policy (`ON DELETE RESTRICT`)
+- **Context:** Upstream FreeAmir had several cascading deletes (e.g. deleting an invoice cascaded to payments and allocations, causing the posting bypass audited in D-084).
+- **Decision:** Universal **`ON DELETE RESTRICT`** across all accounting, voucher, transaction, payment, and inventory tables.
+- **Rule:** A posted voucher, voucher line, commercial invoice, or payment allocation can NEVER be deleted via SQL cascade. Erroneous records must be corrected strictly through statutory reversing vouchers (`FinancialProvenance::REVERSAL`, D-127).
+- **Recommendation:** **Enforce strict `ON DELETE RESTRICT` across all financial foreign keys.**
+
+---
+
 ## 6. The Clean-Room Fresh-Session Protocol
 
 To guarantee mathematical independence, complete copyright hygiene, and eliminate contaminated memory/context carryover, core units must be implemented through the following formal 4-role protocol:
@@ -232,17 +259,23 @@ To guarantee mathematical independence, complete copyright hygiene, and eliminat
 ┌────────────────────────────────────────────────────────────────────────┐
 │ 1. ROLE: ANALYST                                                       │
 │    - Examines statutory tax rules, accounting laws, and Dakhl behavior.│
-│    - Authors behavioral specification in docs/cleanroom/SPECS/.        │
+│    - Authors STRICTLY BEHAVIOR-LEVEL specifications (inputs, outputs,  │
+│      business invariants, validation rules, edge cases).               │
+│    - MUST NOT specify internal class/method structures or legacy idioms│
 │    - Prepares black-box unit/feature characterization tests.           │
-│    - PRODUCES: Functional spec + Interface contracts + Black-box tests│
+│    - PRODUCES: Behavioral spec + Target DTOs + Black-box tests        │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
                                     ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│ 2. ROLE: REVIEWER                                                      │
-│    - Scrubs specification of any FreeAmir code snippets or comments.   │
-│    - Verifies no tainted symbols, line lengths, or idioms exist.       │
-│    - Signs off spec for fresh sandbox deployment.                      │
+│ 2. ROLE: REVIEWER (Dedicated Independent Session)                      │
+│    - Operates in a separate review session before sandbox delivery.    │
+│    - Scrubs specification of any legacy code snippets, comments, or    │
+│      method-signature leakage from FreeAmir/upstream heritage.         │
+│    - Validates that spec is purely functional/behavioral.              │
+│    - Enforces that no mapping tables (RESTRICTED_UPSTREAM_MAPPING) or  │
+│      upstream files enter the sandbox.                                 │
+│    - Formally signs off scrubbed spec for fresh sandbox deployment.    │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
                                     ▼
@@ -287,22 +320,22 @@ The core rewrite is divided into 5 sequential waves designed to preserve depende
 
 ```mermaid
 flowchart TD
-    W1["Wave 1: Foundation & Hierarchy<br/>SubjectService, DocumentNumberService<br/>(3 days)"] --> W2
-    W2["Wave 2: Journal Voucher Posting Core<br/>DocumentService, DocumentReversalService, PeriodLockGuard<br/>(5 days)"] --> W3
-    W3["Wave 3: Commercial & Valuation Builders<br/>InvoiceTransactionBuilder, CostOfGoodsService, AncillaryCostService<br/>(6 days)"] --> W4
-    W4["Wave 4: Treasury, Payments & Cheques<br/>PaymentService, SettlementService, ChequeService<br/>(6 days)"] --> W5
-    W5["Wave 5: Fiscal Closing & Baseline Schema<br/>FiscalYearService, New Baseline Migrations, Invariant Verification<br/>(5 days)"]
+    W1["Wave 1: Hierarchy & Numbering Engine<br/>SubjectService, DocumentNumberService<br/>(3–5 days)"] --> W2
+    W2["Wave 2: Journal Voucher Posting Core<br/>DocumentService, DocumentReversalService, PeriodLockGuard<br/>(6–8 days)"] --> W3
+    W3["Wave 3: Commercial & Valuation Builders<br/>InvoiceTransactionBuilder, CostOfGoodsService, AncillaryCostService<br/>(7–9 days)"] --> W4
+    W4["Wave 4: Treasury, Payments & Cheques<br/>PaymentService, SettlementService, ChequeService<br/>(7–9 days)"] --> W5
+    W5["Wave 5: Fiscal Closing & Fresh Baseline Integration<br/>FiscalYearService, Baseline Migrations, Dual Scans & MariaDB Hardening<br/>(5–7 days)"]
 ```
 
-| Wave | Target Core Units | Key Deliverables & Checkpoints | Estimated Effort |
+| Wave | Target Core Units | Key Deliverables & Checkpoints | Estimated Effort Range |
 |---|---|---|:---:|
-| **Wave 1** | `SubjectService`, `DocumentNumberService` | - Chart of Accounts 3-tier hierarchy engine.<br/>- Concurrency-safe atomic document numbering leases.<br/>- Checkpoint: COA tree tests & numbering collision tests pass. | 3 Days |
-| **Wave 2** | `DocumentService`, `DocumentReversalService`, `PeriodLockGuard` | - Universal journal voucher posting choke-point.<br/>- $\sum \text{value} = 0$ balance invariant enforcement.<br/>- Audit reversal engine (D-127) and 5-state fiscal freeze (D-128).<br/>- Checkpoint: Balanced document tests, reversal tests, lock guards pass. | 5 Days |
-| **Wave 3** | `InvoiceTransactionBuilder`, `InvoiceService`, `CostOfGoodsService`, `AncillaryCostService`, `AncillaryCostTransactionBuilder`, `FixedAssetService`, `GroupActionService` | - Multi-line invoice journal builder (sales, purchases, returns, tax).<br/>- Perpetual inventory COGS valuation and average unit costs.<br/>- Financial mutation boundary gates (D-086–D-089).<br/>- Checkpoint: Invoice posting tests, COGS calculation tests pass. | 6 Days |
-| **Wave 4** | `PaymentService`, `SettlementService`, `ChequeService` | - Cash/bank payment vouchers with financial event UUIDs (D-078/D-079).<br/>- Payment allocation and capacity checks (D-081).<br/>- 8-state independent cheque instrument lifecycle (D-070).<br/>- Posted payment immutability (D-084).<br/>- Checkpoint: Payment allocation tests, cheque state transition tests pass. | 6 Days |
-| **Wave 5** | `FiscalYearService`, New Baseline Migrations, Integration Hardening | - Fiscal closing (P&L transfer, closing/opening vouchers).<br/>- Provenance tracking (`NATIVE` vs `BASELINE`, D-085).<br/>- Fresh Dakhl baseline schema migrations deployed on `dakhl_test`.<br/>- Checkpoint: Dual-measure scans $< 20\%$ across all 16 units; full suite passes on SQLite & MariaDB. | 5 Days |
+| **Wave 1** | `SubjectService`, `DocumentNumberService` | - Chart of Accounts 3-tier hierarchy engine.<br/>- Concurrency-safe atomic document numbering leases.<br/>- Checkpoint: COA tree tests & numbering collision tests pass. | 3 – 5 Days |
+| **Wave 2** | `DocumentService`, `DocumentReversalService`, `PeriodLockGuard` | - Universal journal voucher posting choke-point.<br/>- $\sum \text{debit} = \sum \text{credit}$ balance invariant enforcement.<br/>- Audit reversal engine (D-127) and 5-state fiscal freeze (D-128).<br/>- Checkpoint: Balanced document tests, reversal tests, lock guards pass. | 6 – 8 Days |
+| **Wave 3** | `InvoiceTransactionBuilder`, `InvoiceService`, `CostOfGoodsService`, `AncillaryCostService`, `AncillaryCostTransactionBuilder`, `FixedAssetService`, `GroupActionService` | - Multi-line invoice journal builder (sales, purchases, returns, tax).<br/>- Perpetual inventory COGS valuation and average unit costs.<br/>- Financial mutation boundary gates (D-086–D-089).<br/>- Checkpoint: Invoice posting tests, COGS calculation tests pass. | 7 – 9 Days |
+| **Wave 4** | `PaymentService`, `SettlementService`, `ChequeService` | - Cash/bank payment vouchers with financial event UUIDs (D-078/D-079).<br/>- Payment allocation and capacity checks (D-081).<br/>- 8-state independent cheque instrument lifecycle (D-070).<br/>- Posted payment immutability (D-084).<br/>- Checkpoint: Payment allocation tests, cheque state transition tests pass. | 7 – 9 Days |
+| **Wave 5** | `FiscalYearService`, Baseline Schema Migrations, Verification & Hardening | - Fiscal closing (P&L transfer, closing/opening vouchers).<br/>- Provenance tracking (`NATIVE` vs `BASELINE`, D-085).<br/>- Fresh Dakhl baseline schema migrations deployed on `dakhl_test`.<br/>- Checkpoint: Dual-measure scans $< 20\%$ across all 16 units; full suite passes on SQLite & MariaDB. | 5 – 7 Days |
 
-**Total Estimated Implementation Duration:** 25 Working Days.
+**Total Estimated Implementation Duration:** **28 – 38 Working Days** (incorporating sandbox spec authoring, reviewer scrubbing, clean-room implementation, dual-measure scans, and SQLite + MariaDB verification checkpoints).
 
 ---
 
@@ -314,6 +347,8 @@ Execution of any wave, schema change, or code rewrite will not begin until the O
 - [x] Strategic path confirmed: Option B (Core rewrite + new UX + new schema baseline).
 - [ ] List of 16 protected-core files approved.
 - [ ] 7 core accounting invariants approved.
-- [ ] New baseline schema proposal and old $\to$ new mapping approved.
+- [ ] Four Schema ADR Proposals (A: Dual Columns, B: Precision/Rounding, C: Key Strategy, D: ON DELETE RESTRICT) approved.
+- [ ] Fresh-session sandbox protocol & behavioral spec rules approved.
+- [ ] Wave sequencing, checkpoint criteria, and 28–38 day timeline approved.
 - [ ] Fresh-session sandbox protocol approved.
 - [ ] Wave sequencing and checkpoints approved.

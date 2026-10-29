@@ -265,3 +265,35 @@
      - Backward compatibility verified for `'free_amir'` and `'parsian'` format keys, round-trip export/import, and column alias recognition.
   6. **Legal & Compliance Status**:
      - **Non-Distribution Mandate (Decision D-126)**: In accordance with Rule 2 of Super Prompt r16, no closed-source build, installer, or update channel may be distributed to customers until all GPL-derived modules are replaced (Phase CR-7) and the Owner Release Gate (owner decision before first distribution) is satisfied.
+
+
+---
+
+## Log Entry CR-PRE-REWRITE-01 — 2026-10-29T17:30:00+03:30
+- **Phase:** Pre-Core-Rewrite Quality Remediation & Governance Hardening (Decision D-130)
+- **Scope:** Triage of all 18 test failures to reach ZERO failures, full test suite verification on SQLite and MariaDB `dakhl_test`, dual-measure directory-level similarity scanning with moved-block detection, and `CORE_REWRITE_PLAN.md` governance amendments.
+- **Actor/Role:** Lead Systems Architect & Senior Accountant (Analyst/Verifier)
+- **Actions Executed:**
+  1. **Comprehensive Test Failure Triage (Zero Failures Achieved)**:
+     - `DeepSystemLifecycleStressTest` (5 tests): Classified as `TEST LACKS SETUP & REAL REQUEST CONFORMANCE` + `REAL BUG`. Normalization fixes in `StoreInvoiceRequest` (missing `item_id`), `InvoiceService` (missing `title`), and `StoreTransactionRequest` (operator precedence). Conformed test HTTP methods (POST on `invoices.change-status` and `cheques.transition`) and added required accounting subject IDs. Result: **5 / 5 passed (21 assertions)**.
+     - `VoidSellInvoiceTest`: Classified as `TEST FRAGILITY`. Replaced whole-page layout `assertDontSee(__('Voided'))` with scoped assertion on formatted invoice number. Result: **23 / 23 passed (100 assertions)**.
+     - `HomeServiceChartTest` (28 tests): Classified as `TEST FRAGILITY / UI FINTECH MIGRATION`. Restored `@include('home._access-sections')`, `@include('home._standalone-links')`, and `@include('home._financial-values')`. Added `today-kpi` classes to pulse cards. Result: **28 / 28 passed (164 assertions)**.
+     - `AttendanceLogTest` (59 tests): Classified as `REAL BUG`. Guarded Persian numeral conversion in date range parser. Result: **59 / 59 passed (202 assertions)**.
+     - `FinancialCopilotTest` (13 tests): Updated config key assertion to verify encrypted storage and positive-control `Crypt::decryptString()`. Result: **13 / 13 passed (50 assertions)**.
+     - `OfficialInquiryTest` (8 tests): Updated database assertions to verify masked PII (`001****877`, `603****455`, `145****123`) and positive-control `assertDatabaseMissing` on raw PII. Result: **8 / 8 passed (41 assertions)**.
+  2. **Enhanced Similarity Scanner (`tools/similarity_scan.py`)**:
+     - Implemented **Directory-Level Aggregate Module Scanning** (concatenates all module files into a single virtual text blob and measures M1 literal and M2 AST structure against upstream mirror).
+     - Implemented **Moved-Not-Rewritten Block Detection** (calculates asymmetric shingle containment $\frac{|A \cap B|}{|A|}$ and contiguous matching line streaks $\ge 6$ lines across split files).
+     - Re-scanned `app/Services/DocumentImportExport` (21 files): Directory Max Composite: **25.49%**; flagged 21 split-block containment matches from monolithic upstream files, proving that splitting alone does not eliminate derivation and validating Option B.
+     - Re-scanned `app/Support/Moadian` (10 files): Directory Max Composite: **8.24%** (🟢 CLEAN < 15%); 0 files $\ge 20\%$; only 1 envelope DTO moved block (`MoadianResponse.php`).
+     - Removed all occurrences of the phrase "zero contamination"; retained strict labels `REWRITTEN-LOW-SIMILARITY (contaminated author)`.
+  3. **Core Rewrite Plan Amendments (`CORE_REWRITE_PLAN.md`)**:
+     - Quarantined old $\to$ new schema mapping table into `docs/cleanroom/RESTRICTED_UPSTREAM_MAPPING.md` (flagged as architect-only, strictly forbidden from Implementer sessions).
+     - Mandated strictly **behavior-level specifications** (inputs, outputs, invariants, rules, edge cases) without structural class/method leakage.
+     - Mandated dedicated independent Reviewer session before sandbox delivery.
+     - Formulated 4 Schema Decision ADR Proposals for Owner sign-off:
+       - ADR A: Explicit Dual Debit/Credit Columns (`DECIMAL(18, 4)`).
+       - ADR B: Monetary Decimal Representation with Banker's Rounding & 4-decimal Gold Precision.
+       - ADR C: Primary Key Strategy (Sequential `BIGINT` Clustered PK + Indexed UUIDv7/UUID Sync Key).
+       - ADR D: Universal `ON DELETE RESTRICT` Foreign Key Policy.
+     - Updated implementation duration to realistic range: **28 – 38 Working Days**.
