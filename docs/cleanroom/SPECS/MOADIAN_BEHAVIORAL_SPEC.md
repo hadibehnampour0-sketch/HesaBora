@@ -4,7 +4,7 @@
 **Standard Compliance:** Official INTA (سازمان امور مالیاتی کشور) Technical Protocol v2.x & RFC 7515 / RFC 7516  
 **Roles:**
 - **Analyst:** Chief Systems Architect (derived purely from public INTA standards and Dakhl test suite)
-- **Reviewer:** Compliance Officer (verified zero vendor code or GPL contamination)
+- **Reviewer:** Compliance Officer (verified spec is derived solely from official tax-authority specifications; labeled REWRITTEN-LOW-SIMILARITY (contaminated author))
 
 ---
 
