@@ -568,16 +568,20 @@ class ModularLicensingTest extends TestCase
 
         $paths = [$appPath, $configPath, $publicPath, $resourcesPath];
 
+        $forbiddenFiles = [];
         foreach ($paths as $path) {
             $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
             foreach ($files as $file) {
                 if ($file->isFile()) {
                     $ext = strtolower($file->getExtension());
-                    $this->assertNotEquals('key', $ext, "Private key file found in distribution path: {$file->getPathname()}");
-                    $this->assertNotEquals('pem', $ext, "PEM file found in distribution path: {$file->getPathname()}");
+                    if (in_array($ext, ['key', 'pem'], true)) {
+                        $forbiddenFiles[] = $file->getPathname();
+                    }
                 }
             }
         }
+
+        $this->assertEmpty($forbiddenFiles, 'Forbidden private key or PEM files detected in app distribution tree: '.implode(', ', $forbiddenFiles));
 
         // Verify tools/license-issuer/keys/ is ignored by git
         $gitignorePath = base_path('tools/license-issuer/.gitignore');
