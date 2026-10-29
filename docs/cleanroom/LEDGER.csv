@@ -443,7 +443,7 @@ app/Services/DocumentImportExport/DocumentImportFormat.php,REWRITTEN-LOW-SIMILAR
 app/Services/DocumentImportExport/DocumentImportFormatRegistry.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,111,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 15.94% vs upstream, MIT)"
 app/Services/DocumentImportExport/FreeAmirImportFormat.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,28,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 13.37% vs upstream, MIT)"
 app/Services/DocumentImportExport/ImportSubjectResolver.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,496,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 14.98% vs upstream, MIT)"
-app/Services/DocumentImportExport/ParsianImportFormat.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,368,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 18.48% vs upstream, MIT)"
+app/Services/DocumentImportExport/ParsianImportFormat.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,56,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (M1 19.17%, M2 9.48% vs upstream, MIT)"
 app/Services/DocumentNumberService.php,UPSTREAM-ORIGINAL,100,249,202,CRITICAL,Exact or nearly identical upstream code (100% line match)
 app/Services/DocumentService.php,UPSTREAM-MODIFIED(>20%),84,292,208,CORE-PROTECTED,Derived from upstream with modifications (84% line match) [PROTECTED CORE]
 app/Services/Financing/FinancingService.php,DAKHL-ORIGINAL,0,227,0,LOW,Created newly in Dakhl
@@ -2098,5 +2098,9 @@ app/Services/DocumentImportExport/DocumentImportExportValidator.php,REWRITTEN-LO
 app/Services/DocumentImportExport/DocumentImportPipeline.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,82,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 11.78% vs upstream, MIT)"
 app/Services/DocumentImportExport/ImportFeedbackFormatter.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,96,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 10.44% vs upstream, MIT)"
 app/Services/DocumentImportExport/ParsianRootCatalogue.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,74,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 11.36% vs upstream, MIT)"
-app/Services/DocumentImportExport/ParsianTransactionIngestor.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,212,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 15.26% vs upstream, MIT)"
-app/Services/DocumentImportExport/StandardJournalIngestor.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,348,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 17.60% vs upstream, MIT)"
+app/Services/DocumentImportExport/ParsianTransactionIngestor.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,138,0,LOW,"Companion authored (contaminated author) in Wave 2 (M1 18.35%, M2 17.18% vs upstream, MIT)"
+app/Services/DocumentImportExport/StandardJournalIngestor.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,172,0,LOW,"Companion authored (contaminated author) in Wave 2 (M1 17.93%, M2 16.44% vs upstream, MIT)"
+app/Services/DocumentImportExport/ParsianAccountBridge.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,105,0,LOW,"Companion authored (contaminated author) in Wave 2 (M1 16.98%, M2 16.08% vs upstream, MIT)"
+app/Services/DocumentImportExport/ParsianTrialBalanceIngestor.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,42,0,LOW,"Companion authored (contaminated author) in Wave 2 (M1 12.32%, M2 5.62% vs upstream, MIT)"
+app/Services/DocumentImportExport/StandardJournalDecoder.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,84,0,LOW,"Companion authored (contaminated author) in Wave 2 (M1 10.80%, M2 7.56% vs upstream, MIT)"
+app/Services/DocumentImportExport/StandardJournalRowTransformer.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,42,0,LOW,"Companion authored (contaminated author) in Wave 2 (M1 11.87%, M2 5.65% vs upstream, MIT)"

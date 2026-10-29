@@ -123,6 +123,14 @@ abstract class DocumentImportFormat implements DocumentImportFormatInterface
     }
 
     /**
+     * Tally bypassed or existing Chart of Accounts subject.
+     */
+    public function tallySkippedSubject(int $increment = 1): void
+    {
+        $this->result[self::RESULT_KEY_SUBJECTS_SKIPPED] += $increment;
+    }
+
+    /**
      * Tally malformed or unparseable source row.
      */
     public function tallySkippedRow(int $increment = 1): void
