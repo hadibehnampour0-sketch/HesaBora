@@ -126,9 +126,14 @@ class OfficialInquiryTest extends TestCase
         $this->assertDatabaseHas('official_inquiry_logs', [
             'company_id' => $this->company->id,
             'inquiry_type' => 'shahkar',
-            'query_term' => '0010359877',
+            'query_term' => '001****877',
             'is_matched' => true,
             'status' => 'success',
+        ]);
+        $this->assertDatabaseMissing('official_inquiry_logs', [
+            'company_id' => $this->company->id,
+            'inquiry_type' => 'shahkar',
+            'query_term' => '0010359877',
         ]);
     }
 
@@ -153,8 +158,13 @@ class OfficialInquiryTest extends TestCase
         $this->assertDatabaseHas('official_inquiry_logs', [
             'company_id' => $this->company->id,
             'inquiry_type' => 'card',
-            'query_term' => $card,
+            'query_term' => '603****455',
             'is_matched' => true,
+        ]);
+        $this->assertDatabaseMissing('official_inquiry_logs', [
+            'company_id' => $this->company->id,
+            'inquiry_type' => 'card',
+            'query_term' => $card,
         ]);
     }
 
@@ -177,6 +187,11 @@ class OfficialInquiryTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('official_inquiry_logs', [
+            'company_id' => $this->company->id,
+            'inquiry_type' => 'postal_code',
+            'query_term' => '145****123',
+        ]);
+        $this->assertDatabaseMissing('official_inquiry_logs', [
             'company_id' => $this->company->id,
             'inquiry_type' => 'postal_code',
             'query_term' => $postalCode,

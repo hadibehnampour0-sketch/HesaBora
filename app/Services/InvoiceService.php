@@ -1271,7 +1271,7 @@ class InvoiceService
     public static function extractInvoiceData(array $validated): array
     {
         return [
-            'title' => $validated['title'],
+            'title' => $validated['title'] ?? null,
             'date' => $validated['date'],
             'invoice_type' => InvoiceType::fromName($validated['invoice_type']),
             'customer_id' => $validated['customer_id'],

@@ -27,6 +27,10 @@
         </div>
     </div>
 
+    @include('home._standalone-links')
+
+    @include('home._financial-values')
+
     {{-- Loading Skeleton --}}
     <template x-if="loading">
         <div class="space-y-4">
@@ -103,7 +107,7 @@
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {{-- Card 1: Today Sales --}}
             <a href="{{ route('invoices.index', ['invoice_type' => 'sell']) }}" x-show="block('sales')"
-                class="group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-emerald-500/30 hover:shadow-lg">
+                class="today-kpi group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-emerald-500/30 hover:shadow-lg">
                 <div aria-hidden="true" class="absolute inset-x-0 top-0 h-1 bg-emerald-500"></div>
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-bold text-base-content/70">{{ __('فروش خالص امروز') }}</span>
@@ -122,7 +126,7 @@
 
             {{-- Card 2: Total Liquidity (Cash + Banks) --}}
             <a href="{{ route('bank-accounts.index') }}" x-show="block('liquidity')"
-                class="group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-sky-500/30 hover:shadow-lg">
+                class="today-kpi group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-sky-500/30 hover:shadow-lg">
                 <div aria-hidden="true" class="absolute inset-x-0 top-0 h-1 bg-sky-500"></div>
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-bold text-base-content/70">{{ __('موجودی نقدینگی در دسترس') }}</span>
@@ -141,7 +145,7 @@
 
             {{-- Card 3: Overdue Receivables --}}
             <a href="{{ route('ageing.receivables') }}" x-show="block('receivables')"
-                class="group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-rose-500/30 hover:shadow-lg">
+                class="today-kpi group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-rose-500/30 hover:shadow-lg">
                 <div aria-hidden="true" class="absolute inset-x-0 top-0 h-1 bg-rose-500"></div>
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-bold text-base-content/70">{{ __('مطالبات سررسید گذشته') }}</span>
@@ -160,7 +164,7 @@
 
             {{-- Card 4: Upcoming Cheques Due in 7 Days --}}
             <a href="{{ route('cheques.index') }}" x-show="block('cheques')"
-                class="group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-amber-500/30 hover:shadow-lg">
+                class="today-kpi group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-amber-500/30 hover:shadow-lg">
                 <div aria-hidden="true" class="absolute inset-x-0 top-0 h-1 bg-amber-500"></div>
                 <div class="flex items-center justify-between mb-3">
                     <span class="text-xs font-bold text-base-content/70">{{ __('چک‌های دریافتی نزدیک (۷ روز)') }}</span>

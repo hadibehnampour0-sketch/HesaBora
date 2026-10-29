@@ -131,6 +131,25 @@ class AttendanceLogTest extends TestCase
         $response->assertDontSee(formatDate('2026-03-20'));
     }
 
+    public function test_index_handles_empty_or_invalid_date_filters_gracefully(): void
+    {
+        $this->makeAttendanceLog(['log_date' => '2026-02-10']);
+
+        // Empty strings in date filters must not crash with 500
+        $response = $this->get(route('attendance.attendance-logs.index', [
+            'date_from' => '',
+            'date_to' => '',
+        ]));
+        $response->assertStatus(200);
+
+        // Malformed date strings must not crash with 500
+        $responseInvalid = $this->get(route('attendance.attendance-logs.index', [
+            'date_from' => 'invalid-date',
+            'date_to' => 'not-a-date',
+        ]));
+        $responseInvalid->assertStatus(200);
+    }
+
     public function test_index_filters_by_is_manual(): void
     {
         $this->makeAttendanceLog(['log_date' => '2026-02-10', 'is_manual' => true]);

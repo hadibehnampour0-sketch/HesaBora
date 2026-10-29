@@ -313,7 +313,7 @@ class VoidSellInvoiceTest extends TestCase
         $response->assertSee(__('Voided'));
 
         $buyIndexResponse->assertOk();
-        $buyIndexResponse->assertDontSee(__('Voided'));
+        $buyIndexResponse->assertDontSee((string) formatDocumentNumber($voidedSell->number));
     }
 
     public function test_void_index_lists_a_voided_service_sale(): void

@@ -486,7 +486,7 @@ if (! function_exists('jalali_to_gregorian_date')) {
             $date = $date->format('Y/m/d');
         }
         $parts = explode(' ', (string) $date);
-        $dateOnly = $parts[0] ?? '';
+        $dateOnly = toEnglish($parts[0] ?? '');
 
         if (str_contains($dateOnly, '-') && ! str_contains($dateOnly, '/')) {
             $dateExplodeStr = '-';
@@ -508,7 +508,7 @@ if (! function_exists('gregorian_to_jalali_date')) {
             $date = $date->format('Y/m/d');
         }
         $parts = explode(' ', (string) $date);
-        $dateOnly = $parts[0] ?? '';
+        $dateOnly = toEnglish($parts[0] ?? '');
 
         if (str_contains($dateOnly, '-') && ! str_contains($dateOnly, '/')) {
             $dateExplodeStr = '-';

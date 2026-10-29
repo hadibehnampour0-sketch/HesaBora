@@ -33,12 +33,12 @@ class AttendanceLogController extends Controller
             $query->where('employee_id', $request->employee_id);
         }
 
-        if ($request->filled('date_from')) {
-            $query->whereDate('log_date', '>=', Carbon::createFromFormat('Y/m/d', jalali_to_gregorian_date($request->date_from))->format('Y-m-d'));
+        if ($request->filled('date_from') && ($parsedFrom = $this->parseFilterDate($request->date_from)) !== null) {
+            $query->whereDate('log_date', '>=', $parsedFrom);
         }
 
-        if ($request->filled('date_to')) {
-            $query->whereDate('log_date', '<=', Carbon::createFromFormat('Y/m/d', jalali_to_gregorian_date($request->date_to))->format('Y-m-d'));
+        if ($request->filled('date_to') && ($parsedTo = $this->parseFilterDate($request->date_to)) !== null) {
+            $query->whereDate('log_date', '<=', $parsedTo);
         }
 
         if ($request->filled('is_manual')) {
@@ -440,10 +440,10 @@ class AttendanceLogController extends Controller
         $dateTo = null;
 
         if ($request->filled('date_from')) {
-            $dateFrom = Carbon::createFromFormat('Y/m/d', jalali_to_gregorian_date($request->input('date_from')))->format('Y-m-d');
+            $dateFrom = $this->parseFilterDate($request->input('date_from'));
         }
         if ($request->filled('date_to')) {
-            $dateTo = Carbon::createFromFormat('Y/m/d', jalali_to_gregorian_date($request->input('date_to')))->format('Y-m-d');
+            $dateTo = $this->parseFilterDate($request->input('date_to'));
         }
 
         // Store the uploaded file temporarily for the confirm step
@@ -508,5 +508,31 @@ class AttendanceLogController extends Controller
         }
 
         return redirect()->route('attendance.attendance-logs.index')->with('success', $message);
+    }
+
+    private function parseFilterDate(?string $rawDate): ?string
+    {
+        if (empty($rawDate)) {
+            return null;
+        }
+
+        $trimmed = trim($rawDate);
+        if ($trimmed === '') {
+            return null;
+        }
+
+        $gregorian = jalali_to_gregorian_date($trimmed);
+        if ($gregorian !== '') {
+            try {
+                return Carbon::createFromFormat('Y/m/d', $gregorian)->format('Y-m-d');
+            } catch (\Throwable) {
+            }
+        }
+
+        try {
+            return Carbon::parse($trimmed)->format('Y-m-d');
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

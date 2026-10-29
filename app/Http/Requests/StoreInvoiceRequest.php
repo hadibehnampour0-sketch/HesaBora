@@ -65,15 +65,20 @@ class StoreInvoiceRequest extends FormRequest
         if ($this->has('transactions') && is_array($this->input('transactions'))) {
             $transactions = collect($this->input('transactions'))
                 ->map(function ($t) {
+                    $rawItemId = $t['item_id'] ?? (isset($t['product_id']) ? 'product-'.$t['product_id'] : (isset($t['service_id']) ? 'service-'.$t['service_id'] : ''));
+                    $parts = explode('-', (string) $rawItemId);
+                    $itemType = count($parts) > 1 ? $parts[0] : (isset($t['product_id']) ? 'product' : (isset($t['service_id']) ? 'service' : ($t['item_type'] ?? null)));
+                    $itemId = count($parts) > 1 ? $parts[1] : ($t['item_id'] ?? $t['product_id'] ?? $t['service_id'] ?? null);
+
                     return [
-                        'item_id' => explode('-', $t['item_id'])[1] ?? null,
-                        'item_type' => explode('-', $t['item_id'])[0] ?? null,
-                        'vat' => isset($t['vat']) ? convertToFloat($t['vat']) : null,
+                        'item_id' => $itemId,
+                        'item_type' => $itemType,
+                        'vat' => isset($t['vat']) ? convertToFloat($t['vat']) : (isset($t['tax']) ? convertToFloat($t['tax']) : null),
                         'desc' => $t['desc'] ?? null,
                         'quantity' => isset($t['quantity']) ? convertToFloat($t['quantity']) : 1,
-                        'unit_discount' => isset($t['off']) ? convertToFloat($t['off']) : 0,
-                        'unit' => isset($t['unit']) ? convertToFloat($t['unit']) : null,
-                        'total' => isset($t['total']) ? convertToFloat($t['total']) : null,
+                        'unit_discount' => isset($t['off']) ? convertToFloat($t['off']) : (isset($t['discount']) ? convertToFloat($t['discount']) : 0),
+                        'unit' => isset($t['unit']) ? convertToFloat($t['unit']) : (isset($t['price']) ? convertToFloat($t['price']) : null),
+                        'total' => isset($t['total']) ? convertToFloat($t['total']) : (isset($t['price'], $t['quantity']) ? convertToFloat($t['price']) * convertToFloat($t['quantity']) : null),
                     ];
                 });
 

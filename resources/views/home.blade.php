@@ -47,6 +47,8 @@
         @else
             @include('home._financial-values')
         @endif
+
+        @include('home._access-sections')
     </div>
 
     @push('scripts')

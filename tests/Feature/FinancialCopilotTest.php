@@ -252,8 +252,12 @@ class FinancialCopilotTest extends TestCase
         $this->assertDatabaseHas('configs', [
             'company_id' => $this->company->id,
             'key' => 'gemini_api_key',
-            'value' => 'AIzaSyTestApiKeyForCompany12345',
         ]);
+
+        $config = \App\Models\Config::withoutGlobalScopes()->where('company_id', $this->company->id)->where('key', 'gemini_api_key')->first();
+        $this->assertNotNull($config);
+        $this->assertNotEquals('AIzaSyTestApiKeyForCompany12345', $config->value, 'API key must be encrypted in storage');
+        $this->assertSame('AIzaSyTestApiKeyForCompany12345', \Illuminate\Support\Facades\Crypt::decryptString($config->value), 'Decrypted API key must match the original key');
 
         // 2. Clear key
         $responseClear = $this->postJson(route('copilot.settings'), [

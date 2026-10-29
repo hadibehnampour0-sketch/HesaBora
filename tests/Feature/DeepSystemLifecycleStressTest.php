@@ -51,9 +51,11 @@ class DeepSystemLifecycleStressTest extends TestCase
         ]);
         $this->adminUser->companies()->attach($this->companyId);
 
-        $role = Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'web']);
-        $this->adminUser->givePermissionTo(Permission::all());
+        $this->seed(\Database\Seeders\RolesAndPermissionsSeeder::class);
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        $role = Role::firstOrCreate(['name' => 'Super-Admin', 'guard_name' => 'web']);
         $this->adminUser->assignRole($role);
+        $this->adminUser->givePermissionTo(Permission::all());
 
         $this->withCookies(['active-company-id' => (string) $this->companyId]);
         $_COOKIE['active-company-id'] = (string) $this->companyId;
@@ -61,6 +63,19 @@ class DeepSystemLifecycleStressTest extends TestCase
 
         $this->importSubjects($this->companyId);
         $this->importConfigs($this->companyId);
+
+        foreach (['cheque_documents_receivable', 'cheque_documents_in_collection', 'cheque_documents_payable'] as $key) {
+            $subj = Subject::factory()->create(['company_id' => $this->companyId]);
+            config(['amir.'.$key => (string) $subj->id]);
+            \App\Models\Config::create([
+                'type' => 3,
+                'category' => 1,
+                'key' => $key,
+                'value' => (string) $subj->id,
+                'desc' => $key,
+                'company_id' => $this->companyId,
+            ]);
+        }
     }
 
     /**
@@ -74,10 +89,9 @@ class DeepSystemLifecycleStressTest extends TestCase
             'code' => 'WH-01',
         ]);
 
-        $group = ProductGroup::create(['name' => 'کالای تست', 'company_id' => $this->companyId]);
-        $product = Product::create([
+        $group = ProductGroup::factory()->withSubjects()->create(['name' => 'کالای تست', 'company_id' => $this->companyId]);
+        $product = Product::factory()->withGroup($group)->withSubjects()->create([
             'company_id' => $this->companyId,
-            'group' => $group->id,
             'code' => 'P100',
             'name' => 'کالای تجاری تست ۱',
             'quantity' => 50,
@@ -85,8 +99,14 @@ class DeepSystemLifecycleStressTest extends TestCase
             'selling_price' => 1500000,
             'oversell' => 1,
         ]);
+        \App\Models\WarehouseProductStock::create([
+            'product_id' => $product->id,
+            'warehouse_id' => $warehouse->id,
+            'quantity' => 50,
+        ]);
 
-        $customer = Customer::create([
+        $customerGroup = CustomerGroup::factory()->withSubject()->create(['company_id' => $this->companyId]);
+        $customer = Customer::factory()->withGroup($customerGroup)->withSubject()->create([
             'company_id' => $this->companyId,
             'name' => 'شرکت خریدار آریا',
             'mobile' => '09121234567',
@@ -104,11 +124,12 @@ class DeepSystemLifecycleStressTest extends TestCase
                 'invoice_number' => 201,
                 'transactions' => [
                     [
-                        'product_id' => $product->id,
+                        'item_id' => 'product-'.$product->id,
                         'quantity' => 5,
-                        'price' => 1500000,
-                        'tax' => 0,
-                        'discount' => 0,
+                        'unit' => 1500000,
+                        'total' => 7500000,
+                        'off' => 0,
+                        'vat' => 0,
                     ],
                 ],
             ]);
@@ -122,9 +143,7 @@ class DeepSystemLifecycleStressTest extends TestCase
         // Approve invoice via changeStatus
         $approveRes = $this->actingAs($this->adminUser)
             ->withSession(['company_id' => $this->companyId, 'fiscal_year' => 1405])
-            ->put(route('invoices.change-status', $invoice), [
-                'status' => InvoiceStatus::APPROVED->value,
-            ]);
+            ->post(route('invoices.change-status', ['invoice' => $invoice, 'status' => 'approved']));
 
         $approveRes->assertSessionHasNoErrors();
         $invoice->refresh();
@@ -132,12 +151,10 @@ class DeepSystemLifecycleStressTest extends TestCase
         $this->assertEquals(InvoiceStatus::APPROVED, $invoice->status);
         $this->assertNotNull($invoice->document_id, 'Approved invoice must have an associated accounting Document');
 
-        // Check Document balance
+        // Check Document balance (SUM(value) == 0)
         $doc = Document::find($invoice->document_id);
         $this->assertNotNull($doc);
-        $debtorSum = $doc->transactions()->sum('debtor');
-        $creditorSum = $doc->transactions()->sum('creditor');
-        $this->assertEquals($debtorSum, $creditorSum, 'Accounting Document for invoice must be strictly balanced');
+        $this->assertEquals(0, (float) $doc->transactions()->sum('value'), 'Accounting Document for invoice must be strictly balanced');
     }
 
     /**
@@ -184,12 +201,14 @@ class DeepSystemLifecycleStressTest extends TestCase
     public function test_cheque_lifecycle_transitions(): void
     {
         $bank = Bank::firstOrCreate(['name' => 'بانک تجارت', 'company_id' => $this->companyId]);
+        $bankSubject = Subject::factory()->create(['company_id' => $this->companyId]);
         $bankAccount = BankAccount::create([
             'company_id' => $this->companyId,
             'bank_id' => $bank->id,
             'number' => '1122334455',
             'type' => \App\Enums\BankAccountType::CURRENT->value,
             'name' => 'حساب جاری تجارت',
+            'subject_id' => $bankSubject->id,
         ]);
 
         $customer = Customer::create([
@@ -217,7 +236,7 @@ class DeepSystemLifecycleStressTest extends TestCase
         // Transition: Deposit to bank account
         $depositRes = $this->actingAs($this->adminUser)
             ->withSession(['company_id' => $this->companyId, 'fiscal_year' => 1405])
-            ->put(route('cheques.transition', ['cheque' => $cheque->id, 'action' => 'deposit']), [
+            ->post(route('cheques.transition', ['cheque' => $cheque->id, 'action' => 'deposit']), [
                 'bank_account_id' => $bankAccount->id,
                 'date' => Carbon::now()->format('Y-m-d'),
             ]);
@@ -229,7 +248,7 @@ class DeepSystemLifecycleStressTest extends TestCase
         // Transition: Clear Cheque
         $clearRes = $this->actingAs($this->adminUser)
             ->withSession(['company_id' => $this->companyId, 'fiscal_year' => 1405])
-            ->put(route('cheques.transition', ['cheque' => $cheque->id, 'action' => 'clear']), [
+            ->post(route('cheques.transition', ['cheque' => $cheque->id, 'action' => 'clear']), [
                 'date' => Carbon::now()->format('Y-m-d'),
             ]);
 
@@ -257,6 +276,11 @@ class DeepSystemLifecycleStressTest extends TestCase
             'selling_price' => 300000,
             'oversell' => 1,
         ]);
+        \App\Models\WarehouseProductStock::create([
+            'product_id' => $product->id,
+            'warehouse_id' => $whSource->id,
+            'quantity' => 100,
+        ]);
 
         $transferRes = $this->actingAs($this->adminUser)
             ->withSession(['company_id' => $this->companyId, 'fiscal_year' => 1405])
@@ -283,27 +307,57 @@ class DeepSystemLifecycleStressTest extends TestCase
      */
     public function test_quick_payment_receive_and_pay(): void
     {
-        $customer = Customer::create([
+        $customerGroup = CustomerGroup::factory()->withSubject()->create(['company_id' => $this->companyId]);
+        $customer = Customer::factory()->withGroup($customerGroup)->withSubject()->create([
             'company_id' => $this->companyId,
             'name' => 'مشتری تسویه سریع',
             'mobile' => '09124443322',
         ]);
 
-        $bank = Bank::firstOrCreate(['name' => 'بانک رفاه', 'company_id' => $this->companyId]);
-        $bankAccount = BankAccount::create([
+        $group = ProductGroup::factory()->withSubjects()->create(['name' => 'کالای تست تسویه', 'company_id' => $this->companyId]);
+        $product = Product::factory()->withGroup($group)->withSubjects()->create([
             'company_id' => $this->companyId,
-            'bank_id' => $bank->id,
-            'number' => '77889900',
-            'type' => \App\Enums\BankAccountType::CURRENT->value,
-            'name' => 'حساب رفاه',
+            'code' => 'P-QUICK',
+            'name' => 'کالای تسویه سریع',
+            'quantity' => 10,
+            'average_cost' => 10000000,
+            'selling_price' => 12500000,
+            'oversell' => 1,
+        ]);
+        $warehouse = Warehouse::firstOrCreate(['company_id' => $this->companyId, 'code' => 'WH-QP'], ['name' => 'انبار تسویه']);
+        \App\Models\WarehouseProductStock::firstOrCreate(['product_id' => $product->id, 'warehouse_id' => $warehouse->id], ['quantity' => 10]);
+
+        $invoice = Invoice::create([
+            'company_id' => $this->companyId,
+            'invoice_type' => InvoiceType::SELL,
+            'customer_id' => $customer->id,
+            'warehouse_id' => $warehouse->id,
+            'number' => 8801,
+            'date' => Carbon::now()->format('Y-m-d'),
+            'status' => InvoiceStatus::APPROVED,
+            'amount' => 12500000,
+            'vat' => 0,
+        ]);
+        $invoice->items()->create([
+            'itemable_type' => Product::class,
+            'itemable_id' => $product->id,
+            'quantity' => 1,
+            'unit_price' => 12500000,
+            'amount' => 12500000,
+            'total' => 12500000,
+            'vat' => 0,
+            'unit_discount' => 0,
         ]);
 
-        // Receive payment
+        $cashBook = Subject::withoutGlobalScopes()->find((int) config('amir.cash_book'));
+        $subject = Subject::firstOrCreate(['name' => 'صندوق مرکزی تسویه', 'company_id' => $this->companyId], ['code' => '011099', 'parent_id' => $cashBook?->id, 'type' => 3]);
+
+        // Receive payment via Quick Payment
         $resReceive = $this->actingAs($this->adminUser)
             ->withSession(['company_id' => $this->companyId, 'fiscal_year' => 1405])
             ->post(route('quick-payment.store', 'receive'), [
-                'customer_id' => $customer->id,
-                'bank_account_id' => $bankAccount->id,
+                'party_id' => $customer->id,
+                'subject_id' => $subject->id,
                 'amount' => 12500000,
                 'date' => Carbon::now()->format('Y/m/d'),
                 'description' => 'دریافت نقدی سریع بابت مطالبات',
@@ -312,7 +366,7 @@ class DeepSystemLifecycleStressTest extends TestCase
         $resReceive->assertSessionHasNoErrors();
 
         // Check Payment created
-        $payment = Payment::where('customer_id', $customer->id)->latest()->first();
+        $payment = Payment::where('payer_id', $customer->id)->latest()->first();
         $this->assertNotNull($payment);
         $this->assertEquals(12500000, $payment->amount);
     }
