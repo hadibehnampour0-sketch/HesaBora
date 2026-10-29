@@ -27,3 +27,5 @@ storage/*.sqlite*
 scratch/
 tools/license-issuer/keys/
 *.key
+__pycache__/
+*.pyc
