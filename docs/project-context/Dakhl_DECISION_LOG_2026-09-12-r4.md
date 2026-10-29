@@ -2937,38 +2937,25 @@ Dakhl upgrades fiscal-year closing into an auditable 5-state lifecycle (`OPEN` -
 
 ---
 
-## D-129 — Asymmetric Ed25519 Modular Licensing & Tier Enforcement Architecture (معماری لایسنس ماژولار و امضای نامتقارن Ed25519) — 2026-10-28 — APPROVED & LOCKED
-
-*Implemented and verified on 2026-10-28 (Phase B amendments / Super Prompt r15 & r16).*
+## D-130 — Clean-Room Core Rewrite, Fresh Dakhl Schema Baseline, and UX View Rebuild Architecture (معماری بازنویسی هسته حسابداری در اتاق تمیز، بازطراحی اسکیما و نوسازی فرانت‌اند) — 2026-10-29 — APPROVED (Owner Decision: Option B)
 
 ### 1. Decision
-Dakhl formalizes an asymmetric, mathematically unforgeable offline licensing system utilizing Ed25519 (`libsodium` via `ParagonIE_Sodium_Compat`). The legacy symmetric HMAC format (`DAKHL-LIC-v1`) is completely dropped without migration windows (as no commercial version was ever released). Private signing keys reside strictly offline outside the application workspace and build trees.
+Following the comprehensive clean-room audit (STATUS.md) analyzing 976 derived files (153k lines), the Owner has formally approved **Option B**:
+1. **Core Accounting Clean-Room Rewrite:** Rewrite the ~16 protected-core services, transaction builders, and posting engines via an isolated "fresh-session" clean-room protocol from behavioral specifications and black-box tests only.
+2. **UX-Driven View Replacement:** Replace the 310 legacy FreeAmir Blade views entirely with the modern Persian-first Dakhl UI (Tailwind CSS, DaisyUI, Alpine.js) as part of the scheduled frontend overhaul, avoiding any mechanical 1-to-1 rewrite of obsolete view code.
+3. **Fresh Dakhl-Owned Schema Baseline:** Redesign the database schema from scratch with clean, consistent Persian/English domain terminology, strict relational integrity, and modern foreign keys. Since Dakhl is in active pre-release development and no production data has ever been released, legacy data migrations are omitted.
+4. **Gradual Upstream Test Replacement:** Upstream tests (which are not distributed to end users) remain temporary verification harnesses during development and are replaced iteratively with Dakhl behavioral test suites.
 
-### 2. Locked Rules
-1. **Cryptographic Engine & Format (`DAKHL-LIC-v2`):**
-   - Format: `DAKHL-LIC-v2.{base64url(canonicalJson)}.{base64url(ed25519_signature)}`.
-   - The payload contains canonical JSON with mandatory `kid` (key identifier), `issued_at`, `expires_at`, `grace_days`, `modules`, `limits`, and `fingerprint`.
-   - Verification uses only public keys registered in `config/license.php`. Key rotation and revocation are enforced via `kid` matching and `revoked_kids` blocklist.
-2. **Boot Self-Test & Extension Verification:**
-   - On application boot (`AppServiceProvider::boot`), `LicenseCrypto::selfTest()` performs a detached sign/verify roundtrip. If cryptographic verification fails, boot is halted.
-   - In NativePHP desktop builds, `ext-sodium` availability is verified with fallback to `ParagonIE_Sodium_Compat`.
-3. **Packaging & Security Isolation:**
-   - Private keys and the offline issuer tool (`tools/license-issuer`) MUST NEVER reside in production distribution builds or the application source tree.
-   - `config/nativephp.php` excludes `tools*`, `tools/license-issuer*`, and `*.key` from desktop installer packaging. Enforced via automated packaging test.
-4. **Non-Destructive Expiration & 14-Day Grace Period (D-024):**
-   - Licenses include a 14-day grace period from the signed payload.
-   - Upon hard expiration past grace, the database is NEVER wiped or crippled. The system transitions into an immutable, non-destructive read-only mode (`EnsureModuleLicensed` allows safe GET/HEAD requests, while blocking POST/PUT/DELETE mutations).
-5. **Anti-Tampering & Clock Rollback Detection:**
-   - If `issued_at` or `not_before` is in the future ($> now + 300$), the license is rejected.
-   - If database timestamps in `licenses` or financial records are ahead of system time ($> now + 300$), the license is rejected with clock rollback detection.
-6. **Node-Locking, Benign Drift & Signed Re-Bind Flow:**
-   - Node-locking binds the license to a hardware fingerprint (`DAKHL-XXXX-XXXX-XXXX-XXXX`).
-   - Benign drift tolerance: variations in hostname on identical hardware (same OS, CPU architecture, family, and machine-id) are tolerated.
-   - Hardware transfer is supported via an offline-signed re-bind token (`DAKHL-LIC-REBIND-v2`) updating the hardware fingerprint without data loss.
-7. **"Never Re-Gate" Contract Guarantee (D-026):**
-   - Iranian tax compliance (`tax_moadian`), core accounting (`core_accounting`), sales/invoices (`sales_purchase`), inventory (`inventory_warehouse`), and cheques (`cheques_treasury`) are guaranteed in the `BASIC` (برنزی) tier and may NEVER be re-gated into premium tiers.
-8. **Clean-Room Legal Notice:**
-   - While upstream GPL-derived code remains in Dakhl during the clean-room migration, commercial license enforcement is a convenience and scaffolding mechanism only. No closed-source build, installer, or update may be distributed before CR-7 is completed and approved via the Owner Release Gate (owner decision before first distribution).
+### 2. Locked Rules & Core Invariants
+1. **Mathematical Balance Invariant:** Every financial document must strictly satisfy:
+   $$\sum \text{Debit} = \sum \text{Credit} \iff \sum \text{transactions.value} = 0$$
+   Unbalanced postings must be rejected at the service/builder boundary.
+2. **Posted Record Immutability (D-084, D-086, D-087, D-089):** Posted documents, payments, allocations, and approved invoices are immutable. Destructive edits, unapprovals, or deletions are strictly rejected. Adjustments must follow official audit reversal entries (D-127).
+3. **Audit Trail & Provenance (D-085):** Every financial record carries immutable provenance (`FinancialProvenance::NATIVE` vs. `BASELINE`).
+4. **Company & Fiscal Multi-Tenancy Scoping:** Multi-tenant separation is strictly enforced at query builder and service boundaries (`active-company-id` / `active_fiscal_year_id`).
+5. **Period Lock & Tax Statutory Freeze (D-128):** No financial transactions may be posted or modified in `CLOSED` or `LOCKED` fiscal years without elevated audit justification.
+6. **No Closed-Source Distribution Before CR-7:** In accordance with licensing rules, no distribution is permitted prior to completing all clean-room waves and passing the Owner Release Gate.
+
 
 
 
