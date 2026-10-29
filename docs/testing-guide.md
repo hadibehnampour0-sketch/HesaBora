@@ -28,14 +28,28 @@ php artisan make:test DocumentServiceTest --unit
 
 ## ▶️ اجرای تست‌ها
 
-برای اجرای تست‌ها می‌توانید از دستورهای متداول زیر استفاده کنید:
+پروژه دَخل از دو محیط پایگاه داده برای اجرای تست‌ها پشتیبانی می‌کند:
+1. **SQLite (در حافظه / پیش‌فرض):** اجرای سریع برای سناریوهای معمول و توسعه محلی.
+2. **MariaDB (`dakhl_test` اختصاصی):** اجرای جامع با بررسی محدودیت‌های پایگاه داده رابطه‌ای MariaDB 12/MySQL.
 
 ```bash
-php artisan test                        # Run all tests
-php artisan test --testsuite=Feature    # Run only Feature tests
-php artisan test --testsuite=Unit       # Run only Unit tests
-php artisan test --filter=Document      # Filter tests by class or method name
+# ۱. اجرای کلیه تست‌ها روی SQLite در حافظه (پیش‌فرض)
+php artisan test
+
+# ۲. اجرای کلیه تست‌ها روی MariaDB اختصاصی (dakhl_test)
+php artisan test --configuration=phpunit.mariadb.xml
+
+# اجرای موردی یا فیلتر شده
+php artisan test --testsuite=Feature
+php artisan test --testsuite=Unit
+php artisan test --filter=DocumentImportExportTest
 ```
+
+### 🛡️ گارد محافظتی پایگاه داده (Database Safety Guard)
+در کلاس پایه `Tests\TestCase` گارد محافظتی اختصاصی پیاده‌سازی شده است:
+- تمامی تست‌های مخرب (`RefreshDatabase`، `DatabaseMigrations` و ...) پیش از اجرا نام دیتابیس را بررسی می‌کنند.
+- اجرای تست روی دیتابیس‌های MariaDB/MySQL تنها زمانی مجاز است که نام پایگاه داده با پسوند `_test` خاتمه یابد (مانند `dakhl_test`).
+- در صورت اتصال اشتباه به پایگاه توسعه (`dakhl`) یا عملیاتی، تست‌ها بلافاصله متوقف شده و خطای صریح صادر می‌شود تا هیچ اطلاعاتی تغییر نکند.
 
 ## 🚀 گسترش تست‌های فیچر
 
