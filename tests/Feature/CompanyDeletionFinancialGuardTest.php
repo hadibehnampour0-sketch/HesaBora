@@ -273,7 +273,7 @@ class CompanyDeletionFinancialGuardTest extends TestCase
         );
         $this->assertSame(
             0,
-            PaymentAllocation::whereHas('payment', fn ($q) => $q->where('company_id', $target->id))->count(),
+            PaymentAllocation::whereHas('payment', fn ($q) => $q->whereHas('document', fn ($d) => $d->where('company_id', $target->id)))->count(),
             'No native Allocation should exist -- this is the pure baseline-only case.'
         );
 

@@ -60,10 +60,12 @@ class Company extends Model
                 ->where('provenance', FinancialProvenance::NATIVE)
                 ->exists();
 
-            $hasLocalAllocation = PaymentAllocation::whereHas(
-                'payment',
-                fn ($query) => $query->where('company_id', $company->id)
-            )->exists();
+            $hasLocalAllocation = PaymentAllocation::whereHas('payment', function ($query) use ($company) {
+                $query->whereHas('document', fn ($d) => $d->where('company_id', $company->id))
+                    ->orWhereHas('invoice', fn ($i) => $i->where('company_id', $company->id))
+                    ->orWhereHas('payer', fn ($p) => $p->where('company_id', $company->id))
+                    ->orWhereHas('cheque', fn ($c) => $c->where('company_id', $company->id));
+            })->exists();
 
             if ($hasNativeApprovedDocument || $hasLocalAllocation) {
                 throw ValidationException::withMessages([

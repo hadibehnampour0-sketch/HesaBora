@@ -169,7 +169,17 @@ class AuthLifecycleTest extends TestCase
 
     public function test_platform_admin_can_switch_between_management_and_current_workspace(): void
     {
+        $company = Company::create([
+            'name' => 'Current Workspace',
+            'fiscal_year' => (int) toEnglish(jdate('Y')),
+            'currency' => 'Rial',
+        ]);
+
         $user = User::factory()->create();
+        $user->companies()->syncWithoutDetaching($company);
+
+        $registrar = app(PermissionRegistrar::class);
+        $registrar->setPermissionsTeamId($company->id);
         $user->givePermissionTo(
             Permission::firstOrCreate(['name' => 'access-super-admin-panel']),
             Permission::firstOrCreate(['name' => 'home']),
@@ -179,13 +189,7 @@ class AuthLifecycleTest extends TestCase
             Permission::firstOrCreate(['name' => 'roles.index']),
             Permission::firstOrCreate(['name' => 'permissions.index']),
         );
-
-        $company = Company::create([
-            'name' => 'Current Workspace',
-            'fiscal_year' => (int) toEnglish(jdate('Y')),
-            'currency' => 'Rial',
-        ]);
-        $user->companies()->syncWithoutDetaching($company);
+        $registrar->setPermissionsTeamId(null);
 
         $workspace = $this->actingAs($user)
             ->withCookie('active-company-id', (string) $company->id)
@@ -517,7 +521,12 @@ class AuthLifecycleTest extends TestCase
     {
         Notification::fake();
 
+        $company = $this->company('Platform Company');
         $actor = User::factory()->create();
+        $actor->companies()->syncWithoutDetaching($company);
+
+        $registrar = app(PermissionRegistrar::class);
+        $registrar->setPermissionsTeamId($company->id);
         $actor->givePermissionTo(
             Permission::firstOrCreate(['name' => 'access-super-admin-panel']),
             Permission::firstOrCreate(['name' => 'users.create']),
@@ -525,9 +534,10 @@ class AuthLifecycleTest extends TestCase
             Permission::firstOrCreate(['name' => 'users.edit']),
             Permission::firstOrCreate(['name' => 'users.update']),
         );
+        $registrar->setPermissionsTeamId(null);
+
         Role::create(['name' => 'Super-Admin', 'company_id' => null]);
         $adminRole = Role::create(['name' => __('Admin'), 'company_id' => null]);
-        $company = $this->company('Platform Company');
         $target = User::factory()->create();
         $target->assignRole($adminRole);
         $target->companies()->syncWithoutDetaching($company);
@@ -535,7 +545,9 @@ class AuthLifecycleTest extends TestCase
         $superAdminTarget->assignRole('Super-Admin');
         $superAdminTarget->companies()->syncWithoutDetaching($company);
 
-        $this->actingAs($actor)->get(route('users.create'))->assertOk()->assertDontSee('Super-Admin');
+        $this->actingAs($actor)
+            ->withCookie('active-company-id', (string) $company->id)
+            ->get(route('users.create'))->assertOk()->assertDontSee('Super-Admin');
         $this->get(route('users.edit', $target))->assertOk()->assertDontSee('Super-Admin');
         $this->get(route('users.edit', $superAdminTarget))->assertForbidden();
 

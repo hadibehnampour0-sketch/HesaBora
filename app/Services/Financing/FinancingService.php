@@ -8,6 +8,7 @@ use App\Models\Document;
 use App\Models\FinancingPlan;
 use App\Models\InstallmentContract;
 use App\Models\InstallmentSchedule;
+use App\Models\Subject;
 use App\Models\User;
 use App\Services\DocumentService;
 use Illuminate\Support\Carbon;
@@ -134,12 +135,20 @@ class FinancingService
 
             // Create balanced accounting Document & Transactions (D7: SUM(transactions.value) = 0)
             $customer = $schedule->contract->customer;
-            $customerSubjectId = $customer?->subject_id ?? $customer?->subject?->id ?? (int) (config('amir.cust_subject') ?? 1);
+            $customerSubjectId = $customer?->subject_id
+                ?? $customer?->subject?->id
+                ?? Subject::where('company_id', $schedule->company_id)->where('code', config('amir.cust_subject'))->value('id')
+                ?? Subject::where('company_id', $schedule->company_id)->value('id')
+                ?? (Subject::first()?->id);
 
             $settlementSubjectId = $receivedSubjectId;
             if (! $settlementSubjectId) {
                 $bankAccount = BankAccount::where('company_id', $schedule->company_id)->whereNotNull('subject_id')->first();
-                $settlementSubjectId = $bankAccount?->subject_id ?? (int) (config('amir.cash') ?? config('amir.bank') ?? 1);
+                $settlementSubjectId = $bankAccount?->subject_id
+                    ?? Subject::where('company_id', $schedule->company_id)->whereIn('code', [config('amir.cash'), config('amir.bank'), '101', '102'])->value('id')
+                    ?? Subject::where('company_id', $schedule->company_id)->where('id', '!=', $customerSubjectId)->value('id')
+                    ?? Subject::where('company_id', $schedule->company_id)->value('id')
+                    ?? (Subject::first()?->id);
             }
 
             $desc = "دریافت قسط شماره {$schedule->installment_number} قرارداد {$schedule->contract->contract_number}";

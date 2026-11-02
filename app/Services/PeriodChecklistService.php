@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\ChequeType;
 use App\Enums\InvoiceStatus;
+use App\Enums\InvoiceType;
 use App\Models\Cheque;
 use App\Models\Company;
 use App\Models\Document;
@@ -118,11 +119,9 @@ class PeriodChecklistService
         // 6. Moadian Pending E-Invoices (WARNING)
         $moadianPendingCount = Invoice::withoutGlobalScopes()
             ->where('company_id', $companyId)
+            ->whereIn('invoice_type', [InvoiceType::SELL, InvoiceType::RETURN_SELL, InvoiceType::VOID])
             ->where('status', InvoiceStatus::APPROVED)
-            ->where(function ($q) {
-                $q->whereNull('moadian_status')
-                    ->orWhere('moadian_status', 'pending');
-            })
+            ->whereDoesntHave('moadianHistories', fn ($q) => $q->where('data->status', 'SUCCESS'))
             ->count();
         if ($moadianPendingCount > 0) {
             $warnings++;

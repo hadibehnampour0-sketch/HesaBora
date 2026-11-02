@@ -26,6 +26,18 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         Cache::store()->flush();
+        $registrar = app(\Spatie\Permission\PermissionRegistrar::class);
+        $registrar->setPermissionsTeamId(null);
+        $registrar->forgetCachedPermissions();
+    }
+
+    protected function tearDown(): void
+    {
+        $registrar = app(\Spatie\Permission\PermissionRegistrar::class);
+        $registrar->setPermissionsTeamId(null);
+        $registrar->forgetCachedPermissions();
+
+        parent::tearDown();
     }
 
     /**

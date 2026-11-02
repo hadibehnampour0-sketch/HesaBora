@@ -14,10 +14,10 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable()->index();
             $table->string('inquiry_type', 32)->index(); // 'shahkar', 'sheba', 'card', 'postal_code'
             $table->string('query_term')->index();
-            $table->json('query_payload')->nullable();
+            $table->longText('query_payload')->nullable();
             $table->boolean('is_matched')->default(true);
             $table->string('status', 32)->default('success'); // 'success', 'failed', 'rejected'
-            $table->json('response_data')->nullable();
+            $table->longText('response_data')->nullable();
             $table->text('error_message')->nullable();
             $table->timestamps();
 

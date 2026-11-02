@@ -346,7 +346,7 @@ JS;
             ->where('invoice_type', InvoiceType::SELL->value)
             ->where('creator_id', $user->id)
             ->whereDate('date', today())
-            ->sum('total_amount');
+            ->sum(DB::raw('COALESCE(amount, 0) + COALESCE(vat, 0) - COALESCE(subtraction, 0)'));
 
         $settlement = DailySettlement::updateOrCreate([
             'company_id' => $companyId,

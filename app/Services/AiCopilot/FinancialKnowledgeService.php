@@ -133,13 +133,13 @@ class FinancialKnowledgeService
     public function getLowStockProducts(int $limit = 5): array
     {
         $products = Product::query()
-            ->where('is_active', true)
-            ->whereNotNull('min_order')
+            ->whereNotNull('quantity_warning')
+            ->where('quantity_warning', '>', 0)
             ->get()
             ->filter(function (Product $product) {
                 $stock = WarehouseProductStock::where('product_id', $product->id)->sum('quantity');
 
-                return $stock <= ($product->min_order ?? 0);
+                return $stock <= ($product->quantity_warning ?? 0);
             })
             ->take($limit)
             ->values();
@@ -151,7 +151,7 @@ class FinancialKnowledgeService
                 'name' => $p->name,
                 'code' => $p->code,
                 'current_stock' => (float) WarehouseProductStock::where('product_id', $p->id)->sum('quantity'),
-                'min_order' => (float) $p->min_order,
+                'min_order' => (float) ($p->quantity_warning ?? 0),
             ];
         }
 

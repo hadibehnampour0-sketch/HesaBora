@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Company;
 use App\Models\OfficialInquiryLog;
 use App\Models\User;
+use App\Services\Inquiry\Contracts\InquiryProviderInterface;
+use App\Services\Inquiry\Providers\SandboxInquiryProvider;
 use App\Services\Inquiry\Validators\IranianCardValidator;
 use App\Services\Inquiry\Validators\IranianNationalCodeValidator;
 use App\Services\Inquiry\Validators\IranianPostalCodeValidator;
@@ -25,6 +27,8 @@ class OfficialInquiryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->app->instance(InquiryProviderInterface::class, new SandboxInquiryProvider);
 
         $this->company = Company::firstOrCreate(['id' => 1], [
             'name' => 'Test Company',

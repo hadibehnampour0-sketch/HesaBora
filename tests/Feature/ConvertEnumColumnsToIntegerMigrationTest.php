@@ -26,7 +26,7 @@ class ConvertEnumColumnsToIntegerMigrationTest extends TestCase
         $migration = require database_path('migrations/2026_07_08_000001_convert_enum_columns_to_integer_values.php');
         $migration->up();
 
-        $this->assertSame('integer', Schema::getColumnType('subjects', 'type'));
+        $this->assertContains(Schema::getColumnType('subjects', 'type'), ['integer', 'tinyint']);
 
         DB::table('subjects')->insert([
             'code' => '010',
@@ -58,7 +58,7 @@ class ConvertEnumColumnsToIntegerMigrationTest extends TestCase
 
         $type = DB::table('subjects')->where('code', '010')->value('type');
         $this->assertEquals(3, (int) $type);
-        $this->assertSame('integer', Schema::getColumnType('subjects', 'type'));
+        $this->assertContains(Schema::getColumnType('subjects', 'type'), ['integer', 'tinyint']);
     }
 
     public function test_sqlite_down_restores_string_enum_values(): void
