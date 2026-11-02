@@ -206,43 +206,46 @@ erDiagram
 
 ---
 
-### 5.4 Schema Decision ADR Proposals (Submitted for Owner Approval)
+### 5.4 Owner-Approved Schema Architecture Decision Records (ADRs D-131 .. D-135)
 
-To avoid ad-hoc design decisions during the core rewrite, four fundamental schema questions are structured as formal Architecture Decision Records (ADRs) for explicit Owner sign-off:
+To guarantee architectural stability and rigorous accounting integrity, the Owner has formally approved five foundational Architecture Decision Records (Decisions D-131 through D-135 in `Dakhl_DECISION_LOG_2026-09-12-r4.md`):
 
-#### ADR Proposal A: Signed Single `value` vs Explicit Dual `debit_amount` / `credit_amount`
-- **Context:** Upstream FreeAmir stored transaction amounts in a single signed `value` column (positive for debit, negative for credit). While mathematically compact ($\sum \text{value} = 0$), signed storage creates subtle sign-flipping bugs in queries, complicates financial statements (trial balances, balance sheets), and conflicts with standard accounting audit trails.
-- **Option 1 (Recommended): Explicit Dual Columns (`debit_amount`, `credit_amount` `DECIMAL(18, 4) UNSIGNED DEFAULT 0.0000`).**
-  - *Pros:* Fully standard in ERP/accounting software; balance invariant is $\sum \text{debit} = \sum \text{credit}$; database CHECK constraint `(debit_amount = 0 OR credit_amount = 0)` prevents conflicting entries; trivial SQL generation for balance sheets.
-  - *Cons:* Slightly larger row size (+8 bytes per line).
-- **Option 2: Single Signed Decimal (`amount DECIMAL(18, 4)`).**
-- **Recommendation:** **Option 1 (Explicit Dual Columns)**.
+#### ADR-A (Decision D-131): Explicit Dual `debit_amount` / `credit_amount` Columns & Balance Policy
+- **Decision:** Permanent retirement of legacy single signed `value`. Dual unsigned `debit_amount` and `credit_amount` columns.
+- **Zero-Amount Line Policy:** Lines with `debit_amount == 0 AND credit_amount == 0` are strictly forbidden and rejected at domain and DB levels. Every line must have an amount on exactly one side:
+  $$((\text{debit} > 0 \land \text{credit} = 0) \lor (\text{debit} = 0 \land \text{credit} > 0))$$
+- **Database CHECK Constraints:** Active on both MariaDB and SQLite:
+  `CHECK ((debit_amount = 0 AND credit_amount > 0) OR (debit_amount > 0 AND credit_amount = 0))`
+- **API v1 / Sync Compatibility Plan:**
+  - Inbound/outbound API v1 adapter converts dual columns to/from signed `value` for backward compatibility before releasing Android companion.
+  - Sync Protocol v2 adopts native dual debit/credit columns directly.
 
-#### ADR Proposal B: Monetary Representation & Quantity Precision
-- **Context:** Iranian accounting operates natively in Iranian Rials (IRR) or Tomans. Upstream used floating-point or integer values without strict sub-unit rules, risking IEEE 754 precision loss. Additionally, precious metals (طلا و جواهر) and specialized inventory require sub-unit decimal weights.
-- **Monetary Representation:**
-  - *Rial Currency:* `DECIMAL(18, 0)` or `BIGINT` (since Rial has no fractional dinars in active commerce). However, for multi-currency operations and international trade (USD/EUR conversions), fractional amounts occur before final rounding.
-  - *Recommended:* `DECIMAL(18, 4)` for ledger lines, rounding to integer Rial via half-even (`ROUND_HALF_EVEN` / Banker's Rounding) upon voucher posting.
-- **Quantity Precision:**
-  - *Standard Inventory:* `DECIMAL(12, 3)` (supports grams, milliliters, fractional kilograms).
-  - *Precious Metals / Gold Ledger:* `DECIMAL(12, 4)` (mandated 4-decimal precision for gold grams: $0.0001 \text{ g}$).
-- **Recommendation:** **Adopt `DECIMAL(18, 4)` for financial amounts with explicit Banker's Rounding, and `DECIMAL(12, 4)` for precious/weighed quantity metrics.**
+#### ADR-B (Decision D-132): Monetary Representation, Half-Up Rounding & Precision Boundaries
+- **Monetary Storage (Rials):** All ledger monetary columns are whole integer Iranian Rials stored in `BIGINT`. No floats/decimals for ledger money.
+- **Display Concept (Toman):** Toman is strictly a presentation-layer display format ($1 \text{ Toman} = 10 \text{ Rials}$), never stored in the database.
+- **Rounding Strategy:** Commercial and statutory Iranian tax **Half-Up (away from zero)** via centralized `App\Support\Money::round()` choke point, strictly rejecting banker's rounding (`ROUND_HALF_EVEN`) which conflicts with Moadian / tax compliance.
+- **Foreign Currency & Gold Ledger:**
+  - Foreign Currency: `foreign_amount DECIMAL(18, 4)`, `exchange_rate DECIMAL(18, 4)`.
+  - Gold / Precious Metals: `gold_weight DECIMAL(18, 4)` (supporting statutory $0.0001 \text{ g}$ precision), `gold_rate BIGINT UNSIGNED` (Rials per gram).
+- **Inventory Precision:** Uniform `DECIMAL(18, 6)` quantity across all inventory transactions and bill of materials.
 
-#### ADR Proposal C: Primary Key Strategy (UUIDv7 vs BIGINT + Secondary Sync UUID)
-- **Context:** Phase 2 (Offline/Online Sync, D-071) requires globally unique identifiers across distributed devices. We must select the primary clustering key on MariaDB/InnoDB.
-- **Option 1 (Recommended): Sequential `BIGINT UNSIGNED AUTO_INCREMENT` as Clustered Primary Key + `CHAR(36) / BINARY(16) uuid` Unique Secondary Key.**
-  - *Pros:* Optimal MariaDB InnoDB B-tree page compaction; avoids secondary index bloat; fastest local join performance for local desktop app; zero fragmentation during high-throughput local postings.
-  - *Cons:* Two identifier fields per entity.
-- **Option 2: Pure UUIDv7 (Time-Ordered 128-bit) as Clustered Primary Key.**
-  - *Pros:* Single identifier across local database and sync payloads; naturally sortable by creation time.
-  - *Cons:* 16-byte binary primary key inflates every secondary index on MariaDB; slightly higher memory footprint.
-- **Recommendation:** **Option 1 (`BIGINT` Clustered PK + Indexed UUIDv7/UUID Sync Key)**.
+#### ADR-C (Decision D-133): Primary Key Strategy (BIGINT Clustered PK + Secondary Sync UUIDv7)
+- **Decision:** Clustered sequential `BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY` on MariaDB/InnoDB for highest B-tree compaction and local join throughput.
+- **Distributed Identity:** Indexed `BINARY(16) uuid` storing time-ordered **UUIDv7 (RFC 9562)** on all distributed entities for collision-free offline synchronization.
 
-#### ADR Proposal D: Relational Foreign Key Policy (`ON DELETE RESTRICT`)
-- **Context:** Upstream FreeAmir had several cascading deletes (e.g. deleting an invoice cascaded to payments and allocations, causing the posting bypass audited in D-084).
-- **Decision:** Universal **`ON DELETE RESTRICT`** across all accounting, voucher, transaction, payment, and inventory tables.
-- **Rule:** A posted voucher, voucher line, commercial invoice, or payment allocation can NEVER be deleted via SQL cascade. Erroneous records must be corrected strictly through statutory reversing vouchers (`FinancialProvenance::REVERSAL`, D-127).
-- **Recommendation:** **Enforce strict `ON DELETE RESTRICT` across all financial foreign keys.**
+#### ADR-D (Decision D-134): Universal Relational Integrity (`ON DELETE RESTRICT`) & Exception Policy
+- **Decision:** Universal **`ON DELETE RESTRICT`** across all financial, voucher, invoice, payment, tax, and inventory tables.
+- **Exception List for Non-Financial Tables:**
+  - `personal_access_tokens` (`cascadeOnDelete()`)
+  - `job_batches`, `failed_jobs`, `cache`, `sessions`
+  - `user_preferences` / UI state
+- **Company Deletion SOP:** Permitted only if company has zero native approved documents (`FinancialProvenance::NATIVE`, D-085) and zero payment allocations.
+- **Fiscal-Year Rollover SOP:** Rollover never re-parents foreign keys; transfers closing balances via statutory opening vouchers (`BASELINE`) via `FiscalYearService::transferClosingBalances()`.
+
+#### ADR-E (Decision D-135): Database-Level Defense-in-Depth Immutability Triggers
+- **Decision:** In addition to application-layer guards, DB-level immutability triggers (`BEFORE UPDATE` and `BEFORE DELETE`) are installed on posted documents and transaction lines across both SQLite and MariaDB:
+  - If parent document `approved_at IS NOT NULL`, any modification or deletion raises an engine-level error (`SIGNAL SQLSTATE '45000'`).
+- **Engine Verification:** Integration test suite validates that raw SQL deletes/updates on approved records fail at the database level on both SQLite and MariaDB `dakhl_test`.
 
 ---
 
@@ -316,26 +319,26 @@ C:\Sandbox\dakhl-cleanroom-core/
 
 ## 7. Implementation Sequence, Effort Estimation & Checkpoints
 
-The core rewrite is divided into 5 sequential waves designed to preserve dependency order:
+The core rewrite is divided into 5 sequential waves designed to preserve dependency order over an **8–10 week** timeline (**40–50 working days**):
 
 ```mermaid
 flowchart TD
-    W1["Wave 1: Hierarchy & Numbering Engine<br/>SubjectService, DocumentNumberService<br/>(3–5 days)"] --> W2
-    W2["Wave 2: Journal Voucher Posting Core<br/>DocumentService, DocumentReversalService, PeriodLockGuard<br/>(6–8 days)"] --> W3
-    W3["Wave 3: Commercial & Valuation Builders<br/>InvoiceTransactionBuilder, CostOfGoodsService, AncillaryCostService<br/>(7–9 days)"] --> W4
-    W4["Wave 4: Treasury, Payments & Cheques<br/>PaymentService, SettlementService, ChequeService<br/>(7–9 days)"] --> W5
-    W5["Wave 5: Fiscal Closing & Fresh Baseline Integration<br/>FiscalYearService, Baseline Migrations, Dual Scans & MariaDB Hardening<br/>(5–7 days)"]
+    W1["Wave 1: Hierarchy & Numbering Engine<br/>SubjectService, DocumentNumberService<br/>(5–7 days, Weeks 1–2)"] --> W2
+    W2["Wave 2: Journal Voucher Posting Core<br/>DocumentService, DocumentReversalService, PeriodLockGuard<br/>(8–10 days, Weeks 2–4)"] --> W3
+    W3["Wave 3: Commercial & Valuation Builders<br/>InvoiceTransactionBuilder, CostOfGoodsService, AncillaryCostService<br/>(10–12 days, Weeks 4–6)"] --> W4
+    W4["Wave 4: Treasury, Payments & Cheques<br/>PaymentService, SettlementService, ChequeService<br/>(10–12 days, Weeks 6–8)"] --> W5
+    W5["Wave 5: Fiscal Closing & Fresh Baseline Integration<br/>FiscalYearService, Baseline Migrations, Dual Scans & MariaDB Hardening<br/>(7–9 days, Weeks 8–10)"]
 ```
 
-| Wave | Target Core Units | Key Deliverables & Checkpoints | Estimated Effort Range |
+| Wave | Target Core Units | Key Deliverables & Structured Checkpoints | Estimated Effort Range |
 |---|---|---|:---:|
-| **Wave 1** | `SubjectService`, `DocumentNumberService` | - Chart of Accounts 3-tier hierarchy engine.<br/>- Concurrency-safe atomic document numbering leases.<br/>- Checkpoint: COA tree tests & numbering collision tests pass. | 3 – 5 Days |
-| **Wave 2** | `DocumentService`, `DocumentReversalService`, `PeriodLockGuard` | - Universal journal voucher posting choke-point.<br/>- $\sum \text{debit} = \sum \text{credit}$ balance invariant enforcement.<br/>- Audit reversal engine (D-127) and 5-state fiscal freeze (D-128).<br/>- Checkpoint: Balanced document tests, reversal tests, lock guards pass. | 6 – 8 Days |
-| **Wave 3** | `InvoiceTransactionBuilder`, `InvoiceService`, `CostOfGoodsService`, `AncillaryCostService`, `AncillaryCostTransactionBuilder`, `FixedAssetService`, `GroupActionService` | - Multi-line invoice journal builder (sales, purchases, returns, tax).<br/>- Perpetual inventory COGS valuation and average unit costs.<br/>- Financial mutation boundary gates (D-086–D-089).<br/>- Checkpoint: Invoice posting tests, COGS calculation tests pass. | 7 – 9 Days |
-| **Wave 4** | `PaymentService`, `SettlementService`, `ChequeService` | - Cash/bank payment vouchers with financial event UUIDs (D-078/D-079).<br/>- Payment allocation and capacity checks (D-081).<br/>- 8-state independent cheque instrument lifecycle (D-070).<br/>- Posted payment immutability (D-084).<br/>- Checkpoint: Payment allocation tests, cheque state transition tests pass. | 7 – 9 Days |
-| **Wave 5** | `FiscalYearService`, Baseline Schema Migrations, Verification & Hardening | - Fiscal closing (P&L transfer, closing/opening vouchers).<br/>- Provenance tracking (`NATIVE` vs `BASELINE`, D-085).<br/>- Fresh Dakhl baseline schema migrations deployed on `dakhl_test`.<br/>- Checkpoint: Dual-measure scans $< 20\%$ across all 16 units; full suite passes on SQLite & MariaDB. | 5 – 7 Days |
+| **Wave 1** | `SubjectService`, `DocumentNumberService` | - Chart of Accounts 3-tier hierarchy engine (cyclic link guard, balance calculation).<br/>- Concurrency-safe atomic document numbering leases with device reservation.<br/>- **Checkpoint 1 (Week 2):** COA tree navigation tests, numbering race-condition collision tests pass on both DB engines. | 5 – 7 Days<br/>*(Weeks 1–2)* |
+| **Wave 2** | `DocumentService`, `DocumentReversalService`, `PeriodLockGuard` | - Universal journal voucher posting choke-point.<br/>- $\sum \text{debit} = \sum \text{credit}$ balance invariant enforcement & zero-amount rejection.<br/>- Audit reversal engine (D-127) and 5-state fiscal freeze state machine (D-128).<br/>- **Checkpoint 2 (Week 4):** Zero-unbalanced-lines test suite, reversal voucher tests, period lock gate enforcement pass. | 8 – 10 Days<br/>*(Weeks 2–4)* |
+| **Wave 3** | `InvoiceTransactionBuilder`, `InvoiceService`, `CostOfGoodsService`, `AncillaryCostService`, `AncillaryCostTransactionBuilder`, `FixedAssetService`, `GroupActionService` | - Multi-line commercial invoice journal builder (sales, purchases, returns, tax).<br/>- Perpetual inventory COGS valuation and weighted average unit costs.<br/>- Financial mutation boundary gates (D-086, D-087, D-088, D-089).<br/>- **Checkpoint 3 (Week 6):** Invoice status transition tests, COGS valuation tests, mutation immutability guards pass. | 10 – 12 Days<br/>*(Weeks 4–6)* |
+| **Wave 4** | `PaymentService`, `SettlementService`, `ChequeService` | - Cash/bank payment vouchers with financial event UUIDs (D-078, D-079).<br/>- Payment allocation and capacity checks (D-081).<br/>- 8-state independent cheque instrument lifecycle (D-070).<br/>- Posted payment immutability (D-084).<br/>- **Checkpoint 4 (Week 8):** Payment allocation isolation tests, cheque lifecycle state transition tests pass. | 10 – 12 Days<br/>*(Weeks 6–8)* |
+| **Wave 5** | `FiscalYearService`, Baseline Schema Migrations, Verification & Hardening | - Fiscal closing (P&L transfer, closing/opening vouchers).<br/>- Provenance tracking (`NATIVE` vs `BASELINE`, D-085).<br/>- Fresh Dakhl baseline schema migrations deployed on SQLite & MariaDB `dakhl_test`.<br/>- **Checkpoint 5 (Week 10):** Dual-measure similarity scans $< 15\%$ across all 16 units; full test suite (2,180+ tests) 100% green on SQLite & MariaDB `dakhl_test`. | 7 – 9 Days<br/>*(Weeks 8–10)* |
 
-**Total Estimated Implementation Duration:** **28 – 38 Working Days** (incorporating sandbox spec authoring, reviewer scrubbing, clean-room implementation, dual-measure scans, and SQLite + MariaDB verification checkpoints).
+**Total Estimated Implementation Duration:** **40 – 50 Working Days (8 – 10 Weeks)** (incorporating sandbox spec authoring, reviewer scrubbing, clean-room implementation, dual-measure scans, and SQLite + MariaDB verification checkpoints).
 
 ---
 
@@ -344,11 +347,9 @@ flowchart TD
 Execution of any wave, schema change, or code rewrite will not begin until the Owner formally reviews and approves this design document.
 
 **Owner Sign-Off Checklist:**
-- [x] Strategic path confirmed: Option B (Core rewrite + new UX + new schema baseline).
-- [ ] List of 16 protected-core files approved.
-- [ ] 7 core accounting invariants approved.
-- [ ] Four Schema ADR Proposals (A: Dual Columns, B: Precision/Rounding, C: Key Strategy, D: ON DELETE RESTRICT) approved.
+- [x] Strategic path confirmed: Option B (Core rewrite + new UX + new schema baseline) (Decision D-130).
+- [x] List of 16 protected-core files defined and quarantined.
+- [x] 7 core accounting invariants approved.
+- [x] Five Schema ADRs (A: Dual Columns [D-131], B: Precision/Rounding [D-132], C: Key Strategy [D-133], D: ON DELETE RESTRICT [D-134], E: DB Immutability Triggers [D-135]) owner-approved.
 - [ ] Fresh-session sandbox protocol & behavioral spec rules approved.
-- [ ] Wave sequencing, checkpoint criteria, and 28–38 day timeline approved.
-- [ ] Fresh-session sandbox protocol approved.
-- [ ] Wave sequencing and checkpoints approved.
+- [ ] Wave sequencing, checkpoint criteria, and 8–10 week (40–50 working day) timeline approved.

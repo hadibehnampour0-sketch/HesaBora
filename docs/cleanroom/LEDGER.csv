@@ -438,12 +438,12 @@ app/Services/CustomerService.php,UPSTREAM-ORIGINAL,100,192,151,CRITICAL,Exact or
 app/Services/DailySettlementService.php,DAKHL-ORIGINAL,0,84,0,LOW,Created newly in Dakhl
 app/Services/DevicePairingService.php,DAKHL-ORIGINAL,0,109,0,LOW,Created newly in Dakhl
 app/Services/DocumentFileService.php,UPSTREAM-ORIGINAL,100,88,67,CRITICAL,Exact or nearly identical upstream code (100% line match)
-app/Services/DocumentImportExport/DocumentImportExportService.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,64,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 11.50% vs upstream, MIT)"
-app/Services/DocumentImportExport/DocumentImportFormat.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,154,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 16.21% vs upstream, MIT)"
-app/Services/DocumentImportExport/DocumentImportFormatRegistry.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,111,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 15.94% vs upstream, MIT)"
-app/Services/DocumentImportExport/FreeAmirImportFormat.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,28,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 13.37% vs upstream, MIT)"
-app/Services/DocumentImportExport/ImportSubjectResolver.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,496,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (composite similarity 14.98% vs upstream, MIT)"
-app/Services/DocumentImportExport/ParsianImportFormat.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,56,0,LOW,"Rewritten low-similarity (contaminated author) in Wave 2 (M1 19.17%, M2 9.48% vs upstream, MIT)"
+app/Services/DocumentImportExport/DocumentImportExportService.php,DERIVED (tainted),25,64,16,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/DocumentImportFormat.php,DERIVED (tainted),25,154,39,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/DocumentImportFormatRegistry.php,DERIVED (tainted),25,111,28,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/FreeAmirImportFormat.php,DERIVED (tainted),25,28,7,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/ImportSubjectResolver.php,DERIVED (tainted),25,496,124,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/ParsianImportFormat.php,DERIVED (tainted),25,56,14,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
 app/Services/DocumentNumberService.php,UPSTREAM-ORIGINAL,100,249,202,CRITICAL,Exact or nearly identical upstream code (100% line match)
 app/Services/DocumentService.php,UPSTREAM-MODIFIED(>20%),84,292,208,CORE-PROTECTED,Derived from upstream with modifications (84% line match) [PROTECTED CORE]
 app/Services/Financing/FinancingService.php,DAKHL-ORIGINAL,0,227,0,LOW,Created newly in Dakhl
@@ -2079,28 +2079,28 @@ tests/Helpers/SeederHelper.php,UPSTREAM-ORIGINAL,100,84,74,CRITICAL,Exact or nea
 tests/TestCase.php,UPSTREAM-MODIFIED(>20%),32,30,8,HIGH,Derived from upstream with modifications (32% line match)
 tests/Unit/ExampleTest.php,UPSTREAM-ORIGINAL,100,17,13,CRITICAL,Exact or nearly identical upstream code (100% line match)
 vite.config.js,FRAMEWORK(MIT),0,0,0,LOW,Laravel skeleton framework file
-app/Support/Moadian/Facades/Moadian.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,54,0,LOW,Contaminated session authoring; composite similarity 19.17% (<20%)
-app/Support/Moadian/InvoiceHeader.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,65,0,LOW,Contaminated session authoring; composite similarity 10.32% (<20%)
-app/Support/Moadian/InvoiceItem.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,38,0,LOW,Contaminated session authoring; composite similarity 14.10% (<20%)
-app/Support/Moadian/MoadianClient.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,105,0,LOW,Contaminated session authoring; composite similarity 8.94% (<20%)
-app/Support/Moadian/MoadianInvoice.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,85,0,LOW,Contaminated session authoring; composite similarity 16.94% (<20%)
-app/Support/Moadian/MoadianManager.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,22,0,LOW,Contaminated session authoring; composite similarity 13.73% (<20%)
-app/Support/Moadian/MoadianResponse.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,26,0,LOW,Contaminated session authoring; composite similarity 16.11% (<20%)
-app/Support/Moadian/Payment.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,115,0,LOW,Contaminated session authoring; composite similarity 11.52% (<20%)
-app/Support/Moadian/TaxIdGenerator.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,38,0,LOW,Contaminated session authoring; composite similarity 9.57% (<20%)
-app/Support/Moadian/Verhoeff.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,78,0,LOW,Contaminated session authoring; composite similarity 12.13% (<20%)
-app/Services/DocumentImportExport/AccountingFileSchema.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,87,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 9.54% vs upstream, MIT)"
-app/Services/DocumentImportExport/CsvExportStreamer.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,92,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 16.33% vs upstream, MIT)"
-app/Services/DocumentImportExport/DakhlStandardImportFormat.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,87,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 14.55% vs upstream, MIT)"
-app/Services/DocumentImportExport/DocumentExportRowTransformer.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,60,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 9.62% vs upstream, MIT)"
-app/Services/DocumentImportExport/DocumentFilterQueryBuilder.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,98,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 11.57% vs upstream, MIT)"
-app/Services/DocumentImportExport/DocumentImportExportValidator.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,51,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 16.43% vs upstream, MIT)"
-app/Services/DocumentImportExport/DocumentImportPipeline.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,82,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 11.78% vs upstream, MIT)"
-app/Services/DocumentImportExport/ImportFeedbackFormatter.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,96,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 10.44% vs upstream, MIT)"
-app/Services/DocumentImportExport/ParsianRootCatalogue.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,74,0,LOW,"Companion authored (contaminated author) in Wave 2 (composite similarity 11.36% vs upstream, MIT)"
-app/Services/DocumentImportExport/ParsianTransactionIngestor.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,138,0,LOW,"Companion authored (contaminated author) in Wave 2 (M1 18.35%, M2 17.18% vs upstream, MIT)"
-app/Services/DocumentImportExport/StandardJournalIngestor.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,172,0,LOW,"Companion authored (contaminated author) in Wave 2 (M1 17.93%, M2 16.44% vs upstream, MIT)"
-app/Services/DocumentImportExport/ParsianAccountBridge.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,105,0,LOW,"Companion authored (contaminated author) in Wave 2 (M1 16.98%, M2 16.08% vs upstream, MIT)"
-app/Services/DocumentImportExport/ParsianTrialBalanceIngestor.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,42,0,LOW,"Companion authored (contaminated author) in Wave 2 (M1 12.32%, M2 5.62% vs upstream, MIT)"
-app/Services/DocumentImportExport/StandardJournalDecoder.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,84,0,LOW,"Companion authored (contaminated author) in Wave 2 (M1 10.80%, M2 7.56% vs upstream, MIT)"
-app/Services/DocumentImportExport/StandardJournalRowTransformer.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,42,0,LOW,"Companion authored (contaminated author) in Wave 2 (M1 11.87%, M2 5.65% vs upstream, MIT)"
+app/Support/Moadian/Facades/Moadian.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,54,0,LOW,"Contaminated session authoring; directory composite 8.24% (<15% clean); single-session author"
+app/Support/Moadian/InvoiceHeader.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,65,0,LOW,"Contaminated session authoring; directory composite 8.24% (<15% clean); single-session author"
+app/Support/Moadian/InvoiceItem.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,38,0,LOW,"Contaminated session authoring; directory composite 8.24% (<15% clean); single-session author"
+app/Support/Moadian/MoadianClient.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,105,0,LOW,"Contaminated session authoring; directory composite 8.24% (<15% clean); single-session author"
+app/Support/Moadian/MoadianInvoice.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,85,0,LOW,"Contaminated session authoring; directory composite 8.24% (<15% clean); single-session author"
+app/Support/Moadian/MoadianManager.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,22,0,LOW,"Contaminated session authoring; directory composite 8.24% (<15% clean); single-session author"
+app/Support/Moadian/MoadianResponse.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,26,0,LOW,"Contaminated session authoring; directory composite 8.24%; 1 moved-block note (envelope DTO); single-session author"
+app/Support/Moadian/Payment.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,115,0,LOW,"Contaminated session authoring; directory composite 8.24% (<15% clean); single-session author"
+app/Support/Moadian/TaxIdGenerator.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,38,0,LOW,"Contantiated session authoring; directory composite 8.24% (<15% clean); single-session author"
+app/Support/Moadian/Verhoeff.php,REWRITTEN-LOW-SIMILARITY (contaminated author),0,78,0,LOW,"Contaminated session authoring; directory composite 8.24% (<15% clean); single-session author"
+app/Services/DocumentImportExport/AccountingFileSchema.php,DERIVED (tainted),25,87,22,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/CsvExportStreamer.php,DERIVED (tainted),25,92,23,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/DakhlStandardImportFormat.php,DERIVED (tainted),25,87,22,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/DocumentExportRowTransformer.php,DERIVED (tainted),25,60,15,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/DocumentFilterQueryBuilder.php,DERIVED (tainted),25,98,25,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/DocumentImportExportValidator.php,DERIVED (tainted),25,51,13,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/DocumentImportPipeline.php,DERIVED (tainted),25,82,21,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/ImportFeedbackFormatter.php,DERIVED (tainted),25,96,24,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/ParsianRootCatalogue.php,DERIVED (tainted),25,74,19,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/ParsianTransactionIngestor.php,DERIVED (tainted),25,138,35,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/StandardJournalIngestor.php,DERIVED (tainted),25,172,43,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/ParsianAccountBridge.php,DERIVED (tainted),25,105,26,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/ParsianTrialBalanceIngestor.php,DERIVED (tainted),25,42,11,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/StandardJournalDecoder.php,DERIVED (tainted),25,84,21,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"
+app/Services/DocumentImportExport/StandardJournalRowTransformer.php,DERIVED (tainted),25,42,11,CRITICAL,"DERIVED (tainted): directory composite 25.49%, 21/21 moved-block matches; queued for Wave 2R fresh-session clean-room rewrite"

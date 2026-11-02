@@ -2956,6 +2956,112 @@ Following the comprehensive clean-room audit (STATUS.md) analyzing 976 derived f
 5. **Period Lock & Tax Statutory Freeze (D-128):** No financial transactions may be posted or modified in `CLOSED` or `LOCKED` fiscal years without elevated audit justification.
 6. **No Closed-Source Distribution Before CR-7:** In accordance with licensing rules, no distribution is permitted prior to completing all clean-room waves and passing the Owner Release Gate.
 
+---
+
+## D-131 — Schema Architecture Decision Record: ADR-A (Explicit Dual Debit/Credit Ledger Columns & Balance Policy) — 2026-10-29 — APPROVED (Owner Release Gate)
+
+### 1. Decision & Policy
+The legacy signed single `value` column (positive for debit, negative for credit) inherited from upstream FreeAmir is permanently retired. The redesigned Dakhl core schema establishes explicit dual columns: `debit_amount` and `credit_amount`.
+
+### 2. Concrete Architectural Rules
+1. **Column Specifications:**
+   `debit_amount BIGINT UNSIGNED NOT NULL DEFAULT 0`
+   `credit_amount BIGINT UNSIGNED NOT NULL DEFAULT 0`
+2. **Zero-Amount Lines Policy:**
+   A ledger line where both `debit_amount == 0` and `credit_amount == 0` is strictly illegal and rejected at both the domain entity boundary and database level. Every valid journal line must have an amount on exactly one side:
+   $$((\text{debit} > 0 \land \text{credit} = 0) \lor (\text{debit} = 0 \land \text{credit} > 0))$$
+3. **Database-Level CHECK Constraints:**
+   Both MariaDB and SQLite schema definitions enforce:
+   `CHECK ((debit_amount = 0 AND credit_amount > 0) OR (debit_amount > 0 AND credit_amount = 0))`
+4. **Voucher Balance Invariant:**
+   A document/voucher can only transition to approved/posted if:
+   $$\sum \text{debit\_amount} = \sum \text{credit\_amount}$$
+5. **API v1 & Sync Migration/Compatibility Plan:**
+   Before distributing the Android companion app, an API adapter layer handles bi-directional mapping for legacy client contracts:
+   - Outbound API v1 transforms `(debit_amount, credit_amount)` to legacy signed `value = debit_amount - credit_amount`.
+   - Inbound API v1 maps legacy `value > 0 => debit_amount = value, credit_amount = 0` and `value < 0 => credit_amount = abs(value), debit_amount = 0`.
+   - Sync Protocol v2 adopts canonical dual columns directly, avoiding lossy conversions.
+
+---
+
+## D-132 — Schema Architecture Decision Record: ADR-B (Monetary Representation, Half-Up Rounding & Precision Boundaries) — 2026-10-29 — APPROVED (Owner Release Gate)
+
+### 1. Decision & Policy
+All ledger monetary values are stored strictly as whole integer Iranian Rials. Rounding adheres strictly to commercial and tax standards (**Half-Up / away from zero**), centralized through a single choke point (`Money::round()`). Banker's rounding (`ROUND_HALF_EVEN`) is prohibited for ledger money as it conflicts with statutory Iranian Tax Organization / Moadian regulations.
+
+### 2. Concrete Architectural Rules
+1. **Ledger Money Storage (Rials):**
+   Ledger monetary columns are stored as `BIGINT` representing whole Rials. Floating-point types (`FLOAT`, `DOUBLE`) are prohibited.
+2. **Display Currency (Toman):**
+   Toman is strictly a presentation-layer display concept ($1 \text{ Toman} = 10 \text{ Rials}$). No database column or financial calculation may store or compute in Tomans.
+3. **Rounding Choke Point:**
+   All rounding calculations are routed through `App\Support\Money`:
+   $$\text{round}(v) = \text{floor}(v + 0.5) \quad (\text{for } v \ge 0)$$
+   $$\text{round}(v) = \text{ceil}(v - 0.5) \quad (\text{for } v < 0)$$
+4. **Foreign Currency & Gold Precision:**
+   Foreign currency and gold ledger entries maintain separate `(amount, exchange_rate)` columns:
+   - Foreign Currency: `foreign_amount DECIMAL(18, 4)`, `exchange_rate DECIMAL(18, 4)`.
+   - Gold / Precious Metals: `gold_weight DECIMAL(18, 4)` (supporting statutory $0.0001 \text{ g}$ precision), `gold_rate BIGINT UNSIGNED` (Rials per gram).
+5. **Inventory Quantity Precision:**
+   All inventory moves, warehouse transactions, and invoice items uniformly use `DECIMAL(18, 6)` quantity to support high-precision metric, fractional, and batch manufacturing units without truncation error.
+
+---
+
+## D-133 — Schema Architecture Decision Record: ADR-C (Clustered Primary Key & Distributed UUIDv7 Key Strategy) — 2026-10-29 — APPROVED (Owner Release Gate)
+
+### 1. Decision & Policy
+Dakhl adopts a dual-key database architecture optimized for MariaDB/InnoDB performance while maintaining full distributed synchronization compatibility with offline mobile devices (Phase 2, D-071).
+
+### 2. Concrete Architectural Rules
+1. **Clustered Primary Key:**
+   All tables use `id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY`. This ensures sequential B-tree page appending on InnoDB, eliminates secondary index bloat, and provides the highest join performance for local accounting operations.
+2. **Distributed Sync Identifier:**
+   All distributed entities carry a `uuid BINARY(16) NOT NULL UNIQUE`.
+3. **UUID Generation:**
+   UUIDs must conform to **UUIDv7 (RFC 9562)**, providing 48-bit millisecond timestamp ordering followed by cryptographically random bits.
+4. **Foreign Keys:**
+   Local internal relationships (e.g. `voucher_lines.voucher_id`) reference local clustered `BIGINT` PKs for join performance. Cross-device synchronization sync payloads reference `uuid`.
+
+---
+
+## D-134 — Schema Architecture Decision Record: ADR-D (Universal Relational Integrity & Exception Policy) — 2026-10-29 — APPROVED (Owner Release Gate)
+
+### 1. Decision & Policy
+All relational foreign keys across financial, accounting, journal, voucher, invoice, payment, tax, and inventory tables enforce strict **`ON DELETE RESTRICT`**. Cascading deletes (`CASCADE`) on financial entities are permanently eradicated.
+
+### 2. Concrete Architectural Rules
+1. **Financial Relational Policy:**
+   Foreign keys connecting `companies`, `fiscal_years`, `documents`, `transactions`, `invoices`, `invoice_items`, `payments`, `payment_allocations`, `cheques`, `accounts`, and `inventory_movements` must specify `ON DELETE RESTRICT`.
+2. **Exception List for Non-Financial Tables:**
+   Cascading deletes are strictly confined to transient, session, or purely operational records:
+   - `personal_access_tokens` (`cascadeOnDelete()` on `tokenable_id`)
+   - `job_batches`, `failed_jobs`, `cache`, `sessions`
+   - `user_preferences` / UI layout state
+3. **Company Deletion Standard Operating Procedure (SOP):**
+   A Company may only be deleted if it contains zero locally originated financial activity:
+   - Must have zero approved Documents with `provenance = FinancialProvenance::NATIVE` (D-085).
+   - Must have zero `PaymentAllocation` records associated with its payments or invoices.
+   If financial activity exists, the deletion request is rejected with `ValidationException`.
+4. **Fiscal-Year Rollover SOP:**
+   Closing a fiscal year never moves, updates, or deletes existing foreign keys. Balance transfers generate statutory opening vouchers in the target fiscal year with `FinancialProvenance::BASELINE` via `FiscalYearService::transferClosingBalances()`.
+
+---
+
+## D-135 — Schema Architecture Decision Record: ADR-E (Database-Level Defense-in-Depth Immutability Triggers) — 2026-10-29 — APPROVED (Owner Release Gate)
+
+### 1. Decision & Policy
+To guarantee financial immutability beyond the application layer, Dakhl implements database-level immutability enforcement as defense-in-depth against accidental direct SQL updates, rogue migrations, or script tampering.
+
+### 2. Concrete Architectural Rules
+1. **Document / Voucher Immutability Triggers:**
+   Database triggers (`BEFORE UPDATE` and `BEFORE DELETE`) are installed on `documents` and `transactions` tables in both SQLite and MariaDB:
+   - `BEFORE UPDATE on documents`: If `OLD.approved_at IS NOT NULL`, any modification to `approved_at`, `company_id`, `fiscal_year_id`, `number`, or `date` raises a database exception (`SIGNAL SQLSTATE '45000'`).
+   - `BEFORE DELETE on documents`: If `OLD.approved_at IS NOT NULL`, the delete is unconditionally aborted with a fatal database exception.
+   - `BEFORE UPDATE / DELETE on transactions`: If parent document is approved (`approved_at IS NOT NULL`), any line update or deletion is aborted at the database engine level.
+2. **Dual-Engine Test Verification:**
+   Integration test suite must verify that attempting raw `DB::table('documents')->where('id', $doc->id)->delete()` or `update()` throws an engine-level PDOException on both SQLite and MariaDB `dakhl_test`.
+
+
 
 
 

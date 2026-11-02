@@ -252,10 +252,12 @@
        - `DocumentImportExportValidator`: Request validation for export parameters and uploaded files.
        - `DocumentImportPipeline`: Transactional import execution pipeline.
        - `DocumentImportExportService`: Clean-room orchestrator service delegating to specialized components.
-  3. **Similarity Verification Scan & Contaminated Session Classification**:
-     - Scanned all 17 files in `app/Services/DocumentImportExport` against upstream mirror `C:\Reference\upstream-mirror\app\Services\DocumentImportExport`.
-     - Confirmed **0 / 17 tainted files** ($\ge 20\%$). Every file is strictly $< 20\%$ composite similarity (report: `docs/cleanroom/SIMILARITY/WAVE2_IMPORT_EXPORT_SIMILARITY_REPORT.md`).
-     - **Process Transparency Note**: Because all four CR-3 roles were performed in a single agent session with prior memory of the codebase, these 17 files are classified in `LEDGER.csv` as **`REWRITTEN-LOW-SIMILARITY (contaminated author)`**, reserving `CLEANROOM-REIMPLEMENTED` exclusively for units authored by an untainted Implementer session with zero upstream access.
+  3. **Similarity Verification Scan, Provenance Taint & Queueing for Wave 2R**:
+     - Scanned all 21 files in `app/Services/DocumentImportExport` against upstream mirror `C:\Reference\upstream-mirror\app\Services\DocumentImportExport`.
+     - While file-level comparisons showed superficial token variance, comprehensive directory-level aggregation revealed a composite similarity score of **25.49%** (above the 20% compliance threshold) and detected **21 / 21 moved-block matches** from the monolithic upstream legacy file.
+     - Consequently, all prior claims of Wave 2 being "low-similarity" are retracted. All 21 files are reclassified in `LEDGER.csv` as **`DERIVED (tainted)`**.
+     - Queued as **Wave 2R** for complete clean-room rewrite via the untainted fresh-session protocol alongside core modules.
+     - `app/Support/Moadian` (10 files) remains classified as **`REWRITTEN-LOW-SIMILARITY (contaminated author)`** with directory score **8.24%** (🟢 clean < 15%) and only 1 trivial envelope DTO moved-block note (`MoadianResponse.php`).
   4. **NativePHP Scaffolding Reclassification**:
      - Confirmed provenance of 67 files in `nativephp/electron/`: scaffolding published under MIT by Marcel Pociot & Simon Hamp (`nativephp/desktop`).
      - Reclassified all 67 entries in `docs/cleanroom/LEDGER.csv` from `UPSTREAM-ORIGINAL` to `THIRD-PARTY(licensed)`.
