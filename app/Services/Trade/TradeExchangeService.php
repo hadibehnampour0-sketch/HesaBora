@@ -3,6 +3,7 @@
 namespace App\Services\Trade;
 
 use App\Models\Customer;
+use App\Models\Subject;
 use App\Models\TradeExchange;
 use App\Models\TradeExchangeItem;
 use App\Models\User;
@@ -134,7 +135,9 @@ class TradeExchangeService
                 $customer = $exchange->customer;
                 $customerSubjectId = $customer?->subject_id ?? $customer?->subject?->id;
                 if (! $customerSubjectId) {
-                    $customerSubjectId = (int) (config('amir.cust_subject') ?? 1);
+                    $customerSubjectId = (int) (Subject::withoutGlobalScopes()->where('company_id', $exchange->company_id)->where('code', config('amir.cust_subject'))->value('id')
+                        ?? Subject::withoutGlobalScopes()->where('company_id', $exchange->company_id)->value('id')
+                        ?? throw new \DomainException(__('حساب طرف حساب برای این شرکت تعریف نشده است.')));
                 }
 
                 if ($settlementType === 'cash') {

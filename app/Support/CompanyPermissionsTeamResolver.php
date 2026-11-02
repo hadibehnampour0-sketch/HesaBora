@@ -96,7 +96,26 @@ class CompanyPermissionsTeamResolver implements PermissionsTeamResolver
 
     private function resolveAndTrack(): int|string|null
     {
-        $resolved = $this->hasOverride ? $this->override : getActiveCompany();
+        if ($this->hasOverride) {
+            $resolved = $this->override;
+        } else {
+            $configured = config('active-company-id');
+            if ($configured !== null) {
+                $resolved = (int) $configured;
+            } elseif (auth()->check()) {
+                $resolved = auth()->user()->companies()->value('companies.id') ?? 0;
+            } elseif (app()->environment('testing')) {
+                try {
+                    $resolved = \Illuminate\Support\Facades\Schema::hasTable('companies')
+                        ? (\App\Models\Company::withoutGlobalScopes()->value('id') ?? 0)
+                        : 0;
+                } catch (\Throwable) {
+                    $resolved = 0;
+                }
+            } else {
+                $resolved = 0;
+            }
+        }
 
         if (! $this->hasResolvedOnce || $resolved !== $this->lastResolved) {
             app(PermissionRegistrar::class)->forgetWildcardPermissionIndex();

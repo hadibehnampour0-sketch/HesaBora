@@ -20,9 +20,17 @@ class ConfigLoader
         try {
             $globals = Config::withoutGlobalScope(FiscalYearScope::class)->whereNull('company_id')->get();
 
-            foreach ($globals->merge(Config::all()) as $config) {
+            foreach ($globals as $config) {
                 if ($config->value !== null) {
                     $this->apply($config);
+                }
+            }
+
+            if (config('active-company-id') !== null) {
+                foreach (Config::all() as $config) {
+                    if ($config->value !== null) {
+                        $this->apply($config);
+                    }
                 }
             }
         } catch (\Exception $exception) {

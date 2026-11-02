@@ -215,7 +215,15 @@ class PaymentLinkService
             return $child->id;
         }
 
-        // Return root or first available subject
-        return $bankRootId ?: Subject::first()?->id ?: 1;
+        if ($bankRootId && Subject::withoutGlobalScopes()->where('id', $bankRootId)->where('company_id', $companyId)->exists()) {
+            return $bankRootId;
+        }
+
+        $companySubject = Subject::withoutGlobalScopes()->where('company_id', $companyId)->first();
+        if ($companySubject) {
+            return (int) $companySubject->id;
+        }
+
+        throw new \DomainException(__('حساب معین بانکی برای این شرکت یافت نشد.'));
     }
 }

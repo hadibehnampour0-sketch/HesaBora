@@ -26,6 +26,7 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         Cache::store()->flush();
+        config(['active-company-id' => null]);
         $registrar = app(\Spatie\Permission\PermissionRegistrar::class);
         $registrar->setPermissionsTeamId(null);
         $registrar->forgetCachedPermissions();
@@ -36,6 +37,7 @@ abstract class TestCase extends BaseTestCase
         $registrar = app(\Spatie\Permission\PermissionRegistrar::class);
         $registrar->setPermissionsTeamId(null);
         $registrar->forgetCachedPermissions();
+        config(['active-company-id' => null]);
 
         parent::tearDown();
     }

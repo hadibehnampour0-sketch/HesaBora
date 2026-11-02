@@ -61,7 +61,7 @@ class Invoice extends Model
     {
         static::addGlobalScope(new FiscalYearScope);
         static::creating(function ($model) {
-            $model->company_id = getActiveCompany();
+            $model->company_id ??= getActiveCompany();
         });
         static::deleting(function (Invoice $invoice) {
             // D-084 hardening (post-Phase-2 audit): deleting an Invoice must

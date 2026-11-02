@@ -71,7 +71,7 @@ class PosTerminalService
     public function fastCheckout(User $user, int $companyId, array $data): PosCheckoutResult
     {
         $terminalId = $data['terminal_id'] ?? 'POS-01';
-        $warehouseId = (int) ($data['warehouse_id'] ?? 1);
+        $warehouseId = isset($data['warehouse_id']) ? (int) $data['warehouse_id'] : null;
         $itemsData = $data['items'] ?? [];
 
         if (empty($itemsData)) {
@@ -171,7 +171,7 @@ class PosTerminalService
                 $item['product']->decrement('quantity', $item['quantity']);
 
                 // Commit/release LAN lock
-                $this->lockService->commitReservation($companyId, $warehouseId, $item['product']->id, $terminalId);
+                $this->lockService->commitReservation($companyId, $resolvedWarehouseId, $item['product']->id, $terminalId);
             }
 
             // 5. Build ESC/POS Thermal Receipt

@@ -38,13 +38,29 @@ class DefaultCompany
             $this->setDefaultCompany();
         }
 
+        // Security (D-136, Fail-Closed): When an authenticated user requests a workspace route
+        // without a valid active company context, fail closed.
+        if (Auth::check() && config('active-company-id') === null) {
+            if ($this->requiresActiveCompany($request)) {
+                if ($request->expectsJson() || $request->is('api/*')) {
+                    return response()->json([
+                        'message' => __('No active company context. A valid company must be selected or provided.'),
+                    ], 422);
+                }
+
+                return redirect()->route('companies.index')
+                    ->with('error', __('Please select or create an active company to continue.'));
+            }
+        }
+
         return $next($request);
     }
 
     private function setDefaultCompany(): void
     {
         if (Auth::check()) {
-            $company = Auth::user()->companies()->where('fiscal_year', toEnglish(jdate('Y')))->first();
+            $company = Auth::user()->companies()->where('fiscal_year', toEnglish(jdate('Y')))->first()
+                ?? Auth::user()->companies()->first();
             if ($company) {
                 Cookie::queue('active-company-id', $company->id, 362 * 24 * 60);
 
@@ -60,5 +76,47 @@ class DefaultCompany
             'active-company-name' => $company->name,
             'active-company-fiscal-year' => $company->fiscal_year,
         ]);
+    }
+
+    private function requiresActiveCompany(Request $request): bool
+    {
+        if ($request->is('test/*') || str_starts_with($request->path(), 'test/')) {
+            return false;
+        }
+
+        if ($request->is('docs/*') || $request->is('docs') || $request->is('_scramble/*')) {
+            return false;
+        }
+
+        $routeName = $request->route()?->getName() ?? '';
+
+        $exemptPatterns = [
+            'companies.*',
+            'change-company',
+            'users.*',
+            'account.*',
+            'management.*',
+            'update-global-configs',
+            'logout',
+            'impersonation.*',
+            'about',
+            'locale',
+            'portal.*',
+            'pricing',
+            'logo.showcase',
+            'pages.showcase',
+            'password.*',
+            'verification.*',
+            'scramble.*',
+            'api-docs.*',
+        ];
+
+        foreach ($exemptPatterns as $pattern) {
+            if (fnmatch($pattern, $routeName)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

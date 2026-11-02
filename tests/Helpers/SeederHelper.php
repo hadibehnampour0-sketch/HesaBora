@@ -28,7 +28,7 @@ trait SeederHelper
             ['type' => 2, 'category' => 1, 'key' => 'sell_discount', 'value' => '28', 'desc' => 'تخفیفات فروش', 'company_id' => $companyId],
         ];
 
-        Config::upsert($configs, ['key', 'company_id'], ['value']);
+        Config::withoutGlobalScopes()->upsert($configs, ['key', 'company_id'], ['value']);
 
         foreach ($configs as $config) {
             config(['amir.'.$config['key'] => $config['value']]);
@@ -73,6 +73,7 @@ trait SeederHelper
 
     public function importConfigs(int $companyId): void
     {
+        config(['active-company-id' => $companyId]);
         $this->createConfigs($companyId);
     }
 

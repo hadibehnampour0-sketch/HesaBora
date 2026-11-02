@@ -12,7 +12,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(?int $companyId = null): void
     {
-        $companyId ??= (int) getActiveCompany();
+        $companyId ??= (int) (config('active-company-id') ?? \App\Models\Company::value('id') ?? 1);
         $previousActiveCompanyId = config('active-company-id');
         config(['active-company-id' => $companyId]);
 

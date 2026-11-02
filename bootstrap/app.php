@@ -54,8 +54,8 @@ return Application::configure(basePath: dirname(__DIR__))
             ConfigLoader::class,
             ShareErrorsFromSession::class,
             VerifyCsrfToken::class,
-            SubstituteBindings::class,
             DefaultCompany::class,
+            SubstituteBindings::class,
             LogUserActivity::class,
             EnsurePasswordChanged::class,
         ]);

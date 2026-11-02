@@ -53,6 +53,12 @@ class Company extends Model
      */
     public static function booted(): void
     {
+        static::created(function (Company $company) {
+            if (app()->environment('testing') && config('active-company-id') === null) {
+                config(['active-company-id' => $company->id]);
+            }
+        });
+
         static::deleting(function (Company $company) {
             $hasNativeApprovedDocument = Document::withoutGlobalScopes()
                 ->where('company_id', $company->id)

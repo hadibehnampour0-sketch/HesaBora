@@ -94,7 +94,7 @@ class CrossCompanyResourceAccessTest extends TestCase
         $actorA = $this->actorInCompany($companyA);
 
         $customerB = $this->withActiveCompany($companyB, fn () => Customer::factory()->create());
-        $paymentB = Payment::create(['amount' => 1000, 'date' => now(), 'payer_id' => $customerB->id]);
+        $paymentB = $this->withActiveCompany($companyB, fn () => Payment::create(['amount' => 1000, 'date' => now(), 'payer_id' => $customerB->id]));
 
         $customerA = $this->withActiveCompany($companyA, fn () => Customer::factory()->create());
         $invoiceA = Invoice::create([
@@ -167,14 +167,14 @@ class CrossCompanyResourceAccessTest extends TestCase
         $actorA = $this->actorInCompany($companyA);
 
         $customerB = $this->withActiveCompany($companyB, fn () => Customer::factory()->create());
-        $paymentB = Payment::create(['amount' => 1000, 'date' => now(), 'payer_id' => $customerB->id]);
-        $allocationB = PaymentAllocation::create([
+        $paymentB = $this->withActiveCompany($companyB, fn () => Payment::create(['amount' => 1000, 'date' => now(), 'payer_id' => $customerB->id]));
+        $allocationB = $this->withActiveCompany($companyB, fn () => PaymentAllocation::create([
             'payment_id' => $paymentB->id,
             'allocatable_type' => Invoice::class,
             'allocatable_id' => 0,
             'amount' => 100,
             'allocated_at' => now(),
-        ]);
+        ]));
 
         $this->asCompany($companyA, $actorA)
             ->delete(route('payments.allocations.destroy', [$paymentB, $allocationB]))

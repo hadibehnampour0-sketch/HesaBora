@@ -285,7 +285,10 @@ class CustomerLoyaltyWalletService
 
             // Create balanced double-entry Document and Payment row (D13: SUM(transactions.value) = 0)
             $customer = $invoice->customer;
-            $customerSubjectId = $customer?->subject_id ?? $customer?->subject?->id ?? (int) (config('amir.cust_subject') ?? 1);
+            $customerSubjectId = $customer?->subject_id ?? $customer?->subject?->id 
+                ?? (int) (Subject::withoutGlobalScopes()->where('company_id', $invoice->company_id)->where('code', config('amir.cust_subject'))->value('id')
+                ?? Subject::withoutGlobalScopes()->where('company_id', $invoice->company_id)->value('id')
+                ?? throw new \DomainException(__('حساب معین مشتریان برای شرکت تعریف نشده است.')));
 
             $walletSubject = Subject::withoutGlobalScopes()
                 ->where('company_id', $invoice->company_id)

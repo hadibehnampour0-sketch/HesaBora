@@ -13,6 +13,10 @@ class FiscalYearScope implements Scope
      */
     public function apply(Builder $builder, Model $model): void
     {
-        $builder->where('company_id', getActiveCompany());
+        try {
+            $builder->where('company_id', getActiveCompany());
+        } catch (\App\Exceptions\NoActiveCompanyException) {
+            $builder->whereRaw('1 = 0');
+        }
     }
 }

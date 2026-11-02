@@ -40,6 +40,10 @@ class CustomerLoyaltyWalletTest extends TestCase
         $this->user = User::factory()->create();
         $this->company->users()->syncWithoutDetaching($this->user);
 
+        config(['active-company-id' => $this->company->id]);
+        $registrar = app(\Spatie\Permission\PermissionRegistrar::class);
+        $registrar->setPermissionsTeamId($this->company->id);
+
         $this->user->givePermissionTo(Permission::firstOrCreate(['name' => 'access-super-admin-panel']));
         $this->user->givePermissionTo(Permission::firstOrCreate(['name' => 'loyalty.*']));
 
