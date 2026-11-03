@@ -124,8 +124,21 @@
         <div class="text-sm flex-1 min-w-32 max-w-32 text-center text-gray-500 pt-3">{{ __('Unit') }}</div>
         <div class="text-sm flex-1 min-w-32 max-w-32 text-center text-gray-500 pt-3">{{ __('Total') }}</div>
     </div>
+    <div class="flex items-center justify-between px-4 py-1 text-xs text-gray-500 dark:text-slate-400 bg-gray-50/50 dark:bg-slate-800/50 rounded-lg mx-4 my-2 border border-gray-100 dark:border-slate-700/60">
+        <span class="flex items-center gap-2">
+            <span class="text-indigo-500 font-bold">⚡ ثبت سریع با کیبورد:</span>
+            <span><kbd class="kbd kbd-xs">Enter</kbd> فیلد بعدی / سطر بعد</span>
+            <span>•</span>
+            <span><kbd class="kbd kbd-xs">Shift + Enter</kbd> سطر جدید</span>
+            <span>•</span>
+            <span><kbd class="kbd kbd-xs">Ctrl + S</kbd> ذخیره فاکتور</span>
+        </span>
+        <span class="text-[11px] opacity-75 hidden sm:inline">بدون نیاز به ماوس</span>
+    </div>
     <div class="min-h-96">
-        <div id="transactions" x-data="{ activeTab: {{ $total }} }">
+        <div id="transactions" x-data="{ activeTab: {{ $total }} }"
+            @keydown.window.ctrl.s.prevent="$el.closest('form')?.requestSubmit ? $el.closest('form').requestSubmit() : $el.closest('form').submit()"
+            @keydown.shift.enter.prevent="addTransaction(); $nextTick(() => { activeTab = transactions.length - 1; });">
             <template x-for="(transaction, index) in transactions" :key="transaction.id">
                 <div :class="{ 'active': activeTab === index }" class="transaction flex gap-2 items-center px-4 pb-3"
                     @click="activeTab = index">
@@ -185,7 +198,8 @@
                         <x-text-input x-bind:value="transaction.desc" placeholder="{{ __('description') }}"
                             x-bind:name="'transactions[' + index + '][desc]'" label_text_class="text-gray-500"
                             label_class="w-full" input_class="border-white"
-                            x-bind:disabled="!transaction.product_id && !transaction.service_id"></x-text-input>
+                            x-bind:disabled="!transaction.product_id && !transaction.service_id"
+                            x-on:keydown.enter.prevent="goToNextField(index, 'quantity')"></x-text-input>
                     </div>
                     <div class="flex-1 min-w-24 max-w-32">
                         <x-text-input placeholder="{{ localizeNumber('0') }}" x-model.number="transaction.quantity"
@@ -193,7 +207,8 @@
                             x-bind:disabled="!transaction.product_id" label_text_class="text-gray-500"
                             label_class="w-full" input_class="border-white"
                             x-on:input="transaction.quantity = $store.utils.cleanupNumber($event.target.value).split('.')[0]"
-                            x-effect="$el.value = $store.utils.localizeNumber(($store.utils.cleanupNumber(transaction.quantity).split('.')[0]) || '')">
+                            x-effect="$el.value = $store.utils.localizeNumber(($store.utils.cleanupNumber(transaction.quantity).split('.')[0]) || '')"
+                            x-on:keydown.enter.prevent="goToNextField(index, 'off')">
                         </x-text-input>
                     </div>
                     <div class="flex-1 min-w-24 max-w-32">
@@ -202,7 +217,8 @@
                             x-bind:disabled="!transaction.product_id && !transaction.service_id"
                             label_text_class="text-gray-500" label_class="w-full" input_class="border-white"
                             x-on:input="transaction.off = $store.utils.convertToEnglish($event.target.value)"
-                            x-effect="$el.value = $store.utils.localizeNumber($store.utils.formatNumber(transaction.off))">
+                            x-effect="$el.value = $store.utils.localizeNumber($store.utils.formatNumber(transaction.off))"
+                            x-on:keydown.enter.prevent="goToNextField(index, 'vat')">
                         </x-text-input>
                     </div>
 
@@ -212,7 +228,8 @@
                             x-bind:disabled="!transaction.product_id && !transaction.service_id"
                             label_text_class="text-gray-500" label_class="w-full" input_class="border-white"
                             x-on:input="transaction.vat = $store.utils.convertToEnglish($event.target.value)"
-                            x-effect="$el.value = $store.utils.localizeNumber($store.utils.formatNumber(transaction.vat))">
+                            x-effect="$el.value = $store.utils.localizeNumber($store.utils.formatNumber(transaction.vat))"
+                            x-on:keydown.enter.prevent="goToNextField(index, 'unit')">
                         </x-text-input>
                     </div>
 
@@ -222,7 +239,8 @@
                             x-bind:disabled="!transaction.product_id && !transaction.service_id"
                             label_text_class="text-gray-500" label_class="w-full" input_class="border-white"
                             x-on:input="transaction.unit = $store.utils.convertToEnglish($event.target.value)"
-                            x-effect="$el.value = $store.utils.localizeNumber($store.utils.formatNumber(transaction.unit))">
+                            x-effect="$el.value = $store.utils.localizeNumber($store.utils.formatNumber(transaction.unit))"
+                            x-on:keydown.enter.prevent="advanceFromUnit(index)">
                         </x-text-input>
                     </div>
 
@@ -416,6 +434,32 @@
                         vat: null,
                         desc: ''
                     });
+                },
+                goToNextField(index, fieldName) {
+                    const rows = document.querySelectorAll('.transaction');
+                    if (rows[index]) {
+                        const input = rows[index].querySelector(`input[name*="[${fieldName}]"]`);
+                        if (input) input.focus();
+                    }
+                },
+                advanceFromUnit(index) {
+                    if (index === this.transactions.length - 1) {
+                        this.addTransaction();
+                        this.$nextTick(() => {
+                            const rows = document.querySelectorAll('.transaction');
+                            const lastRow = rows[rows.length - 1];
+                            if (lastRow) {
+                                const nextInput = lastRow.querySelector('input[name*="[quantity]"]');
+                                if (nextInput) nextInput.focus();
+                            }
+                        });
+                    } else {
+                        const rows = document.querySelectorAll('.transaction');
+                        if (rows[index + 1]) {
+                            const nextInput = rows[index + 1].querySelector('input[name*="[quantity]"]');
+                            if (nextInput) nextInput.focus();
+                        }
+                    }
                 },
                 getProductPrice(productId) {
                     const product = this.products.find(p => p.id == productId);
