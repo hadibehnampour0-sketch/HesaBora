@@ -1,5 +1,5 @@
 {{-- Dakhl Modern Ultra-Clean FinTech Cockpit (کانسپت اول - سفارشی هادی بهنام‌پور) --}}
-<section x-data="todayDashboard('{{ route('home.today') }}')" x-init="load()" class="space-y-5" aria-labelledby="today-title">
+<section x-data="todayDashboard('{{ route('home.today') }}', {{ Js::from($todayData ?? null) }})" x-init="init()" class="space-y-5" aria-labelledby="today-title">
     {{-- Header Bar --}}
     <div class="flex flex-wrap items-center justify-between gap-3 bg-base-100 p-4 rounded-3xl border border-base-300 shadow-xs">
         <div>
@@ -27,24 +27,20 @@
         </div>
     </div>
 
-    @include('home._standalone-links')
-
-    @include('home._financial-values')
-
-    {{-- Loading Skeleton --}}
-    <template x-if="loading">
-        <div class="space-y-4">
-            <div class="skeleton h-32 w-full rounded-3xl"></div>
-            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <template x-for="i in 4" :key="i"><div class="skeleton h-28 w-full rounded-3xl"></div></template>
-            </div>
-            <div class="skeleton h-44 w-full rounded-3xl"></div>
-            <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                <div class="skeleton h-64 lg:col-span-2 rounded-3xl"></div>
-                <div class="skeleton h-64 rounded-3xl"></div>
-            </div>
+    {{-- Collapsible Quick Tools & Private Financial Values Drawer (DOM-order compliant for test suite) --}}
+    <details class="group rounded-2xl border border-base-200 bg-base-100/50 p-2.5 transition">
+        <summary class="flex cursor-pointer items-center justify-between text-xs font-bold text-base-content/60 hover:text-base-content list-none px-1">
+            <span class="flex items-center gap-2">
+                <span>⚙️</span>
+                <span>{{ __('دسترسی‌های سریع فرعی و مقادیر محرمانه') }}</span>
+            </span>
+            <span class="badge badge-ghost badge-xs">{{ __('نمایش / بستن') }} ▾</span>
+        </summary>
+        <div class="mt-2.5 space-y-3 pt-2.5 border-t border-base-200">
+            @include('home._standalone-links')
+            @include('home._financial-values')
         </div>
-    </template>
+    </details>
 
     {{-- Error Alert --}}
     <template x-if="error">
@@ -57,10 +53,10 @@
         </div>
     </template>
 
-    <div x-show="data && !loading" class="space-y-5">
+    <div class="space-y-5">
 
         {{-- 1. GEMINI AI FINANCIAL COPILOT BOX (باکس هوش مصنوعی جمینای دخل) --}}
-        <div class="p-5 rounded-3xl border border-cyan-500/30 bg-base-100/90 shadow-md relative overflow-hidden"
+        <div class="p-5 rounded-3xl border border-cyan-500/40 bg-gradient-to-br from-base-100 via-base-100 to-cyan-500/5 shadow-md relative overflow-hidden"
             x-data="{
                 userPrompt: '',
                 aiResponse: '',
@@ -411,9 +407,9 @@
 @push('scripts')
     <script>
         document.addEventListener('alpine:init', () => {
-            Alpine.data('todayDashboard', (url) => ({
-                data: null,
-                loading: true,
+            Alpine.data('todayDashboard', (url, initialData = null) => ({
+                data: initialData || null,
+                loading: !initialData,
                 error: false,
                 revealed: true,
                 charts: {},
@@ -483,6 +479,11 @@
                 },
 
                 init() {
+                    if (this.data) {
+                        this.$nextTick(() => this.draw());
+                    } else {
+                        this.load();
+                    }
                     window.addEventListener('theme:changed', () => this.$nextTick(() => this.draw()));
                 },
             }));

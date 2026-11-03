@@ -75,6 +75,7 @@ class HomeController extends Controller
             'canSales' => $canSales,
             'canInventory' => $canInventory,
             'homeVariant' => $homeVariant,
+            'todayData' => $hasBusinessPerms ? $this->today->build($user) : null,
         ];
 
         if ($canFinancial) {
