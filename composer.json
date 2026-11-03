@@ -40,6 +40,10 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
+            "Dakhl\\Core\\": "app/Core/",
+            "Dakhl\\Cleanroom\\Core\\Contracts\\": "app/Core/Contracts/",
+            "Dakhl\\Cleanroom\\Core\\Exceptions\\": "app/Core/Contracts/Exceptions/",
+            "Dakhl\\Cleanroom\\Core\\DTO\\": "app/Core/Contracts/DTO/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
         },

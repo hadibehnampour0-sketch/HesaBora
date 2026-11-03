@@ -1,11 +1,12 @@
 # Dakhl Clean-Room Core Test Coverage Matrix
-**Document Version:** 2.0.0 (Clean-Room Review Round 2 Verified Baseline)  
+**Document Version:** 3.0.0 (Clean-Room Implementation & Porting 100% GREEN)  
 **Total Specifications:** 16  
 **Total PHPUnit Characterization & Invariant Tests:** 71  
 **Total DDL Conformance Tests:** 4 (31 assertions)  
-**Initial Baseline Status:** 100% RED (71 Failing / 0 Passing Vacuously)  
-**DDL Conformance Status:** 100% GREEN (SQLite: 4/4 passing, MariaDB: 4/4 passing)  
-**Stub Kernel Immunity (Test Strength):** 100% (Exception Stub: 0/71 passed, No-Op Stub: 0/71 passed)  
+**Implementation Status (SQLite):** 100% GREEN (75/75 Passed, 180 Assertions, 0 Failures, 0 Errors)  
+**Implementation Status (MariaDB):** 100% GREEN (75/75 Passed, 180 Assertions, 0 Failures, 0 Errors)  
+**Hygiene Scan Verdict:** PASS (0 tainted tokens, 0 path leaks, 0 hash collisions)  
+**Container DI Resolution:** 100% Verified (All 16 domains bound via CleanroomCoreServiceProvider)  
 
 ---
 
@@ -132,9 +133,11 @@
 | Cross-Cutting Test Classes | 4 (Concurrency, Isolation, Golden Vectors, DDL) |
 | Total Spec & Invariant Tests | 71 |
 | Total DDL Conformance Tests | 4 (31 Assertions) |
-| Baseline Red Run (Specs) | 71 Failed / 0 Passed (100% RED) |
-| DDL Conformance Run (SQLite) | 4 Passed / 0 Failed (100% GREEN) |
-| DDL Conformance Run (MariaDB) | 4 Passed / 0 Failed (100% GREEN) |
+| Total Executed Suite Tests | 75 (180 Assertions) |
+| Final Engine Status (SQLite) | 75 Passed / 0 Failed (100% GREEN) |
+| Final Engine Status (MariaDB) | 75 Passed / 0 Failed (100% GREEN) |
 | Exception Stub Pass Rate | 0 / 71 (0.00%) |
 | No-Op Stub Pass Rate | 0 / 71 (0.00%) |
 | Vacuous Passes | 0 |
+| Hygiene Scan Collisions | 0 |
+| Container DI Resolution | 16 / 16 (100%) |
