@@ -5,11 +5,13 @@ namespace App\Services;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
 use App\Models\Customer;
+use App\Models\InstallmentSchedule;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Phase U "Today" dashboard: a pure read view composed from existing services
@@ -45,6 +47,10 @@ class TodayDashboardService
 
         if ($user->can('cheques.index')) {
             $data['blocks']['cheques'] = $this->chequeBlock();
+        }
+
+        if ($user->can('invoices.index') || $user->can('documents.show')) {
+            $data['blocks']['installments'] = $this->installmentsBlock($today);
         }
 
         if ($user->can('documents.show') || $user->can('bank-accounts.index')) {
@@ -262,5 +268,78 @@ class TodayDashboardService
                 'overdue' => $summary($report['payable']['overdue']),
             ],
         ];
+    }
+
+    private function installmentsBlock(Carbon $today): array
+    {
+        $todayStr = $today->toDateString();
+        $in7DaysStr = $today->copy()->addDays(7)->toDateString();
+
+        if (! Schema::hasTable('installment_schedules')) {
+            return [
+                'today' => ['count' => 0, 'amount' => 0],
+                'overdue' => ['count' => 0, 'amount' => 0],
+                'due_soon' => ['count' => 0, 'amount' => 0],
+                'items' => [],
+            ];
+        }
+
+        try {
+            $schedules = InstallmentSchedule::query()
+                ->with(['contract.customer'])
+                ->whereNull('paid_at')
+                ->where(function ($q) {
+                    $q->whereNull('status')->orWhere('status', '!=', 'PAID');
+                })
+                ->where('due_date', '<=', $in7DaysStr)
+                ->orderBy('due_date')
+                ->limit(10)
+                ->get();
+
+            $todayItems = $schedules->filter(fn ($s) => $s->due_date && Carbon::parse($s->due_date)->toDateString() === $todayStr);
+            $overdueItems = $schedules->filter(fn ($s) => $s->due_date && Carbon::parse($s->due_date)->toDateString() < $todayStr);
+            $dueSoonItems = $schedules->filter(fn ($s) => $s->due_date && Carbon::parse($s->due_date)->toDateString() > $todayStr && Carbon::parse($s->due_date)->toDateString() <= $in7DaysStr);
+
+            return [
+                'today' => [
+                    'count' => $todayItems->count(),
+                    'amount' => (float) $todayItems->sum(fn ($s) => $s->amount - ($s->paid_amount ?? 0)),
+                ],
+                'overdue' => [
+                    'count' => $overdueItems->count(),
+                    'amount' => (float) $overdueItems->sum(fn ($s) => $s->amount - ($s->paid_amount ?? 0)),
+                ],
+                'due_soon' => [
+                    'count' => $dueSoonItems->count(),
+                    'amount' => (float) $dueSoonItems->sum(fn ($s) => $s->amount - ($s->paid_amount ?? 0)),
+                ],
+                'items' => $schedules->map(function ($s) use ($today) {
+                    $customerName = $s->contract?->customer?->name ?? 'مشتری اقساطی';
+                    $phone = $s->contract?->customer?->phone ?? $s->contract?->customer?->mobile ?? '';
+                    $dueDateCarbon = $s->due_date ? Carbon::parse($s->due_date) : null;
+                    $diffDays = $dueDateCarbon ? $dueDateCarbon->diffInDays($today, false) : 0;
+
+                    return [
+                        'id' => $s->id,
+                        'customer_name' => $customerName,
+                        'customer_phone' => $phone,
+                        'contract_number' => $s->contract?->contract_number ?? ('#'.$s->contract_id),
+                        'installment_number' => $s->installment_number,
+                        'amount' => (float) ($s->amount - ($s->paid_amount ?? 0)),
+                        'due_date' => $dueDateCarbon?->toDateString(),
+                        'is_overdue' => $diffDays > 0,
+                        'is_today' => $diffDays === 0,
+                        'diff_days' => abs($diffDays),
+                    ];
+                })->values()->all(),
+            ];
+        } catch (\Throwable) {
+            return [
+                'today' => ['count' => 0, 'amount' => 0],
+                'overdue' => ['count' => 0, 'amount' => 0],
+                'due_soon' => ['count' => 0, 'amount' => 0],
+                'items' => [],
+            ];
+        }
     }
 }

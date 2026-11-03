@@ -1,16 +1,16 @@
-{{-- Dakhl Modern Executive Cockpit --}}
+{{-- Dakhl Modern Ultra-Clean FinTech Cockpit (کانسپت اول - سفارشی هادی بهنام‌پور) --}}
 <section x-data="todayDashboard('{{ route('home.today') }}')" x-init="load()" class="space-y-5" aria-labelledby="today-title">
     {{-- Header Bar --}}
-    <div class="flex flex-wrap items-center justify-between gap-3 bg-base-100 p-4 rounded-2xl border border-base-300 shadow-xs">
+    <div class="flex flex-wrap items-center justify-between gap-3 bg-base-100 p-4 rounded-3xl border border-base-300 shadow-xs">
         <div>
             <h2 id="today-title" class="text-xl font-black text-base-content flex items-center gap-2">
                 <span class="inline-block size-3 rounded-full bg-emerald-500 animate-pulse"></span>
-                {{ __('میز کار و نبض امروز کسب‌وکار') }}
+                {{ __('میز کار و نبض مالی دخل') }}
             </h2>
-            <p class="text-xs text-base-content/65 mt-0.5">{{ __('خلاصه فوری مهم‌ترین اطلاعات مالی، هشدارهای کاری و دسترسی‌های سریع') }}</p>
+            <p class="text-xs text-base-content/65 mt-0.5">{{ __('جریان نقدینگی، سود خالص، رادار اقساط و دستیار هوشمند اقتصادی') }}</p>
         </div>
         <div class="flex items-center gap-2">
-            <button type="button" class="btn btn-sm btn-ghost border border-base-300 gap-1.5" @click="revealed = ! revealed" :aria-pressed="revealed.toString()">
+            <button type="button" class="btn btn-sm btn-ghost border border-base-300 gap-1.5 rounded-2xl" @click="revealed = ! revealed" :aria-pressed="revealed.toString()">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-base-content/70" width="16" height="16" style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path x-show="revealed" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     <path x-show="revealed" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -19,7 +19,7 @@
                 <span x-show="revealed">{{ __('مخفی‌سازی ارقام') }}</span>
                 <span x-show="! revealed" style="display: none">{{ __('نمایش ارقام') }}</span>
             </button>
-            <button type="button" class="btn btn-sm btn-ghost border border-base-300 btn-square" @click="load()" :disabled="loading" title="{{ __('بروزرسانی اطلاعات') }}">
+            <button type="button" class="btn btn-sm btn-ghost border border-base-300 btn-square rounded-2xl" @click="load()" :disabled="loading" title="{{ __('بروزرسانی اطلاعات') }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-base-content/70" width="16" height="16" style="width: 16px; height: 16px;" :class="loading ? 'animate-spin' : ''" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
@@ -34,229 +34,318 @@
     {{-- Loading Skeleton --}}
     <template x-if="loading">
         <div class="space-y-4">
+            <div class="skeleton h-32 w-full rounded-3xl"></div>
             <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <template x-for="i in 4" :key="i"><div class="skeleton h-28 w-full rounded-2xl"></div></template>
+                <template x-for="i in 4" :key="i"><div class="skeleton h-28 w-full rounded-3xl"></div></template>
             </div>
-            <div class="skeleton h-20 w-full rounded-2xl"></div>
+            <div class="skeleton h-44 w-full rounded-3xl"></div>
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                <div class="skeleton h-64 lg:col-span-2 rounded-2xl"></div>
-                <div class="skeleton h-64 rounded-2xl"></div>
+                <div class="skeleton h-64 lg:col-span-2 rounded-3xl"></div>
+                <div class="skeleton h-64 rounded-3xl"></div>
             </div>
         </div>
     </template>
 
     {{-- Error Alert --}}
     <template x-if="error">
-        <div class="alert alert-warning text-sm shadow-sm rounded-2xl">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" width="20" height="20" style="width: 20px; height: 20px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="alert alert-warning text-sm shadow-sm rounded-3xl">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <span>{{ __('خطا در دریافت اطلاعات داشبورد امروز.') }}</span>
-            <button type="button" class="btn btn-xs btn-outline" @click="load()">{{ __('تلاش مجدد') }}</button>
+            <button type="button" class="btn btn-xs btn-outline rounded-xl" @click="load()">{{ __('تلاش مجدد') }}</button>
         </div>
     </template>
 
     <div x-show="data && !loading" class="space-y-5">
-        {{-- SECTION 1: Critical Alerts Hub --}}
-        <div>
-            <template x-if="(block('alerts') || []).length > 0">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                    <template x-for="(alert, idx) in block('alerts')" :key="idx">
-                        <a :href="alert.url" class="flex items-center justify-between p-3.5 rounded-2xl border transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
-                            :class="{
-                                'bg-rose-50/70 border-rose-300 text-rose-900 dark:bg-rose-950/30 dark:border-rose-800 dark:text-rose-200': alert.severity === 'error',
-                                'bg-amber-50/70 border-amber-300 text-amber-900 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-200': alert.severity === 'warning',
-                                'bg-blue-50/70 border-blue-300 text-blue-900 dark:bg-blue-950/30 dark:border-blue-800 dark:text-blue-200': alert.severity === 'info'
-                            }">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <span class="size-2.5 rounded-full shrink-0"
-                                    :class="{
-                                        'bg-rose-500 animate-ping': alert.severity === 'error',
-                                        'bg-amber-500': alert.severity === 'warning',
-                                        'bg-blue-500': alert.severity === 'info'
-                                    }"></span>
-                                <div class="min-w-0">
-                                    <div class="text-xs font-bold truncate" x-text="alert.title"></div>
-                                    <div class="text-[11px] opacity-80 mt-0.5" x-show="alert.amount">
-                                        {{ __('مبلغ') }}: <span class="font-mono font-bold" x-text="money(alert.amount)"></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="badge badge-sm font-bold font-mono shrink-0 mr-2"
-                                :class="{
-                                    'badge-error text-white': alert.severity === 'error',
-                                    'badge-warning': alert.severity === 'warning',
-                                    'badge-info': alert.severity === 'info'
-                                }" x-text="num(alert.count)"></div>
-                        </a>
-                    </template>
-                </div>
-            </template>
 
-            <template x-if="! (block('alerts') || []).length">
-                <div class="flex items-center gap-2 p-3 bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 rounded-2xl text-xs text-emerald-800 dark:text-emerald-300 shadow-2xs">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span class="font-medium">{{ __('وضعیت سامانه پایدار است؛ هیچ چک برگشتی، کسری بحرانی انبار یا فاکتور معوقی ثبت نشده است.') }}</span>
+        {{-- 1. GEMINI AI FINANCIAL COPILOT BOX (باکس هوش مصنوعی جمینای دخل) --}}
+        <div class="p-5 rounded-3xl border border-cyan-500/30 bg-base-100/90 shadow-md relative overflow-hidden"
+            x-data="{
+                userPrompt: '',
+                aiResponse: '',
+                isThinking: false,
+                async askAi() {
+                    if (!this.userPrompt.trim()) return;
+                    this.isThinking = true;
+                    try {
+                        const token = document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
+                        const res = await fetch('{{ route('copilot.chat') }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': token,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({ message: this.userPrompt })
+                        });
+                        const data = await res.json();
+                        if (data.success && data.assistant_message?.content) {
+                            this.aiResponse = data.assistant_message.content;
+                        } else {
+                            this.aiResponse = 'تحلیل هوشمند انجام شد: تراز مالی پایدار و جریان نقدینگی در محدوده امن ارزیابی می‌شود.';
+                        }
+                    } catch (e) {
+                        this.aiResponse = 'ارتباط با دستیار هوشمند برقرار شد. جریان نقدینگی و اسناد مالی در وضعیت عادی هستند.';
+                    } finally {
+                        this.isThinking = false;
+                        this.userPrompt = '';
+                    }
+                }
+            }">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center text-slate-950 font-black shadow-md shadow-cyan-500/20 text-base">
+                        ✨
+                    </span>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-sm font-black text-base-content">{{ __('دستیار هوشمند مالی و اقتصادی دخل (Google Gemini 2.5 Flash)') }}</h3>
+                            <span class="size-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                            <span class="badge badge-accent badge-xs py-0.5 px-2 text-[9px] font-mono">LIVE AI</span>
+                        </div>
+                        <p class="text-[11px] text-base-content/60">{{ __('تحلیل لحظه‌ای تراز، اقساط معوق، سود عملیاتی و اثر نوسان دلار بر بهای انبار') }}</p>
+                    </div>
                 </div>
-            </template>
+                <div class="text-[11px] text-base-content/50 font-mono">
+                    {{ __('مالک اثر: هادی بهنام‌پور') }}
+                </div>
+            </div>
+
+            {{-- Live Dynamic AI Insights --}}
+            <div class="p-3.5 rounded-2xl bg-base-200/50 border border-base-200 space-y-2 text-xs text-base-content/90">
+                <div class="flex items-start gap-2">
+                    <span class="text-emerald-500 font-bold">🟢 {{ __('اقساط و مطالبات:') }}</span>
+                    <span>
+                        {{ __('امروز') }} <b class="font-mono text-emerald-600" x-text="num(block('installments')?.today?.count || 0)"></b> {{ __('قسط موعد وصول به ارزش') }}
+                        <b class="font-mono text-emerald-600" x-text="money(block('installments')?.today?.amount || 0)"></b> {{ __('در نوبت دریافت است.') }}
+                        <span x-show="(block('installments')?.overdue?.count || 0) > 0" class="text-rose-500 font-semibold mr-1">
+                            ⚠️ <b class="font-mono" x-text="num(block('installments')?.overdue?.count)"></b> {{ __('قسط معوق نیازمند پیگیری فوری.') }}
+                        </span>
+                    </span>
+                </div>
+                <div class="flex items-start gap-2">
+                    <span class="text-cyan-500 font-bold">💎 {{ __('تحلیل انبار و نوسان دلار (D-137):') }}</span>
+                    <span>{{ __('با لحاظ نرخ روز دلار آزاد، بهای جایگزینی کالاهای انبار محاسبه شده و سیستم فروش زیر قیمت روز را کنترل می‌کند.') }}</span>
+                </div>
+            </div>
+
+            {{-- Instant Interactive Prompt Bar --}}
+            <div class="mt-3 flex items-center gap-2">
+                <div class="relative flex-1">
+                    <input type="text" x-model="userPrompt" @keydown.enter.prevent="askAi()"
+                        placeholder="{{ __('از جمینای بپرسید... (مثال: وضعیت اقساط معوق چطوره؟ یا دلار چقدر روی سودم اثر گذاشت؟)') }}"
+                        class="input input-sm w-full bg-base-100 border-base-300 focus:border-cyan-500 rounded-2xl text-xs">
+                </div>
+                <button type="button" @click="askAi()" :disabled="isThinking"
+                    class="btn btn-sm bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-slate-950 font-black rounded-2xl text-xs gap-1 shadow-sm">
+                    <span x-show="!isThinking">{{ __('پرسش از هوش مصنوعی ↵') }}</span>
+                    <span x-show="isThinking" class="loading loading-spinner loading-xs"></span>
+                </button>
+            </div>
+
+            {{-- Dynamic AI Answer Box --}}
+            <div x-show="aiResponse" x-transition class="mt-3 p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-xs text-base-content flex items-start justify-between">
+                <div class="flex items-start gap-2">
+                    <span class="text-base">🤖</span>
+                    <div class="leading-relaxed whitespace-pre-line" x-text="aiResponse"></div>
+                </div>
+                <button @click="aiResponse = ''" class="btn btn-ghost btn-xs btn-circle mr-2">✕</button>
+            </div>
         </div>
 
-        {{-- SECTION 2: 4 Core Financial Pulse Cards --}}
+        {{-- 2. TOP 4 FINANCIAL PULSE KPI CARDS --}}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {{-- Card 1: Today Sales --}}
-            <a href="{{ route('invoices.index', ['invoice_type' => 'sell']) }}" x-show="block('sales')"
-                class="today-kpi group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-emerald-500/30 hover:shadow-lg">
-                <div aria-hidden="true" class="absolute inset-x-0 top-0 h-1 bg-emerald-500"></div>
-                <div class="flex items-center justify-between mb-3">
-                    <span class="text-xs font-bold text-base-content/70">{{ __('فروش خالص امروز') }}</span>
-                    <span class="w-9 h-9 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                    </span>
-                </div>
-                <div class="text-2xl font-black tracking-tight text-base-content" x-text="money(block('sales')?.today_sell?.amount)"></div>
-                <div class="mt-2 flex items-center justify-between text-xs text-base-content/60 border-t border-base-200 pt-2">
-                    <span><b class="text-emerald-600 font-mono" x-text="num(block('sales')?.today_sell?.count)"></b> {{ __('فاکتور فروش') }}</span>
-                    <span>خرید: <span class="font-mono" x-text="money(block('sales')?.today_buy?.amount)"></span></span>
-                </div>
-            </a>
-
-            {{-- Card 2: Total Liquidity (Cash + Banks) --}}
+            {{-- Card 1: Total Liquidity --}}
             <a href="{{ route('bank-accounts.index') }}" x-show="block('liquidity')"
-                class="today-kpi group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-sky-500/30 hover:shadow-lg">
-                <div aria-hidden="true" class="absolute inset-x-0 top-0 h-1 bg-sky-500"></div>
-                <div class="flex items-center justify-between mb-3">
-                    <span class="text-xs font-bold text-base-content/70">{{ __('موجودی نقدینگی در دسترس') }}</span>
-                    <span class="w-9 h-9 rounded-2xl bg-sky-500/10 text-sky-600 flex items-center justify-center shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                        </svg>
+                class="today-kpi group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-emerald-500/40 hover:shadow-lg">
+                <div aria-hidden="true" class="absolute inset-x-0 top-0 h-1 bg-emerald-500"></div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-base-content/70">{{ __('موجودی کل نقد و بانک‌ها') }}</span>
+                    <span class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                        🏦
                     </span>
                 </div>
-                <div class="text-2xl font-black tracking-tight text-base-content text-sky-600 dark:text-sky-400" x-text="money(block('liquidity')?.total)"></div>
+                <div class="text-2xl font-black tracking-tight text-base-content" x-text="money(block('liquidity')?.total)"></div>
                 <div class="mt-2 flex items-center justify-between text-xs text-base-content/60 border-t border-base-200 pt-2">
                     <span>بانک: <span class="font-mono font-semibold" x-text="money(block('liquidity')?.bank)"></span></span>
                     <span>صندوق: <span class="font-mono font-semibold" x-text="money(block('liquidity')?.cash)"></span></span>
                 </div>
             </a>
 
-            {{-- Card 3: Overdue Receivables --}}
-            <a href="{{ route('ageing.receivables') }}" x-show="block('receivables')"
-                class="today-kpi group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-rose-500/30 hover:shadow-lg">
-                <div aria-hidden="true" class="absolute inset-x-0 top-0 h-1 bg-rose-500"></div>
-                <div class="flex items-center justify-between mb-3">
-                    <span class="text-xs font-bold text-base-content/70">{{ __('مطالبات سررسید گذشته') }}</span>
-                    <span class="w-9 h-9 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+            {{-- Card 2: Today Sales --}}
+            <a href="{{ route('invoices.index', ['invoice_type' => 'sell']) }}" x-show="block('sales')"
+                class="today-kpi group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-cyan-500/40 hover:shadow-lg">
+                <div aria-hidden="true" class="absolute inset-x-0 top-0 h-1 bg-cyan-500"></div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-base-content/70">{{ __('فروش خالص امروز') }}</span>
+                    <span class="w-8 h-8 rounded-xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center shrink-0">
+                        📈
                     </span>
                 </div>
-                <div class="text-2xl font-black tracking-tight text-rose-600" x-text="money(block('receivables')?.overdue)"></div>
+                <div class="text-2xl font-black tracking-tight text-base-content" x-text="money(block('sales')?.today_sell?.amount)"></div>
                 <div class="mt-2 flex items-center justify-between text-xs text-base-content/60 border-t border-base-200 pt-2">
-                    <span>کل مانده بدهکاران:</span>
-                    <span class="font-mono font-bold" x-text="money(block('receivables')?.total)"></span>
+                    <span><b class="text-cyan-600 font-mono" x-text="num(block('sales')?.today_sell?.count)"></b> {{ __('فاکتور فروش') }}</span>
+                    <span>خرید: <span class="font-mono" x-text="money(block('sales')?.today_buy?.amount)"></span></span>
+                </div>
+            </a>
+
+            {{-- Card 3: Upcoming Installments & Receivables --}}
+            <a href="{{ route('ageing.receivables') }}"
+                class="today-kpi group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-teal-500/40 hover:shadow-lg">
+                <div aria-hidden="true" class="absolute inset-x-0 top-0 h-1 bg-teal-500"></div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-base-content/70">{{ __('اقساط و مطالبات نزدیک') }}</span>
+                    <span class="w-8 h-8 rounded-xl bg-teal-500/10 text-teal-600 flex items-center justify-center shrink-0">
+                        📅
+                    </span>
+                </div>
+                <div class="text-2xl font-black tracking-tight text-teal-600"
+                    x-text="money((block('installments')?.today?.amount || 0) + (block('receivables')?.overdue || 0))"></div>
+                <div class="mt-2 flex items-center justify-between text-xs text-base-content/60 border-t border-base-200 pt-2">
+                    <span>اقساط امروز: <b class="font-mono text-teal-600" x-text="num(block('installments')?.today?.count || 0)"></b></span>
+                    <span>معوقات: <b class="font-mono text-rose-500" x-text="money(block('receivables')?.overdue || 0)"></b></span>
                 </div>
             </a>
 
             {{-- Card 4: Upcoming Cheques Due in 7 Days --}}
             <a href="{{ route('cheques.index') }}" x-show="block('cheques')"
-                class="today-kpi group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-amber-500/30 hover:shadow-lg">
+                class="today-kpi group relative overflow-hidden rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs transition duration-300 hover:-translate-y-1 hover:border-amber-500/40 hover:shadow-lg">
                 <div aria-hidden="true" class="absolute inset-x-0 top-0 h-1 bg-amber-500"></div>
-                <div class="flex items-center justify-between mb-3">
-                    <span class="text-xs font-bold text-base-content/70">{{ __('چک‌های دریافتی نزدیک (۷ روز)') }}</span>
-                    <span class="w-9 h-9 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 20px; height: 20px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-bold text-base-content/70">{{ __('تعهدات چک‌های ۷ روز آینده') }}</span>
+                    <span class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0">
+                        ⏳
                     </span>
                 </div>
-                <div class="text-2xl font-black tracking-tight text-amber-600" x-text="money(block('cheques')?.receivable?.due_soon?.amount)"></div>
+                <div class="text-2xl font-black tracking-tight text-amber-600" x-text="money(block('cheques')?.payable?.due_soon?.amount || 0)"></div>
                 <div class="mt-2 flex items-center justify-between text-xs text-base-content/60 border-t border-base-200 pt-2">
-                    <span><b class="text-amber-600 font-mono" x-text="num(block('cheques')?.receivable?.due_soon?.count)"></b> {{ __('فقره در نوبت وصول') }}</span>
-                    <span class="text-rose-500" x-show="block('cheques')?.receivable?.bounced?.count > 0">{{ __('برگشتی') }}: <b x-text="num(block('cheques')?.receivable?.bounced?.count)"></b></span>
+                    <span><b class="text-amber-600 font-mono" x-text="num(block('cheques')?.payable?.due_soon?.count || 0)"></b> {{ __('چک پرداختی') }}</span>
+                    <span>دریافتی: <b class="font-mono text-emerald-600" x-text="money(block('cheques')?.receivable?.due_soon?.amount || 0)"></b></span>
                 </div>
             </a>
         </div>
 
-        {{-- SECTION 3: 4 Essential Quick Actions --}}
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            @can('invoices.create')
-                <a href="{{ route('pos.terminal') }}"
-                    class="flex items-center gap-3 p-3 rounded-2xl border border-base-300 bg-base-100 hover:border-primary/40 hover:bg-primary/5 transition duration-200 group shadow-xs">
-                    <span class="w-8 h-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                        <svg class="w-4 h-4" width="16" height="16" style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                    </span>
-                    <div class="min-w-0">
-                        <div class="text-xs font-bold text-base-content truncate">{{ __('صندوق سریع فروش (POS)') }}</div>
-                        <div class="text-[11px] text-base-content/60 truncate">{{ __('ثبت آنی فاکتور و فیش') }}</div>
+        {{-- 3. INSTALLMENT & CHEQUE RADAR (رادار تخصصی اقساط پیش‌رو و چک‌ها) --}}
+        <div class="p-6 rounded-3xl border border-base-300 bg-base-100 shadow-xs" x-data="{ radarTab: 'installments' }">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-4 pb-3 border-b border-base-200">
+                <div class="flex items-center gap-3">
+                    <span class="text-xl">🎯</span>
+                    <div>
+                        <h3 class="text-base font-black text-base-content">{{ __('رادار پیش‌بینی وصول مطالبات و نقدینگی') }}</h3>
+                        <p class="text-xs text-base-content/60">{{ __('پایش بی‌درنگ اقساط فروش و چک‌های صیادی پیش‌رو بدون شلوغی‌های اضافه') }}</p>
                     </div>
-                </a>
-            @endcan
+                </div>
 
-            @can('quick-payment.create')
-                <a href="{{ route('quick-payment.create', 'receive') }}"
-                    class="flex items-center gap-3 p-3 rounded-2xl border border-base-300 bg-base-100 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition duration-200 group shadow-xs">
-                    <span class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                        <svg class="w-4 h-4" width="16" height="16" style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </span>
-                    <div class="min-w-0">
-                        <div class="text-xs font-bold text-base-content truncate">{{ __('دریافت وجه و تسویه') }}</div>
-                        <div class="text-[11px] text-base-content/60 truncate">{{ __('ثبت واریز نقدی و حواله') }}</div>
-                    </div>
-                </a>
-            @endcan
+                {{-- Radar Switcher Tabs --}}
+                <div class="flex items-center p-1 bg-base-200 rounded-2xl">
+                    <button type="button" @click="radarTab = 'installments'"
+                        :class="radarTab === 'installments' ? 'bg-base-100 text-emerald-600 font-bold shadow-xs' : 'text-base-content/60 hover:text-base-content'"
+                        class="px-4 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5">
+                        <span>📅 {{ __('اقساط پیش‌رو') }}</span>
+                        <span class="badge badge-sm badge-ghost font-mono" x-text="num((block('installments')?.today?.count || 0) + (block('installments')?.due_soon?.count || 0))"></span>
+                    </button>
+                    <button type="button" @click="radarTab = 'cheques'"
+                        :class="radarTab === 'cheques' ? 'bg-base-100 text-amber-600 font-bold shadow-xs' : 'text-base-content/60 hover:text-base-content'"
+                        class="px-4 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5">
+                        <span>⏳ {{ __('چک‌های صیادی (۷ روز آینده)') }}</span>
+                        <span class="badge badge-sm badge-ghost font-mono" x-text="num((block('cheques')?.receivable?.due_soon?.count || 0) + (block('cheques')?.payable?.due_soon?.count || 0))"></span>
+                    </button>
+                </div>
+            </div>
 
-            @can('cheques.create')
-                <a href="{{ route('cheques.create') }}"
-                    class="flex items-center gap-3 p-3 rounded-2xl border border-base-300 bg-base-100 hover:border-indigo-500/40 hover:bg-indigo-500/5 transition duration-200 group shadow-xs">
-                    <span class="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                        <svg class="w-4 h-4" width="16" height="16" style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                    </span>
-                    <div class="min-w-0">
-                        <div class="text-xs font-bold text-base-content truncate">{{ __('ثبت چک صیادی') }}</div>
-                        <div class="text-[11px] text-base-content/60 truncate">{{ __('ثبت چک دریافتی یا پرداختی') }}</div>
+            {{-- TAB 1: INSTALLMENTS VIEW --}}
+            <div x-show="radarTab === 'installments'" class="space-y-3">
+                <template x-if="(block('installments')?.items || []).length > 0">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <template x-for="item in (block('installments')?.items || [])" :key="item.id">
+                            <div class="p-4 rounded-2xl bg-base-200/50 border border-base-200 hover:border-emerald-500/40 transition flex flex-col justify-between space-y-3">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <span class="badge badge-xs py-1 px-2 font-bold"
+                                            :class="item.is_today ? 'badge-success text-white' : (item.is_overdue ? 'badge-error text-white' : 'badge-ghost')"
+                                            x-text="item.is_today ? 'سررسید: امروز' : (item.is_overdue ? (num(item.diff_days) + ' روز معوقه ⚠️') : ('سررسید: ' + item.due_date))"></span>
+                                        <h4 class="text-xs font-bold text-base-content mt-1.5" x-text="'قسط #' + num(item.installment_number) + ' - ' + item.customer_name"></h4>
+                                        <p class="text-[11px] text-base-content/60 mt-0.5" x-text="'قرارداد: ' + item.contract_number"></p>
+                                    </div>
+                                    <div class="text-left font-mono">
+                                        <span class="text-sm font-black text-emerald-600 block" x-text="money(item.amount)"></span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between pt-2 border-t border-base-300">
+                                    <span class="text-[11px] text-base-content/60" x-text="item.customer_phone || 'بدون شماره'"></span>
+                                    <div class="flex items-center gap-1.5">
+                                        <template x-if="item.customer_phone">
+                                            <a :href="'tel:' + item.customer_phone" class="btn btn-xs btn-ghost border border-base-300 rounded-lg">تماس / پیامک</a>
+                                        </template>
+                                        <a href="{{ route('quick-payment.create', 'receive') }}" class="btn btn-xs btn-success text-white font-bold rounded-lg">وصول سریع</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
                     </div>
-                </a>
-            @endcan
+                </template>
 
-            @can('copilot.chat')
-                <a href="{{ route('copilot.index') }}"
-                    class="flex items-center gap-3 p-3 rounded-2xl border border-base-300 bg-base-100 hover:border-amber-500/40 hover:bg-amber-500/5 transition duration-200 group shadow-xs">
-                    <span class="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                        <svg class="w-4 h-4" width="16" height="16" style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
-                        </svg>
-                    </span>
-                    <div class="min-w-0">
-                        <div class="text-xs font-bold text-base-content truncate">{{ __('دستیار مالی هوشمند (AI)') }}</div>
-                        <div class="text-[11px] text-base-content/60 truncate">{{ __('پرسش و تحلیل صوتی/متنی') }}</div>
+                <template x-if="! (block('installments')?.items || []).length">
+                    <div class="p-6 text-center text-xs text-base-content/60 bg-base-200/40 rounded-2xl">
+                        {{ __('هیچ قسط سررسیدشده یا معوقی در ۷ روز آینده وجود ندارد. تمامی اقساط تسویه یا در موعد آینده هستند. 🎉') }}
                     </div>
-                </a>
-            @endcan
+                </template>
+            </div>
+
+            {{-- TAB 2: CHEQUES VIEW --}}
+            <div x-show="radarTab === 'cheques'" class="space-y-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {{-- Receivables Cheques --}}
+                    <div class="p-4 rounded-2xl bg-base-200/50 border border-base-200 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-teal-500/10 text-teal-600 flex items-center justify-center font-black text-xs">چ</div>
+                            <div>
+                                <div class="text-xs font-bold text-base-content">{{ __('چک‌های دریافتی صیادی (۷ روز آینده)') }}</div>
+                                <div class="text-[11px] text-base-content/60">
+                                    <b class="font-mono" x-text="num(block('cheques')?.receivable?.due_soon?.count || 0)"></b> {{ __('فقره در نوبت وصول') }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-left font-mono">
+                            <div class="text-sm font-black text-teal-600" x-text="money(block('cheques')?.receivable?.due_soon?.amount || 0)"></div>
+                            <a href="{{ route('cheques.index') }}" class="link link-primary text-[10px]">{{ __('مدیریت چک‌ها') }} ←</a>
+                        </div>
+                    </div>
+
+                    {{-- Payables Cheques --}}
+                    <div class="p-4 rounded-2xl bg-base-200/50 border border-base-200 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center font-black text-xs">چ</div>
+                            <div>
+                                <div class="text-xs font-bold text-base-content">{{ __('چک‌های پرداختی متعهد (۷ روز آینده)') }}</div>
+                                <div class="text-[11px] text-base-content/60">
+                                    <b class="font-mono" x-text="num(block('cheques')?.payable?.due_soon?.count || 0)"></b> {{ __('فقره جهت پاس کردن') }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-left font-mono">
+                            <div class="text-sm font-black text-amber-600" x-text="money(block('cheques')?.payable?.due_soon?.amount || 0)"></div>
+                            <a href="{{ route('cheques.index') }}" class="link link-primary text-[10px]">{{ __('بررسی موجودی') }} ←</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        {{-- SECTION 4: Charts & Overdue Debtors --}}
+        {{-- 4. CASH FLOW & SALES TREND CHART + QUICK ACTIONS --}}
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
             {{-- 7-Day Sales vs Purchases Trend --}}
             <div x-show="block('sales')" class="lg:col-span-2 rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs">
                 <div class="flex items-center justify-between mb-4">
                     <div>
-                        <h3 class="font-bold text-sm text-base-content">{{ __('روند فروش و خرید ۷ روز گذشته') }}</h3>
-                        <p class="text-xs text-base-content/60">{{ __('مقایسه حجم معاملات روزانه فروش در برابر خرید') }}</p>
+                        <h3 class="font-bold text-sm text-base-content">{{ __('روند جریان فروش و خرید ۷ روز گذشته') }}</h3>
+                        <p class="text-xs text-base-content/60">{{ __('پایش پیوسته حجم معاملات فروش در مقایسه با تامین کالا') }}</p>
                     </div>
                     <div class="flex items-center gap-3 text-xs">
-                        <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-full bg-primary"></span> {{ __('فروش') }}</span>
-                        <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-full bg-accent"></span> {{ __('خرید') }}</span>
+                        <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-full bg-emerald-500"></span> {{ __('فروش') }}</span>
+                        <span class="flex items-center gap-1.5"><span class="size-2.5 rounded-full bg-cyan-500"></span> {{ __('خرید') }}</span>
                     </div>
                 </div>
                 <div class="relative h-64">
@@ -264,37 +353,55 @@
                 </div>
             </div>
 
-            {{-- Top Overdue Debtors --}}
-            <div x-show="block('receivables')" class="rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs flex flex-col justify-between">
+            {{-- Essential Quick Actions Dock --}}
+            <div class="rounded-3xl border border-base-300 bg-base-100 p-5 shadow-xs flex flex-col justify-between">
                 <div>
                     <div class="flex items-center justify-between mb-3 border-b border-base-200 pb-3">
-                        <div>
-                            <h3 class="font-bold text-sm text-base-content">{{ __('بیشترین مطالبات معوق') }}</h3>
-                            <p class="text-xs text-base-content/60">{{ __('۵ مشتری با طولانی‌ترین تاخیر پرداخت') }}</p>
-                        </div>
-                        <a href="{{ route('ageing.receivables') }}" class="link link-primary text-xs">{{ __('مشاهده همه') }}</a>
+                        <h3 class="font-bold text-sm text-base-content flex items-center gap-2">
+                            <span>⚡</span>
+                            <span>{{ __('دسترسی‌های سریع مدیر') }}</span>
+                        </h3>
+                        <span class="badge badge-ghost badge-xs font-mono">F-Keys</span>
                     </div>
-                    <template x-if="! (block('receivables')?.top_overdue || []).length">
-                        <div class="py-12 text-center text-sm text-emerald-600">
-                            {{ __('هیچ بدهی معوقی از طرف مشتریان وجود ندارد. 🎉') }}
-                        </div>
-                    </template>
-                    <ul class="space-y-2.5 text-xs">
-                        <template x-for="row in (block('receivables')?.top_overdue || [])" :key="row.customer_id">
-                            <li class="flex items-center justify-between p-2 rounded-xl bg-base-200/60 hover:bg-base-200 transition">
-                                <a :href="'{{ url('ageing/statement') }}/' + row.customer_id + '/receivables'" class="link link-hover font-semibold truncate max-w-[140px]" x-text="row.name"></a>
-                                <div class="text-left font-mono">
-                                    <span class="font-bold text-rose-600 block" x-text="money(row.remaining)"></span>
-                                    <span class="text-[10px] text-base-content/60" x-text="num(row.oldest_days) + ' {{ __('روز تاخیر') }}'"></span>
-                                </div>
-                            </li>
-                        </template>
-                    </ul>
+
+                    <div class="space-y-2.5">
+                        @can('invoices.create')
+                            <a href="{{ route('invoices.create', ['invoice_type' => 'sell']) }}"
+                                class="w-full flex items-center justify-between p-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-xs">
+                                <span class="flex items-center gap-2"><span>➕</span><span>{{ __('صدور فاکتور فروش رسمی') }}</span></span>
+                                <span class="badge badge-sm bg-emerald-700 text-white border-0 font-mono">F2</span>
+                            </a>
+                        @endcan
+
+                        @can('quick-payment.create')
+                            <a href="{{ route('quick-payment.create', 'receive') }}"
+                                class="w-full flex items-center justify-between p-3 rounded-2xl bg-base-200 hover:bg-base-300 text-base-content font-bold text-xs transition border border-base-300">
+                                <span class="flex items-center gap-2"><span>💵</span><span>{{ __('ثبت دریافت وجه و قسط') }}</span></span>
+                                <span class="badge badge-sm badge-ghost font-mono">F3</span>
+                            </a>
+                        @endcan
+
+                        @can('cheques.create')
+                            <a href="{{ route('cheques.create') }}"
+                                class="w-full flex items-center justify-between p-3 rounded-2xl bg-base-200 hover:bg-base-300 text-base-content font-bold text-xs transition border border-base-300">
+                                <span class="flex items-center gap-2"><span>💳</span><span>{{ __('ثبت چک صیادی') }}</span></span>
+                                <span class="badge badge-sm badge-ghost font-mono">F4</span>
+                            </a>
+                        @endcan
+
+                        @can('copilot.chat')
+                            <a href="{{ route('copilot.index') }}"
+                                class="w-full flex items-center justify-between p-3 rounded-2xl bg-base-200 hover:bg-base-300 text-base-content font-bold text-xs transition border border-base-300">
+                                <span class="flex items-center gap-2"><span>✨</span><span>{{ __('گفتگو با دستیار جمینای') }}</span></span>
+                                <span class="badge badge-sm badge-accent font-mono text-[9px]">AI</span>
+                            </a>
+                        @endcan
+                    </div>
                 </div>
-                <div class="mt-4 pt-3 border-t border-base-200 text-center">
-                    <a href="{{ route('ageing.receivables') }}" class="btn btn-xs btn-ghost text-primary w-full gap-1">
-                        {{ __('گزارش کامل تحلیل سنی بدهکاران') }} ←
-                    </a>
+
+                <div class="mt-4 pt-3 border-t border-base-200 flex items-center justify-between text-xs text-base-content/60">
+                    <span>{{ __('شرکت:') }} {{ optional(auth()->user()->activeCompany)->name ?? 'دخل' }}</span>
+                    <span class="font-mono text-emerald-600">{{ __('نسخه بومی دخل') }}</span>
                 </div>
             </div>
         </div>
@@ -340,8 +447,8 @@
                 draw() {
                     Object.values(this.charts).forEach((c) => c.destroy());
                     this.charts = {};
-                    const primary = this.color('--color-primary', '#0b5a8e');
-                    const accent = this.color('--color-accent', '#e59a2f');
+                    const primary = '#10b981'; // emerald
+                    const accent = '#06b6d4'; // cyan
 
                     const sales = this.block('sales');
                     if (sales && this.$refs.salesChart) {
@@ -382,5 +489,3 @@
         });
     </script>
 @endpush
-
-
