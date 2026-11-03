@@ -88,11 +88,17 @@ class DefaultCompany
             return false;
         }
 
+        if ($request->is('translations/*') || $request->is('translations')) {
+            return false;
+        }
+
         $routeName = $request->route()?->getName() ?? '';
 
         $exemptPatterns = [
             'companies.*',
             'change-company',
+            'registered-user.*',
+            'api-tokens.*',
             'users.*',
             'account.*',
             'management.*',

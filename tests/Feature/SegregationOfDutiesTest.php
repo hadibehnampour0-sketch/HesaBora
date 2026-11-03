@@ -3,10 +3,13 @@
 namespace Tests\Feature;
 
 use App\Enums\PayrollStatus;
+use App\Enums\PersonnelRequestStatus;
+use App\Enums\PersonnelRequestType;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\Employee;
+use App\Models\Invoice;
 use App\Models\Payroll;
 use App\Models\PersonnelRequest;
 use App\Models\ProductGroup;
@@ -61,6 +64,7 @@ class SegregationOfDutiesTest extends TestCase
     private function actingAsUserWith(array $permissionNames): User
     {
         $user = User::factory()->create();
+        $user->companies()->syncWithoutDetaching([$this->companyId]);
         $user->givePermissionTo(array_map(
             fn (string $name) => Permission::firstOrCreate(['name' => $name]),
             $permissionNames
@@ -124,7 +128,7 @@ class SegregationOfDutiesTest extends TestCase
     // AncillaryCost
     // -----------------------------------------------------------------
 
-    private function buyInvoiceForAncillaryCost(): \App\Models\Invoice
+    private function buyInvoiceForAncillaryCost(): Invoice
     {
         $product = $this->createProduct();
 
@@ -201,10 +205,10 @@ class SegregationOfDutiesTest extends TestCase
             'employee_id' => $employee->id,
             'company_id' => $this->companyId,
             'created_by' => $submitter->id,
-            'request_type' => \App\Enums\PersonnelRequestType::LEAVE_DAILY,
+            'request_type' => PersonnelRequestType::LEAVE_DAILY,
             'start_date' => now(),
             'end_date' => now()->addHour(),
-            'status' => \App\Enums\PersonnelRequestStatus::PENDING,
+            'status' => PersonnelRequestStatus::PENDING,
         ]);
 
         $response = $this->patch(route('hr.personnel-requests.approve', $personnelRequest));
@@ -225,10 +229,10 @@ class SegregationOfDutiesTest extends TestCase
             'employee_id' => $employee->id,
             'company_id' => $this->companyId,
             'created_by' => $submitter->id,
-            'request_type' => \App\Enums\PersonnelRequestType::LEAVE_DAILY,
+            'request_type' => PersonnelRequestType::LEAVE_DAILY,
             'start_date' => now(),
             'end_date' => now()->addHour(),
-            'status' => \App\Enums\PersonnelRequestStatus::PENDING,
+            'status' => PersonnelRequestStatus::PENDING,
         ]);
 
         $this->actingAsUserWith(['hr.personnel-requests.approve']);

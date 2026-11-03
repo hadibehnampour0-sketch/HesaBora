@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Product;
 use App\Models\User;
+use App\Models\Warehouse;
 use App\Services\Hardware\BarcodeScannerParser;
 use App\Services\Hardware\EscPosReceiptBuilder;
 use App\Services\PaymentService;
@@ -39,8 +40,8 @@ class PosTerminalService
             ->where('company_id', $companyId)
             ->where(function ($q) use ($possibleCodes, $rawBarcode) {
                 $q->where('barcode', $rawBarcode)
-                  ->orWhereIn('code', $possibleCodes)
-                  ->orWhereIn('barcode', $possibleCodes);
+                    ->orWhereIn('code', $possibleCodes)
+                    ->orWhereIn('barcode', $possibleCodes);
             })
             ->first();
 
@@ -78,24 +79,21 @@ class PosTerminalService
             return PosCheckoutResult::failure('سبد خرید صندوق خالی است.');
         }
 
-        return DB::transaction(function () use ($user, $companyId, $terminalId, $warehouseId, $itemsData, $data) {
+        return DB::transaction(function () use ($companyId, $terminalId, $warehouseId, $itemsData, $data) {
             // 1. Resolve Warehouse
-            $warehouse = \App\Models\Warehouse::withoutGlobalScopes()
+            $warehouse = Warehouse::withoutGlobalScopes()
                 ->where('company_id', $companyId)
                 ->when($warehouseId, fn ($q) => $q->where('id', $warehouseId))
                 ->first();
 
             if (! $warehouse) {
-                $warehouse = \App\Models\Warehouse::withoutGlobalScopes()
+                $warehouse = Warehouse::withoutGlobalScopes()
                     ->where('company_id', $companyId)
                     ->first();
             }
 
             if (! $warehouse) {
-                $warehouse = \App\Models\Warehouse::create([
-                    'company_id' => $companyId,
-                    'name' => 'انبار پیش‌فرض فروشگاه',
-                ]);
+                return PosCheckoutResult::failure('انباری برای این شرکت تعریف نشده است.');
             }
             $resolvedWarehouseId = $warehouse->id;
 
@@ -178,7 +176,7 @@ class PosTerminalService
             $receiptBuilder = new EscPosReceiptBuilder(42);
             $storeName = $company?->name ?? 'فروشگاه دخل';
             $receiptBuilder->initialize()
-                ->addHeader($storeName, 'صندوق: ' . $terminalId, (string) $invoice->number, Carbon::now()->toDateTimeString());
+                ->addHeader($storeName, 'صندوق: '.$terminalId, (string) $invoice->number, Carbon::now()->toDateTimeString());
 
             foreach ($itemsToCreate as $item) {
                 $receiptBuilder->addItemRow(

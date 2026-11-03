@@ -3,19 +3,20 @@
 namespace Tests\Feature;
 
 use App\Enums\InvoiceStatus;
-use App\Enums\InvoiceType;
 use App\Models\Company;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
-use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\ProductGroup;
 use App\Models\User;
+use App\Models\Warehouse;
 use App\Services\Hardware\BarcodeScannerParser;
 use App\Services\Hardware\EscPosReceiptBuilder;
 use App\Services\Pos\PosInventoryLockService;
 use App\Services\Pos\PosTerminalService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cookie;
 use Spatie\Permission\Models\Permission;
 use Tests\Helpers\InvoiceTestHelper;
 use Tests\Helpers\SeederHelper;
@@ -26,9 +27,15 @@ class PosHardwareSuiteTest extends TestCase
     use InvoiceTestHelper, RefreshDatabase, SeederHelper;
 
     protected User $user;
+
     protected Company $company;
+
     protected Customer $customer;
+
+    protected Warehouse $warehouse;
+
     protected Product $productA;
+
     protected Product $productB;
 
     protected function setUp(): void
@@ -39,8 +46,14 @@ class PosHardwareSuiteTest extends TestCase
             'name' => 'هایپرمارکت و فروشگاه دخل',
             'fiscal_year' => 1405,
         ]);
-        \Illuminate\Support\Facades\Cache::forever('active_company_id', $this->company->id);
-        \Illuminate\Support\Facades\Cookie::queue('active-company-id', (string) $this->company->id);
+        $this->warehouse = Warehouse::firstOrCreate([
+            'id' => 1,
+            'company_id' => $this->company->id,
+        ], [
+            'name' => 'انبار مرکزی فروشگاه',
+        ]);
+        Cache::forever('active_company_id', $this->company->id);
+        Cookie::queue('active-company-id', (string) $this->company->id);
         $_COOKIE['active-company-id'] = (string) $this->company->id;
 
         $this->importSubjects($this->company->id);
@@ -87,6 +100,11 @@ class PosHardwareSuiteTest extends TestCase
             'selling_price' => 3000000, // per kg
             'quantity' => 20, // 20 kg
         ]);
+
+        Warehouse::firstOrCreate([
+            'company_id' => $this->company->id,
+            'name' => 'انبار مرکزی فروشگاه',
+        ]);
     }
 
     public function test_esc_pos_receipt_builder_generates_valid_byte_stream(): void
@@ -104,13 +122,13 @@ class PosHardwareSuiteTest extends TestCase
         $bytes = $builder->getRawBytes();
 
         // Must contain initialize ESC @
-        $this->assertStringContainsString(EscPosReceiptBuilder::ESC . '@', $bytes);
+        $this->assertStringContainsString(EscPosReceiptBuilder::ESC.'@', $bytes);
 
         // Must contain cash drawer kick pulse ESC p 0 25 250
-        $this->assertStringContainsString(EscPosReceiptBuilder::ESC . "p\x00\x19\xFA", $bytes);
+        $this->assertStringContainsString(EscPosReceiptBuilder::ESC."p\x00\x19\xFA", $bytes);
 
         // Must contain paper cut command GS V
-        $this->assertStringContainsString(EscPosReceiptBuilder::GS . "V\x00", $bytes);
+        $this->assertStringContainsString(EscPosReceiptBuilder::GS."V\x00", $bytes);
 
         // Must contain Persian text content
         $this->assertStringContainsString('هایپرمارکت دخل', $bytes);
@@ -217,8 +235,36 @@ class PosHardwareSuiteTest extends TestCase
 
         // Verify ESC/POS receipt contains open cash drawer command
         $rawBytes = base64_decode($result->receiptBase64);
-        $this->assertStringContainsString(EscPosReceiptBuilder::ESC . "p\x00\x19\xFA", $rawBytes);
+        $this->assertStringContainsString(EscPosReceiptBuilder::ESC."p\x00\x19\xFA", $rawBytes);
         $this->assertStringContainsString('شیر پرچرب کاله', $rawBytes);
+    }
+
+    public function test_pos_fast_checkout_fails_gracefully_when_no_warehouse_exists_without_silent_creation(): void
+    {
+        // Delete any existing warehouses for company
+        Warehouse::withoutGlobalScopes()->where('company_id', $this->company->id)->delete();
+
+        $service = app(PosTerminalService::class);
+        $checkoutData = [
+            'terminal_id' => 'POS-01',
+            'warehouse_id' => 99999, // Non-existent
+            'customer_id' => $this->customer->id,
+            'items' => [
+                [
+                    'product_id' => $this->productA->id,
+                    'quantity' => 1,
+                    'price' => 450000,
+                    'discount' => 0,
+                ],
+            ],
+        ];
+
+        $result = $service->fastCheckout($this->user, $this->company->id, $checkoutData);
+
+        $this->assertFalse($result->successful);
+        $this->assertStringContainsString('انباری برای این شرکت تعریف نشده است', $result->errorMessage);
+        // Ensure no warehouse was silently created
+        $this->assertSame(0, Warehouse::withoutGlobalScopes()->where('company_id', $this->company->id)->count());
     }
 
     public function test_pos_http_endpoints_scan_and_checkout(): void
@@ -261,5 +307,28 @@ class PosHardwareSuiteTest extends TestCase
         $checkoutResponse->assertOk();
         $checkoutResponse->assertJsonPath('success', true);
         $this->assertNotNull($checkoutResponse->json('receipt_base64'));
+    }
+
+    public function test_pos_checkout_fails_closed_when_no_warehouse_exists_for_company(): void
+    {
+        $emptyCompany = Company::factory()->create(['name' => 'شرکت بدون انبار']);
+        $product = Product::create([
+            'company_id' => $emptyCompany->id,
+            'name' => 'کالای تست',
+            'code' => 'TEST-01',
+            'selling_price' => 100000,
+            'quantity' => 10,
+        ]);
+
+        $service = app(PosTerminalService::class);
+        $result = $service->fastCheckout($this->user, $emptyCompany->id, [
+            'terminal_id' => 'POS-02',
+            'items' => [
+                ['product_id' => $product->id, 'quantity' => 1, 'price' => 100000],
+            ],
+        ]);
+
+        $this->assertFalse($result->successful, 'Checkout must fail closed when company has no warehouse.');
+        $this->assertStringContainsString('تعریف نشده است', $result->errorMessage);
     }
 }

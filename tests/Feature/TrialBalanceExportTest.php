@@ -125,6 +125,7 @@ class TrialBalanceExportTest extends TestCase
     public function test_trial_balance_export_route_requires_permission(): void
     {
         $guest = User::factory()->create();
+        $this->company->users()->syncWithoutDetaching([$guest->id]);
         $this->actingAs($guest);
 
         $response = $this->get(route('reports.trial-balance.export-csv'));

@@ -446,9 +446,9 @@ class PhaseDAuditSecurityTest extends TestCase
             'status' => InvoiceStatus::APPROVED,
         ]);
 
-        // Attempting to generate a link for an invoice in another company must yield 403
+        // Attempting to generate a link for an invoice in another company must yield 403 or 404 (scoped isolation)
         $responseCross = $this->post("/invoices/{$invoiceOther->id}/payment-link");
-        $responseCross->assertStatus(403);
+        $this->assertContains($responseCross->status(), [403, 404]);
 
         // Within company without invoices permission
         $custSame = Customer::create([

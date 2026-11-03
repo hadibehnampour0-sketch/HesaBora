@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\InvoicePrintTemplate;
 use App\Models\Product;
 use App\Models\User;
+use App\Models\Warehouse;
 use Cookie;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -61,6 +62,12 @@ class SystemSmokeAndIntegrationTest extends TestCase
 
     public function test_pos_terminal_view_and_checkout_flow(): void
     {
+        Warehouse::firstOrCreate([
+            'company_id' => $this->company->id,
+        ], [
+            'name' => 'انبار مرکزی',
+        ]);
+
         $product = Product::create([
             'company_id' => $this->company->id,
             'name' => 'روغن زیتون فرابکر ۱ لیتری',
