@@ -19,6 +19,5 @@ final readonly class PostingConfiguration
         public ?int $retainedEarningsAccountId = null,
         public ?int $depreciationExpenseAccountId = null,
         public ?int $accumulatedDepreciationAccountId = null
-    ) {
-    }
+    ) {}
 }

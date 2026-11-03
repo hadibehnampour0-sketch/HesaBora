@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dakhl\Cleanroom\Core\Contracts;
 
+use Dakhl\Cleanroom\Core\Exceptions\InvoiceMutationForbiddenException;
+
 /**
  * Commercial Invoice Mutation Boundary Guard Contract.
  */
@@ -12,7 +14,7 @@ interface CommercialInvoiceLifecycleContract
     /**
      * Assert that invoice can undergo the specified lifecycle mutation.
      *
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\InvoiceMutationForbiddenException
+     * @throws InvoiceMutationForbiddenException
      */
     public function assertCanMutate(int $invoiceId, string $action): void;
 

@@ -82,6 +82,7 @@ final class PeriodFreezeService implements PeriodFreezeGuardContract
                 if (in_array('period.override', $userPermissions, true) || in_array('*', $userPermissions, true)) {
                     continue;
                 }
+
                 return false;
             }
 

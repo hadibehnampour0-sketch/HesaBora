@@ -198,7 +198,7 @@ final class TreasuryPaymentService implements TreasuryPaymentContract
 
     public function deletePayment(int $paymentId): void
     {
-        throw new PostedFinancialMutationException("Posted payments are strictly immutable and cannot be deleted through the service layer.");
+        throw new PostedFinancialMutationException('Posted payments are strictly immutable and cannot be deleted through the service layer.');
     }
 
     private function ensureTenantAndFiscalYear(int $companyId, int $fiscalYearId): void

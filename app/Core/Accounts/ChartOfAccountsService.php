@@ -52,7 +52,7 @@ final class ChartOfAccountsService implements SubjectHierarchyContract
             }
 
             if ((int) $parent['company_id'] !== $companyId) {
-                throw new DomainException("Cannot attach account to parent of different company.");
+                throw new DomainException('Cannot attach account to parent of different company.');
             }
 
             $parentTier = (int) $parent['account_tier'];

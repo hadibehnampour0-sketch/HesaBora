@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dakhl\Cleanroom\Core\Contracts;
 
+use Dakhl\Cleanroom\Core\Exceptions\FiscalPeriodLockedException;
+
 /**
  * Chronological Inventory Cost Dependency Recalculation Contract.
  */
@@ -13,7 +15,8 @@ interface CostDependencyRecalculationContract
      * Recalculate moving average costs from a historical date without altering posted sales vouchers.
      *
      * @return array{recalculation_succeeded: bool, variance_amount: int}
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\FiscalPeriodLockedException
+     *
+     * @throws FiscalPeriodLockedException
      */
     public function recalculateCostChain(int $companyId, string $itemCode, string $effectiveStartDate): array;
 

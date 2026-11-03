@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Dakhl\Cleanroom\Core\Contracts;
 
+use Dakhl\Cleanroom\Core\Exceptions\FiscalYearNotReconciledException;
+use Dakhl\Cleanroom\Core\Exceptions\TargetYearAlreadyOpenedException;
+
 /**
  * Fiscal Year Closing & Opening Voucher Transfer Contract.
  */
@@ -12,7 +15,7 @@ interface FiscalClosingContract
     /**
      * Execute closing voucher for temporary accounts into Retained Earnings.
      *
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\FiscalYearNotReconciledException
+     * @throws FiscalYearNotReconciledException
      */
     public function closeTemporaryAccounts(
         int $companyId,
@@ -24,7 +27,7 @@ interface FiscalClosingContract
     /**
      * Generate opening voucher carrying forward permanent balance sheet accounts.
      *
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\TargetYearAlreadyOpenedException
+     * @throws TargetYearAlreadyOpenedException
      */
     public function createOpeningVoucher(
         int $companyId,

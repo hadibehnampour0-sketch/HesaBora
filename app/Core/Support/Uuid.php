@@ -28,11 +28,11 @@ final class Uuid
 
         $random = random_bytes(10);
         // set version 7 (0111) in byte 6
-        $random[0] = chr((ord($random[0]) & 0x0f) | 0x70);
+        $random[0] = chr((ord($random[0]) & 0x0F) | 0x70);
         // set variant 1 (10xx) in byte 8
-        $random[2] = chr((ord($random[2]) & 0x3f) | 0x80);
+        $random[2] = chr((ord($random[2]) & 0x3F) | 0x80);
 
-        return $timePart . $random;
+        return $timePart.$random;
     }
 
     /**
@@ -42,6 +42,7 @@ final class Uuid
     {
         $bin = self::binary16();
         $hex = bin2hex($bin);
+
         return sprintf(
             '%08s-%04s-%04s-%04s-%12s',
             substr($hex, 0, 8),

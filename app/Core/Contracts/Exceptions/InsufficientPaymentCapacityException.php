@@ -7,6 +7,4 @@ namespace Dakhl\Cleanroom\Core\Exceptions;
 /**
  * Thrown when an allocation amount exceeds unallocated payment capacity.
  */
-class InsufficientPaymentCapacityException extends DomainException
-{
-}
+class InsufficientPaymentCapacityException extends DomainException {}

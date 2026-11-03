@@ -7,6 +7,4 @@ namespace Dakhl\Cleanroom\Core\Exceptions;
 /**
  * Thrown when fixed asset useful life is zero or negative.
  */
-class InvalidUsefulLifeException extends ValidationException
-{
-}
+class InvalidUsefulLifeException extends ValidationException {}

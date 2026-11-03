@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dakhl\Cleanroom\Core\Contracts;
 
+use Dakhl\Cleanroom\Core\Exceptions\AssetFullyDepreciatedException;
+
 /**
  * Fixed Assets Acquisition & Depreciation Contract.
  */
@@ -25,7 +27,7 @@ interface FixedAssetDepreciationContract
     /**
      * Compute periodic depreciation for an asset.
      *
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\AssetFullyDepreciatedException
+     * @throws AssetFullyDepreciatedException
      */
     public function calculatePeriodicDepreciation(int $assetId): int;
 

@@ -7,6 +7,4 @@ namespace Dakhl\Cleanroom\Core\Exceptions;
 /**
  * Thrown when attempting to allocate an ancillary expense of zero value.
  */
-class ZeroExpenseException extends ValidationException
-{
-}
+class ZeroExpenseException extends ValidationException {}

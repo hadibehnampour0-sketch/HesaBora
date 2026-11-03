@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Dakhl\Cleanroom\Core\Contracts;
 
+use Dakhl\Cleanroom\Core\Exceptions\DomainException;
+use Dakhl\Cleanroom\Core\Exceptions\DuplicateAccountCodeException;
+use Dakhl\Cleanroom\Core\Exceptions\ValidationException;
+
 /**
  * Chart of Accounts (COA) 3-Tier Hierarchy & Balance Contract.
  *
@@ -17,8 +21,8 @@ interface SubjectHierarchyContract
     /**
      * Create a new chart of accounts node.
      *
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\ValidationException
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\DuplicateAccountCodeException
+     * @throws ValidationException
+     * @throws DuplicateAccountCodeException
      */
     public function createAccount(
         int $companyId,
@@ -38,16 +42,14 @@ interface SubjectHierarchyContract
     /**
      * Update parent of an account node, enforcing cycle prevention and company scoping.
      *
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\DomainException If cycle detected or company mismatch
+     * @throws DomainException If cycle detected or company mismatch
      */
     public function updateParent(int $accountId, ?int $newParentId): void;
 
     /**
      * Calculate net balance (sum of debits - sum of credits) for an account across a fiscal year.
      *
-     * @param int $accountId
-     * @param int $fiscalYearId
-     * @param bool $includeDescendants If true, recursively sums all child subsidiary accounts.
+     * @param  bool  $includeDescendants  If true, recursively sums all child subsidiary accounts.
      * @return int Net balance in Rials (positive = Debit balance, negative = Credit balance)
      */
     public function calculateBalance(int $accountId, int $fiscalYearId, bool $includeDescendants = true): int;

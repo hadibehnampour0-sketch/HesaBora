@@ -10,9 +10,7 @@ use PDO;
 
 final class ProvenanceTrackingService implements ProvenanceTrackingContract
 {
-    public function __construct(private PDO $pdo)
-    {
-    }
+    public function __construct(private PDO $pdo) {}
 
     public function assertCanDeleteCompany(int $companyId): void
     {

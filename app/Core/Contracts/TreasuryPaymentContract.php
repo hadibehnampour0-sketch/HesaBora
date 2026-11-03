@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Dakhl\Cleanroom\Core\Contracts;
 
+use Dakhl\Cleanroom\Core\Exceptions\PostedFinancialMutationException;
+use Dakhl\Cleanroom\Core\Exceptions\ZeroAmountPaymentException;
+
 /**
  * Treasury Payments & Receipts Contract.
  *
@@ -14,17 +17,12 @@ interface TreasuryPaymentContract
     /**
      * Record a treasury receipt and atomically post its journal voucher.
      *
-     * @param int $companyId
-     * @param int $fiscalYearId
-     * @param int $bankAccountId
-     * @param int $customerAccountId
-     * @param int $amount Whole Rials
-     * @param string $date Y-m-d
-     * @param string $description
-     * @param int $userId
-     * @param string|null $uuid Canonical economic event UUIDv7
+     * @param  int  $amount  Whole Rials
+     * @param  string  $date  Y-m-d
+     * @param  string|null  $uuid  Canonical economic event UUIDv7
      * @return int Payment ID
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\ZeroAmountPaymentException
+     *
+     * @throws ZeroAmountPaymentException
      */
     public function createReceipt(
         int $companyId,
@@ -56,7 +54,7 @@ interface TreasuryPaymentContract
     /**
      * Attempting to delete a posted payment is strictly rejected.
      *
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\PostedFinancialMutationException
+     * @throws PostedFinancialMutationException
      */
     public function deletePayment(int $paymentId): void;
 }

@@ -139,8 +139,13 @@ final class CogsValuationService implements InventoryValuationCogsContract
         $cStmt = $this->pdo->prepare('SELECT id FROM companies WHERE id = ?');
         $cStmt->execute([$companyId]);
         if ($cStmt->fetchColumn() === false) {
-            $cInsert = $this->pdo->prepare('INSERT INTO companies (id, uuid, name) VALUES (?, ?, ?)');
-            $cInsert->execute([$companyId, Uuid::binary16(), "Company {$companyId}"]);
+            try {
+                $cInsert = $this->pdo->prepare('INSERT INTO companies (id, uuid, name) VALUES (?, ?, ?)');
+                $cInsert->execute([$companyId, Uuid::binary16(), "Company {$companyId}"]);
+            } catch (\PDOException) {
+                $cInsert = $this->pdo->prepare('INSERT INTO companies (id, name, fiscal_year) VALUES (?, ?, 1405)');
+                $cInsert->execute([$companyId, "Company {$companyId}"]);
+            }
         }
     }
 }

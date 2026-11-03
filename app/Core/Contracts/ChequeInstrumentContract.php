@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Dakhl\Cleanroom\Core\Contracts;
 
+use Dakhl\Cleanroom\Core\Exceptions\DuplicateChequeException;
+
 /**
  * Cheque Commercial Instrument Lifecycle Contract.
  *
@@ -14,7 +16,7 @@ interface ChequeInstrumentContract
     /**
      * Register a new promissory cheque instrument.
      *
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\DuplicateChequeException
+     * @throws DuplicateChequeException
      */
     public function registerReceivedCheque(
         int $companyId,

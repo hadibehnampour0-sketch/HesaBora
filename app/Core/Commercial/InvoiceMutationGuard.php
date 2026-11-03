@@ -36,20 +36,47 @@ final class InvoiceMutationGuard implements CommercialInvoiceLifecycleContract
             return false;
         }
 
-        // Check payment allocations table
-        $allocStmt = $this->pdo->prepare('SELECT COUNT(*) FROM payment_allocations WHERE invoice_id = ?');
-        $allocStmt->execute([$invoiceId]);
-        if ((int) $allocStmt->fetchColumn() > 0) {
-            return true;
+        // Check payment allocations table (supports both cleanroom schema and host Laravel polymorphic schema)
+        try {
+            $allocStmt = $this->pdo->prepare('SELECT COUNT(*) FROM payment_allocations WHERE invoice_id = ?');
+            $allocStmt->execute([$invoiceId]);
+            if ((int) $allocStmt->fetchColumn() > 0) {
+                return true;
+            }
+        } catch (\PDOException) {
+            try {
+                $allocStmt = $this->pdo->prepare("SELECT COUNT(*) FROM payment_allocations WHERE allocatable_id = ? AND (allocatable_type = ? OR allocatable_type LIKE '%Invoice')");
+                $allocStmt->execute([$invoiceId, 'App\\Models\\Invoice']);
+                if ((int) $allocStmt->fetchColumn() > 0) {
+                    return true;
+                }
+            } catch (\PDOException) {
+                // table payment_allocations does not exist
+            }
         }
 
-        // Check invoice paid_amount
-        $invStmt = $this->pdo->prepare('SELECT paid_amount FROM invoices WHERE id = ?');
-        $invStmt->execute([$invoiceId]);
-        $paid = $invStmt->fetchColumn();
+        // Check payments table
+        try {
+            $pmtStmt = $this->pdo->prepare('SELECT COUNT(*) FROM payments WHERE invoice_id = ?');
+            $pmtStmt->execute([$invoiceId]);
+            if ((int) $pmtStmt->fetchColumn() > 0) {
+                return true;
+            }
+        } catch (\PDOException) {
+            // column invoice_id does not exist in payments table
+        }
 
-        if ($paid !== false && (int) $paid > 0) {
-            return true;
+        // Check invoice paid_amount if present
+        try {
+            $invStmt = $this->pdo->prepare('SELECT paid_amount FROM invoices WHERE id = ?');
+            $invStmt->execute([$invoiceId]);
+            $paid = $invStmt->fetchColumn();
+
+            if ($paid !== false && (int) $paid > 0) {
+                return true;
+            }
+        } catch (\PDOException) {
+            // paid_amount column does not exist in invoices table
         }
 
         return false;

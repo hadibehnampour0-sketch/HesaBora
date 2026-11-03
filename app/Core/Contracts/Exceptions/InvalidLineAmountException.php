@@ -7,6 +7,4 @@ namespace Dakhl\Cleanroom\Core\Exceptions;
 /**
  * Thrown when a journal line has zero amount or both debit and credit amounts.
  */
-class InvalidLineAmountException extends ValidationException
-{
-}
+class InvalidLineAmountException extends ValidationException {}

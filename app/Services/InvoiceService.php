@@ -14,9 +14,11 @@ use App\Models\Product;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\WarehouseProductStock;
+use Dakhl\Core\Bridge\CleanroomInvoiceBridge;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class InvoiceService
@@ -622,7 +624,26 @@ class InvoiceService
      */
     private static function hasEffectiveFinancialActivity(Invoice $invoice): bool
     {
-        return $invoice->payments()->exists() || $invoice->paymentAllocations()->exists();
+        $driver = config('accounting.drivers.invoices', config('accounting.driver', 'legacy'));
+
+        if ($driver === 'cleanroom') {
+            return app(CleanroomInvoiceBridge::class)->hasFinancialActivity($invoice);
+        }
+
+        $legacyResult = $invoice->payments()->exists() || $invoice->paymentAllocations()->exists();
+
+        if ($driver === 'shadow') {
+            try {
+                $cleanroomResult = app(CleanroomInvoiceBridge::class)->hasFinancialActivity($invoice);
+                if ($legacyResult !== $cleanroomResult) {
+                    Log::warning("Accounting Shadow Discrepancy: Invoice {$invoice->id} hasEffectiveFinancialActivity: legacy={$legacyResult}, cleanroom={$cleanroomResult}");
+                }
+            } catch (\Throwable $e) {
+                Log::error("Accounting Shadow Error on Invoice {$invoice->id}: ".$e->getMessage());
+            }
+        }
+
+        return $legacyResult;
     }
 
     /**

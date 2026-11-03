@@ -12,9 +12,7 @@ use PDO;
 
 final class FixedAssetDepreciationService implements FixedAssetDepreciationContract
 {
-    public function __construct(private PDO $pdo)
-    {
-    }
+    public function __construct(private PDO $pdo) {}
 
     public function registerAsset(
         int $companyId,
@@ -42,7 +40,7 @@ final class FixedAssetDepreciationService implements FixedAssetDepreciationContr
             default => 1,
         };
 
-        $assetCode = 'AST-' . bin2hex(random_bytes(4));
+        $assetCode = 'AST-'.bin2hex(random_bytes(4));
         $assetUuid = Uuid::binary16();
         $bookValue = $acquisitionCost;
 
@@ -205,6 +203,7 @@ final class FixedAssetDepreciationService implements FixedAssetDepreciationContr
         $fyUuid = Uuid::binary16();
         $ins = $this->pdo->prepare('INSERT INTO fiscal_years (id, uuid, company_id, year_number, start_date, end_date, status) VALUES (1405, ?, ?, 1405, ?, ?, 1)');
         $ins->execute([$fyUuid, $companyId, '2026-03-21', '2027-03-20']);
+
         return 1405;
     }
 

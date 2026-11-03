@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Dakhl\Cleanroom\Core\Contracts;
 
+use Dakhl\Cleanroom\Core\Exceptions\InvalidVoucherStatusException;
+use Dakhl\Cleanroom\Core\Exceptions\VoucherAlreadyReversedException;
+
 /**
  * Mirror Audit Reversals Engine Contract.
  *
@@ -16,13 +19,11 @@ interface AuditReversalContract
      *
      * Reversal inverts debits and credits and updates original voucher status to 3 (Reversed).
      *
-     * @param int $voucherId
-     * @param string $reversalDate Y-m-d
-     * @param string $reason
-     * @param int $userId
+     * @param  string  $reversalDate  Y-m-d
      * @return int Reversal Voucher ID
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\VoucherAlreadyReversedException
-     * @throws \Dakhl\Cleanroom\Core\Exceptions\InvalidVoucherStatusException
+     *
+     * @throws VoucherAlreadyReversedException
+     * @throws InvalidVoucherStatusException
      */
     public function reverseVoucher(int $voucherId, string $reversalDate, string $reason, int $userId): int;
 }

@@ -12,19 +12,34 @@ namespace Dakhl\Cleanroom\Core\Contracts;
 interface CoreKernelContract
 {
     public function accounts(): SubjectHierarchyContract;
+
     public function numbering(): DocumentNumberingContract;
+
     public function posting(): JournalVoucherPostingContract;
+
     public function reversals(): AuditReversalContract;
+
     public function periods(): PeriodFreezeGuardContract;
+
     public function invoicePosting(): CommercialInvoicePostingContract;
+
     public function inventory(): InventoryValuationCogsContract;
+
     public function ancillaryCosts(): AncillaryCostContract;
+
     public function treasury(): TreasuryPaymentContract;
+
     public function allocations(): PaymentAllocationContract;
+
     public function cheques(): ChequeInstrumentContract;
+
     public function fixedAssets(): FixedAssetDepreciationContract;
+
     public function costRecalculation(): CostDependencyRecalculationContract;
+
     public function invoiceLifecycle(): CommercialInvoiceLifecycleContract;
+
     public function provenance(): ProvenanceTrackingContract;
+
     public function closing(): FiscalClosingContract;
 }

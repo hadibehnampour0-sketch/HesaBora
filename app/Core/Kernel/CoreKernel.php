@@ -41,9 +41,7 @@ use PDO;
 
 final class CoreKernel implements CoreKernelContract
 {
-    public function __construct(private PDO $pdo)
-    {
-    }
+    public function __construct(private PDO $pdo) {}
 
     public function accounts(): SubjectHierarchyContract
     {

@@ -71,7 +71,7 @@ final class PaymentAllocationService implements PaymentAllocationContract
 
     public function deleteAllocation(int $allocationId): void
     {
-        throw new PostedFinancialMutationException("Posted allocations are immutable financial records and cannot be deleted.");
+        throw new PostedFinancialMutationException('Posted allocations are immutable financial records and cannot be deleted.');
     }
 
     private function ensurePaymentAndInvoiceExist(int $paymentId, int $invoiceId): void

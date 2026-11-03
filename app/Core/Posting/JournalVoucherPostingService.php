@@ -200,6 +200,7 @@ final class JournalVoucherPostingService implements JournalVoucherPostingContrac
 
         $fInsert = $this->pdo->prepare('INSERT INTO fiscal_years (id, uuid, company_id, year_number, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?)');
         $fInsert->execute([$fiscalYearId, Uuid::binary16(), $companyId, $fiscalYearId, '2026-03-21', '2027-03-20']);
+
         return $fiscalYearId;
     }
 

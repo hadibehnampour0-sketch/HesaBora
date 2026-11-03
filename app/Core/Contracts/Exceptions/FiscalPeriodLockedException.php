@@ -7,6 +7,4 @@ namespace Dakhl\Cleanroom\Core\Exceptions;
 /**
  * Thrown when attempting to post into a frozen, closed, or audited fiscal period.
  */
-class FiscalPeriodLockedException extends DomainException
-{
-}
+class FiscalPeriodLockedException extends DomainException {}
