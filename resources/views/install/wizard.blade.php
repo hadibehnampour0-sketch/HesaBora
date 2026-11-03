@@ -259,7 +259,7 @@
     </main>
 
     <footer class="py-4 border-t border-slate-800 text-center text-xs text-slate-500">
-        توسعه‌یافته با بالاترین استانداردهای مهندسی نرم‌افزار، حسابداری و سامانه مالیاتی ایران &bull; دخل ۱۴۰۵
+        توسعه‌یافته با بالاترین استانداردهای مهندسی نرم‌افزار، حسابداری و سامانه مالیاتی ایران &bull; دخل ۱۴۰۵ &bull; صاحب امتیاز: هادی بهنام‌پور
     </footer>
 
     <script>
@@ -275,8 +275,8 @@
                 submitting: false,
                 errorMessage: '',
                 adminForm: {
-                    company_name: 'شرکت بازرگانی آزمایشی',
-                    admin_name: 'مدیر ارشد سامانه',
+                    company_name: 'شرکت دخل',
+                    admin_name: 'هادی بهنام‌پور',
                     email: 'admin@dakhl.local',
                     password: '',
                     password_confirmation: ''
