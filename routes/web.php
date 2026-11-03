@@ -14,6 +14,14 @@ use App\Http\Controllers\Template\InvoiceTemplateController;
 use App\Http\Controllers\Trade\TradeExchangeController;
 use Illuminate\Support\Facades\Route;
 
+// Web Installer & First-Run Setup Wizard
+Route::prefix('install')->name('install.')->group(function () {
+    Route::get('/', [Controllers\InstallController::class, 'index'])->name('index');
+    Route::post('/migrate', [Controllers\InstallController::class, 'migrate'])->name('migrate');
+    Route::post('/seed', [Controllers\InstallController::class, 'seed'])->name('seed');
+    Route::post('/setup-admin', [Controllers\InstallController::class, 'setupAdmin'])->name('setup-admin');
+});
+
 Route::get('/login', [Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [Controllers\Auth\LoginController::class, 'login'])->middleware('throttle:6,1');
 Route::get('/logout', [Controllers\Auth\LoginController::class, 'logout'])->name('logout');

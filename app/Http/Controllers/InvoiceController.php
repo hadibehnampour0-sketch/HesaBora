@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\ChequeType;
 use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
+use App\Enums\SerialNumberStatus;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Models\Bank;
 use App\Models\BankAccount;
@@ -14,9 +15,11 @@ use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\Document;
 use App\Models\Invoice;
+use App\Models\InvoicePrintTemplate;
 use App\Models\PaymentTerm;
 use App\Models\Product;
 use App\Models\ProductGroup;
+use App\Models\ProductSerialNumber;
 use App\Models\Service;
 use App\Models\ServiceGroup;
 use App\Models\SettlementObligation;
@@ -29,6 +32,7 @@ use App\Services\InvoiceService;
 use App\Services\MoadianService;
 use App\Services\PaymentService;
 use App\Services\ReportExportService;
+use App\Services\Template\InvoicePrintTemplateService;
 use DB;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -347,8 +351,8 @@ class InvoiceController extends Controller
         if ($invoice->invoice_type === InvoiceType::SELL) {
             $productIds = $invoice->items->where('itemable_type', Product::class)->pluck('itemable_id')->all();
             if (! empty($productIds)) {
-                $availableSerialNumbers = \App\Models\ProductSerialNumber::whereIn('product_id', $productIds)
-                    ->where('status', \App\Enums\SerialNumberStatus::IN_STOCK)
+                $availableSerialNumbers = ProductSerialNumber::whereIn('product_id', $productIds)
+                    ->where('status', SerialNumberStatus::IN_STOCK)
                     ->with(['product', 'warehouse'])
                     ->get();
             }
@@ -363,6 +367,15 @@ class InvoiceController extends Controller
 
         if (! $invoice->status->isApprovedOrSettled()) {
             return view('invoices.draft', compact('invoice'));
+        }
+
+        if (request('format') === 'html' || request()->has('template_id') || request()->has('paper_size')) {
+            $templateService = app(InvoicePrintTemplateService::class);
+            $template = request()->has('template_id')
+                ? InvoicePrintTemplate::find(request('template_id'))
+                : $templateService->getDefaultTemplate($invoice->company_id, request('paper_size', 'A4_PORTRAIT'));
+
+            return response($templateService->renderInvoiceHtml($invoice, $template));
         }
 
         return $reportExportService->inlineResponse('invoice_pdf', ['invoice_id' => $invoice->id]);

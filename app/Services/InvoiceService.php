@@ -799,6 +799,16 @@ class InvoiceService
         DocumentService::changeDocumentStatus($document, $user, 'approved');
         DocumentService::syncDocumentable($document, $invoice);
 
+        $driver = config('accounting.drivers.posting', config('accounting.driver', 'legacy'));
+        if ($driver === 'cleanroom' || $driver === 'shadow') {
+            try {
+                $bridge = app(CleanroomInvoiceBridge::class);
+                $bridge->postInvoice($invoice, $user->id, $buildResult['transactions']);
+            } catch (\Throwable $e) {
+                Log::info("Cleanroom dual-post note on invoice {$invoice->id}: ".$e->getMessage());
+            }
+        }
+
         return $document;
     }
 

@@ -104,6 +104,9 @@ return new class extends Migration
                 $table->unsignedInteger('line_number');
                 $table->unsignedBigInteger('debit_amount')->default(0);
                 $table->unsignedBigInteger('credit_amount')->default(0);
+                $table->string('currency_code', 3)->default('IRR');
+                $table->unsignedBigInteger('foreign_amount')->nullable();
+                $table->decimal('exchange_rate', 18, 6)->nullable();
                 $table->text('description')->nullable();
                 $table->string('reference_type', 64)->nullable();
                 $table->unsignedBigInteger('reference_id')->nullable();

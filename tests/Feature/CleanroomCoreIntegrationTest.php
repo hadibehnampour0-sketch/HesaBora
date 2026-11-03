@@ -13,6 +13,7 @@ use Dakhl\Core\Bridge\CleanroomFiscalClosingBridge;
 use Dakhl\Core\Bridge\CleanroomInventoryBridge;
 use Dakhl\Core\Bridge\CleanroomInvoiceBridge;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 final class CleanroomCoreIntegrationTest extends TestCase
@@ -43,6 +44,51 @@ final class CleanroomCoreIntegrationTest extends TestCase
         // Calling assertCanMutate should not throw
         $bridge->assertCanMutate($invoice);
         $this->assertTrue(true);
+    }
+
+    public function test_cleanroom_invoice_bridge_dual_post_creates_journal_voucher(): void
+    {
+        $bridge = app(CleanroomInvoiceBridge::class);
+
+        $invoice = new Invoice;
+        $invoice->id = 555;
+        $invoice->company_id = 1;
+        $invoice->number = 1001;
+        $invoice->date = '2026-11-03';
+
+        $transactions = [
+            [
+                'subject_id' => 101, // customer (debit)
+                'desc' => 'حساب مشتری',
+                'value' => -1090000,
+            ],
+            [
+                'subject_id' => 401, // sales revenue (credit)
+                'desc' => 'درآمد فروش',
+                'value' => 1000000,
+            ],
+            [
+                'subject_id' => 205, // vat (credit)
+                'desc' => 'مالیات بر ارزش افزوده',
+                'value' => 90000,
+            ],
+        ];
+
+        $voucherId = $bridge->postInvoice($invoice, 1, $transactions);
+        $this->assertGreaterThan(0, $voucherId);
+
+        $pdo = DB::connection()->getPdo();
+        $stmt = $pdo->prepare('SELECT status, voucher_number FROM journal_vouchers WHERE id = ?');
+        $stmt->execute([$voucherId]);
+        $voucher = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertNotEmpty($voucher);
+        $this->assertSame(2, (int) $voucher['status']); // Posted status
+        $this->assertGreaterThan(0, (int) $voucher['voucher_number']);
+
+        $lineStmt = $pdo->prepare('SELECT COUNT(*) FROM journal_voucher_lines WHERE voucher_id = ?');
+        $lineStmt->execute([$voucherId]);
+        $this->assertSame(3, (int) $lineStmt->fetchColumn());
     }
 
     public function test_cleanroom_inventory_bridge_moving_weighted_average(): void

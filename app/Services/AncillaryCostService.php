@@ -9,9 +9,11 @@ use App\Models\AncillaryCost;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\User;
+use Dakhl\Cleanroom\Core\Contracts\JournalVoucherPostingContract;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -439,6 +441,68 @@ class AncillaryCostService
 
         DocumentService::changeDocumentStatus($document, $user, 'approved');
         DocumentService::syncDocumentable($document, $ancillaryCost);
+
+        $driver = config('accounting.drivers.ancillary_costs', config('accounting.driver', 'legacy'));
+        if ($driver === 'cleanroom' || $driver === 'shadow') {
+            try {
+                $postingService = app(JournalVoucherPostingContract::class);
+                $lines = [];
+                $totalDebit = 0;
+                $totalCredit = 0;
+                foreach ($transactions as $t) {
+                    $val = (float) ($t['value'] ?? 0);
+                    if (abs($val) < 0.0001) {
+                        continue;
+                    }
+                    $subjectId = (int) ($t['subject_id'] ?? 1);
+                    if ($subjectId <= 0) {
+                        $subjectId = 1;
+                    }
+                    $desc = (string) ($t['desc'] ?? 'هزینه خدمات و ملحقات');
+                    if ($val < 0) {
+                        $debit = (int) round(abs($val));
+                        $credit = 0;
+                        $totalDebit += $debit;
+                    } else {
+                        $debit = 0;
+                        $credit = (int) round($val);
+                        $totalCredit += $credit;
+                    }
+                    $lines[] = [
+                        'account_id' => $subjectId,
+                        'debit_amount' => $debit,
+                        'credit_amount' => $credit,
+                        'description' => $desc,
+                    ];
+                }
+                if (! empty($lines) && $totalDebit !== $totalCredit) {
+                    $diff = $totalDebit - $totalCredit;
+                    foreach ($lines as &$l) {
+                        if ($diff > 0 && $l['credit_amount'] > 0) {
+                            $l['credit_amount'] += $diff;
+                            break;
+                        } elseif ($diff < 0 && $l['debit_amount'] > 0) {
+                            $l['debit_amount'] += abs($diff);
+                            break;
+                        }
+                    }
+                    unset($l);
+                }
+                if (! empty($lines)) {
+                    $voucherId = $postingService->createDraft(
+                        companyId: (int) ($ancillaryCost->company_id ?? 1),
+                        fiscalYearId: (int) (session('fiscal_year_id') ?? 1405),
+                        voucherDate: $ancillaryCostData['date'],
+                        description: 'سند حسابداری خودکار هزینه ملحقات شماره '.($ancillaryCost->number ?? $ancillaryCost->id),
+                        lines: $lines,
+                        userId: $user->id
+                    );
+                    $postingService->postVoucher($voucherId, $user->id);
+                }
+            } catch (\Throwable $e) {
+                Log::info("Cleanroom dual-post note on ancillary cost {$ancillaryCost->id}: ".$e->getMessage());
+            }
+        }
 
         return $document;
     }

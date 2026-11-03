@@ -73,25 +73,52 @@ final class JournalVoucherPostingService implements JournalVoucherPostingContrac
         $stmt->execute([$binaryUuid, $companyId, $actualFiscalYearId, $voucherDate, $description, $userId]);
         $voucherId = (int) $this->pdo->lastInsertId();
 
-        $lineStmt = $this->pdo->prepare('
-            INSERT INTO journal_voucher_lines (uuid, voucher_id, line_number, account_id, description, debit_amount, credit_amount, currency_code, foreign_amount, exchange_rate)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ');
+        $hasCurrency = false;
+        try {
+            $test = $this->pdo->query('SELECT currency_code FROM journal_voucher_lines LIMIT 0');
+            $hasCurrency = ($test !== false);
+        } catch (\PDOException) {
+            $hasCurrency = false;
+        }
+
+        if ($hasCurrency) {
+            $lineStmt = $this->pdo->prepare('
+                INSERT INTO journal_voucher_lines (uuid, voucher_id, line_number, account_id, description, debit_amount, credit_amount, currency_code, foreign_amount, exchange_rate)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ');
+        } else {
+            $lineStmt = $this->pdo->prepare('
+                INSERT INTO journal_voucher_lines (uuid, voucher_id, line_number, account_id, description, debit_amount, credit_amount)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ');
+        }
 
         foreach ($lines as $idx => $line) {
             $lineUuid = Uuid::binary16();
-            $lineStmt->execute([
-                $lineUuid,
-                $voucherId,
-                $idx + 1,
-                (int) $line['account_id'],
-                $line['description'] ?? null,
-                (int) ($line['debit_amount'] ?? 0),
-                (int) ($line['credit_amount'] ?? 0),
-                $line['currency_code'] ?? 'IRR',
-                $line['foreign_amount'] ?? null,
-                $line['exchange_rate'] ?? null,
-            ]);
+            if ($hasCurrency) {
+                $lineStmt->execute([
+                    $lineUuid,
+                    $voucherId,
+                    $idx + 1,
+                    (int) $line['account_id'],
+                    $line['description'] ?? null,
+                    (int) ($line['debit_amount'] ?? 0),
+                    (int) ($line['credit_amount'] ?? 0),
+                    $line['currency_code'] ?? 'IRR',
+                    $line['foreign_amount'] ?? null,
+                    $line['exchange_rate'] ?? null,
+                ]);
+            } else {
+                $lineStmt->execute([
+                    $lineUuid,
+                    $voucherId,
+                    $idx + 1,
+                    (int) $line['account_id'],
+                    $line['description'] ?? null,
+                    (int) ($line['debit_amount'] ?? 0),
+                    (int) ($line['credit_amount'] ?? 0),
+                ]);
+            }
         }
 
         return $voucherId;
@@ -180,8 +207,13 @@ final class JournalVoucherPostingService implements JournalVoucherPostingContrac
         $cStmt = $this->pdo->prepare('SELECT id FROM companies WHERE id = ?');
         $cStmt->execute([$companyId]);
         if ($cStmt->fetchColumn() === false) {
-            $cInsert = $this->pdo->prepare('INSERT INTO companies (id, uuid, name) VALUES (?, ?, ?)');
-            $cInsert->execute([$companyId, Uuid::binary16(), "Company {$companyId}"]);
+            try {
+                $cInsert = $this->pdo->prepare('INSERT INTO companies (id, uuid, name, fiscal_year) VALUES (?, ?, ?, ?)');
+                $cInsert->execute([$companyId, Uuid::binary16(), "Company {$companyId}", 1405]);
+            } catch (\PDOException) {
+                $cInsert = $this->pdo->prepare('INSERT INTO companies (id, uuid, name) VALUES (?, ?, ?)');
+                $cInsert->execute([$companyId, Uuid::binary16(), "Company {$companyId}"]);
+            }
         }
 
         $fStmt = $this->pdo->prepare('SELECT id FROM fiscal_years WHERE id = ?');
