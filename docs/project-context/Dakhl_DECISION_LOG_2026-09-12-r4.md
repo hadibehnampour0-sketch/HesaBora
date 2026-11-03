@@ -3061,6 +3061,37 @@ To guarantee financial immutability beyond the application layer, Dakhl implemen
 2. **Dual-Engine Test Verification:**
    Integration test suite must verify that attempting raw `DB::table('documents')->where('id', $doc->id)->delete()` or `update()` throws an engine-level PDOException on both SQLite and MariaDB `dakhl_test`.
 
+---
+
+## D-136 — Web Installer Wizard, Setup Lifecycle & Dual-Posting Ledger Parity — 2026-11-03 — APPROVED (Owner Release Gate)
+
+### 1. Decision & Policy
+1. Dakhl features a frictionless, self-hosted web installer at `/install` (wizard flow) verifying PHP extensions, permissions, database connectivity, and administrative user registration.
+2. Dual-posting parity is active: Invoices and Ancillary Costs post concurrently to legacy `Document` transactions and clean-room `journal_vouchers` / `journal_voucher_lines` with whole-Rial penny leveling.
+
+---
+
+## D-137 — Dynamic USD-Pegged Inventory Valuation & Replacement Cost Auto-Repricing — 2026-11-03 — REGISTERED (Pending Inventory Phase)
+
+### 1. Context & Business Need
+Requested directly by product owner **Hadi Behnampour (هادی بهنام‌پور)** to protect merchant working capital and inventory value against Rial currency depreciation and inflation in the Iranian commercial market:
+- Merchants purchase inventory in Rials/Tomans when the USD exchange rate is at rate $R_1$.
+- If the USD exchange rate rises to $R_2$ and the merchant lacks real-time market data or manual price adjustments, selling at historical Rial cost causes severe capital loss (عدم توانایی در جایگزینی مجدد کالا).
+
+### 2. Concrete Architectural Design & Formulas
+1. **Purchase Time Currency Snapshotting:**
+   When a purchase invoice or goods receipt is posted in Rials ($Cost_{IRR}$), Dakhl records the prevailing market exchange rate ($Rate_{purchase}$ in IRR per USD). The baseline dollar cost of each unit is recorded:
+   $$Cost_{USD} = \frac{Cost_{IRR}}{Rate_{purchase}}$$
+2. **Real-time Replacement Cost Calculation (بهای جایگزینی لحظه‌ای):**
+   When the live market USD rate updates to $Rate_{current}$, the system calculates the updated replacement cost:
+   $$ReplacementCost_{IRR} = Cost_{USD} \times Rate_{current}$$
+3. **Smart Selling Price Guard (محافظ هوشمند سود و قیمت‌گذاری فروش):**
+   In product lists, sales invoicing, and quote builders, Dakhl flags items where the current selling price falls below the real-time replacement cost, alerting the user and auto-calculating the suggested selling price:
+   $$SuggestedPrice_{IRR} = ReplacementCost_{IRR} \times (1 + Margin_{target})$$
+4. **Implementation Schedule:**
+   Registered as an authoritative architectural backlog item to be implemented during the upcoming Advanced Inventory & Pricing Phase.
+
+
 
 
 
