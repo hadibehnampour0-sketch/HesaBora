@@ -17,12 +17,12 @@
 ---
 
 ## 2. Implementer Input Package
-The Implementer receives exclusively the following five assets in `C:\Sandbox\dakhl-cleanroom-core\`:
-1. `contracts/`: 8 clean PHP 8.4 interfaces under namespace `Dakhl\Cleanroom\Core\Contracts\*`.
+The Implementer receives exclusively the following four assets in `C:\Sandbox\dakhl-cleanroom-core\`:
+1. `contracts/`: 17 clean PHP 8.4 interfaces under namespace `Dakhl\Cleanroom\Core\Contracts\*` along with DTOs and namespaced Exceptions.
 2. `specs/`: 16 behavioral specifications (`SPEC_01` through `SPEC_16`) detailing inputs, mathematical formulas, business rules, invariants, and error conditions.
 3. `schema/`: SQLite and MariaDB DDL definitions conforming to ADR-A through ADR-E.
-4. `tests/`: 16 PHPUnit characterization test suites (62 tests total) mapping 1:1 with specifications.
-5. `verify_sandbox_hygiene.py`: Automated hygiene script.
+4. `tests/`: 16 PHPUnit characterization test suites mapping 1:1 with specifications, plus DDL conformance tests.
+*(Note: Hygiene rules and automated scanners are strictly Verifier-only tools kept OUTSIDE the Implementer kit at `C:\Reference\hygiene\` to prevent bias or reverse-engineering).*
 
 ---
 
@@ -88,7 +88,7 @@ The Implementer works through the 16 specifications systematically:
    ```powershell
    $env:DB_CONNECTION="mysql"; $env:DB_DATABASE="dakhl_test"; php vendor/phpunit/phpunit/phpunit -c phpunit.xml
    ```
-**Target Final Result:** 62 tests run, 62 passed (100% GREEN) on BOTH engines.
+**Target Final Result:** 71 specification tests run, 71 passed (100% GREEN) on BOTH engines (plus 4 DDL conformance tests).
 
 ---
 
@@ -96,12 +96,19 @@ The Implementer works through the 16 specifications systematically:
 
 Once the Implementer finishes, the **Verifier** (a separate session) executes the porting procedure:
 
-### Phase 1: Sandbox Hygiene & Token Audit
-Run the automated hygiene script:
+### Phase 1: Sandbox Hygiene, Token Audit & Test Strength
+1. Run the external automated hygiene script kept in the Verifier reference suite:
 ```bash
-python C:\Sandbox\dakhl-cleanroom-core\verify_sandbox_hygiene.py
+python C:\Reference\hygiene\verify_sandbox_hygiene.py
 ```
 Must return: `Sandbox Status: 100% CLEAN & HYGIENIC`.
+
+2. Verify test strength resistance against stubs:
+```bash
+php ./vendor/bin/phpunit --bootstrap C:\Reference\stubs\bootstrap_throwing.php
+php ./vendor/bin/phpunit --bootstrap C:\Reference\stubs\bootstrap_neutral.php
+```
+Both stub runs must confirm <= 5.0% pass rate.
 
 ### Phase 2: Similarity Scans
 Run structural and token-level similarity scans comparing `src/` against legacy code:

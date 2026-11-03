@@ -1,8 +1,11 @@
 # Dakhl Clean-Room Core Test Coverage Matrix
-**Document Version:** 1.0.0 (Clean-Room Fail-First Verification Baseline)  
+**Document Version:** 2.0.0 (Clean-Room Review Round 2 Verified Baseline)  
 **Total Specifications:** 16  
-**Total PHPUnit Characterization Tests:** 62  
-**Initial Baseline Status:** 100% RED (62 Failing / 0 Passing Vacuously)  
+**Total PHPUnit Characterization & Invariant Tests:** 71  
+**Total DDL Conformance Tests:** 4 (31 assertions)  
+**Initial Baseline Status:** 100% RED (71 Failing / 0 Passing Vacuously)  
+**DDL Conformance Status:** 100% GREEN (SQLite: 4/4 passing, MariaDB: 4/4 passing)  
+**Stub Kernel Immunity (Test Strength):** 100% (Exception Stub: 0/71 passed, No-Op Stub: 0/71 passed)  
 
 ---
 
@@ -76,9 +79,10 @@
 - **Rule 6 (Illegal State Machine Transition Rejection):** `Spec11ChequeLifecycleTest::test_reject_illegal_state_transition_from_cancelled_to_cleared`
 - **Invariant (Unique Sayad Serial Per Company):** `Spec11ChequeLifecycleTest::test_reject_duplicate_cheque_sayad_number_in_same_company`
 
-### SPEC_12: Fixed Assets & Depreciation Engine (2 Tests)
+### SPEC_12: Fixed Assets & Depreciation Engine (3 Tests)
 - **Rule 1 & 3 (Straight-Line Depreciation & Monthly Posting):** `Spec12FixedAssetsDepreciationTest::test_straight_line_depreciation_monthly_calculation_and_posting`
 - **Rule 2 (Salvage Value Ceiling Enforcement):** `Spec12FixedAssetsDepreciationTest::test_depreciation_stops_when_book_value_reaches_salvage_value`
+- **Rule 6 (Invalid Useful Life Rejection):** `Spec12FixedAssetsDepreciationTest::test_reject_asset_registration_with_zero_or_negative_useful_life`
 
 ### SPEC_13: Chronological Cost Dependency Recalculation (3 Tests)
 - **Rule 2 & Invariant (Preserve Historical Posted Vouchers D-087/D-127):** `Spec13DependencyRecalculationTest::test_recalculate_cost_chain_preserves_historical_posted_vouchers`
@@ -102,6 +106,22 @@
 - **Rule 6 (Unbalanced Ledger Closure Rejection):** `Spec16FiscalClosingWorkflowTest::test_reject_closing_when_unbalanced_ledger_exists`
 - **Rule 6 (Duplicate Opening Voucher Guard):** `Spec16FiscalClosingWorkflowTest::test_reject_duplicate_opening_voucher_creation_in_same_year`
 
+### Cross-Cutting Concurrency & Isolation Suites (8 Tests)
+- **Concurrency (Lease Block Atomicity):** `ConcurrencyIsolationTest::test_concurrency_safe_numbering_lease_block_allocation`
+- **Concurrency (Sequential Single Numbering):** `ConcurrencyIsolationTest::test_concurrency_safe_single_number_allocation`
+- **Multi-Tenant (COA Cross-Company Isolation):** `MultiTenantCompanyIsolationTest::test_chart_of_accounts_cross_company_isolation`
+- **Multi-Tenant (Numbering Sequence Isolation):** `MultiTenantCompanyIsolationTest::test_document_numbering_counters_isolated_per_company`
+- **Multi-Tenant (Voucher Posting Isolation):** `MultiTenantCompanyIsolationTest::test_journal_voucher_posting_isolated_between_companies`
+- **Golden Vector 1 (Moving Weighted Average COGS):** `GoldenVectorsAccountingTest::test_golden_vector_moving_weighted_average_inventory_cogs`
+- **Golden Vector 2 (Landed Cost Proportional Allocation):** `GoldenVectorsAccountingTest::test_golden_vector_landed_cost_value_proportional_allocation`
+- **Golden Vector 3 (Fixed Asset Straight-Line Depreciation):** `GoldenVectorsAccountingTest::test_golden_vector_fixed_asset_straight_line_depreciation`
+
+### Database DDL Conformance Suite (4 Tests, 31 Assertions)
+- **Trigger Immutability (Journal Voucher Posted Immutability):** `DdlConformanceTest::test_adr_e_database_triggers_enforce_posted_voucher_immutability`
+- **Trigger Immutability (Journal Voucher Lines Immutability):** `DdlConformanceTest::test_adr_e_database_triggers_enforce_posted_lines_immutability`
+- **Trigger Immutability (Single Reversal Mirroring Lock):** `DdlConformanceTest::test_adr_e_database_triggers_enforce_single_reversal_state_lock`
+- **Trigger Immutability (Strict Reversal Status-Only Transition):** `DdlConformanceTest::test_adr_e_reversal_status_transition_allows_only_status_change`
+
 ---
 
 ## Summary Verification
@@ -109,7 +129,12 @@
 | :--- | :--- |
 | Specifications Evaluated | 16 / 16 (100%) |
 | Behavioral Test Classes | 16 |
-| Total Characterization Tests | 62 |
-| Total Expected Assertions / Exceptions | 62 |
-| Baseline Red Run | 62 Failed (54 Class Not Found, 8 Exceptions/Domain Errors) |
+| Cross-Cutting Test Classes | 4 (Concurrency, Isolation, Golden Vectors, DDL) |
+| Total Spec & Invariant Tests | 71 |
+| Total DDL Conformance Tests | 4 (31 Assertions) |
+| Baseline Red Run (Specs) | 71 Failed / 0 Passed (100% RED) |
+| DDL Conformance Run (SQLite) | 4 Passed / 0 Failed (100% GREEN) |
+| DDL Conformance Run (MariaDB) | 4 Passed / 0 Failed (100% GREEN) |
+| Exception Stub Pass Rate | 0 / 71 (0.00%) |
+| No-Op Stub Pass Rate | 0 / 71 (0.00%) |
 | Vacuous Passes | 0 |
