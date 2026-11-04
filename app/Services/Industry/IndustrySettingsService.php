@@ -161,6 +161,16 @@ class IndustrySettingsService
             $row = IndustryProfileActivation::where('profile_key', $profileKey)->lockForUpdate()->first();
 
             if ($active && ! $row) {
+                $licenseService = app(\App\Services\LicenseService::class);
+                $maxAllowed = $licenseService->getMaxAllowedIndustries();
+                $currentActiveCount = IndustryProfileActivation::count();
+
+                if ($currentActiveCount >= $maxAllowed) {
+                    throw ValidationException::withMessages([
+                        'license' => "سقف تعداد اصناف فعال مجاز در پلن شما ({$maxAllowed} صنف) تکمیل شده است. جهت فعال‌سازی اصناف تخصصی بیشتر، لطفاً لایسنس نرم‌افزار را ارتقا دهید."
+                    ]);
+                }
+
                 IndustryProfileActivation::create(['profile_key' => $profileKey, 'activated_at' => now()]);
                 $this->log($profileKey, '*', 'activate', null, null, $userId);
             } elseif (! $active && $row) {

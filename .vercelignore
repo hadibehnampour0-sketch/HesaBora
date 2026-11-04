@@ -1,0 +1,36 @@
+# Vercel Ignore File for Dakhl ERP
+
+# Workspace artifacts and local clones
+.claude
+.git
+.github
+.idea
+.vscode
+.mimocode
+scratch
+
+# Desktop Electron & NativePHP binaries
+vendor
+nativephp
+build
+
+# Test suites, documentation & internal scripts
+tests
+docs
+script
+phpunit.xml
+
+# Node dependencies & source build caches
+node_modules
+.npm
+public/hot
+
+# Local environment and sensitive secrets
+.env
+.env.*
+!.env.example
+auth.json
+
+# Local runtime storage
+storage
+

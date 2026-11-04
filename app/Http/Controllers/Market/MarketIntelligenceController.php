@@ -89,6 +89,10 @@ class MarketIntelligenceController extends Controller
     {
         $request->validate([
             'market_price' => ['nullable', 'numeric', 'min:0'],
+            'purchase_usd_rate' => ['nullable', 'numeric', 'min:0'],
+            'base_usd_cost' => ['nullable', 'numeric', 'min:0'],
+            'target_margin_percent' => ['nullable', 'numeric', 'min:0', 'max:1000'],
+            'is_pegged_to_usd' => ['nullable', 'boolean'],
             'market_source_type' => ['nullable', 'string', 'in:manual,web_link,guild_peer'],
             'market_source_url' => ['nullable', 'string', 'max:500'],
             'is_wholesale_broadcast' => ['nullable', 'boolean'],
@@ -106,6 +110,10 @@ class MarketIntelligenceController extends Controller
             $companyId,
             $request->only([
                 'market_price',
+                'purchase_usd_rate',
+                'base_usd_cost',
+                'target_margin_percent',
+                'is_pegged_to_usd',
                 'market_source_type',
                 'market_source_url',
                 'is_wholesale_broadcast',

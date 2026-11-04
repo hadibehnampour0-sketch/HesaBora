@@ -14,6 +14,10 @@ class ProductMarketPrice extends Model
         'product_id',
         'company_id',
         'market_price',
+        'purchase_usd_rate',
+        'base_usd_cost',
+        'target_margin_percent',
+        'is_pegged_to_usd',
         'market_source_type',
         'market_source_url',
         'is_wholesale_broadcast',
@@ -27,6 +31,10 @@ class ProductMarketPrice extends Model
 
     protected $casts = [
         'market_price' => 'decimal:4',
+        'purchase_usd_rate' => 'decimal:4',
+        'base_usd_cost' => 'decimal:4',
+        'target_margin_percent' => 'decimal:2',
+        'is_pegged_to_usd' => 'boolean',
         'wholesale_price' => 'decimal:4',
         'wholesale_min_qty' => 'decimal:2',
         'is_wholesale_broadcast' => 'boolean',

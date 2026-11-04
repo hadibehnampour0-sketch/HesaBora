@@ -22,6 +22,19 @@
     </li>
 @endcan
 
+{{-- انتقال و مهاجرت اطلاعات با هوش مصنوعی (Universal Database Migration) --}}
+<li>
+    <a href="{{ route('migration.index') }}" class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center justify-between bg-emerald-500/10 dark:bg-emerald-950/40 hover:bg-emerald-500/20 rounded-xl my-0.5 border border-emerald-500/30">
+        <span class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            <span>{{ __('انتقال دیتابیس قبلی با AI') }}</span>
+        </span>
+        <span class="badge badge-success badge-xs text-white text-[9px] px-1 font-mono">چند کلیک</span>
+    </a>
+</li>
+
 {{-- ۲. قیمت آنلاین و تابلوی بازار (Live Market & Pricing) --}}
 <li>
     <details class="{{ $topDropdownClass }}" data-main-menu-dropdown>
@@ -294,7 +307,12 @@
                     <li><a href="{{ route('documents.sort-numbers') }}">{{ __('مرتب‌سازی شماره اسناد') }}</a></li>
                 @endcan
                 @can('fixed-assets.index')
-                    <li><a href="{{ route('fixed-assets.index') }}">{{ __('اموال و دارایی‌های ثابت') }}</a></li>
+                    <li>
+                        <a href="{{ route('fixed-assets.index') }}" class="flex items-center justify-between font-medium">
+                            <span>{{ __('اموال، تجهیزات و لاگ‌بوک تعمیرات') }}</span>
+                            <span class="badge badge-warning badge-xs font-mono">TCO</span>
+                        </a>
+                    </li>
                 @endcan
                 @can('recurring-invoice-templates.index')
                     <li><a href="{{ route('recurring-invoice-templates.index') }}">{{ __('الگوهای فاکتور دوره‌ای') }}</a></li>
@@ -572,14 +590,16 @@
             @can('backups.create')
                 <li>
                     <details>
-                        <summary>{{ __('پشتیبان‌گیری و بازیابی') }}</summary>
+                        <summary class="flex items-center justify-between"><span>{{ __('پشتیبان‌گیری و نجات داده‌ها') }}</span><span class="badge badge-success badge-xs">۳-۲-۱</span></summary>
                         <ul>
-                            <li><a href="{{ route('backups.create') }}">{{ __('ایجاد نسخه پشتیبان') }}</a></li>
+                            <li><a href="{{ route('backups.index') }}" class="font-bold text-success">{{ __('داشبورد جامع پشتیبان‌گیری و نجات') }}</a></li>
+                            <li><a href="{{ route('backups.create') }}">{{ __('پشتیبان سفارشی سال مالی') }}</a></li>
                             <li><a href="{{ route('backups.upload') }}">{{ __('بارگذاری و بازگردانی فایل') }}</a></li>
                         </ul>
                     </details>
                 </li>
             @endcan
+            <li><a href="{{ route('updates.index') }}" class="flex items-center justify-between font-bold text-info"><span>{{ __('بروزرسانی نرم‌افزار و پچ‌ها') }}</span><span class="badge badge-info badge-xs">v2.5</span></a></li>
             @can('configs.index')
                 <li><a href="{{ route('configs.index') }}">{{ __('تنظیمات عمومی سامانه') }}</a></li>
             @endcan

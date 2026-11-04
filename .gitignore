@@ -29,3 +29,6 @@ tools/license-issuer/keys/
 *.key
 __pycache__/
 *.pyc
+
+.vercel
+.env*

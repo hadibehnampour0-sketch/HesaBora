@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Financing;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\FinancingPlan;
+use App\Models\InstallmentCollateral;
 use App\Models\InstallmentContract;
 use App\Models\InstallmentSchedule;
 use App\Services\Financing\FinancingService;
@@ -65,6 +66,7 @@ class FinancingController extends Controller
             'tenor_months' => ['required', 'integer', 'min:1', 'max:120'],
             'start_date' => ['required', 'date'],
             'notes' => ['nullable', 'string'],
+            'collaterals' => ['nullable', 'array'],
         ]);
 
         $validated['company_id'] = getActiveCompany();
@@ -76,7 +78,7 @@ class FinancingController extends Controller
 
     public function show(InstallmentContract $contract)
     {
-        $contract->load(['customer', 'plan', 'schedules']);
+        $contract->load(['customer', 'plan', 'schedules', 'collaterals']);
         $summary = $this->financingService->getContractSummary($contract);
 
         return view('financing.show', compact('contract', 'summary'));
@@ -134,5 +136,56 @@ class FinancingController extends Controller
         return back()->with('success', __('خسارت تأخیر تأدیه اقساط معوق به مبلغ :amount ریال محاسبه و اعمال شد.', [
             'amount' => number_format($totalPenalties),
         ]));
+    }
+
+    public function storeCollateral(InstallmentContract $contract, Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'type' => ['required', 'string', 'in:CHEQUE,GOLD,PROPERTY,VEHICLE,PROMISSORY_NOTE,OTHER'],
+            'title' => ['nullable', 'string', 'max:255'],
+            'purpose' => ['nullable', 'string', 'in:GUARANTEE,PAYMENT'],
+            'estimated_value' => ['nullable', 'numeric', 'min:0'],
+            'cheque_sayad_number' => ['nullable', 'string', 'max:32'],
+            'cheque_bank' => ['nullable', 'string', 'max:128'],
+            'cheque_account_owner' => ['nullable', 'string', 'max:128'],
+            'cheque_due_date' => ['nullable', 'date'],
+            'cheque_amount' => ['nullable', 'numeric', 'min:0'],
+            'cheque_installment_number' => ['nullable', 'integer', 'min:1'],
+            'gold_weight_grams' => ['nullable', 'numeric', 'min:0'],
+            'gold_karat' => ['nullable', 'integer', 'min:1', 'max:24'],
+            'property_registry_code' => ['nullable', 'string', 'max:128'],
+            'property_address' => ['nullable', 'string'],
+            'property_area' => ['nullable', 'numeric', 'min:0'],
+            'vehicle_model' => ['nullable', 'string', 'max:128'],
+            'vehicle_plate' => ['nullable', 'string', 'max:64'],
+            'vehicle_chassis_number' => ['nullable', 'string', 'max:128'],
+            'vehicle_color' => ['nullable', 'string', 'max:64'],
+            'promissory_note_number' => ['nullable', 'string', 'max:64'],
+            'notes' => ['nullable', 'string'],
+            'received_at' => ['nullable', 'date'],
+            'attachment' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,pdf', 'max:10240'], // 10MB max
+        ]);
+
+        $this->financingService->addCollateral(
+            $contract,
+            $validated,
+            $request->file('attachment')
+        );
+
+        return back()->with('success', __('وثیقه / تضمین با موفقیت برای این قرارداد ثبت شد.'));
+    }
+
+    public function releaseCollateral(InstallmentCollateral $collateral, Request $request): RedirectResponse
+    {
+        $this->financingService->releaseCollateral($collateral, $request->input('release_notes'));
+
+        return back()->with('success', __('وضعیت وثیقه به «عودت داده شده به مشتری» تغییر یافت.'));
+    }
+
+    public function destroyCollateral(InstallmentCollateral $collateral): RedirectResponse
+    {
+        $this->financingService->deleteCollateral($collateral);
+
+        return back()->with('success', __('وثیقه با موفقیت حذف گردید.'));
     }
 }

@@ -4,14 +4,167 @@ namespace App\Http\Controllers;
 
 use App\Enums\FiscalYearSection;
 use App\Models\Company;
+use App\Services\BackupEngineService;
 use App\Services\FiscalYearService;
+use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use ZipArchive;
 
 class BackupController extends Controller
 {
+    /**
+     * Display the Enterprise Backup & Disaster Recovery Center dashboard.
+     */
+    public function index(BackupEngineService $backupEngine): View
+    {
+        $backups = $backupEngine->listBackups();
+        $settings = $backupEngine->getSettings();
+        $activeCompany = Company::first();
+
+        return view('backups.index', compact('backups', 'settings', 'activeCompany'));
+    }
+
+    /**
+     * Create and download a full system backup (.dakhl package).
+     */
+    public function fullExport(Request $request, BackupEngineService $backupEngine): BinaryFileResponse|RedirectResponse
+    {
+        try {
+            $includeDocs = $request->boolean('include_documents', true);
+            $sendTelegram = $request->boolean('send_telegram', false);
+            $targetDir = $request->input('target_dir');
+
+            $result = $backupEngine->createFullBackup([
+                'include_documents' => $includeDocs,
+                'send_telegram' => $sendTelegram,
+                'target_path' => $targetDir,
+            ]);
+
+            if ($request->input('action') === 'save_only') {
+                return redirect()->route('backups.index')
+                    ->with('success', __('Full backup :name created successfully (:size MB).', [
+                        'name' => $result['filename'],
+                        'size' => $result['size_mb'],
+                    ]));
+            }
+
+            return response()->download($result['path'], $result['filename'], [
+                'Content-Type' => 'application/octet-stream',
+            ]);
+        } catch (Exception $e) {
+            return redirect()->route('backups.index')
+                ->with('error', __('Backup failed: :msg', ['msg' => $e->getMessage()]));
+        }
+    }
+
+    /**
+     * Download an existing backup file.
+     */
+    public function download(Request $request, string $filename): BinaryFileResponse|RedirectResponse
+    {
+        $safeName = basename($filename);
+        $path = storage_path("app/backups/{$safeName}");
+
+        if (! File::exists($path)) {
+            return redirect()->route('backups.index')
+                ->with('error', __('Backup file does not exist.'));
+        }
+
+        return response()->download($path, $safeName);
+    }
+
+    /**
+     * Safe 1-Click Restore with pre-restore safety snapshot.
+     */
+    public function fullRestore(Request $request, BackupEngineService $backupEngine): RedirectResponse
+    {
+        $validated = $request->validate([
+            'backup_file' => 'nullable|string',
+            'upload_file' => 'nullable|file|max:204800',
+        ]);
+
+        try {
+            $filePath = null;
+
+            if ($request->hasFile('upload_file')) {
+                $file = $request->file('upload_file');
+                $filePath = $file->getRealPath();
+            } elseif (! empty($validated['backup_file'])) {
+                $filePath = storage_path('app/backups/' . basename($validated['backup_file']));
+            }
+
+            if (! $filePath || ! File::exists($filePath)) {
+                return redirect()->route('backups.index')
+                    ->with('error', __('Please specify a valid backup file to restore.'));
+            }
+
+            $result = $backupEngine->restoreFullBackup($filePath);
+
+            return redirect()->route('backups.index')
+                ->with('success', $result['message']);
+        } catch (Exception $e) {
+            return redirect()->route('backups.index')
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    /**
+     * Save backup preferences (Auto-backup, flash drive path, Telegram).
+     */
+    public function saveSettings(Request $request, BackupEngineService $backupEngine): RedirectResponse
+    {
+        $validated = $request->validate([
+            'auto_backup_on_exit' => 'nullable|boolean',
+            'daily_scheduled_backup' => 'nullable|boolean',
+            'local_target_path' => 'nullable|string|max:255',
+            'telegram_enabled' => 'nullable|boolean',
+            'telegram_bot_token' => 'nullable|string|max:255',
+            'telegram_chat_id' => 'nullable|string|max:255',
+            'include_documents' => 'nullable|boolean',
+        ]);
+
+        $backupEngine->saveSettings([
+            'auto_backup_on_exit' => $request->boolean('auto_backup_on_exit'),
+            'daily_scheduled_backup' => $request->boolean('daily_scheduled_backup'),
+            'local_target_path' => trim((string) ($validated['local_target_path'] ?? '')),
+            'telegram_enabled' => $request->boolean('telegram_enabled'),
+            'telegram_bot_token' => trim((string) ($validated['telegram_bot_token'] ?? '')),
+            'telegram_chat_id' => trim((string) ($validated['telegram_chat_id'] ?? '')),
+            'include_documents' => $request->boolean('include_documents', true),
+        ]);
+
+        return redirect()->route('backups.index')
+            ->with('success', __('Backup preferences updated successfully.'));
+    }
+
+    /**
+     * Test sending backup alert to Telegram Bot.
+     */
+    public function testTelegram(Request $request, BackupEngineService $backupEngine): JsonResponse
+    {
+        $backups = $backupEngine->listBackups();
+        if (empty($backups)) {
+            $created = $backupEngine->createFullBackup(['include_documents' => false]);
+            $testFile = $created['path'];
+        } else {
+            $testFile = $backups[0]['path'];
+        }
+
+        $sent = $backupEngine->dispatchToTelegram($testFile);
+
+        return response()->json([
+            'success' => $sent,
+            'message' => $sent
+                ? __('Test backup successfully sent to Telegram!')
+                : __('Could not connect to Telegram. Please check your Bot Token and Chat ID.'),
+        ]);
+    }
     public function create()
     {
         $previousYears = auth()->user()->companies()->orderByDesc('fiscal_year')->get();

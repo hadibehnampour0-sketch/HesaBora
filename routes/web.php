@@ -35,8 +35,11 @@ Route::post('/integrations/woocommerce/webhook/{token}', [Controllers\Integratio
 Route::post('/integrations/digikala/webhook/{token}', [Controllers\IntegrationWebhookController::class, 'digikala'])
     ->middleware('throttle:60,1')->name('integrations.digikala.webhook');
 
-// Public Pricing, Product Capabilities & Online License Ordering Portal
+// Public Landing, Pricing, Product Capabilities & Online License Ordering Portal
+Route::get('/landing', [Controllers\LicenseController::class, 'landing'])->name('landing');
 Route::get('/pricing', [Controllers\LicenseController::class, 'publicPricing'])->name('pricing');
+Route::post('/trial/request', [Controllers\LicenseController::class, 'requestTrial'])->middleware('throttle:10,1')->name('trial.request');
+Route::post('/order/submit', [Controllers\LicenseController::class, 'submitOrder'])->middleware('throttle:10,1')->name('order.submit');
 Route::view('/logo-showcase', 'logo-showcase')->name('logo.showcase');
 Route::view('/pages-showcase', 'pages-showcase')->name('pages.showcase');
 
@@ -135,12 +138,23 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
     Route::get('change-company/{company}', [Controllers\CompanyController::class, 'setActiveCompany'])->name('change-company');
 
     Route::group(['prefix' => 'backups', 'as' => 'backups.'], function () {
+        Route::get('/', [Controllers\BackupController::class, 'index'])->name('index');
         Route::get('/create', [Controllers\BackupController::class, 'create'])->name('create');
         Route::get('/upload', [Controllers\BackupController::class, 'upload'])->name('upload');
         Route::get('/document-files-size', [Controllers\BackupController::class, 'documentFilesSize'])->name('document-files-size');
         Route::post('/export', [Controllers\BackupController::class, 'export'])->name('export');
+        Route::post('/full-export', [Controllers\BackupController::class, 'fullExport'])->name('full-export');
+        Route::get('/download/{filename}', [Controllers\BackupController::class, 'download'])->name('download');
+        Route::post('/full-restore', [Controllers\BackupController::class, 'fullRestore'])->name('full-restore');
+        Route::post('/settings', [Controllers\BackupController::class, 'saveSettings'])->name('settings');
+        Route::post('/test-telegram', [Controllers\BackupController::class, 'testTelegram'])->name('test-telegram');
         Route::post('/import', [Controllers\BackupController::class, 'import'])->name('import');
     });
+
+    // System Software Updates & Patch Management
+    Route::get('updates', [Controllers\UpdateController::class, 'index'])->name('updates.index');
+    Route::post('updates/check', [Controllers\UpdateController::class, 'check'])->name('updates.check');
+    Route::post('updates/apply', [Controllers\UpdateController::class, 'apply'])->name('updates.apply');
     Route::get('/', [Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/home/today', [Controllers\HomeController::class, 'today'])->name('home.today');
     // Phase U: guided "Collect money" / "Pay suppliers" (submits to the existing invoices.payments.store).
@@ -236,6 +250,12 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
         Route::get('tax-evidences/{tax_evidence}/download', [Controllers\TaxEvidenceController::class, 'download'])->name('tax-evidences.download');
         Route::delete('tax-evidences/{tax_evidence}', [Controllers\TaxEvidenceController::class, 'destroy'])->name('tax-evidences.destroy');
         Route::get('ancillary-costs/', [Controllers\AncillaryCostController::class, 'index'])->name('ancillary-costs.index');
+        Route::get('ancillary-costs/create', [Controllers\AncillaryCostController::class, 'create'])->name('ancillary-costs.create');
+        Route::post('ancillary-costs', [Controllers\AncillaryCostController::class, 'store'])->name('ancillary-costs.store');
+        Route::get('ancillary-costs/{ancillary_cost}', [Controllers\AncillaryCostController::class, 'show'])->name('ancillary-costs.show');
+        Route::get('ancillary-costs/{ancillary_cost}/edit', [Controllers\AncillaryCostController::class, 'edit'])->name('ancillary-costs.edit');
+        Route::put('ancillary-costs/{ancillary_cost}', [Controllers\AncillaryCostController::class, 'update'])->name('ancillary-costs.update');
+        Route::delete('ancillary-costs/{ancillary_cost}', [Controllers\AncillaryCostController::class, 'destroy'])->name('ancillary-costs.destroy');
         Route::get('{invoice}/ancillary-costs/create', [Controllers\AncillaryCostController::class, 'create'])->name('invoices.ancillary-costs.create');
         Route::post('{invoice}/ancillary-costs', [Controllers\AncillaryCostController::class, 'store'])->name('invoices.ancillary-costs.store');
         Route::get('{invoice}/ancillary-costs/{ancillary_cost}', [Controllers\AncillaryCostController::class, 'show'])->name('invoices.ancillary-costs.show');
@@ -387,6 +407,9 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
             Route::post('calculate', [FinancingController::class, 'calculate'])->name('calculate');
             Route::post('schedules/{schedule}/pay', [FinancingController::class, 'paySchedule'])->name('schedules.pay');
             Route::post('contracts/{contract}/penalties', [FinancingController::class, 'applyPenalties'])->name('contracts.penalties');
+            Route::post('contracts/{contract}/collaterals', [FinancingController::class, 'storeCollateral'])->name('contracts.collaterals.store');
+            Route::patch('collaterals/{collateral}/release', [FinancingController::class, 'releaseCollateral'])->name('collaterals.release');
+            Route::delete('collaterals/{collateral}', [FinancingController::class, 'destroyCollateral'])->name('collaterals.destroy');
         });
 
         // Phase 22 (Visual Document & Invoice Template Designer - D-113).
@@ -566,8 +589,8 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
     Route::group(['prefix' => 'salary', 'as' => 'salary.'], function () {
         Route::get('payrolls/dashboard', [Controllers\PayrollController::class, 'dashboard'])->name('payrolls.dashboard');
         Route::resource('tax-slabs', Controllers\TaxSlabController::class);
-        Route::resource('work-sites', Controllers\WorkSiteController::class)->except(['show']);
-        Route::resource('work-site-contracts', Controllers\WorkSiteContractController::class)->except(['show']);
+        Route::resource('work-sites', Controllers\WorkSiteController::class);
+        Route::resource('work-site-contracts', Controllers\WorkSiteContractController::class);
         Route::resource('public-holidays', Controllers\PublicHolidayController::class)->except(['show']);
         Route::resource('payroll-elements', Controllers\PayrollElementController::class)->except(['show']);
         Route::resource('salary-decrees', Controllers\SalaryDecreeController::class)->except(['show']);
@@ -642,6 +665,9 @@ Route::group(['middleware' => ['auth', 'check-permission', 'ensure-feature-enabl
     Route::group(['prefix' => 'fixed-assets', 'as' => 'fixed-assets.'], function () {
         Route::get('/', [Controllers\FixedAssetController::class, 'index'])->name('index');
         Route::post('/', [Controllers\FixedAssetController::class, 'store'])->name('store');
+        Route::get('{fixedAsset}', [Controllers\FixedAssetController::class, 'show'])->name('show');
+        Route::post('{fixedAsset}/maintenances', [Controllers\FixedAssetController::class, 'storeMaintenance'])->name('maintenances.store');
+        Route::delete('{fixedAsset}/maintenances/{maintenance}', [Controllers\FixedAssetController::class, 'destroyMaintenance'])->name('maintenances.destroy');
         Route::post('{fixedAsset}/depreciation', [Controllers\FixedAssetController::class, 'postDepreciation'])->name('depreciation.store');
         Route::post('{fixedAsset}/dispose', [Controllers\FixedAssetController::class, 'dispose'])->name('dispose');
     });

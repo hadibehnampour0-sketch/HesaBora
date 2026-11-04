@@ -48,19 +48,18 @@
             @include('home._financial-values')
         @endif
 
-        <div class="pt-2">
-            <details class="group rounded-3xl border border-base-200 bg-base-100/50 p-4 transition">
-                <summary class="flex cursor-pointer items-center justify-between text-xs font-bold text-base-content/60 hover:text-base-content list-none">
-                    <span class="flex items-center gap-2">
-                        <span>📂</span>
-                        <span>{{ __('دفاتر کلیدی و سایر کارپوشه‌ها (حسابداری، فروش، انبار و CRM)') }}</span>
-                    </span>
-                    <span class="badge badge-ghost badge-xs">{{ __('مشاهده کارت‌های تکمیلی') }} ▾</span>
-                </summary>
-                <div class="mt-4 pt-4 border-t border-base-200">
-                    @include('home._access-sections')
+        <div class="pt-4 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-1">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-xl">📂</span>
+                    <div>
+                        <h3 class="font-black text-sm text-base-content">{{ __('کارپوشه‌های اصلی و دفاتر کلیدی دَخل') }}</h3>
+                        <p class="text-xs text-base-content/60">{{ __('دسترسی جامع به ماژول‌های حسابداری، فاکتورها، انبارداری و CRM') }}</p>
+                    </div>
                 </div>
-            </details>
+                <span class="badge badge-sm badge-ghost font-mono text-[10px]">ERP Workspaces</span>
+            </div>
+            @include('home._access-sections')
         </div>
     </div>
 

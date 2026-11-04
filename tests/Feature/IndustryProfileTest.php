@@ -540,4 +540,34 @@ class IndustryProfileTest extends TestCase
         $this->get(route('industry-profiles.show', 'gold'))->assertOk()->assertDontSee('999', false);
         $this->assertSame(750, $this->settings()->value('gold', 'standard_purity'));
     }
+
+    public function test_industry_profile_activation_enforces_plan_quota(): void
+    {
+        $this->grant('industry-profiles.show', 'industry-profiles.toggle');
+
+        // Create a license with edition 'basic' (allows only 1 industry profile)
+        \App\Models\License::query()->delete();
+        \App\Models\License::create([
+            'license_key' => 'DAKHL-TEST-SHOP-KEY',
+            'license_hash' => hash('sha256', 'DAKHL-TEST-SHOP-KEY'),
+            'edition' => 'basic',
+            'customer_name' => 'Shop Test Co',
+            'issued_at' => now(),
+            'expires_at' => now()->addYear(),
+            'max_users' => 1,
+            'max_companies' => 1,
+            'hardware_fingerprint' => app(\App\Services\LicenseService::class)->generateMachineFingerprint(),
+            'is_active' => true,
+            'signature' => 'dummy_test_sig',
+            'modules' => [\App\Services\LicenseService::MODULE_CORE_ACCOUNTING],
+        ]);
+
+        // Activating first industry (gold) succeeds
+        $this->settings()->setActive('gold', true, $this->user->id);
+        $this->assertTrue($this->settings()->isActive('gold'));
+
+        // Activating second industry (iron) exceeds quota -> throws ValidationException
+        $this->expectException(ValidationException::class);
+        $this->settings()->setActive('iron', true, $this->user->id);
+    }
 }

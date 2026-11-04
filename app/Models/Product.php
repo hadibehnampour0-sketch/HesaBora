@@ -78,6 +78,15 @@ class Product extends Model
         return $this->hasOne(ProductMarketPrice::class, 'product_id');
     }
 
+    /**
+     * Decision D-137: Real-time USD-pegged inventory valuation & replacement cost.
+     */
+    public function usdPeggedValuation(?float $currentUsdRate = null): array
+    {
+        return app(\App\Services\Market\MarketIntelligenceService::class)
+            ->calculateUsdPeggedValuation($this, $currentUsdRate);
+    }
+
     public function productWebsites(): HasMany
     {
         return $this->hasMany(ProductWebsite::class, 'product_id');

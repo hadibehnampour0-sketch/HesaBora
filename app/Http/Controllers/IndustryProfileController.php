@@ -44,6 +44,7 @@ class IndustryProfileController extends Controller
                 'pending' => $this->settings->pendingCounts($key),
                 'fields' => count($this->registry->fields($key)),
                 'calculators' => count($profile['calculators'] ?? []),
+                'icon' => $profile['icon'] ?? null,
             ];
         }
 
@@ -90,9 +91,16 @@ class IndustryProfileController extends Controller
     public function toggle(Request $request, string $profile): RedirectResponse
     {
         $this->definition($profile);
-        $this->settings->setActive($profile, ! $this->settings->isActive($profile), $request->user()?->id);
 
-        return redirect()->back()->with('success', __('Industry profile status updated.'));
+        try {
+            $this->settings->setActive($profile, ! $this->settings->isActive($profile), $request->user()?->id);
+
+            return redirect()->back()->with('success', __('Industry profile status updated.'));
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $msg = $e->validator->errors()->first('license') ?? $e->validator->errors()->first() ?? $e->getMessage();
+
+            return redirect()->back()->with('error', $msg);
+        }
     }
 
     public function calculate(Request $request, string $profile, string $calculator): JsonResponse

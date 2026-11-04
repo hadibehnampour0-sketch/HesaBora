@@ -205,12 +205,33 @@ class License extends Model
     public function getEditionLabel(): string
     {
         return match ($this->edition) {
-            'trial' => 'نسخه آزمایشی ۱۴ روزه (Trial)',
+            'shop' => 'نسخه فروشگاهی و اصناف (Retail & Shop)',
+            'commercial' => 'نسخه بازرگانی و شرکتی (Commercial)',
+            'distribution' => 'نسخه پخش مویرگی و ویزیتوری (Distribution)',
+            'manufacturing' => 'نسخه تولیدی و صنعتی (Manufacturing)',
+            'enterprise' => 'نسخه طلایی (سازمانی / نامحدود)',
             'basic' => 'نسخه برنزی (پایه اصناف خرد)',
             'professional' => 'نسخه نقره‌ای (حرفه‌ای / رشد کسب‌وکار)',
-            'enterprise' => 'نسخه طلایی (سازمانی / نامحدود)',
+            'trial' => 'نسخه آزمایشی ۱۴ روزه (Trial)',
             'custom' => 'نسخه سفارشی (ماژولار انتخابی)',
             default => 'نامشخص',
+        };
+    }
+
+    /**
+     * Maximum allowed active industry profiles under this license.
+     */
+    public function getMaxIndustries(): int
+    {
+        if (isset($this->metadata['max_industries'])) {
+            return (int) $this->metadata['max_industries'];
+        }
+
+        return match ($this->edition) {
+            'shop', 'basic' => 1,
+            'commercial', 'professional' => 2,
+            'distribution', 'manufacturing', 'enterprise', 'trial' => 16,
+            default => 1,
         };
     }
 }

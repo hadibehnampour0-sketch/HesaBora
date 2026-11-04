@@ -45,6 +45,15 @@
                     </button>
                 </form>
 
+                <div class="mt-4 flex items-center justify-between text-xs text-base-content/70 px-1">
+                    <a href="{{ route('landing') }}" class="hover:text-primary transition flex items-center gap-1 font-semibold">
+                        <span>🌐</span> <span>{{ __('معرفی نرم‌افزار و ۱۶ صنف') }}</span>
+                    </a>
+                    <a href="{{ route('pricing') }}" class="hover:text-primary transition flex items-center gap-1 font-semibold text-primary">
+                        <span>⚡</span> <span>{{ __('تعرفه‌ها و خرید لایسنس') }}</span>
+                    </a>
+                </div>
+
                 <div class="mt-6 pt-4 border-t border-base-200 text-center text-xs text-base-content/50">
                     {{ __('نسخه :version', ['version' => config('app.version', '1.0')]) }} • {{ __('دوبل و چندشرکتی') }}
                 </div>

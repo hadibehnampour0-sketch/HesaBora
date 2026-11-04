@@ -150,7 +150,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'distribution.settlements' => ['index', 'store', 'submit', 'approve'],
 
             // Backups
-            'backups' => ['create', 'export', 'import', 'upload', 'document-files-size'],
+            'backups' => ['index', 'create', 'export', 'import', 'upload', 'document-files-size', 'full-export', 'full-restore', 'download', 'settings', 'test-telegram'],
+
+            // Software Updates
+            'updates' => ['index', 'check', 'apply'],
 
             // Banks / bank accounts
             'bank-accounts' => [...self::CRUD, 'search-bank'],

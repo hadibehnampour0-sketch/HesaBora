@@ -18,6 +18,8 @@ class InstallmentContract extends Model
         'customer_id',
         'invoice_id',
         'plan_id',
+        'calculation_method',
+        'applied_interest_rate',
         'total_price',
         'down_payment',
         'principal_amount',
@@ -34,6 +36,7 @@ class InstallmentContract extends Model
     ];
 
     protected $casts = [
+        'applied_interest_rate' => 'float',
         'total_price' => 'integer',
         'down_payment' => 'integer',
         'principal_amount' => 'integer',
@@ -77,5 +80,15 @@ class InstallmentContract extends Model
     public function schedules(): HasMany
     {
         return $this->hasMany(InstallmentSchedule::class, 'contract_id')->orderBy('installment_number');
+    }
+
+    public function collaterals(): HasMany
+    {
+        return $this->hasMany(InstallmentCollateral::class, 'contract_id')->latest();
+    }
+
+    public function totalCollateralsEstimatedValue(): int
+    {
+        return (int) $this->collaterals()->where('status', 'RECEIVED')->sum('estimated_value');
     }
 }

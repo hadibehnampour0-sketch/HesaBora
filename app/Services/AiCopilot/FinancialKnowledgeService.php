@@ -6,14 +6,17 @@ use App\Enums\InvoiceStatus;
 use App\Enums\InvoiceType;
 use App\Models\BankAccount;
 use App\Models\Company;
+use App\Models\InstallmentSchedule;
 use App\Models\Invoice;
 use App\Models\Product;
 use App\Models\WarehouseProductStock;
 use App\Services\AgeingService;
 use App\Services\ChequeRiskDashboardService;
+use App\Services\Market\MarketIntelligenceService;
 use App\Services\PlainReportService;
 use App\Services\TaxReadinessService;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * Gathers deterministic, company-scoped financial facts directly from Dakhl's
@@ -181,12 +184,63 @@ class FinancialKnowledgeService
         ];
     }
 
+    public function getInstallmentsSummary(): array
+    {
+        if (! Schema::hasTable('installment_schedules')) {
+            return [
+                'today' => ['count' => 0, 'amount' => 0.0],
+                'overdue' => ['count' => 0, 'amount' => 0.0],
+            ];
+        }
+
+        try {
+            $todayStr = Carbon::today()->toDateString();
+            $schedules = InstallmentSchedule::query()
+                ->whereIn('status', ['pending', 'partial'])
+                ->get();
+
+            $overdue = $schedules->filter(fn ($s) => $s->due_date && $s->due_date->toDateString() < $todayStr);
+            $today = $schedules->filter(fn ($s) => $s->due_date && $s->due_date->toDateString() === $todayStr);
+
+            return [
+                'today' => [
+                    'count' => $today->count(),
+                    'amount' => (float) $today->sum('remaining_amount'),
+                ],
+                'overdue' => [
+                    'count' => $overdue->count(),
+                    'amount' => (float) $overdue->sum('remaining_amount'),
+                ],
+            ];
+        } catch (\Throwable) {
+            return [
+                'today' => ['count' => 0, 'amount' => 0.0],
+                'overdue' => ['count' => 0, 'amount' => 0.0],
+            ];
+        }
+    }
+
+    public function getMarketQuotesSummary(): array
+    {
+        $quotes = MarketIntelligenceService::DEFAULT_SYMBOLS;
+
+        return [
+            'USD' => number_format($quotes['USD']['price'] / 10).' تومان',
+            'USDT' => number_format($quotes['USDT']['price'] / 10).' تومان',
+            'AED' => number_format($quotes['AED']['price'] / 10).' تومان',
+            'GOLD_18K' => number_format($quotes['GOLD_18K']['price'] / 10).' تومان (هر گرم)',
+            'COIN_EMAMI' => number_format($quotes['COIN_EMAMI']['price'] / 10).' تومان',
+        ];
+    }
+
     public function getFullSnapshot(int $companyId): array
     {
         return [
             'sales' => $this->getSalesSummary($companyId),
             'debtors' => $this->getTopOverdueDebtors(5),
             'cheques' => $this->getChequesDueSoon(7),
+            'installments' => $this->getInstallmentsSummary(),
+            'market_rates' => $this->getMarketQuotesSummary(),
             'tax' => $this->getTaxReadiness($companyId),
             'low_stock' => $this->getLowStockProducts(5),
             'banks' => $this->getBankBalances(),

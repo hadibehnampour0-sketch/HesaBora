@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پیشنهادهای بازطراحی صفحه اصلی دخل (Dakhl Home Redesign Concepts)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <style>
+        body { font-family: 'Vazirmatn', sans-serif; }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .linear-card {
+            background: #090d16;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-emerald-500 selection:text-slate-950" x-data="{ concept: 'cockpit' }">
+
+    <!-- Top Sticky Concept Switcher Bar -->
+    <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3 shadow-2xl">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center font-black text-xl text-slate-950 shadow-lg shadow-emerald-500/25">
+                    د
+                </div>
+                <div>
+                    <h1 class="text-base font-black text-white flex items-center gap-2">
+                        <span>دخل</span>
+                        <span class="text-xs font-normal text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">پیش‌نمایش زنده ۳ کانسپت</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">مالک اثر: هادی بهنام‌پور</p>
+                </div>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div class="flex items-center p-1 bg-slate-950/80 rounded-2xl border border-slate-800">
+                <button type="button" @click="concept = 'cockpit'"
+                    :class="concept === 'cockpit' ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-bold shadow-md' : 'text-slate-400 hover:text-white'"
+                    class="px-4 py-2 rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center gap-2">
+                    <span>✨ کاکپیت هوشمند فین‌تک (سفارشی هادی بهنام‌پور)</span>
+                </button>
+                <button type="button" @click="concept = 'linear'"
+                    :class="concept === 'linear' ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-950 font-bold shadow-md' : 'text-slate-400 hover:text-white'"
+                    class="px-4 py-2 rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center gap-2">
+                    <span>⚡ دارک آبسیدین (سبک Linear)</span>
+                </button>
+                <button type="button" @click="concept = 'bento'"
+                    :class="concept === 'bento' ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-bold shadow-md' : 'text-slate-400 hover:text-white'"
+                    class="px-4 py-2 rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center gap-2">
+                    <span>🍱 بنتو گرید اپل (Apple 2026)</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- ========================================================================================= -->
+        <!-- CONCEPT 1: MODERN FINTECH COCKPIT (Stripe / Mercury) -->
+        <!-- ========================================================================================= -->
+        <div x-show="concept === 'cockpit'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6">
+            
+            <!-- Description Banner -->
+            <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">💎</span>
+                    <div>
+                        <h2 class="text-sm font-bold text-emerald-400">کانسپت اول: کاکپیت مدرن فین‌تک (سبک Stripe / Mercury Bank)</h2>
+                        <p class="text-xs text-slate-300 mt-0.5">تمرکز کامل بر جریان نقدینگی، سود خالص، نمودار زنده درآمد/هزینه و حذف کامل شلوغی‌های فرمی سنتی.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="/images/concepts/dakhl_concept1_fintech_cockpit_1793709615911.jpg" target="_blank" class="text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 px-3 py-1.5 rounded-xl border border-emerald-500/30 transition flex items-center gap-1.5">
+                        <span>🖼️ رندر کیفیت بالا (HD) ↗</span>
+                    </a>
+                    <span class="text-xs font-mono text-emerald-400 bg-emerald-950 px-2.5 py-1 rounded-lg border border-emerald-800">Ultra-Clean FinTech</span>
+                </div>
+            </div>
+
+            <!-- Visual Render Preview Showcase -->
+            <div class="relative rounded-3xl overflow-hidden border border-emerald-500/30 shadow-2xl group bg-slate-900/50">
+                <img src="/images/concepts/dakhl_concept1_fintech_cockpit_1793709615911.jpg" alt="رندر کانسپت کاکپیت فین‌تک" class="w-full h-auto object-cover max-h-[520px] rounded-3xl group-hover:scale-[1.01] transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
+                <div class="absolute bottom-4 right-4 left-4 flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-xs bg-slate-950/80 backdrop-blur-md px-3.5 py-1.5 rounded-full text-slate-200 border border-slate-700/80 font-medium">تصویر رندر گرافیکی: داشبورد فین‌تک دخل (جریان نقدینگی، سود و عملیات)</span>
+                    <a href="/images/concepts/dakhl_concept1_fintech_cockpit_1793709615911.jpg" target="_blank" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-1.5 rounded-full transition shadow-lg shadow-emerald-500/25">مشاهده تصویر در اندازه اصلی ↗</a>
+                </div>
+            </div>
+
+            <!-- 1. LIVE MARKET & CURRENCY TICKER (نوار زنده نبض بازار ارز و طلا) -->
+            <div class="glass-card p-3 rounded-2xl border border-emerald-500/30 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-slate-900/90 via-slate-950/90 to-slate-900/90">
+                <div class="flex items-center gap-2">
+                    <span class="flex h-2.5 w-2.5 relative">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-xs font-black text-white">نبض بازار و ارز (لحظه‌ای):</span>
+                    <span class="text-[10px] text-slate-400 font-mono hidden sm:inline">بروزرسانی: ۱۴:۳۰</span>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-3 text-xs">
+                    <!-- USD -->
+                    <div class="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1 rounded-xl border border-slate-800">
+                        <span class="text-slate-400">💵 دلار آزاد:</span>
+                        <span class="font-black text-white font-mono">۷۰,۲۵۰</span>
+                        <span class="text-[10px] text-emerald-400 font-mono">↑ ۰.۴٪</span>
+                    </div>
+                    <!-- USDT -->
+                    <div class="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1 rounded-xl border border-slate-800">
+                        <span class="text-slate-400">🪙 تتر:</span>
+                        <span class="font-black text-white font-mono">۷۰,۳۰۰</span>
+                        <span class="text-[10px] text-slate-400 font-mono">۰.۰٪</span>
+                    </div>
+                    <!-- AED -->
+                    <div class="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1 rounded-xl border border-slate-800">
+                        <span class="text-slate-400">🇦🇪 درهم:</span>
+                        <span class="font-black text-white font-mono">۱۹,۱۵۰</span>
+                        <span class="text-[10px] text-emerald-400 font-mono">↑ ۰.۳٪</span>
+                    </div>
+                    <!-- GOLD -->
+                    <div class="flex items-center gap-1.5 bg-slate-950/80 px-2.5 py-1 rounded-xl border border-slate-800">
+                        <span class="text-slate-400">✨ طلا ۱۸:</span>
+                        <span class="font-black text-amber-300 font-mono">۴,۶۲۰,۰۰۰</span>
+                        <span class="text-[10px] text-amber-400 font-mono">↑ ۱.۱٪</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">
+                        انبار دلاری (D-137) فعال
+                    </span>
+                </div>
+            </div>
+
+            <!-- 2. GEMINI AI FINANCIAL COPILOT BOX (باکس هوش مصنوعی جمینای دخل) -->
+            <div class="glass-card p-5 rounded-3xl border border-cyan-500/30 relative overflow-hidden bg-gradient-to-br from-slate-900/90 via-slate-950/95 to-cyan-950/30 shadow-xl" x-data="{ userPrompt: '', aiResponse: '', isThinking: false }">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-500 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-cyan-500/25 text-lg">
+                            ✨
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-sm font-black text-white">دستیار هوشمند مالی و اقتصادی دخل (Google Gemini 2.5 Flash)</h3>
+                                <span class="size-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                                <span class="text-[10px] text-cyan-300 font-mono bg-cyan-950/80 px-2 py-0.5 rounded-full border border-cyan-800">Live API Connected</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400">تحلیل آنی تراز مالی، مطالبات اقساط، ریسک نقدینگی و اثر نوسان دلار بر بهای جایگزینی انبار</p>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-400 font-mono">
+                        مبتنی بر داده‌های واقعی کسب‌وکار
+                    </div>
+                </div>
+
+                <!-- Live AI Briefing Content -->
+                <div class="p-3.5 rounded-2xl bg-slate-950/70 border border-slate-800/80 space-y-2 text-xs text-slate-200">
+                    <div class="flex items-start gap-2">
+                        <span class="text-emerald-400 font-bold">🟢 اقساط امروز:</span>
+                        <span>امروز ۵ سررسید قسط به مبلغ ۴۲,۰۰۰,۰۰۰ تومان دارید که ۳ مورد وصول شده و ۲ مورد (مشتری: بازرگانی نوید و پارسا الکترونیک) در انتظار دریافت است.</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="text-cyan-400 font-bold">💎 تحلیل نرخ دلار و انبار (D-137):</span>
+                        <span>با رشد ۰.۴٪ دلار آزاد امروز، بهای جایگزینی ۱۲ قلم کالا در انبار افزایش یافته است. پیشنهاد می‌شود نرخ فروش فاکتورهای جدید بر مبنای دلار ۷۰,۲۵۰ تومان محاسبه شود.</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="text-amber-400 font-bold">⚠️ تعهدات چک‌های پیش‌رو:</span>
+                        <span>در ۷ روز آینده ۳ فقره چک به ارزش ۲۴۰ میلیون تومان باید پاس شوند؛ موجودی بانک ملت برای پاس کردن چک تاریخ ۱۶ آبان کافی است.</span>
+                    </div>
+                </div>
+
+                <!-- Instant Question Prompt Bar -->
+                <div class="mt-3 flex items-center gap-2">
+                    <div class="relative flex-1">
+                        <input type="text" x-model="userPrompt" @keydown.enter="if(userPrompt) { isThinking = true; setTimeout(() => { isThinking = false; aiResponse = 'پاسخ جمینای: براساس آخرین ثبت‌های حسابداری، مجموع سود خالص شما در ۳۰ روز گذشته ۲۳٪ بالاتر از هدف‌گذاری ماهانه بوده است و اقساط معوق کمتر از ۳٪ کل مطالبات است.'; userPrompt = ''; }, 1200); }"
+                            placeholder="از جمینای بپرسید... (مثال: وضعیت اقساط معوق این هفته چطوره؟ یا دلار چقدر روی سودم اثر گذاشت؟)"
+                            class="w-full bg-slate-950 border border-slate-800 focus:border-cyan-500 rounded-2xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none transition">
+                    </div>
+                    <button type="button" @click="if(userPrompt) { isThinking = true; setTimeout(() => { isThinking = false; aiResponse = 'پاسخ هوش مصنوعی جمینای: بر اساس دفتر روزنامه و اسناد تایید شده، جریان نقدینگی شرکت مثبت بوده و تعهدات سررسید شده امروز به طور کامل پوشش داده می‌شوند.'; userPrompt = ''; }, 1200); }"
+                        class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2.5 rounded-2xl text-xs transition flex items-center gap-1.5 shadow-lg shadow-cyan-500/20">
+                        <span x-show="!isThinking">پرسش از هوش مصنوعی ↵</span>
+                        <span x-show="isThinking" class="animate-spin">⏳ در حال تفکر...</span>
+                    </button>
+                </div>
+
+                <!-- Dynamic Answer Box (if prompt answered) -->
+                <div x-show="aiResponse" x-transition class="mt-3 p-3 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 text-xs text-cyan-200 flex items-start justify-between">
+                    <div class="flex items-start gap-2">
+                        <span>🤖</span>
+                        <span x-text="aiResponse"></span>
+                    </div>
+                    <button @click="aiResponse = ''" class="text-slate-400 hover:text-white mr-2">✕</button>
+                </div>
+            </div>
+
+            <!-- 3. TOP 4 FINANCIAL HORIZON KPI CARDS -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Card 1: Cash & Banks -->
+                <div class="glass-card p-5 rounded-3xl relative overflow-hidden group hover:border-emerald-500/40 transition">
+                    <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                        <span>موجودی کل نقد و بانک‌ها</span>
+                        <span class="p-1.5 rounded-xl bg-emerald-500/10 text-emerald-400">🏦</span>
+                    </div>
+                    <div class="text-2xl font-black text-white tracking-tight">۲,۸۴۰,۵۰۰,۰۰۰ <span class="text-xs font-normal text-slate-400">ریال</span></div>
+                    <div class="flex items-center gap-1.5 text-xs text-emerald-400 mt-2 font-medium">
+                        <span>↑ ۱۲.۴٪</span>
+                        <span class="text-slate-400 text-[11px]">موجودی در گردش آزاد</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Net Profit -->
+                <div class="glass-card p-5 rounded-3xl relative overflow-hidden group hover:border-cyan-500/40 transition">
+                    <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                        <span>سود خالص ماه جاری</span>
+                        <span class="p-1.5 rounded-xl bg-cyan-500/10 text-cyan-400">💎</span>
+                    </div>
+                    <div class="text-2xl font-black text-white tracking-tight">۱,۴۳۰,۰۰۰,۰۰۰ <span class="text-xs font-normal text-slate-400">ریال</span></div>
+                    <div class="flex items-center gap-1.5 text-xs text-cyan-400 mt-2 font-medium">
+                        <span>حاشیه سود: ۲۳.۱٪</span>
+                        <span class="text-slate-400 text-[11px]">(پس از کسر بهای تمام‌شده)</span>
+                    </div>
+                </div>
+
+                <!-- Card 3: Upcoming Installments -->
+                <div class="glass-card p-5 rounded-3xl relative overflow-hidden group hover:border-teal-500/40 transition">
+                    <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                        <span>اقساط و مطالبات نزدیک</span>
+                        <span class="p-1.5 rounded-xl bg-teal-500/10 text-teal-400">📅</span>
+                    </div>
+                    <div class="text-2xl font-black text-teal-300 tracking-tight">۷۵۰,۰۰۰,۰۰۰ <span class="text-xs font-normal text-slate-400">ریال</span></div>
+                    <div class="flex items-center gap-1.5 text-xs text-teal-400 mt-2 font-medium">
+                        <span>۱۴ قسط سررسید ماه</span>
+                        <span class="text-slate-400 text-[11px]">۵ قسط امروز</span>
+                    </div>
+                </div>
+
+                <!-- Card 4: Upcoming Cheques -->
+                <div class="glass-card p-5 rounded-3xl relative overflow-hidden group hover:border-amber-500/40 transition">
+                    <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                        <span>تعهدات چک‌های ۷ روز آینده</span>
+                        <span class="p-1.5 rounded-xl bg-amber-500/10 text-amber-400">⏳</span>
+                    </div>
+                    <div class="text-2xl font-black text-amber-300 tracking-tight">۲۴۰,۰۰۰,۰۰۰ <span class="text-xs font-normal text-slate-400">ریال</span></div>
+                    <div class="flex items-center gap-1.5 text-xs text-amber-400 mt-2">
+                        <span class="size-2 rounded-full bg-amber-500 animate-ping"></span>
+                        <span class="text-slate-300 text-[11px]">۳ فقره پرداختی / ۱ دریافتی</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. INSTALLMENT & CHEQUE RADAR (رادار تخصصی اقساط و چک‌ها) -->
+            <div class="glass-card p-6 rounded-3xl border border-slate-800" x-data="{ radarTab: 'installments' }">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-5 pb-3 border-b border-slate-800/80">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">🎯</span>
+                        <div>
+                            <h3 class="text-base font-black text-white">رادار پیش‌بینی وصول مطالبات و نقدینگی</h3>
+                            <p class="text-xs text-slate-400">پایش بی‌درنگ اقساط فروش و چک‌های صیادی پیش‌رو بدون شلوغی‌های اضافه</p>
+                        </div>
+                    </div>
+
+                    <!-- Radar Sub-Tabs -->
+                    <div class="flex items-center p-1 bg-slate-950 rounded-2xl border border-slate-800">
+                        <button type="button" @click="radarTab = 'installments'"
+                            :class="radarTab === 'installments' ? 'bg-emerald-500 text-slate-950 font-black' : 'text-slate-400 hover:text-white'"
+                            class="px-4 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5">
+                            <span>📅 اقساط پیش‌رو (۵ مورد امروز)</span>
+                        </button>
+                        <button type="button" @click="radarTab = 'cheques'"
+                            :class="radarTab === 'cheques' ? 'bg-amber-400 text-slate-950 font-black' : 'text-slate-400 hover:text-white'"
+                            class="px-4 py-1.5 rounded-xl text-xs transition flex items-center gap-1.5">
+                            <span>⏳ چک‌های صیادی (۷ روز آینده)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tab 1: Installments View -->
+                <div x-show="radarTab === 'installments'" class="space-y-3">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <!-- Installment Item 1 -->
+                        <div class="p-4 rounded-2xl bg-slate-950/70 border border-emerald-500/30 flex flex-col justify-between space-y-3 group hover:border-emerald-500/60 transition">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">سررسید: امروز</span>
+                                    <h4 class="text-sm font-bold text-white mt-1">قسط #۴ - علی رضایی</h4>
+                                    <p class="text-xs text-slate-400 mt-0.5">فاکتور فروش اقساطی #۱۱۰۴</p>
+                                </div>
+                                <span class="text-base font-black text-emerald-400 font-mono">۱۲,۵۰۰,۰۰۰ <span class="text-[10px] font-normal text-slate-400">ریال</span></span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                                <span class="text-[11px] text-slate-400">تماس: ۰۹۱۲۳۴۵۶۷۸۹</span>
+                                <div class="flex items-center gap-1.5">
+                                    <button class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-lg border border-slate-700 transition">📩 پیامک</button>
+                                    <button class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3 py-1 rounded-lg transition shadow-md shadow-emerald-500/20">وصول سریع</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Installment Item 2 -->
+                        <div class="p-4 rounded-2xl bg-slate-950/70 border border-emerald-500/30 flex flex-col justify-between space-y-3 group hover:border-emerald-500/60 transition">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <span class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">سررسید: امروز</span>
+                                    <h4 class="text-sm font-bold text-white mt-1">قسط #۲ - پارسا الکترونیک</h4>
+                                    <p class="text-xs text-slate-400 mt-0.5">فاکتور فروش اقساطی #۱۰۹۸</p>
+                                </div>
+                                <span class="text-base font-black text-emerald-400 font-mono ۲۹,۵۰۰,۰۰۰>۲۹,۵۰۰,۰۰۰ <span class="text-[10px] font-normal text-slate-400">ریال</span></span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                                <span class="text-[11px] text-slate-400">تماس: ۰۹۳۵۰۰۰۱۱۲۲</span>
+                                <div class="flex items-center gap-1.5">
+                                    <button class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-lg border border-slate-700 transition">📩 پیامک</button>
+                                    <button class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3 py-1 rounded-lg transition shadow-md shadow-emerald-500/20">وصول سریع</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Installment Item 3 (Overdue warning) -->
+                        <div class="p-4 rounded-2xl bg-slate-950/70 border border-rose-500/40 flex flex-col justify-between space-y-3 group hover:border-rose-500/70 transition">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <span class="text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full">۲ روز معوقه ⚠️</span>
+                                    <h4 class="text-sm font-bold text-white mt-1">قسط #۳ - بازرگانی نوید</h4>
+                                    <p class="text-xs text-slate-400 mt-0.5">فاکتور فروش اقساطی #۱۰۷۲</p>
+                                </div>
+                                <span class="text-base font-black text-rose-400 font-mono">۴۵,۰۰۰,۰۰۰ <span class="text-[10px] font-normal text-slate-400">ریال</span></span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                                <span class="text-[11px] text-slate-400">پیگیری تلفنی انجام شد</span>
+                                <div class="flex items-center gap-1.5">
+                                    <button class="text-xs bg-rose-500/20 text-rose-300 hover:bg-rose-500/30 px-2.5 py-1 rounded-lg border border-rose-500/30 transition">ارسال اخطار</button>
+                                    <button class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3 py-1 rounded-lg transition shadow-md shadow-emerald-500/20">ثبت وصول</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Cheques View -->
+                <div x-show="radarTab === 'cheques'" class="space-y-3">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center font-black text-sm">چ</div>
+                                <div>
+                                    <div class="text-xs font-bold text-white">چک صیادی #۸۳۹۲ - بانک ملت (پرداختی)</div>
+                                    <div class="text-[11px] text-slate-400">وجه تامین‌کننده فولاد خوزستان • سررسید: ۱۴ آبان</div>
+                                </div>
+                            </div>
+                            <div class="text-left">
+                                <div class="text-sm font-black text-amber-400 font-mono">-۱۶۰,۰۰۰,۰۰۰ ریال</div>
+                                <span class="text-[10px] text-slate-400">پاس از حساب جاری</span>
+                            </div>
+                        </div>
+
+                        <div class="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center font-black text-sm">چ</div>
+                                <div>
+                                    <div class="text-xs font-bold text-white">چک صیادی #۲۱۴۵ - بانک صادرات (دریافتی)</div>
+                                    <div class="text-[11px] text-slate-400">فروش عمده تجهیزات • سررسید: ۱۷ آبان</div>
+                                </div>
+                            </div>
+                            <div class="text-left">
+                                <div class="text-sm font-black text-teal-400 font-mono">+۸۰,۰۰۰,۰۰۰ ریال</div>
+                                <span class="text-[10px] text-emerald-400 font-bold">استعلام صیاد: سفید</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. CASH FLOW CHART & COMPACT QUICK ACTIONS -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Large Chart (2 columns) -->
+                <div class="lg:col-span-2 glass-card p-6 rounded-3xl">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-base font-bold text-white">روند جریان نقدینگی و فروش ۳۰ روز گذشته</h3>
+                            <p class="text-xs text-slate-400">مقایسه فروش نقد، وصول اقساط، مطالبات و هزینه‌های عملیاتی</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-xl border border-slate-700">روزانه</span>
+                            <span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-xl border border-emerald-500/30">ماهانه</span>
+                        </div>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="cockpitChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Quick Action Dock & Live System Activity (1 column) -->
+                <div class="glass-card p-6 rounded-3xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <span class="size-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                <span>دسترسی‌های سریع مدیر</span>
+                            </h3>
+                            <span class="text-[10px] text-slate-500 font-mono">F-Keys</span>
+                        </div>
+                        
+                        <div class="space-y-2.5">
+                            <a href="/invoices/create" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold p-3 rounded-2xl text-xs transition shadow-lg shadow-emerald-600/25 flex items-center justify-between">
+                                <span class="flex items-center gap-2"><span>➕</span><span>صدور فاکتور فروش رسمی</span></span>
+                                <span class="text-[10px] bg-emerald-700/60 px-2 py-0.5 rounded font-mono">F2</span>
+                            </a>
+                            <button class="w-full bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold p-3 rounded-2xl text-xs transition border border-slate-800 flex items-center justify-between">
+                                <span class="flex items-center gap-2"><span>💵</span><span>ثبت دریافت قسط / وصولی</span></span>
+                                <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded font-mono">F3</span>
+                            </button>
+                            <button class="w-full bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold p-3 rounded-2xl text-xs transition border border-slate-800 flex items-center justify-between">
+                                <span class="flex items-center gap-2"><span>💳</span><span>ثبت چک جدید صیادی</span></span>
+                                <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded font-mono">F4</span>
+                            </button>
+                            <button class="w-full bg-slate-900 hover:bg-slate-800 text-slate-200 font-bold p-3 rounded-2xl text-xs transition border border-slate-800 flex items-center justify-between">
+                                <span class="flex items-center gap-2"><span>🏛️</span><span>استعلام کارپوشه مودیان</span></span>
+                                <span class="text-[10px] text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded font-mono">ماده ۶</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                        <span>مالک اثر: هادی بهنام‌پور</span>
+                        <span class="text-emerald-400 font-mono">نسخه تجاری دخل</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================================= -->
+        <!-- CONCEPT 2: EXECUTIVE DARK OBSIDIAN (Linear / Raycast) -->
+        <!-- ========================================================================================= -->
+        <div x-show="concept === 'linear'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6">
+            
+            <!-- Description Banner -->
+            <div class="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">⚡</span>
+                    <div>
+                        <h2 class="text-sm font-bold text-cyan-400">کانسپت دوم: هاب اجرایی دارک آبسیدین (سبک Linear / Raycast)</h2>
+                        <p class="text-xs text-slate-300 mt-0.5">سیاهی عمیق، بردرهای مویی ۱ پیکسلی، سرچ‌بار مرکزی Ctrl+K و کارت خلاصه هوش مصنوعی روزانه برای مدیر ارشد.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="/images/concepts/dakhl_concept2_dark_obsidian_full_1793709690803.jpg" target="_blank" class="text-xs font-bold bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 px-3 py-1.5 rounded-xl border border-cyan-500/30 transition flex items-center gap-1.5">
+                        <span>🖼️ رندر کیفیت بالا (HD) ↗</span>
+                    </a>
+                    <span class="text-xs font-mono text-cyan-400 bg-cyan-950 px-2.5 py-1 rounded-lg border border-cyan-800">Precision Engineering</span>
+                </div>
+            </div>
+
+            <!-- Visual Render Preview Showcase -->
+            <div class="relative rounded-3xl overflow-hidden border border-cyan-500/30 shadow-2xl group bg-slate-900/50">
+                <img src="/images/concepts/dakhl_concept2_dark_obsidian_full_1793709690803.jpg" alt="رندر کانسپت دارک آبسیدین" class="w-full h-auto object-cover max-h-[520px] rounded-3xl group-hover:scale-[1.01] transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
+                <div class="absolute bottom-4 right-4 left-4 flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-xs bg-slate-950/80 backdrop-blur-md px-3.5 py-1.5 rounded-full text-slate-200 border border-slate-700/80 font-medium">تصویر رندر گرافیکی: محیط فوق‌حرفه‌ای دارک آبسیدین و تایم‌لاین لحظه‌ای</span>
+                    <a href="/images/concepts/dakhl_concept2_dark_obsidian_full_1793709690803.jpg" target="_blank" class="text-xs bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black px-4 py-1.5 rounded-full transition shadow-lg shadow-cyan-400/25">مشاهده تصویر در اندازه اصلی ↗</a>
+                </div>
+            </div>
+
+            <!-- Central Command Bar (Spotlight) -->
+            <div class="max-w-3xl mx-auto">
+                <div class="relative">
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-cyan-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input type="text" readonly placeholder="جستجوی سریع مشتری، فاکتور، کالا یا تایپ دستور مالی مستقیم... (Ctrl + K)" 
+                           class="w-full bg-[#0d121f] text-slate-200 text-sm rounded-2xl pr-12 pl-24 py-4 border border-cyan-500/30 focus:outline-none shadow-2xl shadow-cyan-500/10">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-4">
+                        <kbd class="px-2.5 py-1 bg-slate-800 border border-slate-700 text-slate-400 rounded-lg text-xs font-mono">⌘ K</kbd>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Financial Briefing Card -->
+            <div class="linear-card p-5 rounded-2xl border-l-4 border-l-cyan-500 relative overflow-hidden">
+                <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center shrink-0">
+                        🤖
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-sm font-bold text-white">پیام هوش مصنوعی دخل برای آقای هادی بهنام‌پور</h3>
+                            <span class="text-[10px] text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded-full font-mono">AI Briefing 1405</span>
+                        </div>
+                        <p class="text-xs text-slate-300 mt-1 leading-6">
+                            صبح بخیر هادی جان؛ امروز تراز حسابداری دخل ۱۰۰٪ متوازن است. دو فاکتور به ارزش ۹۴ میلیون تومان در انتظار تأیید شماست و سررسید پرداخت چک آقای حسینی فردا می‌باشد. پیشنهاد می‌کنم پیش از ساعت ۱۲ کارپوشه سامانه مودیان را سینک بفرمایید.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kanban Action Columns (Urgent / Pending / Done) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Column 1: Action Required (Red) -->
+                <div class="linear-card p-4 rounded-2xl border-t-2 border-t-rose-500">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold text-rose-400 flex items-center gap-2">
+                            <span class="size-2 rounded-full bg-rose-500"></span>
+                            <span>نیازمند اقدام فوری</span>
+                        </span>
+                        <span class="text-xs font-mono text-slate-400">۲ مورد</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs">
+                            <div class="font-bold text-white mb-1">چک برگشتی #۴۹۲ - بازرگانی البرز</div>
+                            <div class="text-rose-400 font-mono font-bold">۲۵,۰۰۰,۰۰۰ ریال</div>
+                            <div class="text-[10px] text-slate-500 mt-1">علت: کسری موجودی &bull; سررسید: دیروز</div>
+                        </div>
+                        <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs">
+                            <div class="font-bold text-white mb-1">هشدار انقضای مهلت ارسال مودیان</div>
+                            <div class="text-amber-400">فاکتور فروش شماره #۱۰۱۸</div>
+                            <div class="text-[10px] text-slate-500 mt-1">باقی‌مانده: ۱۸ ساعت</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 2: In-Progress (Amber) -->
+                <div class="linear-card p-4 rounded-2xl border-t-2 border-t-amber-500">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold text-amber-400 flex items-center gap-2">
+                            <span class="size-2 rounded-full bg-amber-500"></span>
+                            <span>در حال گردش و پیگیری</span>
+                        </span>
+                        <span class="text-xs font-mono text-slate-400">۳ مورد</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs">
+                            <div class="font-bold text-white mb-1">چک واگذار شده به بانک ملی</div>
+                            <div class="text-cyan-400 font-mono font-bold">۱۱۰,۰۰۰,۰۰۰ ریال</div>
+                            <div class="text-[10px] text-slate-500 mt-1">در جریان وصول &bull; سررسید: فردا</div>
+                        </div>
+                        <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs">
+                            <div class="font-bold text-white mb-1">پیش‌فاکتور منتظر تایید مشتری</div>
+                            <div class="text-slate-300">شرکت مهندسی نوآوران</div>
+                            <div class="text-[10px] text-slate-500 mt-1">مبلغ: ۲۱۰ میلیون ریال</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 3: Reconciled / Done (Emerald) -->
+                <div class="linear-card p-4 rounded-2xl border-t-2 border-t-emerald-500">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs font-bold text-emerald-400 flex items-center gap-2">
+                            <span class="size-2 rounded-full bg-emerald-500"></span>
+                            <span>تایید و تسویه شده امروز</span>
+                        </span>
+                        <span class="text-xs font-mono text-slate-400">۸ مورد</span>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs">
+                            <div class="font-bold text-white mb-1">تسویه آنلاین لینک پرداخت شاپرک</div>
+                            <div class="text-emerald-400 font-mono font-bold">+۴۵,۰۰۰,۰۰۰ ریال</div>
+                            <div class="text-[10px] text-slate-500 mt-1">سند دوطرفه کلین‌روم صادر شد</div>
+                        </div>
+                        <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs">
+                            <div class="font-bold text-white mb-1">ارسال کارپوشه مؤدیان (بچ #۲۸)</div>
+                            <div class="text-emerald-400">۵ فاکتور معتبر و پذیرفته‌شده</div>
+                            <div class="text-[10px] text-slate-500 mt-1">امضای JWS تایید شد</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================================= -->
+        <!-- CONCEPT 3: APPLE BENTO GRID (Apple 2026 Modular UI) -->
+        <!-- ========================================================================================= -->
+        <div x-show="concept === 'bento'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" class="space-y-6">
+            
+            <!-- Description Banner -->
+            <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🍱</span>
+                    <div>
+                        <h2 class="text-sm font-bold text-amber-400">کانسپت سوم: بنتو گرید ماژولار اپل (Apple 2026 Bento Grid)</h2>
+                        <p class="text-xs text-slate-300 mt-0.5">کاشی‌های گرافیکی نرم، کارت‌های مجازی بانکی با لوگوی بانک‌ها، تقویم جلالی با دایره‌های سررسید و چینش ارگونومیک مدرن.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="/images/concepts/dakhl_concept3_apple_bento_1793709729306.jpg" target="_blank" class="text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 px-3 py-1.5 rounded-xl border border-amber-500/30 transition flex items-center gap-1.5">
+                        <span>🖼️ رندر کیفیت بالا (HD) ↗</span>
+                    </a>
+                    <span class="text-xs font-mono text-amber-400 bg-amber-950 px-2.5 py-1 rounded-lg border border-amber-800">Bento Grid Layout</span>
+                </div>
+            </div>
+
+            <!-- Visual Render Preview Showcase -->
+            <div class="relative rounded-3xl overflow-hidden border border-amber-500/30 shadow-2xl group bg-slate-900/50">
+                <img src="/images/concepts/dakhl_concept3_apple_bento_1793709729306.jpg" alt="رندر کانسپت بنتو گرید اپل" class="w-full h-auto object-cover max-h-[520px] rounded-3xl group-hover:scale-[1.01] transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-60"></div>
+                <div class="absolute bottom-4 right-4 left-4 flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-xs bg-slate-950/80 backdrop-blur-md px-3.5 py-1.5 rounded-full text-slate-200 border border-slate-700/80 font-medium">تصویر رندر گرافیکی: ماژول‌های شیشه‌ای بنتو، کارت‌های بانکی مجازی و ویجت تقویم مالیاتی</span>
+                    <a href="/images/concepts/dakhl_concept3_apple_bento_1793709729306.jpg" target="_blank" class="text-xs bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-1.5 rounded-full transition shadow-lg shadow-amber-400/25">مشاهده تصویر در اندازه اصلی ↗</a>
+                </div>
+            </div>
+
+            <!-- Bento Master Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                
+                <!-- Tile 1: Graphical Bank Cards (Col 1-2) -->
+                <div class="md:col-span-2 p-6 rounded-3xl bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <span>💳 گاوصندوق و کارت‌های بانکی فعال</span>
+                        </h3>
+                        <span class="text-xs text-slate-400">۲ کارت متصل</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Simulated Mellat Card -->
+                        <div class="p-4 rounded-2xl bg-gradient-to-tr from-rose-950 via-slate-900 to-rose-900/40 border border-rose-500/30 text-white relative shadow-lg">
+                            <div class="flex items-center justify-between text-xs mb-6">
+                                <span class="font-bold">بانک ملت</span>
+                                <span class="font-mono text-[10px] opacity-75">جاری جام</span>
+                            </div>
+                            <div class="font-mono text-sm tracking-wider mb-2">۶۱۰۴ &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; ۲۸۹۱</div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs opacity-75">موجودی:</span>
+                                <span class="text-sm font-bold font-mono text-rose-300">۱,۲۳۰,۰۰۰,۰۰۰ <span class="text-[10px]">ریال</span></span>
+                            </div>
+                        </div>
+
+                        <!-- Simulated Saman Card -->
+                        <div class="p-4 rounded-2xl bg-gradient-to-tr from-sky-950 via-slate-900 to-sky-900/40 border border-sky-500/30 text-white relative shadow-lg">
+                            <div class="flex items-center justify-between text-xs mb-6">
+                                <span class="font-bold">بانک سامان</span>
+                                <span class="font-mono text-[10px] opacity-75">تنخواه گردان</span>
+                            </div>
+                            <div class="font-mono text-sm tracking-wider mb-2">۶۲۱۹ &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; ۷۱۴۰</div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs opacity-75">موجودی:</span>
+                                <span class="text-sm font-bold font-mono text-sky-300">۸۵۰,۰۰۰,۰۰۰ <span class="text-[10px]">ریال</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 2: Jalali Cheque Calendar (Col 3) -->
+                <div class="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-xs font-bold text-white mb-3">
+                            <span>📅 سررسید چک‌ها (آبان ۱۴۰۵)</span>
+                            <span class="text-amber-400">امروز: ۱۲ آبان</span>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1 text-center text-xs text-slate-400 mb-2">
+                            <span>ش</span><span>ی</span><span>د</span><span>س</span><span>چ</span><span>پ</span><span>ج</span>
+                        </div>
+                        <div class="grid grid-cols-7 gap-1 text-center text-xs font-mono">
+                            <span class="p-1 rounded text-slate-600">۸</span>
+                            <span class="p-1 rounded text-slate-600">۹</span>
+                            <span class="p-1 rounded text-slate-600">۱۰</span>
+                            <span class="p-1 rounded text-slate-600">۱۱</span>
+                            <span class="p-1 rounded-lg bg-emerald-500 text-slate-950 font-bold">۱۲</span>
+                            <span class="p-1 rounded text-slate-300 relative">۱۳<span class="size-1 rounded-full bg-rose-500 absolute bottom-0 left-1/2 -translate-x-1/2"></span></span>
+                            <span class="p-1 rounded text-slate-500">۱۴</span>
+                            <span class="p-1 rounded text-slate-300 relative">۱۵<span class="size-1 rounded-full bg-cyan-500 absolute bottom-0 left-1/2 -translate-x-1/2"></span></span>
+                            <span class="p-1 rounded text-slate-300">۱۶</span>
+                            <span class="p-1 rounded text-slate-300">۱۷</span>
+                            <span class="p-1 rounded text-slate-300">۱۸</span>
+                            <span class="p-1 rounded text-slate-300">۱۹</span>
+                            <span class="p-1 rounded text-slate-300">۲۰</span>
+                            <span class="p-1 rounded text-slate-500">۲۱</span>
+                        </div>
+                    </div>
+                    <div class="text-[11px] text-slate-400 mt-3 pt-2 border-t border-slate-800 flex items-center justify-between">
+                        <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-rose-500"></span> چک پرداختی</span>
+                        <span class="flex items-center gap-1.5"><span class="size-2 rounded-full bg-cyan-500"></span> چک دریافتی</span>
+                    </div>
+                </div>
+
+                <!-- Tile 3: Live Market Ticker Mini (Col 4) -->
+                <div class="p-5 rounded-3xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between text-xs font-bold text-white mb-3">
+                            <span>🪙 تابلوی زنده مظنه بازار</span>
+                            <span class="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">زنده</span>
+                        </div>
+                        <div class="space-y-2.5">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-300">طلای ۱۸ عیار</span>
+                                <span class="font-mono font-bold text-amber-400">۴۸,۹۰۰,۰۰۰ <span class="text-[10px]">ریال</span></span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-300">سکه تمام امامی</span>
+                                <span class="font-mono font-bold text-amber-400">۵۴۲,۰۰۰,۰۰۰ <span class="text-[10px]">ریال</span></span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-300">تتر (USDT)</span>
+                                <span class="font-mono font-bold text-emerald-400">۶۸۵,۰۰۰ <span class="text-[10px]">ریال</span></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-[10px] text-slate-500 mt-3 pt-2 border-t border-slate-800 text-center">
+                        اتصال به ۵ سرور لایو TGJU و نوبیتکس
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-6 border-t border-slate-900 text-center text-xs text-slate-500">
+        سامانه مالی و حسابداری دخل &bull; صاحب امتیاز و مدیر توسعه: هادی بهنام‌پور
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('cockpitChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['۱ آبان', '۵ آبان', '۱۰ آبان', '۱۵ آبان', '۲۰ آبان', '۲۵ آبان', '۳۰ آبان'],
+                    datasets: [
+                        {
+                            label: 'درآمد فروش',
+                            data: [120, 190, 300, 250, 420, 390, 510],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        {
+                            label: 'هزینه‌ها و خرید',
+                            data: [80, 110, 170, 140, 220, 190, 280],
+                            borderColor: '#06b6d4',
+                            backgroundColor: 'rgba(6, 182, 212, 0.05)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#94a3b8',
+                                font: { family: 'Vazirmatn' }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { family: 'Vazirmatn' } }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#94a3b8', font: { family: 'Vazirmatn' } }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

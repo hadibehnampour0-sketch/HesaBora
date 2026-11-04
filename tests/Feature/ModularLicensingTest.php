@@ -417,6 +417,57 @@ class ModularLicensingTest extends TestCase
             ->assertSee('۱۶ ماژول قدرتمند دخل', false);
     }
 
+    public function test_flagship_landing_page_renders_successfully(): void
+    {
+        $response = $this->get(route('landing'));
+
+        $response->assertOk()
+            ->assertSee('دخل')
+            ->assertSee('۱۶ صنف تخصصی')
+            ->assertSee('سامانه مودیان')
+            ->assertSee('بکاپ ۳-۲-۱')
+            ->assertSee('نسخه آزمایشی ۱۴ روزه');
+    }
+
+    public function test_instant_trial_request_endpoint(): void
+    {
+        $response = $this->postJson(route('trial.request'), [
+            'customer_name' => 'فروشگاه آزمایشی دخل',
+            'phone' => '09123456789',
+            'business_type' => 'طلا و جواهر',
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('days', 14);
+
+        $licenseKey = $response->json('license_key');
+        $this->assertNotEmpty($licenseKey);
+
+        $verify = $this->licenseService->verifyLicenseKey($licenseKey);
+        $this->assertTrue($verify['valid']);
+        $this->assertSame('trial', $verify['payload']['tier'] ?? $verify['payload']['edition']);
+        $this->assertStringContainsString('فروشگاه آزمایشی دخل', $verify['payload']['org']);
+    }
+
+    public function test_public_order_submission_endpoint(): void
+    {
+        $response = $this->postJson(route('order.submit'), [
+            'plan' => 'commercial',
+            'customer_name' => 'بازرگانی آریا',
+            'phone' => '09129876543',
+            'company_name' => 'شرکت توسعه تجارت آریا',
+            'extra_companies' => 2,
+            'extra_users' => 1,
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('success', true);
+
+        $this->assertStringStartsWith('DK-ORD-', $response->json('order_reference'));
+        $this->assertGreaterThan(15500000, $response->json('total_price_irr'));
+    }
+
     public function test_legacy_v1_license_token_rejection_as_invalid_format(): void
     {
         $v1Token = 'DAKHL-LIC-v1.eyJlZGl0aW9uIjoiZW50ZXJwcmlzZSJ9.mock_signature_12345';

@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\FinancingPlan;
+use App\Models\InstallmentCollateral;
 use App\Models\InstallmentContract;
 use App\Models\InstallmentSchedule;
 use App\Models\User;
@@ -13,8 +14,10 @@ use App\Services\Financing\FinancingService;
 use App\Services\Financing\InstallmentCalculator;
 use Cookie;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
@@ -256,5 +259,142 @@ class FinancingInstallmentTest extends TestCase
         $response->assertOk();
         $response->assertSee('INS-COMPANY-A-001');
         $response->assertDontSee('INS-COMPANY-B-999');
+    }
+
+    public function test_create_contract_with_manual_rate_and_initial_collaterals(): void
+    {
+        $response = $this->actingAs($this->user)->post(route('financing.store'), [
+            'customer_id' => $this->customer->id,
+            'calculation_method' => 'MARKET_MONTHLY',
+            'monthly_interest_rate' => 4.5,
+            'total_price' => 50000000,
+            'down_payment' => 10000000,
+            'tenor_months' => 8,
+            'start_date' => '2026-11-04',
+            'notes' => 'قرارداد اقساطی با نرخ دستی ۴.۵٪ و وثایق اولیه',
+            'collaterals' => [
+                [
+                    'type' => 'CHEQUE',
+                    'title' => 'چک صیادی ضمانت',
+                    'purpose' => 'GUARANTEE',
+                    'cheque_sayad_number' => '1234567890123456',
+                    'cheque_bank' => 'بانک تجارت',
+                    'cheque_account_owner' => 'رضا حسینی',
+                    'cheque_amount' => 60000000,
+                    'estimated_value' => 60000000,
+                ],
+                [
+                    'type' => 'GOLD',
+                    'title' => 'النگو طلا ۱۸ عیار',
+                    'gold_weight_grams' => 15.350,
+                    'gold_karat' => 18,
+                    'estimated_value' => 750000000,
+                ],
+            ],
+        ]);
+
+        $contract = InstallmentContract::where('company_id', $this->company->id)->latest()->first();
+        $this->assertNotNull($contract);
+        $response->assertRedirect(route('financing.show', $contract->id));
+
+        $this->assertSame(4.5, (float) $contract->applied_interest_rate);
+        $this->assertSame('MARKET_MONTHLY', $contract->calculation_method);
+        $this->assertSame(40000000, $contract->principal_amount);
+
+        // 2 initial collaterals created
+        $this->assertCount(2, $contract->collaterals);
+        $this->assertSame(810000000, $contract->totalCollateralsEstimatedValue());
+
+        $goldCol = $contract->collaterals->where('type', 'GOLD')->first();
+        $this->assertNotNull($goldCol);
+        $this->assertEquals(15.350, (float) $goldCol->gold_weight_grams);
+        $this->assertSame(18, $goldCol->gold_karat);
+    }
+
+    public function test_add_collateral_with_attachment_and_release_workflow(): void
+    {
+        Storage::fake('public');
+
+        $contract = $this->service->createContract([
+            'company_id' => $this->company->id,
+            'customer_id' => $this->customer->id,
+            'total_price' => 20000000,
+            'tenor_months' => 4,
+            'start_date' => '2026-11-04',
+        ]);
+
+        $fakeImage = UploadedFile::fake()->create('gold_ring.jpg', 100, 'image/jpeg');
+
+        $res = $this->actingAs($this->user)->post(route('financing.contracts.collaterals.store', $contract->id), [
+            'type' => 'GOLD',
+            'title' => 'انگشتر طلای مردانه',
+            'gold_weight_grams' => 8.240,
+            'gold_karat' => 18,
+            'estimated_value' => 400000000,
+            'attachment' => $fakeImage,
+            'notes' => 'نزد صندوقدار شرکت به امانت سپرده شد.',
+        ]);
+
+        $res->assertRedirect();
+
+        $collateral = InstallmentCollateral::where('contract_id', $contract->id)->first();
+        $this->assertNotNull($collateral);
+        $this->assertSame('GOLD', $collateral->type);
+        $this->assertSame('RECEIVED', $collateral->status);
+        $this->assertNotNull($collateral->attachment_path);
+        Storage::disk('public')->assertExists($collateral->attachment_path);
+
+        // Release collateral back to customer
+        $releaseRes = $this->actingAs($this->user)->patch(route('financing.collaterals.release', $collateral->id), [
+            'release_notes' => 'با تسویه اقساط، طلا تحویل مشتری شد.',
+        ]);
+
+        $releaseRes->assertRedirect();
+        $collateral->refresh();
+        $this->assertSame('RELEASED', $collateral->status);
+        $this->assertNotNull($collateral->released_at);
+        $this->assertSame('با تسویه اقساط، طلا تحویل مشتری شد.', $collateral->release_notes);
+    }
+
+    public function test_property_and_vehicle_collaterals_registration(): void
+    {
+        $contract = $this->service->createContract([
+            'company_id' => $this->company->id,
+            'customer_id' => $this->customer->id,
+            'total_price' => 100000000,
+            'tenor_months' => 12,
+            'start_date' => '2026-11-04',
+        ]);
+
+        // Register Property
+        $this->actingAs($this->user)->post(route('financing.contracts.collaterals.store', $contract->id), [
+            'type' => 'PROPERTY',
+            'title' => 'سند تک‌برگ آپارتمان',
+            'property_registry_code' => 'پلاک ۹۸۴ فرعی ۱۲',
+            'property_area' => 120.5,
+            'property_address' => 'تهران، سعادت‌آباد، خیابان سرو غربی',
+            'estimated_value' => 5000000000,
+        ])->assertRedirect();
+
+        // Register Vehicle
+        $this->actingAs($this->user)->post(route('financing.contracts.collaterals.store', $contract->id), [
+            'type' => 'VEHICLE',
+            'title' => 'خودرو تارا اتوماتیک V4',
+            'vehicle_model' => 'تارا اتومات ۱۴۰۳',
+            'vehicle_plate' => '۱۲ الف ۳۴۵ ایران ۲۲',
+            'vehicle_chassis_number' => 'NAAL123456789',
+            'estimated_value' => 1200000000,
+        ])->assertRedirect();
+
+        $contract->refresh();
+        $this->assertCount(2, $contract->collaterals);
+
+        $property = $contract->collaterals->where('type', 'PROPERTY')->first();
+        $this->assertSame('پلاک ۹۸۴ فرعی ۱۲', $property->property_registry_code);
+        $this->assertEquals(120.5, (float) $property->property_area);
+
+        $vehicle = $contract->collaterals->where('type', 'VEHICLE')->first();
+        $this->assertSame('تارا اتومات ۱۴۰۳', $vehicle->vehicle_model);
+        $this->assertSame('۱۲ الف ۳۴۵ ایران ۲۲', $vehicle->vehicle_plate);
     }
 }

@@ -1,6 +1,21 @@
 <x-super-admin-layout :title="__('Dashboard')">
     <x-show-message-bags />
 
+    {{-- Banner for easy switching to the main software dashboard --}}
+    <div class="mb-5 p-4 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <span class="text-3xl">🚀</span>
+            <div>
+                <h3 class="font-extrabold text-sm sm:text-base">ورود به محیط کاربری و داشبورد نرم‌افزار دخل</h3>
+                <p class="text-xs text-emerald-100 mt-0.5">شما در حال حاضر در پنل مدیریت کل پلتفرم (Super Admin) هستید. جهت مشاهده میز کار اصلی، حسابداری، فاکتورها، اقساط و هوش مصنوعی کلیک کنید.</p>
+            </div>
+        </div>
+        <a href="{{ route('home') }}" class="btn btn-sm bg-white hover:bg-slate-100 text-emerald-950 font-black border-0 shadow-md rounded-xl shrink-0 gap-2">
+            <span>ورود به داشبورد اصلی فروش و حسابداری</span>
+            <span>←</span>
+        </a>
+    </div>
+
     <section
         class="admin-rise flex flex-col justify-between gap-5 rounded-2xl px-4 md:flex-row md:items-center md:px-6 md:py-6"
         aria-labelledby="management-welcome">

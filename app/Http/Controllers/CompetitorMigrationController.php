@@ -36,6 +36,7 @@ class CompetitorMigrationController extends Controller
         try {
             $payload = $this->migrationService->parse($rawContent, $request->input('source_type'));
             $healthCheck = $this->migrationService->analyzeAndHealthCheck($payload);
+            $aiInspection = $this->migrationService->aiSupervisionReport($payload, $healthCheck);
 
             if ($request->wantsJson()) {
                 return response()->json([
@@ -47,12 +48,14 @@ class CompetitorMigrationController extends Controller
                         'warnings' => $healthCheck->warnings,
                         'reconciliation' => $healthCheck->reconciliation,
                     ],
+                    'ai_inspection' => $aiInspection,
                 ]);
             }
 
             return view('migration.preview', [
                 'payload' => $payload,
                 'health' => $healthCheck,
+                'aiInspection' => $aiInspection,
                 'sourceType' => $request->input('source_type'),
                 'rawJson' => $rawContent,
             ]);

@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="emerald">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دخل | نسل نوین نرم‌افزار حسابداری و ERP اصناف و شرکت‌های ایران</title>
+    <meta name="description" content="دخل؛ سیستم عامل جامع مالی، حسابداری و مدیریت اصناف ایران. ۱۰۰٪ آفلاین اول، اتصال مستقیم و رایگان به سامانه مودیان، پشتیبان‌گیری ۳-۲-۱ خودکار روی فلش و تلگرام، و هوش مصنوعی کوپایلوت مالی.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <style>
+        body { font-family: system-ui, -apple-system, "Vazirmatn", "Segoe UI", Roboto, Tahoma, sans-serif; }
+        .gradient-text {
+            background: linear-gradient(135deg, #059669 0%, #0d9488 50%, #0284c7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .glow-emerald {
+            box-shadow: 0 0 50px -10px rgba(16, 185, 129, 0.25);
+        }
+        .glass-nav {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+    </style>
+</head>
+<body class="bg-base-200/40 text-base-content min-h-screen selection:bg-emerald-500 selection:text-white"
+      x-data="{
+          trialModalOpen: false,
+          orderModalOpen: false,
+          selectedPlan: 'shop',
+          trialForm: { customer_name: '', phone: '', business_type: 'فروشگاهی' },
+          trialResult: null,
+          trialLoading: false,
+          trialError: null,
+          orderForm: { plan: 'shop', customer_name: '', phone: '', company_name: '', extra_companies: 0, extra_users: 0 },
+          orderResult: null,
+          orderLoading: false,
+          orderError: null,
+          activeIndustryTab: 'gold',
+          plansData: {{ json_encode($plans) }},
+          submitTrial() {
+              this.trialLoading = true;
+              this.trialError = null;
+              fetch('{{ route('trial.request') }}', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                      'Accept': 'application/json'
+                  },
+                  body: JSON.stringify(this.trialForm)
+              })
+              .then(res => res.json())
+              .then(data => {
+                  this.trialLoading = false;
+                  if (data.success) {
+                      this.trialResult = data;
+                  } else {
+                      this.trialError = data.message || 'خطا در صدور لایسنس آزمایشی.';
+                  }
+              })
+              .catch(err => {
+                  this.trialLoading = false;
+                  this.trialError = 'ارتباط با سرور برقرار نشد.';
+              });
+          },
+          submitOrder() {
+              this.orderLoading = true;
+              this.orderError = null;
+              this.orderForm.plan = this.selectedPlan;
+              fetch('{{ route('order.submit') }}', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                      'Accept': 'application/json'
+                  },
+                  body: JSON.stringify(this.orderForm)
+              })
+              .then(res => res.json())
+              .then(data => {
+                  this.orderLoading = false;
+                  if (data.success) {
+                      this.orderResult = data;
+                  } else {
+                      this.orderError = data.message || 'خطا در ثبت سفارش.';
+                  }
+              })
+              .catch(err => {
+                  this.orderLoading = false;
+                  this.orderError = 'ارتباط با سرور برقرار نشد.';
+              });
+          },
+          openOrder(planKey) {
+              this.selectedPlan = planKey;
+              this.orderResult = null;
+              this.orderError = null;
+              this.orderModalOpen = true;
+          }
+      }">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-base-100/90 glass-nav border-b border-base-300/80 sticky top-0 z-50 shadow-sm transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-500 text-white flex items-center justify-center text-2xl font-black shadow-lg shadow-emerald-600/25">
+                    د
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl font-black tracking-tight text-base-content">دخل</span>
+                        <span class="badge badge-accent badge-xs py-0.5 px-2 font-mono text-[10px] font-bold">ERP v2.5</span>
+                    </div>
+                    <span class="text-[11px] text-base-content/60 block font-medium">نسل نوین نرم‌افزار مالی و حسابداری ایران</span>
+                </div>
+            </div>
+
+            <nav class="hidden lg:flex items-center gap-7 text-xs font-bold text-base-content/80">
+                <a href="#features" class="hover:text-primary transition">{{ __('امکانات کلیدی') }}</a>
+                <a href="#industries" class="hover:text-primary transition">{{ __('۱۶ صنف تخصصی') }}</a>
+                <a href="#comparison" class="hover:text-primary transition">{{ __('مقایسه با رقبا') }}</a>
+                <a href="#backup-engine" class="hover:text-primary transition">{{ __('امنیت و بکاپ ۳-۲-۱') }}</a>
+                <a href="#pricing" class="hover:text-primary transition">{{ __('پکیج‌ها و تعرفه‌ها') }}</a>
+                <a href="{{ route('pricing') }}" class="hover:text-primary transition text-primary flex items-center gap-1">
+                    <span>⚡</span> <span>{{ __('محاسبه‌گر آنلاین') }}</span>
+                </a>
+                <a href="#faq" class="hover:text-primary transition">{{ __('پرسش‌های متداول') }}</a>
+            </nav>
+
+            <div class="flex items-center gap-2.5">
+                @auth
+                    <a href="{{ route('home') }}" class="btn btn-primary btn-sm rounded-xl px-5 font-bold shadow-md shadow-primary/20 text-xs">
+                        <span>{{ __('ورود به پیشخوان دخل') }}</span>
+                        <span>←</span>
+                    </a>
+                @else
+                    <button @click="trialModalOpen = true" class="btn btn-outline btn-primary btn-sm rounded-xl px-4 text-xs font-bold hidden sm:inline-flex">
+                        <span>🎁</span>
+                        <span>{{ __('نسخه آزمایشی رایگان') }}</span>
+                    </button>
+                    <a href="{{ route('login') }}" class="btn btn-ghost btn-sm rounded-xl px-3 text-xs font-bold">
+                        {{ __('ورود') }}
+                    </a>
+                    <a href="#pricing" class="btn btn-primary btn-sm rounded-xl px-5 font-bold shadow-md shadow-primary/25 text-xs">
+                        {{ __('خرید نرم‌افزار') }}
+                    </a>
+                @endauth
+            </div>
+        </div>
+    </header>
+
+    <main class="space-y-28 pb-20">
+
+        <!-- HERO SECTION -->
+        <section class="relative overflow-hidden pt-12 pb-16 lg:pt-20 lg:pb-24">
+            <!-- Background Glows -->
+            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+            <div class="absolute top-1/3 right-10 w-[300px] h-[300px] bg-teal-500/10 blur-[90px] rounded-full pointer-events-none -z-10"></div>
+
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
+                <!-- Badges -->
+                <div class="inline-flex flex-wrap items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 text-xs font-bold shadow-sm">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>۱۰۰٪ آفلاین اول</span>
+                    <span class="text-emerald-300">•</span>
+                    <span>سامانه مودیان رایگان</span>
+                    <span class="text-emerald-300">•</span>
+                    <span>بکاپ ۳-۲-۱ اتوماتیک به تلگرام</span>
+                    <span class="text-emerald-300">•</span>
+                    <span>دستیار هوش مصنوعی</span>
+                </div>
+
+                <!-- Main Title -->
+                <div class="space-y-4 max-w-4xl mx-auto">
+                    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-base-content tracking-tight leading-[1.25]">
+                        پایان عصر نرم‌افزارهای قفلی، کند و قدیمی؛
+                        <br>
+                        <span class="gradient-text">حسابداری دخل، آینده کسب‌وکار شما</span>
+                    </h1>
+                    <p class="text-base sm:text-lg text-base-content/70 leading-relaxed max-w-3xl mx-auto font-normal">
+                        نرم‌افزار جامع حسابداری و مدیریت مالی دخل، برای بازاریان، اصناف و کارآفرینان هوشمند ایران ساخته شده است. بدون ترس از قطع اینترنت کار کنید، فاکتورهای خود را مستقیم و بدون واسطه به سامانه مودیان ارسال کنید و آسوده‌خاطر باشید که داده‌هایتان هرگز از بین نمی‌روند.
+                    </p>
+                </div>
+
+                <!-- CTA Actions -->
+                <div class="flex flex-wrap items-center justify-center gap-3.5 pt-2">
+                    <button @click="trialModalOpen = true" class="btn btn-primary btn-lg rounded-2xl px-8 font-black shadow-xl shadow-primary/30 text-sm hover:scale-[1.02] transition-transform">
+                        <span>دریافت رایگان نسخه آزمایشی ۱۴ روزه</span>
+                        <span class="text-lg">⚡</span>
+                    </button>
+                    <a href="#pricing" class="btn btn-outline btn-lg rounded-2xl px-7 font-bold text-sm hover:scale-[1.02] transition-transform">
+                        <span>مشاهده ۵ پکیج تجاری و قیمت‌ها</span>
+                        <span>↓</span>
+                    </a>
+                    <a href="{{ route('pricing') }}" class="btn btn-ghost btn-lg rounded-2xl px-5 font-bold text-xs text-base-content/70">
+                        <span>محاسبه‌گر سفارشی لایسنس ←</span>
+                    </a>
+                </div>
+
+                <!-- Trust Metrics Strip -->
+                <div class="pt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-center">
+                    <div class="p-4 rounded-2xl bg-base-100 border border-base-300/60 shadow-sm">
+                        <div class="text-2xl lg:text-3xl font-black text-emerald-600 font-mono">+۱۵,۰۰۰</div>
+                        <div class="text-xs text-base-content/60 font-semibold mt-1">سند مالی روزانه در سراسر کشور</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-base-100 border border-base-300/60 shadow-sm">
+                        <div class="text-2xl lg:text-3xl font-black text-teal-600 font-mono">۱۶ صنف</div>
+                        <div class="text-xs text-base-content/60 font-semibold mt-1">پروفایل و فرمول محاسباتی تخصصی</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-base-100 border border-base-300/60 shadow-sm">
+                        <div class="text-2xl lg:text-3xl font-black text-cyan-600 font-mono">۰ ثانیه</div>
+                        <div class="text-xs text-base-content/60 font-semibold mt-1">تاخیر با معماری محلی ۱۰۰٪ آفلاین</div>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-base-100 border border-base-300/60 shadow-sm">
+                        <div class="text-2xl lg:text-3xl font-black text-indigo-600 font-mono">۱۰۰٪ مستقیم</div>
+                        <div class="text-xs text-base-content/60 font-semibold mt-1">کارپوشه مالیاتی بدون شرکت معتمد</div>
+                    </div>
+                </div>
+
+                <!-- Interactive App Cockpit Mockup Preview -->
+                <div class="pt-8 max-w-5xl mx-auto">
+                    <div class="rounded-3xl border border-base-300 bg-base-100 p-3 sm:p-4 shadow-2xl shadow-slate-900/10 glow-emerald">
+                        <!-- Window Controls -->
+                        <div class="flex items-center justify-between border-b border-base-200 pb-3 mb-3 px-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                                <span class="text-xs font-mono text-base-content/40 mr-2">dakhl-desktop-erp // cockpit</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-xs">
+                                <span class="badge badge-success badge-sm gap-1 font-bold">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-white"></span> پایگاه داده فعال و تراز
+                                </span>
+                                <span class="badge badge-info badge-sm gap-1 font-bold">
+                                    <span>🛡️</span> بکاپ ۳-۲-۱ همگام
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Mockup Content Grid -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-right">
+                            <div class="p-4 rounded-2xl bg-base-200/60 border border-base-300/50">
+                                <div class="text-xs text-base-content/60 font-bold mb-1">فروش ماه جاری (تراز لحظه‌ای)</div>
+                                <div class="text-xl font-black text-emerald-600 font-mono">۲,۴۸۵,۴۰۰,۰۰۰ <span class="text-xs font-normal">تومان</span></div>
+                                <div class="text-[11px] text-emerald-700 font-bold mt-1">↑ ۱۸٪ رشد نسبت به ماه قبل</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-base-200/60 border border-base-300/50">
+                                <div class="text-xs text-base-content/60 font-bold mb-1">وضعیت کارپوشه سامانه مودیان</div>
+                                <div class="text-xl font-black text-teal-600 font-mono">۹۸ فاکتور ارسالی <span class="text-xs font-normal text-success">تایید قطعی</span></div>
+                                <div class="text-[11px] text-base-content/60 font-medium mt-1">ارسال مستقیم با کلید اختصاصی CSR</div>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-base-200/60 border border-base-300/50">
+                                <div class="text-xs text-base-content/60 font-bold mb-1">دستیار مالی هوش مصنوعی دخل</div>
+                                <div class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/60 p-2 rounded-xl mt-1">
+                                    💡 تحلیل دخل: ۲ چک به مبلغ ۳۴۰ م.ت طی ۳ روز آینده سررسید می‌شوند؛ مانده بانک ملی کافی است.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- WHY DAKHL / PAIN POINTS VS SOLUTIONS -->
+        <section id="features" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <span class="badge badge-primary badge-outline text-xs font-bold px-3 py-1">چرا دخل انتخاب اول اصناف است؟</span>
+                <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-base-content">
+                    حل ریشه‌ای چالش‌هایی که سال‌ها درگیرشان بودید
+                </h2>
+                <p class="text-sm sm:text-base text-base-content/70">
+                    نرم‌افزارهای نسل قبل بر اساس فناوری‌های ۲۰ سال پیش ساخته شده‌اند. دخل از روز اول برای پاسخ به واقعیت‌های اقتصادی و فناوری امروز بازار ایران طراحی شده است.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1: Offline First -->
+                <div class="card bg-base-100 border border-base-300 p-6 rounded-3xl shadow-sm hover:shadow-md transition space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-2xl font-bold">
+                        ⚡
+                    </div>
+                    <h3 class="text-lg font-black text-base-content">۱۰۰٪ آفلاین اول؛ پایان لنگ ماندن پای صندوق</h3>
+                    <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        اینترنت ملی شد؟ فیبر نوری قطع شد؟ با دخل حتی متوجه قطعی نخواهید شد. پایگاه‌داده محلی پرسرعت به شما امکان می‌دهد با نهایت سرعت فاکتور بزنید و هنگامی که اینترنت متصل شد، شعب و تبلت‌ها به صورت خودکار و بدون تداخل با یکدیگر همگام (Sync) می‌شوند.
+                    </p>
+                </div>
+
+                <!-- Feature 2: Free Moadian -->
+                <div class="card bg-base-100 border border-base-300 p-6 rounded-3xl shadow-sm hover:shadow-md transition space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-600 flex items-center justify-center text-2xl font-bold">
+                        🏛️
+                    </div>
+                    <h3 class="text-lg font-black text-base-content">سامانه مودیان رایگان دائمی در تمام پلن‌ها</h3>
+                    <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        برخلاف شرکت‌های سنتی که برای ماژول مودیان مبالغ گزاف چند میلیونی سالانه دریافت می‌کنند، در دخل سامانه مودیان به صورت مادام‌العمر در پایه تمام پلن‌ها رایگان است. اتصال مستقیم به کارپوشه، امضای دیجیتال و دریافت توکن بدون نیاز به پرداخت حتی ۱ ریال به شرکت‌های معتمد!
+                    </p>
+                </div>
+
+                <!-- Feature 3: 3-2-1 Backup Engine -->
+                <div class="card bg-base-100 border border-base-300 p-6 rounded-3xl shadow-sm hover:shadow-md transition space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center text-2xl font-bold">
+                        🛡️
+                    </div>
+                    <h3 class="text-lg font-black text-base-content">موتور بکاپ ۳-۲-۱ اتوماتیک روی فلش و تلگرام</h3>
+                    <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        سوختن هارد، ویروس باج‌گیر، یا سرقت سیستم؟ هیچ فاجعه‌ای حساب‌های شما را نابود نمی‌کند. دخل هنگام خروج از نرم‌افزار، یک نسخه رمزنگاری‌شده AES-256 را روی فلش‌مموری و یک نسخه امن صفر-دانش را مستقیم به ربات تلگرام شخصی شما می‌فرستد.
+                    </p>
+                </div>
+
+                <!-- Feature 4: Atomic Auto Updater -->
+                <div class="card bg-base-100 border border-base-300 p-6 rounded-3xl shadow-sm hover:shadow-md transition space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center text-2xl font-bold">
+                        🔄
+                    </div>
+                    <h3 class="text-lg font-black text-base-content">به‌روزرسانی اتومیک با ۱ کلیک و قابلیت Rollback</h3>
+                    <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        قوانین جدید مالیاتی تصویب شد؟ دخل با یک کلیک خود را به‌روز می‌کند؛ بدون نیاز به حضور نصاب یا دیسک‌های نصب قدیمی. قبل از هر به‌روزرسانی اسنپ‌شات اضطراری گرفته می‌شود و داده‌ها و اسناد مالی شما به هیچ وجه دستکاری نمی‌شوند.
+                    </p>
+                </div>
+
+                <!-- Feature 5: AI Financial Copilot -->
+                <div class="card bg-base-100 border border-base-300 p-6 rounded-3xl shadow-sm hover:shadow-md transition space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-2xl font-bold">
+                        🤖
+                    </div>
+                    <h3 class="text-lg font-black text-base-content">دستیار مالی هوش مصنوعی (AI Copilot)</h3>
+                    <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        حسابداری دخل فراتر از یک دفتر ساده است؛ هوش مصنوعی دخل سودآوری اقلام فاکتور را می‌سنجد، کسری نقدینگی را قبل از سررسید چک‌ها هشدار می‌دهد، و کالاهای کم‌گردش را برای جلوگیری از راکد ماندن سرمایه به شما پیشنهاد می‌کند.
+                    </p>
+                </div>
+
+                <!-- Feature 6: Fast Migration -->
+                <div class="card bg-base-100 border border-base-300 p-6 rounded-3xl shadow-sm hover:shadow-md transition space-y-4">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-600 flex items-center justify-center text-2xl font-bold">
+                        🚀
+                    </div>
+                    <h3 class="text-lg font-black text-base-content">مهاجرت از هلو، سپیدار و دشت در ۳ دقیقه</h3>
+                    <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        نگران انتقال اطلاعات سال‌های گذشته‌تان هستید؟ با موتور هوشمند مهاجرت دخل، فایل اکسل کالاها، اشخاص و مانده حساب‌های نرم‌افزار قبلی خود را بارگذاری کنید تا در کمتر از ۳ دقیقه تمام حساب‌هایتان با تراز افتتاحیه آماده به کار شود.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 16 SPECIALIZED INDUSTRIES SHOWCASE -->
+        <section id="industries" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <span class="badge badge-accent badge-outline text-xs font-bold px-3 py-1">تخصصی برای شغل شما</span>
+                <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-base-content">
+                    ۱۶ صنف تخصصی با فرمول‌ها و محاسبات بومی بازار
+                </h2>
+                <p class="text-sm sm:text-base text-base-content/70">
+                    نیازی به خرید ماژول‌های جداگانه یا شخصی‌سازی‌های پرهزینه ندارید؛ دخل فرمول‌های ریاضی و استانداردهای صنف شما را می‌شناسد.
+                </p>
+            </div>
+
+            <!-- Industry Cards Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- 1. Gold -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-amber-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">🟡</div>
+                    <h4 class="font-black text-base text-base-content">طلا، جواهر و نقره</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">محاسبه مظنه، عیار ۷۵۰، تبدیل به ۱۸ عیار، اجرت درصدی یا وزنی، سود و مالیات قانون جدید ارزش افزوده طلا.</p>
+                    <div class="badge badge-sm badge-warning font-mono text-[10px]">فرمول مظنه و سوت</div>
+                </div>
+
+                <!-- 2. Iron -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-slate-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">🏗️</div>
+                    <h4 class="font-black text-base text-base-content">آهن و مقاطع فولادی</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">فروش شاخه‌ای، بندیل، کلاف، جدول اشتال وزنی میلگرد و تیرآهن، و باسکول با کسر ناخالصی.</p>
+                    <div class="badge badge-sm badge-neutral font-mono text-[10px]">محاسبه بندیل و اشتال</div>
+                </div>
+
+                <!-- 3. Building Materials -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-emerald-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">🧱</div>
+                    <h4 class="font-black text-base text-base-content">مصالح، سیمان و بتن</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">فرمول پاکت به تن، بارنامه کرایه حمل، ضایعات تخلیه، بارگیری تریلی و مخلوط بتن آماده.</p>
+                    <div class="badge badge-sm badge-success font-mono text-[10px]">تبدیل کیسه به تن</div>
+                </div>
+
+                <!-- 4. Confectionery -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-rose-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">🎂</div>
+                    <h4 class="font-black text-base text-base-content">قنادی، شیرینی و خشکبار</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">کسر خودکار وزن جعبه و دیس، اتصال مستقیم به ترازوی بارکدزن دیجیتال و فروش وزنی فله.</p>
+                    <div class="badge badge-sm badge-secondary font-mono text-[10px]">ترازوی دیجیتال و ته‌وزن</div>
+                </div>
+
+                <!-- 5. Restaurant -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-orange-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">☕</div>
+                    <h4 class="font-black text-base text-base-content">کافه، رستوران و فست‌فود</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">مدیریت میزها، پرینت مجزای فیش آشپزخانه و بار گرم، سفارش‌گیر تبلتی گارسون و اسنپ‌فود.</p>
+                    <div class="badge badge-sm badge-warning font-mono text-[10px]">میز و آشپزخانه LAN</div>
+                </div>
+
+                <!-- 6. Supermarket & Food -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-teal-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">🛒</div>
+                    <h4 class="font-black text-base text-base-content">سوپرمارکت و هایپرمارکت</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">بارکدخوان پرسرعت، بسته‌بندی، تاریخ انقضا، پروموشن تخفیف پلکانی و اتصال به کارتخوان POS.</p>
+                    <div class="badge badge-sm badge-info font-mono text-[10px]">بارکدخوان بی‌درنگ</div>
+                </div>
+
+                <!-- 7. Pharmacy -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-blue-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">💊</div>
+                    <h4 class="font-black text-base text-base-content">داروخانه و تجهیزات پزشکی</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">سری ساخت و ردیابی لات (LOT/Batch)، تاریخ انقضا، محاسبه سهم بیمه و تعرفه خدمات دارویی.</p>
+                    <div class="badge badge-sm badge-primary font-mono text-[10px]">سهم بیمه و بچ‌نامبر</div>
+                </div>
+
+                <!-- 8. Auto Parts -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-purple-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">🚗</div>
+                    <h4 class="font-black text-base text-base-content">لوازم یدکی و قطعات خودرو</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">جستجوی پارت نامبر (Part Number)، کد فنی، خودروهای سازگار و قطعات معادل اورجینال/شرکتی.</p>
+                    <div class="badge badge-sm badge-accent font-mono text-[10px]">پارت نامبر و خودروی سازگار</div>
+                </div>
+
+                <!-- 9. Mobile & Tech -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-cyan-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">📱</div>
+                    <h4 class="font-black text-base text-base-content">موبایل و لوازم دیجیتال</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">ثبت و ردیابی شماره سریال IMEI دستگاه، وضعیت رجیستری همتا، و ثبت گارانتی و مهلت تست.</p>
+                    <div class="badge badge-sm badge-info font-mono text-[10px]">ردیابی IMEI و همتا</div>
+                </div>
+
+                <!-- 10. Apparel & Fashion -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-pink-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">👔</div>
+                    <h4 class="font-black text-base text-base-content">پوشاک، کیف و کفش</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">ماتریس دوبعدی سایزبندی و رنگ‌بندی، چاپ بارکد اتیکت، و تعریف فصل و برند البسه.</p>
+                    <div class="badge badge-sm badge-secondary font-mono text-[10px]">ماتریس سایز و رنگ</div>
+                </div>
+
+                <!-- 11. Home Appliances -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-amber-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">📺</div>
+                    <h4 class="font-black text-base text-base-content">لوازم خانگی و صوتی‌تصویری</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">فروش اقساطی، چک‌های دوره‌ای با محاسبه بهره کارمزد، و خدمات نصب و کارت طلایی گارانتی.</p>
+                    <div class="badge badge-sm badge-warning font-mono text-[10px]">قرارداد اقساط و ضامن</div>
+                </div>
+
+                <!-- 12. Carpet & Textile -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-red-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">🧶</div>
+                    <h4 class="font-black text-base text-base-content">فرش، موکت و پارچه</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">محاسبه متر مربع، اندازه قواره طاقه، ریشه و سرطاقه، شانه و تراکم فرش و منسوجات.</p>
+                    <div class="badge badge-sm badge-neutral font-mono text-[10px]">متر مربع و طاقه</div>
+                </div>
+
+                <!-- 13. Auto Repair -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-slate-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">🔧</div>
+                    <h4 class="font-black text-base text-base-content">تعمیرگاه و خدمات خودرو</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">پذیرش خودرو با پلاک، شرح عیب، صدور پیش‌فاکتور اجرت مکانیک و قطعات مصرفی با تایید پیامکی.</p>
+                    <div class="badge badge-sm badge-primary font-mono text-[10px]">پلاک خودرو و قبض پذیرش</div>
+                </div>
+
+                <!-- 14. Stationery & Books -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-emerald-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">📚</div>
+                    <h4 class="font-black text-base text-base-content">لوازم‌التحریر و کتاب</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">جستجوی شابک (ISBN)، بسته و جین، ناشران و مؤلفان، و بن‌های خرید دانش‌آموزی.</p>
+                    <div class="badge badge-sm badge-success font-mono text-[10px]">جستجوی شابک (ISBN)</div>
+                </div>
+
+                <!-- 15. Van Distribution -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-indigo-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">🚚</div>
+                    <h4 class="font-black text-base text-base-content">پخش مویرگی و ویزیتوری</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">انبار ماشین، مسیربندی ویزیتورها، کاتالوگ فروش تبلت اندروید و فاکتور فوری با تسویه چک/نقدی.</p>
+                    <div class="badge badge-sm badge-accent font-mono text-[10px]">انبار ماشین و تبلت ویزیتور</div>
+                </div>
+
+                <!-- 16. Manufacturing -->
+                <div class="p-5 rounded-3xl bg-base-100 border border-base-300 hover:border-teal-400/60 hover:shadow-md transition space-y-2.5">
+                    <div class="text-3xl">⚙️</div>
+                    <h4 class="font-black text-base text-base-content">تولیدی و کارگاهی</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">فرمول ساخت و درخت محصول (BOM)، کسر خودکار مواد اولیه از انبار و محاسبه دقیق بهای تمام‌شده کالا.</p>
+                    <div class="badge badge-sm badge-info font-mono text-[10px]">درخت محصول (BOM)</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HEAD-TO-HEAD COMPARISON TABLE -->
+        <section id="comparison" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <span class="badge badge-primary badge-outline text-xs font-bold px-3 py-1">مقایسه بی‌طرفانه</span>
+                <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-base-content">
+                    چرا دخل از هلو، سپیدار و دشت سبقت گرفت؟
+                </h2>
+                <p class="text-sm sm:text-base text-base-content/70">
+                    جدول مقایسه قابلیت‌ها و هزینه‌های مالکیت دخل در مقایسه با نرم‌افزارهای سنتی بازار:
+                </p>
+            </div>
+
+            <div class="overflow-x-auto rounded-3xl border border-base-300 bg-base-100 shadow-md">
+                <table class="table w-full text-right">
+                    <thead>
+                        <tr class="bg-base-200/80 text-xs font-black text-base-content border-b border-base-300">
+                            <th class="py-4 px-6 text-sm">قابلیت و معیار ارزیابی</th>
+                            <th class="py-4 px-6 text-emerald-600 font-black text-base bg-emerald-500/10">نرم‌افزار مدرن «دخل»</th>
+                            <th class="py-4 px-6 text-base-content/70">نرم‌افزار هلو</th>
+                            <th class="py-4 px-6 text-base-content/70">سپیدار سیستم</th>
+                            <th class="py-4 px-6 text-base-content/70">نرم‌افزار دشت</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-xs sm:text-sm divide-y divide-base-200">
+                        <tr>
+                            <td class="font-bold py-4 px-6">ارسال به سامانه مودیان</td>
+                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ ۱۰۰٪ رایگان و دائمی (همه پلن‌ها)</td>
+                            <td class="py-4 px-6 text-rose-600">✗ ماژول جداگانه سالانه</td>
+                            <td class="py-4 px-6 text-rose-600">✗ ماژول گران‌قیمت با پشتیبانی</td>
+                            <td class="py-4 px-6 text-rose-600">✗ ماژول سالانه اشتراکی</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold py-4 px-6">کارکرد ۱۰۰٪ آفلاین اول</td>
+                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ بله (بدون نیاز به اینترنت)</td>
+                            <td class="py-4 px-6 text-amber-600">△ آفلاین اما بدون سینک مدرن</td>
+                            <td class="py-4 px-6 text-amber-600">△ نیازمند سرور و شبکه محلی</td>
+                            <td class="py-4 px-6 text-amber-600">△ وابسته به ارتباط شبکه</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold py-4 px-6">بکاپ اتوماتیک ۳-۲-۱ به فلش و تلگرام</td>
+                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ بله، اتوماتیک با رمزنگاری AES-256</td>
+                            <td class="py-4 px-6 text-rose-600">✗ دستی، روی همان هارد دیسک</td>
+                            <td class="py-4 px-6 text-amber-600">△ نیازمند ادمین شبکه و SQL</td>
+                            <td class="py-4 px-6 text-rose-600">✗ دستی بدون ارسال تلگرام</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold py-4 px-6">نوع قفل لایسنس</td>
+                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ دیجیتال Ed25519 امن بدون قطعه USB</td>
+                            <td class="py-4 px-6 text-rose-600">✗ دانگل سخت‌افزاری شکننده</td>
+                            <td class="py-4 px-6 text-rose-600">✗ قفل سخت‌افزاری و هزینه تعویض</td>
+                            <td class="py-4 px-6 text-amber-600">△ قفل سخت‌افزاری/اینترنتی</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold py-4 px-6">دستیار مالی هوش مصنوعی (AI Copilot)</td>
+                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ دارد (تحلیل سود، نقدینگی و چک)</td>
+                            <td class="py-4 px-6 text-rose-600">✗ ندارد</td>
+                            <td class="py-4 px-6 text-rose-600">✗ ندارد</td>
+                            <td class="py-4 px-6 text-rose-600">✗ ندارد</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold py-4 px-6">ارزیابی انبار به نرخ دلار روز</td>
+                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ دارد (محاسبه سود واقعی تورمی)</td>
+                            <td class="py-4 px-6 text-rose-600">✗ ندارد</td>
+                            <td class="py-4 px-6 text-amber-600">△ فقط در پلن گران ارزی</td>
+                            <td class="py-4 px-6 text-rose-600">✗ ندارد</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold py-4 px-6">به‌روزرسانی نرم‌افزار</td>
+                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ اتومیک با ۱ کلیک + بازگشت اضطراری</td>
+                            <td class="py-4 px-6 text-rose-600">✗ نیازمند نصاب، CD یا دردسر پشتیبانی</td>
+                            <td class="py-4 px-6 text-amber-600">△ بسته‌های حجیم آپدیت سالانه</td>
+                            <td class="py-4 px-6 text-amber-600">△ اینترنتی محدود</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold py-4 px-6">زمان یادگیری کاربر عادی</td>
+                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ کمتر از ۱۵ دقیقه</td>
+                            <td class="py-4 px-6 text-rose-600">✗ نیازمند دوره‌های چند هفته‌ای</td>
+                            <td class="py-4 px-6 text-rose-600">✗ نیازمند حسابدار مسلط به کدینگ</td>
+                            <td class="py-4 px-6 text-amber-600">△ چند روز</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 5 COMMERCIAL PLANS & PRICING -->
+        <section id="pricing" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <span class="badge badge-primary badge-outline text-xs font-bold px-3 py-1">قیمت‌گذاری شفاف و عادلانه</span>
+                <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-base-content">
+                    ۵ پکیج تجاری متناسب با مقیاس کسب‌وکار شما
+                </h2>
+                <p class="text-sm sm:text-base text-base-content/70">
+                    بدون هزینه‌های پنهان؛ لایسنس مادام‌العمر با به‌روزرسانی‌های هوشمند، همراه با دوره آزمایشی رایگان ۱۴ روزه.
+                </p>
+            </div>
+
+            <!-- Plans Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <!-- 1. Shop / Basic -->
+                <div class="rounded-3xl bg-base-100 border border-base-300 p-6 flex flex-col justify-between hover:shadow-lg transition space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="badge badge-ghost font-bold text-xs">پکیج اول</span>
+                            <span class="text-xl">🏪</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-base-content">اصناف و فروشگاهی</h3>
+                            <p class="text-xs text-base-content/60 mt-1">مخصوص مغازه‌ها، فروشگاه‌ها و خرده‌فروشی‌ها</p>
+                        </div>
+                        <div class="pt-2">
+                            <div class="text-2xl font-black text-emerald-600 font-mono">۴,۸۰۰,۰۰۰</div>
+                            <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
+                        </div>
+                        <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۱ کاربر همزمان</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۱ شرکت / صنف فعال</li>
+                            <li class="flex items-center gap-1.5 font-bold text-emerald-700"><span class="text-emerald-500">✓</span> سامانه مودیان رایگان</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> اتصال به کارتخوان PC-POS</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> بکاپ اتوماتیک به تلگرام</li>
+                        </ul>
+                    </div>
+                    <button @click="openOrder('shop')" class="btn btn-outline btn-primary w-full rounded-2xl font-bold text-xs">
+                        انتخاب و خرید آنلاین
+                    </button>
+                </div>
+
+                <!-- 2. Commercial / Professional -->
+                <div class="rounded-3xl bg-base-100 border-2 border-primary p-6 flex flex-col justify-between shadow-xl shadow-primary/10 relative space-y-6">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 badge badge-primary text-[10px] font-black px-3 py-1 shadow">
+                        پیشنهاد ویژه بازار
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="badge badge-primary text-white font-bold text-xs">پکیج دوم</span>
+                            <span class="text-xl">💼</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-base-content">تجاری و شرکتی</h3>
+                            <p class="text-xs text-base-content/60 mt-1">بازرگانی‌ها، عمده‌فروشان و شرکت‌های متوسط</p>
+                        </div>
+                        <div class="pt-2">
+                            <div class="text-2xl font-black text-emerald-600 font-mono">۱۱,۵۰۰,۰۰۰</div>
+                            <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
+                        </div>
+                        <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> تا ۳ کاربر همزمان</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۳ شرکت + ۲ صنف فعال</li>
+                            <li class="flex items-center gap-1.5 font-bold text-emerald-700"><span class="text-emerald-500">✓</span> چندارزی و دلاریابی روز</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> مراکز هزینه و پروژه‌ها</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> پیش‌فاکتور و سود فاکتور</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> مغایرت‌گیری هوشمند بانک</li>
+                        </ul>
+                    </div>
+                    <button @click="openOrder('commercial')" class="btn btn-primary w-full rounded-2xl font-black text-xs shadow-md shadow-primary/30">
+                        خرید پکیج تجاری ⚡
+                    </button>
+                </div>
+
+                <!-- 3. Distribution -->
+                <div class="rounded-3xl bg-base-100 border border-base-300 p-6 flex flex-col justify-between hover:shadow-lg transition space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="badge badge-ghost font-bold text-xs">پکیج سوم</span>
+                            <span class="text-xl">🚚</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-base-content">پخش مویرگی و ویزیتور</h3>
+                            <p class="text-xs text-base-content/60 mt-1">شرکت‌های پخش مواد غذایی، دارویی و کالا</p>
+                        </div>
+                        <div class="pt-2">
+                            <div class="text-2xl font-black text-emerald-600 font-mono">۱۸,۹۰۰,۰۰۰</div>
+                            <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
+                        </div>
+                        <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۵ کاربر دسکتاپ + تبلت‌ها</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> انبار ماشین و حواله بارگیری</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> مسیربندی و کاتالوگ تبلت</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> پورسانت ویزیتور و موزع</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۱۶ صنف فعال بدون محدودیت</li>
+                        </ul>
+                    </div>
+                    <button @click="openOrder('distribution')" class="btn btn-outline btn-primary w-full rounded-2xl font-bold text-xs">
+                        انتخاب و خرید آنلاین
+                    </button>
+                </div>
+
+                <!-- 4. Manufacturing -->
+                <div class="rounded-3xl bg-base-100 border border-base-300 p-6 flex flex-col justify-between hover:shadow-lg transition space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="badge badge-ghost font-bold text-xs">پکیج چهارم</span>
+                            <span class="text-xl">⚙️</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-base-content">تولیدی و صنعتی</h3>
+                            <p class="text-xs text-base-content/60 mt-1">کارگاه‌ها، کارخانه‌ها و واحدهای مونتاژ</p>
+                        </div>
+                        <div class="pt-2">
+                            <div class="text-2xl font-black text-emerald-600 font-mono">۲۱,۵۰۰,۰۰۰</div>
+                            <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
+                        </div>
+                        <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۵ کاربر همزمان دسکتاپ</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> درخت محصول و فرمول ساخت (BOM)</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> بهای تمام‌شده و ضایعات تولید</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> استهلاک دارایی‌های ثابت</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۱۶ صنف فعال بدون محدودیت</li>
+                        </ul>
+                    </div>
+                    <button @click="openOrder('manufacturing')" class="btn btn-outline btn-primary w-full rounded-2xl font-bold text-xs">
+                        انتخاب و خرید آنلاین
+                    </button>
+                </div>
+
+                <!-- 5. Enterprise -->
+                <div class="rounded-3xl bg-base-100 border border-base-300 p-6 flex flex-col justify-between hover:shadow-lg transition space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="badge badge-accent font-bold text-xs">سازمانی</span>
+                            <span class="text-xl">🏢</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-black text-base-content">جامع و هلدینگ</h3>
+                            <p class="text-xs text-base-content/60 mt-1">هلدینگ‌ها، زنجیره‌ای‌ها و سازمان‌های بزرگ</p>
+                        </div>
+                        <div class="pt-2">
+                            <div class="text-2xl font-black text-emerald-600 font-mono">۳۴,۰۰۰,۰۰۰</div>
+                            <div class="text-xs text-base-content/60">تومان (سفارشی و جامع)</div>
+                        </div>
+                        <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
+                            <li class="flex items-center gap-1.5 font-bold text-emerald-700"><span class="text-emerald-500">✓</span> کاربران نامحدود</li>
+                            <li class="flex items-center gap-1.5 font-bold text-emerald-700"><span class="text-emerald-500">✓</span> شرکت‌های نامحدود هلدینگ</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> تمامی ماژول‌های سیستم (*)</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> وب‌سرویس و API یکپارچه‌سازی</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> پشتیبانی VIP اختصاصی ۲۴/۷</li>
+                        </ul>
+                    </div>
+                    <button @click="openOrder('enterprise')" class="btn btn-outline btn-accent w-full rounded-2xl font-bold text-xs">
+                        درخواست مشاوره سازمانی
+                    </button>
+                </div>
+            </div>
+
+            <!-- Callout to Custom Calculator -->
+            <div class="rounded-3xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-8 max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+                <div class="space-y-2 text-center sm:text-right">
+                    <h3 class="text-xl font-black">نیاز به محاسبه دقیق بر اساس تعداد کاربر و شعب دارید؟</h3>
+                    <p class="text-xs text-white/80">از ابزار محاسبه‌گر آنلاین ماژولار دخل استفاده کنید و پیش‌فاکتور خود را فوراً تحویل بگیرید.</p>
+                </div>
+                <a href="{{ route('pricing') }}#calculator" class="btn btn-accent rounded-2xl px-6 font-black text-xs shadow-lg shrink-0">
+                    ورود به محاسبه‌گر قیمت ←
+                </a>
+            </div>
+        </section>
+
+        <!-- SECURITY & 3-2-1 DISASTER RECOVERY ARCHITECTURE -->
+        <section id="backup-engine" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <span class="badge badge-accent badge-outline text-xs font-bold px-3 py-1">آرامش خاطر ۱۰۰٪</span>
+                <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-base-content">
+                    چگونه معماری ۳-۲-۱ دخل، اسناد مالی شما را جاودانه می‌کند؟
+                </h2>
+                <p class="text-sm sm:text-base text-base-content/70">
+                    برخلاف نرم‌افزارهای قدیمی که با یک خرابی هارد، حاصل سال‌ها زحمت حسابدار دود می‌شود و به هوا می‌رود:
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-right">
+                <div class="p-6 rounded-3xl bg-base-100 border border-base-300 space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-black">۱</div>
+                    <h4 class="font-black text-base text-base-content">نسخه محلی اول (روی سیستم)</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">
+                        داده‌ها با بالاترین سرعت روی حافظه SSD سیستم شما ذخیره و پردازش می‌شوند. تمامی فیلدهای حساس با کلید محلی رمزنگاری شده‌اند.
+                    </p>
+                </div>
+                <div class="p-6 rounded-3xl bg-base-100 border border-base-300 space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-600 flex items-center justify-center font-black">۲</div>
+                    <h4 class="font-black text-base text-base-content">کپی اتوماتیک به فلش (هنگام خروج)</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">
+                        هر بار که دکمه خروج را می‌زنید، دخل بدون معطلی یک پکیج جامع `.dakhl` را روی فلش‌مموری متصل به سیستم کپی می‌کند تا همیشه یک نسخه فیزیکی همراه داشته باشید.
+                    </p>
+                </div>
+                <div class="p-6 rounded-3xl bg-base-100 border border-base-300 space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center font-black">۳</div>
+                    <h4 class="font-black text-base text-base-content">ارسال صفر-دانش به تلگرام مدیر</h4>
+                    <p class="text-xs text-base-content/70 leading-relaxed">
+                        دخل نسخه فشرده پایگاه‌داده و اسناد را به چت تلگرام خصوصی شما دیسپچ می‌کند. حتی اگر مغازه یا دفتر کار دچار سرقت یا آتش‌سوزی شود، تمام اسناد در تلگرام شما محفوظ است.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ SECTION -->
+        <section id="faq" class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+            <div class="text-center space-y-3">
+                <span class="badge badge-primary badge-outline text-xs font-bold px-3 py-1">پاسخ به ابهامات</span>
+                <h2 class="text-2xl sm:text-3xl font-black text-base-content">پرسش‌های متداول خریداران</h2>
+            </div>
+
+            <div class="space-y-3">
+                <div class="collapse collapse-plus bg-base-100 border border-base-300 rounded-2xl">
+                    <input type="radio" name="faq-accordion" checked="checked" />
+                    <div class="collapse-title text-sm sm:text-base font-bold text-base-content">
+                        آیا دخل برای ارسال به سامانه مودیان نیاز به پرداخت هزینه به شرکت‌های معتمد (TSP) دارد؟
+                    </div>
+                    <div class="collapse-content text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        خیر! دخل به طور مستقیم به سرورهای کارپوشه سازمان امور مالیاتی کشور متصل می‌شود و فاکتورها را با کلید اختصاصی مودی (CSR / Private Key) امضا و ارسال می‌کند. شما هیچ نیازی به پرداخت هزینه سالانه یا درصدی به شرکت‌های معتمد نخواهید داشت.
+                    </div>
+                </div>
+
+                <div class="collapse collapse-plus bg-base-100 border border-base-300 rounded-2xl">
+                    <input type="radio" name="faq-accordion" />
+                    <div class="collapse-title text-sm sm:text-base font-bold text-base-content">
+                        اگر کامپیوتر ما بسوزد یا عوض شود، تکلیف لایسنس نرم‌افزار چه می‌شود؟
+                    </div>
+                    <div class="collapse-content text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        هیچ مشکلی پیش نمی‌آید! به لطف ساختار لایسنسینگ رمزنگاری‌شده دخل، جابه‌جایی سیستم با صدور توکن ره‌بایند (Rebind) در چند ثانیه انجام می‌شود و نیازی به پرداخت هزینه جریمه یا خرید مجدد قفل سخت‌افزاری نخواهید داشت.
+                    </div>
+                </div>
+
+                <div class="collapse collapse-plus bg-base-100 border border-base-300 rounded-2xl">
+                    <input type="radio" name="faq-accordion" />
+                    <div class="collapse-title text-sm sm:text-base font-bold text-base-content">
+                        چگونه می‌توانم اطلاعات قبلی خود را از هلو یا سپیدار به دخل منتقل کنم؟
+                    </div>
+                    <div class="collapse-content text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        دخل مجهز به موتور هوشمند مهاجرت است. شما خروجی اکسل اشخاص، کالاها و مانده‌ها را در پنل مهاجرت دخل بارگذاری می‌کنید و نرم‌افزار به صورت خودکار تراز افتتاحیه و کارتکس کالاها را در کمتر از ۳ دقیقه تنظیم می‌کند.
+                    </div>
+                </div>
+
+                <div class="collapse collapse-plus bg-base-100 border border-base-300 rounded-2xl">
+                    <input type="radio" name="faq-accordion" />
+                    <div class="collapse-title text-sm sm:text-base font-bold text-base-content">
+                        آیا دخل روی شبکه محلی، تبلت و لپ‌تاپ هم کار می‌کند؟
+                    </div>
+                    <div class="collapse-content text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        بله! معماری مدرن وب و دسکتاپ دخل به شما اجازه می‌دهد از هر دستگاهی درون شبکه (کامپیوتر صندوق، تبلت ویزیتور، گوشی همراه مدیر) به سیستم متصل شوید و نقش‌های کاربری با سطح دسترسی دقیق تعریف کنید.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BOTTOM CALL TO ACTION -->
+        <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="rounded-3xl bg-base-100 border border-base-300 p-8 sm:p-12 text-center space-y-6 shadow-xl relative overflow-hidden">
+                <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center text-3xl font-black mx-auto shadow-lg shadow-emerald-600/30">
+                    د
+                </div>
+                <div class="space-y-2">
+                    <h2 class="text-2xl sm:text-4xl font-black text-base-content">آماده‌اید دخل و خرج کسب‌وکارتان را متحول کنید؟</h2>
+                    <p class="text-xs sm:text-sm text-base-content/70 max-w-xl mx-auto">
+                        همین حالا نسخه آزمایشی ۱۴ روزه را بدون نیاز به کارت بانکی دریافت کنید و تفاوت یک نرم‌افزار حسابداری مدرن را از نزدیک تجربه کنید.
+                    </p>
+                </div>
+                <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+                    <button @click="trialModalOpen = true" class="btn btn-primary btn-lg rounded-2xl px-8 font-black text-sm shadow-xl shadow-primary/25">
+                        دریافت فوری لایسنس آزمایشی ۱۴ روزه ⚡
+                    </button>
+                    <a href="tel:02191000000" class="btn btn-outline btn-lg rounded-2xl px-6 font-bold text-sm">
+                        <span>📞</span>
+                        <span>تماس با واحد فروش و مشاوره</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-base-100 border-t border-base-300 py-12 text-xs text-base-content/70">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black text-base">
+                    د
+                </div>
+                <div>
+                    <span class="font-black text-base-content text-sm block">سامانه مالی و حسابداری دخل (Dakhl ERP)</span>
+                    <span class="text-[11px] text-base-content/50">توسعه‌یافته مطابق قوانین مالیاتی و تجاری جمهوری اسلامی ایران</span>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-6 font-semibold">
+                <a href="#features" class="hover:text-primary transition">امکانات</a>
+                <a href="#industries" class="hover:text-primary transition">اصناف</a>
+                <a href="{{ route('pricing') }}" class="hover:text-primary transition">تعرفه‌ها</a>
+                <a href="{{ route('login') }}" class="hover:text-primary transition">ورود کاربران</a>
+            </div>
+
+            <div class="text-[11px] text-base-content/50">
+                © {{ date('Y') }} تمامی حقوق مادی و معنوی متعلق به نرم‌افزار حسابداری «دخل» است.
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL 1: INSTANT TRIAL REQUEST -->
+    <div x-show="trialModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div @click.away="trialModalOpen = false" class="card bg-base-100 border border-base-300 w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-right">
+            <div class="flex items-center justify-between border-b border-base-200 pb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🎁</span>
+                    <h3 class="font-black text-lg text-base-content">دریافت نسخه آزمایشی ۱۴ روزه رایگان</h3>
+                </div>
+                <button @click="trialModalOpen = false" class="btn btn-ghost btn-sm btn-circle text-lg">✕</button>
+            </div>
+
+            <!-- When Result Ready -->
+            <template x-if="trialResult">
+                <div class="space-y-4">
+                    <div class="alert alert-success text-xs font-bold rounded-2xl">
+                        <span>✓</span>
+                        <span x-text="trialResult.message"></span>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-base-200 border border-base-300 space-y-2">
+                        <div class="text-xs text-base-content/60 font-bold">کلید فعال‌سازی آزمایشی شما:</div>
+                        <div class="p-3 bg-base-100 rounded-xl border border-base-300 font-mono text-[11px] break-all select-all text-emerald-700" x-text="trialResult.license_key"></div>
+                        <div class="flex items-center justify-between text-[11px] text-base-content/50 pt-1">
+                            <span>اعتبار: ۱۴ روز کامل</span>
+                            <span>دسترسی به تمام ۱۶ صنف و ماژول‌ها</span>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-base-content/70 leading-relaxed bg-info/10 p-3 rounded-xl border border-info/20">
+                        📌 <strong>نحوه استفاده:</strong> وارد منوی «مدیریت لایسنس» در نرم‌افزار دخل شوید و کلید بالا را در کادر فعال‌سازی الصاق کنید.
+                    </div>
+
+                    <button @click="navigator.clipboard.writeText(trialResult.license_key); alert('کد لایسنس با موفقیت کپی شد!')" class="btn btn-primary w-full rounded-2xl font-bold text-xs">
+                        کپی کلید فعال‌سازی 📋
+                    </button>
+                </div>
+            </template>
+
+            <!-- Form -->
+            <template x-if="!trialResult">
+                <form @submit.prevent="submitTrial()" class="space-y-4">
+                    <p class="text-xs text-base-content/70 leading-relaxed">
+                        نام و شماره موبایل خود را وارد کنید تا لایسنس ۱۴ روزه دخل با دسترسی نامحدود به تمامی ماژول‌ها و اصناف فوراً برای شما صادر شود:
+                    </p>
+
+                    <template x-if="trialError">
+                        <div class="alert alert-error text-xs font-bold rounded-xl" x-text="trialError"></div>
+                    </template>
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-base-content/70">نام و نام خانوادگی / نام فروشگاه *</label>
+                        <input type="text" x-model="trialForm.customer_name" required placeholder="مثال: فروشگاه برادران حسینی" class="input input-bordered w-full rounded-xl text-xs bg-base-200/50" />
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-base-content/70">شماره موبایل جهت هماهنگی *</label>
+                        <input type="tel" x-model="trialForm.phone" required placeholder="۰۹۱۲۳۴۵۶۷۸۹" class="input input-bordered w-full rounded-xl text-xs bg-base-200/50 text-left font-mono" dir="ltr" />
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-base-content/70">صنف یا حوزه فعالیت</label>
+                        <select x-model="trialForm.business_type" class="select select-bordered w-full rounded-xl text-xs bg-base-200/50">
+                            <option value="طلا و جواهر">طلا و جواهر</option>
+                            <option value="آهن و فولاد">آهن و فولاد</option>
+                            <option value="رستوران و کافی‌شاپ">رستوران و کافی‌شاپ</option>
+                            <option value="سوپرمارکت و مواد غذایی">سوپرمارکت و مواد غذایی</option>
+                            <option value="داروخانه و پزشکی">داروخانه و پزشکی</option>
+                            <option value="پوشاک و مد">پوشاک و مد</option>
+                            <option value="قطعات خودرو">قطعات خودرو</option>
+                            <option value="پخش مویرگی">پخش مویرگی</option>
+                            <option value="تولیدی و صنعتی">تولیدی و صنعتی</option>
+                            <option value="سایر اصناف">سایر اصناف</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" :disabled="trialLoading" class="btn btn-primary w-full rounded-2xl font-black text-xs shadow-md shadow-primary/20 mt-2">
+                        <span x-show="!trialLoading">دریافت فوری لایسنس آزمایشی ⚡</span>
+                        <span x-show="trialLoading" class="loading loading-spinner loading-xs"></span>
+                    </button>
+                </form>
+            </template>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ONLINE ORDER SUBMISSION -->
+    <div x-show="orderModalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div @click.away="orderModalOpen = false" class="card bg-base-100 border border-base-300 w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 text-right">
+            <div class="flex items-center justify-between border-b border-base-200 pb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">⚡</span>
+                    <h3 class="font-black text-lg text-base-content">ثبت سفارش آنلاین نرم‌افزار دخل</h3>
+                </div>
+                <button @click="orderModalOpen = false" class="btn btn-ghost btn-sm btn-circle text-lg">✕</button>
+            </div>
+
+            <!-- When Order Completed -->
+            <template x-if="orderResult">
+                <div class="space-y-4">
+                    <div class="alert alert-success text-xs font-bold rounded-2xl">
+                        <span>✓</span>
+                        <span x-text="orderResult.message"></span>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-base-200 border border-base-300 space-y-3">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-base-content/60">شناسه پیگیری سفارش:</span>
+                            <span class="font-mono font-bold text-primary" x-text="orderResult.order_reference"></span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-base-content/60">پکیج انتخابی:</span>
+                            <span class="font-bold text-base-content" x-text="orderResult.plan_title"></span>
+                        </div>
+                        <div class="flex justify-between items-center text-xs border-t border-base-300 pt-2">
+                            <span class="text-base-content/60">مبلغ نهایی:</span>
+                            <span class="font-black text-emerald-600 text-sm font-mono" x-text="orderResult.total_price_formatted"></span>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-base-content/70 leading-relaxed bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 text-emerald-900">
+                        📞 کارشناس صدور لایسنس دخل تا دقایقی دیگر جهت ارائه فاکتور رسمی و کلید فعال‌سازی نهایی با شماره شما تماس خواهد گرفت.
+                    </div>
+
+                    <button @click="orderModalOpen = false" class="btn btn-primary w-full rounded-2xl font-bold text-xs">
+                        متوجه شدم، بستن پنجره
+                    </button>
+                </div>
+            </template>
+
+            <!-- Order Form -->
+            <template x-if="!orderResult">
+                <form @submit.prevent="submitOrder()" class="space-y-4">
+                    <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-800 flex justify-between items-center">
+                        <span>پکیج در حال خرید:</span>
+                        <span class="badge badge-primary font-bold" x-text="plansData[selectedPlan] ? plansData[selectedPlan].title : selectedPlan"></span>
+                    </div>
+
+                    <template x-if="orderError">
+                        <div class="alert alert-error text-xs font-bold rounded-xl" x-text="orderError"></div>
+                    </template>
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-base-content/70">نام و نام خانوادگی خریدار *</label>
+                        <input type="text" x-model="orderForm.customer_name" required placeholder="مثال: علیرضا محمدی" class="input input-bordered w-full rounded-xl text-xs bg-base-200/50" />
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-base-content/70">شماره موبایل جهت دریافت فاکتور و لایسنس *</label>
+                        <input type="tel" x-model="orderForm.phone" required placeholder="۰۹۱۲۳۴۵۶۷۸۹" class="input input-bordered w-full rounded-xl text-xs bg-base-200/50 text-left font-mono" dir="ltr" />
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-xs font-bold text-base-content/70">نام رسمی شرکت یا واحد تجاری (اختیاری)</label>
+                        <input type="text" x-model="orderForm.company_name" placeholder="مثال: بازرگانی محمدی و شرکا" class="input input-bordered w-full rounded-xl text-xs bg-base-200/50" />
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                        <div class="space-y-1">
+                            <label class="text-[11px] font-bold text-base-content/60">شرکت اضافه (+۱.۵ م.ت)</label>
+                            <input type="number" min="0" max="20" x-model.number="orderForm.extra_companies" class="input input-bordered w-full rounded-xl text-xs bg-base-200/50 font-mono" />
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[11px] font-bold text-base-content/60">کاربر اضافه (+۱.۲ م.ت)</label>
+                            <input type="number" min="0" max="50" x-model.number="orderForm.extra_users" class="input input-bordered w-full rounded-xl text-xs bg-base-200/50 font-mono" />
+                        </div>
+                    </div>
+
+                    <button type="submit" :disabled="orderLoading" class="btn btn-primary w-full rounded-2xl font-black text-xs shadow-md shadow-primary/20 mt-2">
+                        <span x-show="!orderLoading">تایید و ثبت نهایی سفارش ⚡</span>
+                        <span x-show="orderLoading" class="loading loading-spinner loading-xs"></span>
+                    </button>
+                </form>
+            </template>
+        </div>
+    </div>
+
+</body>
+</html>

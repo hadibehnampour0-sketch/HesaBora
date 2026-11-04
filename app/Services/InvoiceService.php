@@ -609,6 +609,21 @@ class InvoiceService
         CostOfGoodsService::updateProductsAverageCost($invoice);
         ProductService::updateWarehouseAverageCosts($invoice);
         self::syncCOGAfterForInvoiceItems($invoice);
+
+        // Decision D-137: Dynamic USD-pegged inventory valuation snapshotting on purchase
+        if ($invoice->invoice_type === InvoiceType::BUY) {
+            try {
+                $marketService = app(\App\Services\Market\MarketIntelligenceService::class);
+                $usdRate = $marketService->getCurrentUsdRate($invoice->company_id);
+                foreach ($invoice->items as $item) {
+                    if ($item->itemable instanceof Product) {
+                        $marketService->recordProductPurchaseUsdRate($item->itemable, (float) $item->unit_price, $usdRate);
+                    }
+                }
+            } catch (\Throwable $e) {
+                Log::warning('D-137 purchase USD snapshotting skipped: '.$e->getMessage());
+            }
+        }
     }
 
     /**

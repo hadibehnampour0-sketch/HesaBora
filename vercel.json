@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/trial/request", "destination": "/api/trial" },
+    { "source": "/login/trial/request", "destination": "/api/trial" },
+    { "source": "/order/submit", "destination": "/api/order" },
+    { "source": "/login/order/submit", "destination": "/api/order" },
+    { "source": "/pricing", "destination": "/pricing.html" },
+    { "source": "/login/pricing", "destination": "/pricing.html" },
+    { "source": "/landing", "destination": "/landing.html" },
+    { "source": "/login/landing", "destination": "/landing.html" },
+    { "source": "/", "destination": "/index.html" }
+  ],
+  "redirects": [
+    { "source": "/login/login", "destination": "/", "permanent": false },
+    { "source": "/login", "destination": "/", "permanent": false }
+  ]
+}

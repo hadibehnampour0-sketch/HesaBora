@@ -61,9 +61,16 @@
                 userPrompt: '',
                 aiResponse: '',
                 isThinking: false,
+                errorMessage: '',
+                suggest(text) {
+                    this.userPrompt = text;
+                    this.askAi();
+                },
                 async askAi() {
                     if (!this.userPrompt.trim()) return;
                     this.isThinking = true;
+                    this.errorMessage = '';
+                    this.aiResponse = '';
                     try {
                         const token = document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || '';
                         const res = await fetch('{{ route('copilot.chat') }}', {
@@ -80,13 +87,12 @@
                         if (data.success && data.assistant_message?.content) {
                             this.aiResponse = data.assistant_message.content;
                         } else {
-                            this.aiResponse = 'تحلیل هوشمند انجام شد: تراز مالی پایدار و جریان نقدینگی در محدوده امن ارزیابی می‌شود.';
+                            this.errorMessage = data.message || 'پاسخی از دستیار دریافت نشد.';
                         }
                     } catch (e) {
-                        this.aiResponse = 'ارتباط با دستیار هوشمند برقرار شد. جریان نقدینگی و اسناد مالی در وضعیت عادی هستند.';
+                        this.errorMessage = 'خطا در برقراری ارتباط با هوش مصنوعی. لطفاً مجدداً تلاش فرمایید.';
                     } finally {
                         this.isThinking = false;
-                        this.userPrompt = '';
                     }
                 }
             }">
@@ -97,15 +103,21 @@
                     </span>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-sm font-black text-base-content">{{ __('دستیار هوشمند مالی و اقتصادی دخل (Google Gemini 2.5 Flash)') }}</h3>
-                            <span class="size-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                            <span class="badge badge-accent badge-xs py-0.5 px-2 text-[9px] font-mono">LIVE AI</span>
+                            <h3 class="text-sm font-black text-base-content">{{ __('دستیار ارشد مالی و هوش تجاری دخل (Google Gemini AI)') }}</h3>
+                            <span class="size-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span class="badge badge-accent badge-xs py-0.5 px-2 text-[9px] font-mono tracking-wider">LIVE COCKPIT</span>
                         </div>
-                        <p class="text-[11px] text-base-content/60">{{ __('تحلیل لحظه‌ای تراز، اقساط معوق، سود عملیاتی و اثر نوسان دلار بر بهای انبار') }}</p>
+                        <p class="text-[11px] text-base-content/60">{{ __('تحلیل یکپارچه تراز، رادار اقساط، اثر نوسان دلار بر انبار و استراتژی نقدینگی') }}</p>
                     </div>
                 </div>
-                <div class="text-[11px] text-base-content/50 font-mono">
-                    {{ __('مالک اثر: هادی بهنام‌پور') }}
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('copilot.index') }}" class="btn btn-xs btn-ghost border border-cyan-500/30 text-cyan-600 dark:text-cyan-400 rounded-xl gap-1">
+                        <span>💬</span>
+                        <span>{{ __('اتاق گفتگوی کامل') }}</span>
+                    </a>
+                    <span class="text-[11px] text-base-content/50 font-mono hidden sm:inline">
+                        {{ __('مالک اثر: هادی بهنام‌پور') }}
+                    </span>
                 </div>
             </div>
 
@@ -127,27 +139,62 @@
                 </div>
             </div>
 
-            {{-- Instant Interactive Prompt Bar --}}
-            <div class="mt-3 flex items-center gap-2">
-                <div class="relative flex-1">
-                    <input type="text" x-model="userPrompt" @keydown.enter.prevent="askAi()"
-                        placeholder="{{ __('از جمینای بپرسید... (مثال: وضعیت اقساط معوق چطوره؟ یا دلار چقدر روی سودم اثر گذاشت؟)') }}"
-                        class="input input-sm w-full bg-base-100 border-base-300 focus:border-cyan-500 rounded-2xl text-xs">
-                </div>
-                <button type="button" @click="askAi()" :disabled="isThinking"
-                    class="btn btn-sm bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-slate-950 font-black rounded-2xl text-xs gap-1 shadow-sm">
-                    <span x-show="!isThinking">{{ __('پرسش از هوش مصنوعی ↵') }}</span>
-                    <span x-show="isThinking" class="loading loading-spinner loading-xs"></span>
+            {{-- Suggestion Chips (چیپس‌های آماده پرسش از جمینای) --}}
+            <div class="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px]">
+                <span class="text-base-content/50 text-[10px]">{{ __('پرسش‌های پیشنهادی:') }}</span>
+                <button type="button" @click="suggest('وضعیت اقساط پیش‌رو و مطالبات معوق من چطوره و چطور وصولشون کنم؟')"
+                    class="badge badge-sm badge-ghost border-base-300 hover:border-cyan-500 hover:text-cyan-600 transition cursor-pointer py-2">
+                    ⚡ {{ __('وضعیت اقساط و وصول مطالبات') }}
+                </button>
+                <button type="button" @click="suggest('با نوسانات اخیر دلار، انبار و قیمت‌گذاری کالاها رو چطور تنظیم کنم تا ضرر نکنم؟')"
+                    class="badge badge-sm badge-ghost border-base-300 hover:border-cyan-500 hover:text-cyan-600 transition cursor-pointer py-2">
+                    💵 {{ __('تنظیم بهای انبار با نوسان دلار') }}
+                </button>
+                <button type="button" @click="suggest('تحلیل فروش و سود این ماهم چطوره و چه راهکاری برای افزایش نقدینگی داری؟')"
+                    class="badge badge-sm badge-ghost border-base-300 hover:border-cyan-500 hover:text-cyan-600 transition cursor-pointer py-2">
+                    📊 {{ __('تحلیل فروش و راهکار نقدینگی') }}
                 </button>
             </div>
 
-            {{-- Dynamic AI Answer Box --}}
-            <div x-show="aiResponse" x-transition class="mt-3 p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-xs text-base-content flex items-start justify-between">
-                <div class="flex items-start gap-2">
-                    <span class="text-base">🤖</span>
-                    <div class="leading-relaxed whitespace-pre-line" x-text="aiResponse"></div>
+            {{-- Instant Interactive Prompt Bar --}}
+            <div class="mt-2.5 flex items-center gap-2">
+                <div class="relative flex-1">
+                    <input type="text" x-model="userPrompt" @keydown.enter.prevent="askAi()"
+                        placeholder="{{ __('از هوش مصنوعی بپرسید... (دست جمینای برای تحلیل، استراتژی و مشاوره کاملاً باز است)') }}"
+                        class="input input-sm w-full bg-base-100 border-base-300 focus:border-cyan-500 rounded-2xl text-xs">
                 </div>
-                <button @click="aiResponse = ''" class="btn btn-ghost btn-xs btn-circle mr-2">✕</button>
+                <button type="button" @click="askAi()" :disabled="isThinking"
+                    class="btn btn-sm bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-slate-950 font-black rounded-2xl text-xs gap-1 shadow-sm shrink-0">
+                    <span x-show="!isThinking">{{ __('پرسش از هوش مصنوعی ↵') }}</span>
+                    <span x-show="isThinking" class="flex items-center gap-1.5">
+                        <span class="loading loading-spinner loading-xs"></span>
+                        <span>{{ __('جمینای در حال تفکر...') }}</span>
+                    </span>
+                </button>
+            </div>
+
+            {{-- Error Message Box --}}
+            <div x-show="errorMessage" x-transition class="mt-3 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-600 flex items-center justify-between">
+                <span x-text="errorMessage"></span>
+                <button @click="errorMessage = ''" class="btn btn-ghost btn-xs btn-circle">✕</button>
+            </div>
+
+            {{-- Dynamic AI Answer Box --}}
+            <div x-show="aiResponse" x-transition class="mt-3 p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-xs text-base-content space-y-2">
+                <div class="flex items-start justify-between gap-3 border-b border-cyan-500/20 pb-2">
+                    <div class="flex items-center gap-2 font-bold text-cyan-600 dark:text-cyan-400">
+                        <span class="text-sm">🤖</span>
+                        <span>{{ __('تحلیل و پاسخ مشاور هوشمند دخل (Gemini AI)') }}</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button type="button" @click="navigator.clipboard.writeText(aiResponse); $el.innerText = '✓ کپی شد'; setTimeout(() => $el.innerText = 'کپی', 2000)"
+                            class="btn btn-ghost btn-xs rounded-lg text-[10px] text-base-content/60">
+                            {{ __('کپی') }}
+                        </button>
+                        <button @click="aiResponse = ''" class="btn btn-ghost btn-xs btn-circle">✕</button>
+                    </div>
+                </div>
+                <div class="leading-relaxed whitespace-pre-line text-xs font-normal" x-text="aiResponse"></div>
             </div>
         </div>
 

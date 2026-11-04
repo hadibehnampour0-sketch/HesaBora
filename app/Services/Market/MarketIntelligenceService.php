@@ -506,7 +506,9 @@ class MarketIntelligenceService
             ->orderBy('id', 'desc')
             ->get();
 
-        return $products->map(function (Product $product) {
+        $currentUsdRate = $this->getCurrentUsdRate($companyId);
+
+        return $products->map(function (Product $product) use ($currentUsdRate) {
             $mp = $product->marketPrice;
             $bookCost = (float) ($product->average_cost ?: 0);
             $sellingPrice = (float) ($product->selling_price ?: 0);
@@ -514,6 +516,8 @@ class MarketIntelligenceService
 
             $spreadAmount = $marketPrice !== null && $bookCost > 0 ? $marketPrice - $bookCost : null;
             $spreadPercent = $spreadAmount !== null && $bookCost > 0 ? round(($spreadAmount / $bookCost) * 100, 1) : null;
+
+            $usdValuation = $this->calculateUsdPeggedValuation($product, $currentUsdRate);
 
             return [
                 'product_id' => $product->id,
@@ -535,8 +539,120 @@ class MarketIntelligenceService
                 'wholesale_note' => $mp?->wholesale_note,
                 'guild_category' => $mp?->guild_category,
                 'last_checked_at' => $mp?->last_checked_at?->format('Y-m-d H:i') ?: ($mp?->updated_at?->format('Y-m-d H:i')),
+                // Decision D-137: Dynamic USD-Pegged Inventory Valuation
+                'usd_valuation' => $usdValuation,
+                'base_usd_cost' => $usdValuation['base_usd_cost'],
+                'purchase_usd_rate' => $usdValuation['purchase_usd_rate'],
+                'replacement_cost_irr' => $usdValuation['replacement_cost_irr'],
+                'suggested_selling_price_irr' => $usdValuation['suggested_selling_price_irr'],
+                'is_below_replacement' => $usdValuation['is_below_replacement'],
+                'is_below_suggested' => $usdValuation['is_below_suggested'],
+                'unrealized_inflation_gain' => $usdValuation['unrealized_inflation_gain'],
             ];
         })->toArray();
+    }
+
+    /**
+     * Decision D-137: Retrieve current authoritative USD rate in IRR.
+     */
+    public function getCurrentUsdRate(?int $companyId = null): float
+    {
+        $quote = MarketQuote::where('symbol', 'USD')
+            ->when($companyId, fn ($q) => $q->where('company_id', $companyId))
+            ->first();
+
+        if ($quote && $quote->price > 0) {
+            return (float) $quote->price;
+        }
+
+        return (float) (self::DEFAULT_SYMBOLS['USD']['price'] ?? 2719050.0);
+    }
+
+    /**
+     * Decision D-137: Calculate real-time USD-pegged inventory valuation & replacement cost.
+     * Formulas:
+     * - Cost_USD = Cost_IRR / Rate_purchase
+     * - ReplacementCost_IRR = Cost_USD * Rate_current
+     * - SuggestedSellingPrice_IRR = ReplacementCost_IRR * (1 + Margin_target / 100)
+     */
+    public function calculateUsdPeggedValuation(Product $product, ?float $currentUsdRate = null): array
+    {
+        $currentRate = $currentUsdRate ?: $this->getCurrentUsdRate($product->company_id);
+        $mp = $product->marketPrice;
+
+        $bookCost = (float) ($product->average_cost ?: 0.0);
+        $sellingPrice = (float) ($product->selling_price ?: 0.0);
+        $quantity = (float) ($product->quantity ?: 0.0);
+
+        if ($mp && $mp->purchase_usd_rate && $mp->base_usd_cost !== null && (float) $mp->purchase_usd_rate > 0) {
+            $purchaseUsdRate = (float) $mp->purchase_usd_rate;
+            $baseUsdCost = (float) $mp->base_usd_cost;
+        } else {
+            $purchaseUsdRate = $currentRate;
+            $baseUsdCost = $currentRate > 0 ? ($bookCost / $currentRate) : 0.0;
+        }
+
+        $targetMarginPercent = $mp && $mp->target_margin_percent !== null ? (float) $mp->target_margin_percent : 20.00;
+        $isPegged = $mp ? (bool) $mp->is_pegged_to_usd : true;
+
+        $replacementCostIrr = $baseUsdCost * $currentRate;
+        $suggestedSellingPriceIrr = $replacementCostIrr * (1.0 + ($targetMarginPercent / 100.0));
+
+        $isBelowReplacement = $isPegged && $replacementCostIrr > 0 && $sellingPrice < $replacementCostIrr;
+        $isBelowSuggested = $isPegged && $suggestedSellingPriceIrr > 0 && $sellingPrice < $suggestedSellingPriceIrr;
+
+        $capitalErosionPerUnit = max(0.0, $replacementCostIrr - $sellingPrice);
+        $totalCapitalErosion = $capitalErosionPerUnit * $quantity;
+
+        $inventoryReplacementValue = $replacementCostIrr * $quantity;
+        $inventoryNominalCost = $bookCost * $quantity;
+        $unrealizedInflationGain = max(0.0, $inventoryReplacementValue - $inventoryNominalCost);
+
+        $usdRateChangePercent = $purchaseUsdRate > 0
+            ? round((($currentRate - $purchaseUsdRate) / $purchaseUsdRate) * 100, 2)
+            : 0.0;
+
+        return [
+            'product_id' => $product->id,
+            'is_pegged_to_usd' => $isPegged,
+            'purchase_usd_rate' => $purchaseUsdRate,
+            'current_usd_rate' => $currentRate,
+            'usd_rate_change_percent' => $usdRateChangePercent,
+            'base_usd_cost' => round($baseUsdCost, 4),
+            'book_cost_irr' => $bookCost,
+            'replacement_cost_irr' => round($replacementCostIrr, 2),
+            'target_margin_percent' => $targetMarginPercent,
+            'suggested_selling_price_irr' => round($suggestedSellingPriceIrr, 2),
+            'selling_price_irr' => $sellingPrice,
+            'is_below_replacement' => $isBelowReplacement,
+            'is_below_suggested' => $isBelowSuggested,
+            'capital_erosion_per_unit' => round($capitalErosionPerUnit, 2),
+            'total_capital_erosion' => round($totalCapitalErosion, 2),
+            'inventory_replacement_value' => round($inventoryReplacementValue, 2),
+            'inventory_nominal_cost' => round($inventoryNominalCost, 2),
+            'unrealized_inflation_gain' => round($unrealizedInflationGain, 2),
+        ];
+    }
+
+    /**
+     * Decision D-137: Snapshot USD exchange rate and baseline dollar cost for a product.
+     */
+    public function recordProductPurchaseUsdRate(Product $product, float $unitCostIrr, ?float $usdRate = null): ProductMarketPrice
+    {
+        $rate = $usdRate ?: $this->getCurrentUsdRate($product->company_id);
+        $baseUsdCost = $rate > 0 ? ($unitCostIrr / $rate) : 0.0;
+
+        $mp = ProductMarketPrice::firstOrNew([
+            'product_id' => $product->id,
+            'company_id' => $product->company_id,
+        ]);
+
+        $mp->purchase_usd_rate = $rate;
+        $mp->base_usd_cost = $baseUsdCost;
+        $mp->last_checked_at = Carbon::now();
+        $mp->save();
+
+        return $mp;
     }
 
     /**
@@ -553,6 +669,22 @@ class MarketIntelligenceService
 
         if (array_key_exists('market_price', $data)) {
             $mp->market_price = $data['market_price'] !== null && $data['market_price'] !== '' ? (float) $data['market_price'] : null;
+        }
+
+        if (array_key_exists('purchase_usd_rate', $data)) {
+            $mp->purchase_usd_rate = $data['purchase_usd_rate'] !== null && $data['purchase_usd_rate'] !== '' ? (float) $data['purchase_usd_rate'] : null;
+        }
+
+        if (array_key_exists('base_usd_cost', $data)) {
+            $mp->base_usd_cost = $data['base_usd_cost'] !== null && $data['base_usd_cost'] !== '' ? (float) $data['base_usd_cost'] : null;
+        }
+
+        if (array_key_exists('target_margin_percent', $data)) {
+            $mp->target_margin_percent = $data['target_margin_percent'] !== null && $data['target_margin_percent'] !== '' ? (float) $data['target_margin_percent'] : 20.00;
+        }
+
+        if (array_key_exists('is_pegged_to_usd', $data)) {
+            $mp->is_pegged_to_usd = (bool) $data['is_pegged_to_usd'];
         }
 
         if (array_key_exists('market_source_type', $data)) {

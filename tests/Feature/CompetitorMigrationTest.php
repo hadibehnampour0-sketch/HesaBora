@@ -430,4 +430,46 @@ CSV;
         $doc = Document::withoutGlobalScopes()->with('transactions')->find($result->openingDocument->id);
         $this->assertEquals(0, $doc->transactions->sum('value'));
     }
+
+    public function test_ai_supervision_report_and_placement_mapping(): void
+    {
+        $payload = new MigrationPayload(
+            customers: [
+                ['name' => 'شرکت پیشگامان فناور', 'mobile' => '09121112233', 'balance' => 50000000],
+            ],
+            products: [
+                ['name' => 'لپ‌تاپ گیمینگ ایسوس', 'initial_stock' => 5, 'purchase_price' => 45000000, 'sell_price' => 55000000],
+            ],
+            cheques: [
+                ['cheque_number' => '102938', 'sayad_number' => '1234567890123456', 'amount' => 20000000, 'direction' => 'receivable'],
+            ],
+        );
+
+        $health = $this->service->analyzeAndHealthCheck($payload);
+        $aiReport = $this->service->aiSupervisionReport($payload, $health);
+
+        $this->assertNotEmpty($aiReport['detected_source']);
+        $this->assertGreaterThanOrEqual(80, $aiReport['source_confidence']);
+        $this->assertEquals(100, $aiReport['health_score']);
+        $this->assertCount(4, $aiReport['placements']);
+        $this->assertTrue($aiReport['can_commit']);
+        $this->assertNotEmpty($aiReport['commentary']);
+
+        // Verify placements specify target tables in Dakhl
+        $categories = collect($aiReport['placements'])->pluck('category')->all();
+        $this->assertContains('اشخاص و طرف‌حساب‌ها', $categories);
+        $this->assertContains('کالاها و خدمات', $categories);
+        $this->assertContains('چک‌ها و اسناد مالی', $categories);
+        $this->assertContains('ترازنامه و سند افتتاحیه', $categories);
+
+        // Verify preview endpoint includes AI inspection
+        $response = $this->postJson(route('migration.preview'), [
+            'source_type' => 'universal_json',
+            'raw_json' => json_encode($payload->toArray()),
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('ai_inspection.health_score', 100);
+    }
 }

@@ -286,6 +286,13 @@
                                     <th class="text-end">
                                         <span x-text="'فروش شما (' + unitLabel() + ')'"></span>
                                     </th>
+                                    <th class="text-end font-semibold text-cyan-600 dark:text-cyan-400" title="{{ __('محاسبه بر اساس نرخ دلار روز و بهای دلاری خرید (D-137)') }}">
+                                        <span x-text="'بهای جایگزینی دلاری (' + unitLabel() + ')'"></span>
+                                    </th>
+                                    <th class="text-end font-semibold text-emerald-600 dark:text-emerald-400" title="{{ __('قیمت پیشنهادی فروش با لحاظ حاشیه سود هدف') }}">
+                                        <span x-text="'فروش پیشنهادی (' + unitLabel() + ')'"></span>
+                                    </th>
+                                    <th class="text-center">{{ __('محافظ سرمایه (D-137)') }}</th>
                                     <th class="text-end">
                                         <span x-text="'نرخ روز بازار (' + unitLabel() + ')'"></span>
                                     </th>
@@ -313,6 +320,31 @@
                                         </td>
                                         <td class="text-end font-mono font-medium">
                                             <span x-text="formatMoney({{ $item['selling_price'] }})"></span>
+                                        </td>
+                                        {{-- Decision D-137: Real-time Replacement Cost --}}
+                                        <td class="text-end font-mono text-cyan-600 dark:text-cyan-400 font-semibold">
+                                            <div x-text="formatMoney({{ $item['replacement_cost_irr'] }})"></div>
+                                            <div class="text-[10px] opacity-70 font-mono" title="{{ __('بهای دلاری پایه') }}">${{ number_format($item['base_usd_cost'], 2) }}</div>
+                                        </td>
+                                        {{-- Decision D-137: Suggested Selling Price with Margin --}}
+                                        <td class="text-end font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+                                            <span x-text="formatMoney({{ $item['suggested_selling_price_irr'] }})"></span>
+                                        </td>
+                                        {{-- Decision D-137: Capital Protection Alert Badge --}}
+                                        <td class="text-center">
+                                            @if ($item['is_below_replacement'])
+                                                <span class="badge badge-error badge-sm gap-1" title="{{ __('فروش زیر بهای جایگزینی دلاری!') }}">
+                                                    ⚠️ {{ __('زیر جایگزینی') }}
+                                                </span>
+                                            @elseif ($item['is_below_suggested'])
+                                                <span class="badge badge-warning badge-sm gap-1" title="{{ __('حاشیه سود کمتر از هدف است') }}">
+                                                    ⚠️ {{ __('سود پایین') }}
+                                                </span>
+                                            @else
+                                                <span class="badge badge-success badge-sm gap-1">
+                                                    🛡️ {{ __('حاشیه امن') }}
+                                                </span>
+                                            @endif
                                         </td>
                                         <td class="text-end font-mono font-bold text-accent">
                                             @if ($item['market_price'])
@@ -353,13 +385,13 @@
                                         <td class="text-center">
                                             <button type="button" class="btn btn-xs btn-outline btn-primary"
                                                 @click="openProductModal({{ json_encode($item) }})">
-                                                {{ __('ثبت قیمت روز و عمده') }}
+                                                {{ __('تنظیم بهای دلاری و عمده') }}
                                             </button>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="10" class="text-center py-6 text-sm opacity-60">
+                                        <td colspan="13" class="text-center py-6 text-sm opacity-60">
                                             {{ __('هیچ کالایی یافت نشد.') }}
                                         </td>
                                     </tr>
@@ -583,6 +615,35 @@
                         <input type="url" name="market_source_url" x-model="productModalData.market_source_url" placeholder="https://torob.com/p/..." class="input input-bordered w-full text-xs">
                     </div>
 
+                    <div class="divider text-xs opacity-60 text-cyan-600 dark:text-cyan-400 font-bold">💎 {{ __('محافظ هوشمند سود و بهای جایگزینی دلاری (D-137)') }}</div>
+
+                    <div class="form-control">
+                        <label class="label cursor-pointer justify-start gap-3">
+                            <input type="checkbox" name="is_pegged_to_usd" value="1" x-model="productModalData.is_pegged_to_usd" class="checkbox checkbox-accent checkbox-sm">
+                            <span class="label-text text-xs font-bold">{{ __('فعال‌سازی ارزیابی دلاری و سپر ضد تورم برای این کالا') }}</span>
+                        </label>
+                    </div>
+
+                    <div x-show="productModalData.is_pegged_to_usd" class="space-y-3 pt-1">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="form-control">
+                                <label class="label"><span class="label-text text-xs">{{ __('بهای دلاری خرید ($)') }}</span></label>
+                                <input type="number" step="0.0001" name="base_usd_cost" x-model="productModalData.base_usd_cost" placeholder="0.00" class="input input-bordered input-sm font-mono text-cyan-600">
+                            </div>
+                            <div class="form-control">
+                                <label class="label"><span class="label-text text-xs">{{ __('حاشیه سود هدف (٪)') }}</span></label>
+                                <input type="number" step="0.1" name="target_margin_percent" x-model="productModalData.target_margin_percent" placeholder="20" class="input input-bordered input-sm font-mono text-emerald-600">
+                            </div>
+                        </div>
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text text-xs">{{ __('نرخ دلار مبنا در زمان خرید (ریال)') }}</span>
+                                <span class="label-text-alt text-xs opacity-60" x-text="'معادل: ' + (Math.round((productModalData.purchase_usd_rate || 0) / 10)).toLocaleString('fa-IR') + ' تومان'"></span>
+                            </label>
+                            <input type="number" step="any" name="purchase_usd_rate" x-model="productModalData.purchase_usd_rate" class="input input-bordered input-sm font-mono">
+                        </div>
+                    </div>
+
                     <div class="divider text-xs opacity-60">{{ __('اشتراک در شبکه عمده‌فروشی هم‌صنفان (B2B)') }}</div>
 
                     <div class="form-control">
@@ -722,6 +783,10 @@
                     this.productModalData = {
                         name: item.name,
                         market_price: item.market_price,
+                        purchase_usd_rate: item.purchase_usd_rate,
+                        base_usd_cost: item.base_usd_cost,
+                        target_margin_percent: item.usd_valuation?.target_margin_percent ?? 20,
+                        is_pegged_to_usd: item.usd_valuation?.is_pegged_to_usd ?? true,
                         market_source_url: item.market_source_url || '',
                         is_wholesale_broadcast: item.is_wholesale_broadcast,
                         wholesale_price: item.wholesale_price,
