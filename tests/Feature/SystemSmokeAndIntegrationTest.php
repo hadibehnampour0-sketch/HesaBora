@@ -133,7 +133,7 @@ class SystemSmokeAndIntegrationTest extends TestCase
     {
         $res = $this->actingAs($this->user)->get(route('migration.index'));
         $res->assertOk()
-            ->assertSee('مهاجرت هوشمند از نرم‌افزارهای حسابداری رقیب');
+            ->assertSee('مهاجرت و انتقال دیتابیس نرم‌افزار قدیمی');
 
         $previewRes = $this->actingAs($this->user)->post(route('migration.preview'), [
             'source_type' => 'holoo',
@@ -144,7 +144,7 @@ class SystemSmokeAndIntegrationTest extends TestCase
             ]),
         ]);
         $previewRes->assertOk()
-            ->assertSee('مرحله ۲: گزارش عیب‌یابی و تراز افتتاحیه');
+            ->assertSee('گام ۲: گزارش پایش هوش مصنوعی و تراز افتتاحیه');
     }
 
     public function test_official_inquiries_dashboard_and_validations(): void

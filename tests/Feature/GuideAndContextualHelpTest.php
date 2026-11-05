@@ -44,9 +44,9 @@ class GuideAndContextualHelpTest extends TestCase
             ->get(route('guide.index'));
 
         $response->assertOk();
-        $response->assertSee('راهنمای کامل و مصور سامانه دخل');
-        $response->assertSee('مفاهیم پایه و شروع به کار با دخل');
-        $response->assertSee('نمودار جریان یکپارچه اطلاعات در دخل');
+        $response->assertSee('راهنمای کامل و مصور سامانه نپتون');
+        $response->assertSee('مفاهیم پایه و شروع به کار با نپتون');
+        $response->assertSee('نمودار جریان یکپارچه اطلاعات در نپتون');
     }
 
     public function test_user_can_view_different_topics_in_guide(): void
@@ -57,7 +57,7 @@ class GuideAndContextualHelpTest extends TestCase
             'warehouse' => 'انبارداری، ردیابی سریال و لات (بچ ساخت)',
             'accounting' => 'حسابداری دوبل، ساختار کدینگ و اسناد مالی',
             'tax' => 'سامانه مودیان و پایانه‌های فروشگاهی',
-            'copilot' => 'دستیار مالی هوش مصنوعی دخل (AI Copilot)',
+            'copilot' => 'دستیار مالی هوش مصنوعی نپتون (AI Copilot)',
             'shortcuts' => 'کلیدهای میانبر و ابزارهای سریع صفحه‌کلید',
         ];
 
@@ -78,7 +78,7 @@ class GuideAndContextualHelpTest extends TestCase
             ->get(route('guide.index', ['topic' => 'nonexistent_topic']));
 
         $response->assertOk();
-        $response->assertSee('مفاهیم پایه و شروع به کار با دخل');
+        $response->assertSee('مفاهیم پایه و شروع به کار با نپتون');
     }
 
     public function test_guide_links_are_present_in_navigation_menus(): void

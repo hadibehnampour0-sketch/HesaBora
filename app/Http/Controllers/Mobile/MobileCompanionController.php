@@ -40,9 +40,9 @@ class MobileCompanionController extends Controller
     public function manifest(): JsonResponse
     {
         return response()->json([
-            'name' => 'دخل همراه | پخش و انبارداری',
-            'short_name' => 'دخل همراه',
-            'description' => 'اپلیکیشن همراه دخل برای ویزیتورهای پخش مویرگی و انبارداران',
+            'name' => 'نپتون همراه | پخش و انبارداری',
+            'short_name' => 'نپتون همراه',
+            'description' => 'اپلیکیشن همراه نپتون برای ویزیتورهای پخش مویرگی و انبارداران',
             'start_url' => '/mobile',
             'display' => 'standalone',
             'background_color' => '#0f172a',
@@ -226,7 +226,7 @@ JS;
                 'warehouse_id' => $validated['warehouse_id'],
                 'document_number' => $maxNumber,
                 'number' => $maxNumber,
-                'description' => $validated['notes'] ?? 'ثبت شده از اپلیکیشن همراه دخل',
+                'description' => $validated['notes'] ?? 'ثبت شده از اپلیکیشن همراه نپتون',
             ];
 
             $createResult = InvoiceService::createInvoice($user, $invoiceData, $items, true);

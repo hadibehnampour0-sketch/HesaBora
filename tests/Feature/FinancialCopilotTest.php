@@ -79,7 +79,7 @@ class FinancialCopilotTest extends TestCase
             ->get(route('copilot.index'));
 
         $response->assertOk()
-            ->assertSee(__('دستیار مالی و اقتصادی دخل (Dakhl Copilot)'))
+            ->assertSee(__('دستیار مالی و اقتصادی نپتون (Neptune Copilot)'))
             ->assertSee(__('گفتگوی جدید'));
     }
 

@@ -85,7 +85,7 @@ class MobileFieldCompanionTest extends TestCase
         $response = $this->get(route('mobile.index'));
 
         $response->assertOk();
-        $response->assertSee('دخل همراه');
+        $response->assertSee('نپتون همراه');
         $response->assertSee('ویزیتور پخش');
     }
 
@@ -95,7 +95,7 @@ class MobileFieldCompanionTest extends TestCase
 
         $response->assertOk();
         $response->assertJson([
-            'short_name' => 'دخل همراه',
+            'short_name' => 'نپتون همراه',
             'display' => 'standalone',
             'dir' => 'rtl',
         ]);

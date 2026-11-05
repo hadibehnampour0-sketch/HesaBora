@@ -36,7 +36,7 @@ final class InstallController extends Controller
     public function index(): View|RedirectResponse
     {
         if ($this->isAlreadyInstalled()) {
-            return redirect()->route('login')->with('info', __('سامانه دخل قبلاً نصب و راه‌اندازی شده است.'));
+            return redirect()->route('login')->with('info', __('سامانه مالی نپتون قبلاً نصب و راه‌اندازی شده است.'));
         }
 
         $requirements = $this->getRequirementsStatus();
@@ -177,12 +177,12 @@ final class InstallController extends Controller
             if ($request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => __('نصب سامانه دخل با موفقیت پایان یافت.'),
+                    'message' => __('نصب و راه‌اندازی سامانه مالی نپتون با موفقیت پایان یافت.'),
                     'redirect' => route('login'),
                 ]);
             }
 
-            return redirect()->route('login')->with('success', __('نصب سامانه با موفقیت انجام شد. اکنون وارد شوید.'));
+            return redirect()->route('login')->with('success', __('نصب سامانه نپتون با موفقیت انجام شد. اکنون وارد شوید.'));
         } catch (\Throwable $e) {
             DB::rollBack();
 
@@ -206,7 +206,7 @@ final class InstallController extends Controller
     {
         file_put_contents(storage_path('installed'), json_encode([
             'installed_at' => now()->toIso8601String(),
-            'version' => '1.0.0-cleanroom',
+            'version' => '2.5.0-neptune',
         ], JSON_PRETTY_PRINT));
     }
 

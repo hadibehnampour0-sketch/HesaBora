@@ -19,7 +19,9 @@ yarn-error.log
 /.vscode
 /.claude
 /.playwright-cli/
-/build
+/build/output
+/build/php
+/build/installer/Neptune.exe
 script/*.sql*
 script/*/*.sql*
 storage/*.sqlite*
@@ -32,3 +34,4 @@ __pycache__/
 
 .vercel
 .env*
+!build/installer/.env.standalone

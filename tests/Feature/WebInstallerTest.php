@@ -35,7 +35,7 @@ final class WebInstallerTest extends TestCase
         $response = $this->get(route('install.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('راه‌اندازی اولیه سامانه حسابداری دخل');
+        $response->assertSee('راه‌اندازی اولیه سامانه مالی و اداری نپتون');
         $response->assertSee('بررسی سلامت سرور و پیش‌نیازها');
     }
 
@@ -55,9 +55,9 @@ final class WebInstallerTest extends TestCase
     public function test_installer_setup_admin_creates_company_and_admin_and_locks_installer(): void
     {
         $payload = [
-            'company_name' => 'شرکت حسابداری دخل تست',
+            'company_name' => 'شرکت حسابداری نپتون تست',
             'admin_name' => 'مدیر سیستم تست',
-            'email' => 'test-admin@dakhl.ir',
+            'email' => 'test-admin@neptune.ir',
             'password' => 'SecurePass1405!',
             'password_confirmation' => 'SecurePass1405!',
         ];
@@ -71,11 +71,11 @@ final class WebInstallerTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('companies', [
-            'name' => 'شرکت حسابداری دخل تست',
+            'name' => 'شرکت حسابداری نپتون تست',
         ]);
 
         $this->assertDatabaseHas('users', [
-            'email' => 'test-admin@dakhl.ir',
+            'email' => 'test-admin@neptune.ir',
             'name' => 'مدیر سیستم تست',
         ]);
 
