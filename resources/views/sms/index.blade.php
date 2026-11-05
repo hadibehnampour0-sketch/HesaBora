@@ -80,7 +80,7 @@
                             <input type="text" name="recipient" class="input input-bordered w-full" placeholder="{{ __('Mobile (e.g. 09121234567)') }}" required>
                         </div>
                         <div>
-                            <textarea name="message" class="textarea textarea-bordered w-full" rows="2" placeholder="{{ __('Test message content...') }}" required>تست ارسال پیامک از سامانه حسابداری دخل</textarea>
+                            <textarea name="message" class="textarea textarea-bordered w-full" rows="2" placeholder="{{ __('Test message content...') }}" required>تست ارسال پیامک از سامانه حسابداری نپتون</textarea>
                         </div>
                         <div class="flex justify-end">
                             <button type="submit" class="btn btn-secondary btn-sm">{{ __('Send Test') }}</button>

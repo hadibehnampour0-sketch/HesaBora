@@ -77,7 +77,7 @@
                     <span>{{ __('نگاشت سریع کالا و پردازش مجدد رویداد') }}</span>
                 </div>
                 <p class="text-xs text-base-content/70">
-                    {{ __('اگر دلیل توقف عدم تطابق کالا بوده است، شناسه کالای خارجی (ووکامرس یا دیجی‌کالا) را به شناسه کالای دخل متصل کنید و دکمه نگاشت را بزنید.') }}
+                    {{ __('اگر دلیل توقف عدم تطابق کالا بوده است، شناسه کالای خارجی (ووکامرس یا دیجی‌کالا) را به شناسه کالای نپتون متصل کنید و دکمه نگاشت را بزنید.') }}
                 </p>
                 <form method="POST" action="{{ route('integrations.queue.map-product') }}" class="grid grid-cols-1 gap-2 sm:grid-cols-5">
                     @csrf
@@ -91,7 +91,7 @@
                         <input type="text" name="external_id" class="input input-bordered input-sm w-full" placeholder="{{ __('شناسه خارجی کالا / کد تنوع') }}" required>
                     </div>
                     <div>
-                        <input type="number" name="product_id" class="input input-bordered input-sm w-full" placeholder="{{ __('شناسه کالای دخل (ID)') }}" required>
+                        <input type="number" name="product_id" class="input input-bordered input-sm w-full" placeholder="{{ __('شناسه کالای نپتون (ID)') }}" required>
                     </div>
                     <div>
                         <input type="number" name="event_id" class="input input-bordered input-sm w-full" placeholder="{{ __('شناسه رویداد (Event ID)') }}" required>

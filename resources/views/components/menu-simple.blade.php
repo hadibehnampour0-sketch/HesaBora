@@ -152,7 +152,7 @@
             <li><a href="{{ route('settings.appearance') }}" class="font-bold text-primary">{{ __('تنظیمات ظاهری و پوسته') }}</a></li>
             <li><a href="{{ route('account.edit') }}">{{ __('پروفایل و حساب کاربری') }}</a></li>
             <li><a href="{{ route('guide.index') }}" class="font-bold text-accent">{{ __('راهنمای جامع و مصور') }}</a></li>
-            <li><a href="{{ route('about') }}">{{ __('درباره دخل') }}</a></li>
+            <li><a href="{{ route('about') }}">{{ __('درباره نپتون') }}</a></li>
         </ul>
     </details>
 </li>

@@ -1,11 +1,11 @@
-{{-- Dakhl Modern Ultra-Clean FinTech Cockpit (کانسپت اول - سفارشی هادی بهنام‌پور) --}}
+{{-- Neptune Modern Ultra-Clean FinTech Cockpit (کانسپت اول - سفارشی هادی بهنام‌پور) --}}
 <section x-data="todayDashboard('{{ route('home.today') }}', {{ Js::from($todayData ?? null) }})" x-init="init()" class="space-y-5" aria-labelledby="today-title">
     {{-- Header Bar --}}
     <div class="flex flex-wrap items-center justify-between gap-3 bg-base-100 p-4 rounded-3xl border border-base-300 shadow-xs">
         <div>
             <h2 id="today-title" class="text-xl font-black text-base-content flex items-center gap-2">
                 <span class="inline-block size-3 rounded-full bg-emerald-500 animate-pulse"></span>
-                {{ __('میز کار و نبض مالی دخل') }}
+                {{ __('میز کار و نبض مالی نپتون') }}
             </h2>
             <p class="text-xs text-base-content/65 mt-0.5">{{ __('جریان نقدینگی، سود خالص، رادار اقساط و دستیار هوشمند اقتصادی') }}</p>
         </div>
@@ -55,7 +55,7 @@
 
     <div class="space-y-5">
 
-        {{-- 1. GEMINI AI FINANCIAL COPILOT BOX (باکس هوش مصنوعی جمینای دخل) --}}
+        {{-- 1. GEMINI AI FINANCIAL COPILOT BOX (باکس هوش مصنوعی جمینای نپتون) --}}
         <div class="p-5 rounded-3xl border border-cyan-500/40 bg-gradient-to-br from-base-100 via-base-100 to-cyan-500/5 shadow-md relative overflow-hidden"
             x-data="{
                 userPrompt: '',
@@ -103,7 +103,7 @@
                     </span>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-sm font-black text-base-content">{{ __('دستیار ارشد مالی و هوش تجاری دخل (Google Gemini AI)') }}</h3>
+                            <h3 class="text-sm font-black text-base-content">{{ __('دستیار ارشد مالی و هوش تجاری نپتون (Google Gemini AI)') }}</h3>
                             <span class="size-2 rounded-full bg-emerald-400 animate-pulse"></span>
                             <span class="badge badge-accent badge-xs py-0.5 px-2 text-[9px] font-mono tracking-wider">LIVE COCKPIT</span>
                         </div>
@@ -184,7 +184,7 @@
                 <div class="flex items-start justify-between gap-3 border-b border-cyan-500/20 pb-2">
                     <div class="flex items-center gap-2 font-bold text-cyan-600 dark:text-cyan-400">
                         <span class="text-sm">🤖</span>
-                        <span>{{ __('تحلیل و پاسخ مشاور هوشمند دخل (Gemini AI)') }}</span>
+                        <span>{{ __('تحلیل و پاسخ مشاور هوشمند نپتون (Gemini AI)') }}</span>
                     </div>
                     <div class="flex items-center gap-1">
                         <button type="button" @click="navigator.clipboard.writeText(aiResponse); $el.innerText = '✓ کپی شد'; setTimeout(() => $el.innerText = 'کپی', 2000)"
@@ -443,8 +443,8 @@
                 </div>
 
                 <div class="mt-4 pt-3 border-t border-base-200 flex items-center justify-between text-xs text-base-content/60">
-                    <span>{{ __('شرکت:') }} {{ optional(auth()->user()->activeCompany)->name ?? 'دخل' }}</span>
-                    <span class="font-mono text-emerald-600">{{ __('نسخه بومی دخل') }}</span>
+                    <span>{{ __('شرکت:') }} {{ optional(auth()->user()->activeCompany)->name ?? 'نپتون' }}</span>
+                    <span class="font-mono text-emerald-600">{{ __('نسخه بومی نپتون') }}</span>
                 </div>
             </div>
         </div>

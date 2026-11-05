@@ -17,7 +17,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'نپتون'),
 
     'version' => env('APP_VERSION', 'nightly-local'),
 

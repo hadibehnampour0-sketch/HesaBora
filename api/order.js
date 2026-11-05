@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
 
   const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   const randSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
-  const orderRef = `DK-ORD-${dateStr}-${randSuffix}`;
+  const orderRef = `NEP-ORD-${dateStr}-${randSuffix}`;
 
   return res.status(200).json({
     success: true,
@@ -51,6 +51,6 @@ module.exports = async (req, res) => {
     plan_title: planTitles[selectedPlan] || selectedPlan,
     total_price_irr: totalPrice,
     total_price_formatted: new Intl.NumberFormat('fa-IR').format(totalPrice) + ' تومان',
-    message: 'سفارش لایسنس شما با موفقیت ثبت شد. کارشناسان دخل جهت فعال‌سازی نهایی و صدور فاکتور با شما تماس خواهند گرفت.'
+    message: 'سفارش لایسنس شما با موفقیت ثبت شد. کارشناسان نپتون جهت فعال‌سازی نهایی و صدور فاکتور با شما تماس خواهند گرفت.'
   });
 };

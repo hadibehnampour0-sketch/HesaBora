@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl" data-theme="emerald">
+<html lang="fa" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تعرفه‌ها و پکیج‌های لایسنس ماژولار | نرم‌افزار حسابداری و مالی دخل</title>
+    <title>تعرفه‌ها و پکیج‌های لایسنس ماژولار | نرم‌افزار حسابداری و مالی نپتون</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
@@ -17,12 +17,12 @@
     <header class="bg-base-100 border-b border-base-300 sticky top-0 z-50 shadow-sm backdrop-blur-md bg-base-100/90">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white flex items-center justify-center text-2xl font-black shadow-lg shadow-emerald-600/20">
-                    د
+                <div class="w-12 h-12 rounded-2xl bg-[#090D16] p-1.5 shadow-lg shadow-cyan-500/25 border border-cyan-500/30 flex items-center justify-center shrink-0">
+                    <img src="/images/neptune-logo.svg" alt="Neptune ERP" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <span class="text-xl font-black tracking-tight text-base-content flex items-center gap-1.5">
-                        <span>دخل</span>
+                        <span>نپتون</span>
                         <span class="badge badge-accent badge-xs py-0.5 px-1.5 font-mono text-[10px]">ERP v2.5</span>
                     </span>
                     <span class="text-[11px] text-base-content/60 block font-medium">سامانه یکپارچه مالی، حسابداری و مدیریت اصناف</span>
@@ -44,7 +44,7 @@
             <div class="flex items-center gap-2">
                 @auth
                     <a href="{{ route('home') }}" class="btn btn-primary btn-sm rounded-xl px-5 font-bold shadow-md shadow-primary/20 text-xs">
-                        <span>{{ __('ورود به پیشخوان دخل') }}</span>
+                        <span>{{ __('ورود به پیشخوان نپتون') }}</span>
                         <span>←</span>
                     </a>
                 @else
@@ -63,8 +63,8 @@
 
         <!-- Hero Section -->
         <section class="text-center max-w-3xl mx-auto space-y-6 pt-4">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-xs font-bold">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/25 text-sky-700 text-xs font-bold">
+                <span class="w-2 h-2 rounded-full bg-sky-500 animate-ping"></span>
                 <span>نسل نوین حسابداری ایران؛ ماژولار، ۱۰۰٪ آفلاین و هوشمند</span>
             </div>
 
@@ -73,7 +73,7 @@
             </h1>
 
             <p class="text-sm sm:text-base text-base-content/70 leading-relaxed max-w-2xl mx-auto">
-                با معماری لایسنسینگ ماژولار «دخل»، می‌توانید پکیج متناسب با صنف و ابعاد کسب‌وکارتان را انتخاب کرده و هر زمان که رشد کردید، تنها با وارد کردن یک کلید فعال‌سازی بدون نیاز به نصب مجدد، ظرفیت سیستم را ارتقا دهید.
+                با معماری لایسنسینگ ماژولار «نپتون»، می‌توانید پکیج متناسب با صنف و ابعاد کسب‌وکارتان را انتخاب کرده و هر زمان که رشد کردید، تنها با وارد کردن یک کلید فعال‌سازی بدون نیاز به نصب مجدد، ظرفیت سیستم را ارتقا دهید.
             </p>
 
             <div class="flex flex-wrap justify-center gap-3 pt-2">
@@ -90,7 +90,7 @@
         <!-- 5 Commercial Plans Grid -->
         <section id="plans" class="space-y-8 scroll-mt-28">
             <div class="text-center space-y-2">
-                <span class="badge badge-primary badge-sm font-bold">پلن‌های رسمی دخل</span>
+                <span class="badge badge-primary badge-sm font-bold">پلن‌های رسمی نپتون</span>
                 <h2 class="text-2xl sm:text-4xl font-black text-base-content">پکیج‌های استاندارد متناسب با هر نوع کسب‌وکار</h2>
                 <p class="text-xs sm:text-sm text-base-content/60">از فروشگاه‌ها و اصناف خرد تا شرکت‌های بزرگ بازرگانی، پخش مویرگی، کارخانجات و هلدینگ‌ها</p>
             </div>
@@ -265,7 +265,7 @@
             <div class="text-center space-y-2 max-w-2xl mx-auto">
                 <span class="badge badge-accent badge-sm font-bold">مزیت رقابتی بی‌نظیر</span>
                 <h2 class="text-2xl sm:text-3xl font-black text-base-content">۱۶ صنف تخصصی بازار ایران با زبان و عرف همان صنف</h2>
-                <p class="text-xs text-base-content/60">نیازی به خرید نرم‌افزارهای جداگانه نیست! دخل با یک کلیک به زبان صنف شما صحبت می‌کند.</p>
+                <p class="text-xs text-base-content/60">نیازی به خرید نرم‌افزارهای جداگانه نیست! نپتون با یک کلیک به زبان صنف شما صحبت می‌کند.</p>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
@@ -479,7 +479,7 @@
         <!-- 16 Modules Showcase -->
         <section id="modules" class="space-y-8 scroll-mt-28">
             <div class="text-center space-y-2 max-w-2xl mx-auto">
-                <h2 class="text-2xl sm:text-3xl font-black text-base-content">۱۶ ماژول قدرتمند دخل</h2>
+                <h2 class="text-2xl sm:text-3xl font-black text-base-content">۱۶ ماژول قدرتمند نپتون</h2>
                 <p class="text-xs text-base-content/60">هر آنچه یک بنگاه اقتصادی مدرن از یک سیستم یکپارچه انتظار دارد</p>
             </div>
 
@@ -512,7 +512,7 @@
                 <div class="collapse collapse-plus bg-base-100 border border-base-300 rounded-2xl">
                     <input type="radio" name="faq-accordion" checked="checked" />
                     <div class="collapse-title text-sm font-bold text-base-content">
-                        آیا نرم‌افزار دخل بدون اینترنت هم کار می‌کند؟
+                        آیا نرم‌افزار نپتون بدون اینترنت هم کار می‌کند؟
                     </div>
                     <div class="collapse-content text-xs text-base-content/70 leading-relaxed">
                         بله، ۱۰۰٪! هسته نرم‌افزار، حسابداری، انبارداری، صدور فاکتور و کارتخوان‌ها به صورت کاملاً آفلاین و محلی (Offline-First) اجرا می‌شوند و لایسنس شما نیز به صورت ریاضی و بدون نیاز به اینترنت اعتبارسنجی می‌گردد.
@@ -547,7 +547,7 @@
     <footer class="bg-base-100 border-t border-base-300 mt-20 py-10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-base-content/60">
             <div class="flex items-center gap-3">
-                <span class="font-black text-sm text-base-content">دخل (Dakhl ERP)</span>
+                <span class="font-black text-sm text-base-content">نپتون (Neptune ERP)</span>
                 <span>•</span>
                 <span>توسعه‌یافته برای اصناف، شرکت‌های بازرگانی، پخش و کارخانجات ایران</span>
             </div>

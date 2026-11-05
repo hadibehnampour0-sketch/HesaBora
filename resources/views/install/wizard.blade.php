@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>راه‌اندازی اولیه سامانه حسابداری دخل</title>
+    <title>راه‌اندازی اولیه سامانه حسابداری نپتون</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
                     د
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight text-white">دَخل (Dakhl)</h1>
+                    <h1 class="text-xl font-bold tracking-tight text-white">دَخل (Neptune)</h1>
                     <p class="text-xs text-slate-400">دستیار هوشمند و سامانه جامع مالی و حسابداری</p>
                 </div>
             </div>
@@ -259,7 +259,7 @@
     </main>
 
     <footer class="py-4 border-t border-slate-800 text-center text-xs text-slate-500">
-        توسعه‌یافته با بالاترین استانداردهای مهندسی نرم‌افزار، حسابداری و سامانه مالیاتی ایران &bull; دخل ۱۴۰۵ &bull; صاحب امتیاز: هادی بهنام‌پور
+        توسعه‌یافته با بالاترین استانداردهای مهندسی نرم‌افزار، حسابداری و سامانه مالیاتی ایران &bull; نپتون ۱۴۰۵ &bull; صاحب امتیاز: هادی بهنام‌پور
     </footer>
 
     <script>
@@ -275,7 +275,7 @@
                 submitting: false,
                 errorMessage: '',
                 adminForm: {
-                    company_name: 'شرکت دخل',
+                    company_name: 'شرکت نپتون',
                     admin_name: 'هادی بهنام‌پور',
                     email: 'admin@dakhl.local',
                     password: '',

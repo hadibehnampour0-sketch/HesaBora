@@ -51,9 +51,9 @@ class BackupEngineTest extends TestCase
 
         $this->assertTrue($result['success']);
         $this->assertFileExists($result['path']);
-        $this->assertStringEndsWith('.dakhl', $result['filename']);
+        $this->assertStringEndsWith('.neptune', $result['filename']);
         $this->assertNotEmpty($result['hash']);
-        $this->assertEquals('Dakhl Accounting & ERP', $result['manifest']['system']);
+        $this->assertEquals('Neptune Accounting & ERP', $result['manifest']['system']);
     }
 
     public function test_can_list_stored_backups(): void

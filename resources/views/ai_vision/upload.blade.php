@@ -30,7 +30,7 @@
                 <div class="bg-base-200/60 p-4 rounded-lg space-y-2 text-xs text-base-content/70">
                     <div class="font-bold text-base-content flex items-center gap-1">
                         <svg class="w-4 h-4 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        {{ __('اصل بنیادین راستی‌آزمایی انسانی در دخل (D-114):') }}
+                        {{ __('اصل بنیادین راستی‌آزمایی انسانی در نپتون (D-114):') }}
                     </div>
                     <p>
                         {{ __('«یک سند مالی قطعی در حسابداری نباید بدون تأیید انسان ثبت شود». هوش مصنوعی فاکتور را برای شما تایپ، محاسبه و آماده می‌کند؛ اما ثبت نهایی در دفاتر پس از بازبینی شما صورت می‌پذیرد.') }}

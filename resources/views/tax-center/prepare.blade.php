@@ -56,7 +56,7 @@
                 <li>{{ __('Log into the tax office portal and file using the figures in the pack.') }}</li>
                 <li>{{ __('Keep the pack for your own records.') }}</li>
             </ol>
-            <p class="mt-3 text-xs text-base-content/60">{{ __('Dakhl prepares the figures and the pack; it does not submit your filing to the tax office for you.') }}</p>
+            <p class="mt-3 text-xs text-base-content/60">{{ __('Neptune prepares the figures and the pack; it does not submit your filing to the tax office for you.') }}</p>
 
             @can('tax-center.audit-pack')
                 <a href="{{ route('tax-center.audit-pack', ['jalali_year' => $jalaliYear, 'quarter' => $quarter]) }}" class="btn btn-sm btn-primary mt-3">{{ __('Download audit pack') }}</a>

@@ -1,4 +1,4 @@
-<x-app-layout :title="__('راهنمای جامع و مصور سامانه دخل')">
+<x-app-layout :title="__('راهنمای جامع و مصور سامانه نپتون')">
 
     <div class="mx-auto max-w-6xl space-y-6 pb-12 pt-2" x-data="{
         activeTab: @js($activeTab),
@@ -16,10 +16,10 @@
                 <div class="text-center md:text-right">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/15 text-primary text-xs font-bold mb-2">
                         <span class="size-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span>{{ __('دانشنامه و مرکز آموزش دخل') }}</span>
+                        <span>{{ __('دانشنامه و مرکز آموزش نپتون') }}</span>
                     </div>
                     <h1 class="text-2xl sm:text-3xl font-black text-base-content tracking-tight">
-                        {{ __('راهنمای کامل و مصور سامانه دخل') }}
+                        {{ __('راهنمای کامل و مصور سامانه نپتون') }}
                     </h1>
                     <p class="text-xs sm:text-sm text-base-content/65 mt-1.5 max-w-2xl leading-relaxed">
                         {{ __('آموزش فرآیندهای مالی، فروش، انبارداری، خزانه‌داری، استاندارد دوبل و سامانه مودیان با فلوچارت‌های تصویری و مثال‌های عملیاتی.') }}
@@ -66,7 +66,7 @@
                     <div>
                         <h2 class="text-lg font-black text-base-content flex items-center gap-2">
                             <span>🚀</span>
-                            <span>{{ __('مفاهیم پایه و شروع به کار با دخل') }}</span>
+                            <span>{{ __('مفاهیم پایه و شروع به کار با نپتون') }}</span>
                         </h2>
                         <p class="text-xs text-base-content/65 mt-1">{{ __('معماری سیستم، چگونگی گردش اطلاعات و راه‌اندازی اولیه در ۳ گام') }}</p>
                     </div>
@@ -77,7 +77,7 @@
                 <div class="rounded-2xl border border-base-300 bg-base-200/40 p-5 mb-6">
                     <div class="text-xs font-black text-base-content mb-3 flex items-center gap-1.5">
                         <span class="size-2 rounded-full bg-primary"></span>
-                        <span>{{ __('نمودار جریان یکپارچه اطلاعات در دخل (از معامله تا تراز مالی)') }}</span>
+                        <span>{{ __('نمودار جریان یکپارچه اطلاعات در نپتون (از معامله تا تراز مالی)') }}</span>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-center text-xs">
@@ -169,7 +169,7 @@
                         <div class="text-xs space-y-1">
                             <div class="font-bold text-base-content">{{ __('تهاتر و مبادله کالا با کالا (Trade Barter)') }}</div>
                             <p class="text-base-content/70 leading-relaxed">
-                                {{ __('در معاملات همکاران (مانند طلافروشی، قطعات یدکی یا مصالح)، می‌توانید اقلام مبادله‌شده را ثبت کنید. در زمان تسویه، دخل مابه‌التفاوت ریالی را محاسبه کرده و به طور کاملاً خودکار یک سند موازنه دوبل حسابداری بین بدهکار/بستانکار ثبت می‌کند.') }}
+                                {{ __('در معاملات همکاران (مانند طلافروشی، قطعات یدکی یا مصالح)، می‌توانید اقلام مبادله‌شده را ثبت کنید. در زمان تسویه، نپتون مابه‌التفاوت ریالی را محاسبه کرده و به طور کاملاً خودکار یک سند موازنه دوبل حسابداری بین بدهکار/بستانکار ثبت می‌کند.') }}
                             </p>
                         </div>
                     </div>
@@ -201,7 +201,7 @@
                 <div class="rounded-2xl border border-base-300 bg-base-200/40 p-5 mb-5">
                     <div class="text-xs font-black text-base-content mb-3 flex items-center gap-1.5">
                         <span class="size-2 rounded-full bg-indigo-500"></span>
-                        <span>{{ __('مراحل هفت‌گانه چرخه حیات چک در دخل:') }}</span>
+                        <span>{{ __('مراحل هفت‌گانه چرخه حیات چک در نپتون:') }}</span>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 text-xs text-right">
@@ -252,7 +252,7 @@
                 <div class="p-4 rounded-2xl bg-base-200/50 border border-base-200 text-xs space-y-1.5 leading-relaxed">
                     <div class="font-bold text-sm text-base-content">{{ __('تخصیص وجه به فاکتورها (Payment Allocation):') }}</div>
                     <p class="text-base-content/75">
-                        {{ __('در دخل، دریافت وجه از تخصیص آن به فاکتور مستقل است؛ شما می‌توانید یک واریزی ۵۰ میلیون تومانی را همزمان به ۳ فاکتور قدیمی یا معوق یک مشتری اختصاص دهید تا مانده معوقه هر فاکتور به تفکیک به صفر برسد.') }}
+                        {{ __('در نپتون، دریافت وجه از تخصیص آن به فاکتور مستقل است؛ شما می‌توانید یک واریزی ۵۰ میلیون تومانی را همزمان به ۳ فاکتور قدیمی یا معوق یک مشتری اختصاص دهید تا مانده معوقه هر فاکتور به تفکیک به صفر برسد.') }}
                     </p>
                 </div>
             </div>
@@ -297,7 +297,7 @@
                 <div class="p-4 rounded-2xl bg-base-200/50 border border-base-200 text-xs space-y-1 mt-4">
                     <div class="font-bold text-base-content">{{ __('رسید ورود کالا (Goods Receipt) و حواله خروج (Delivery Note):') }}</div>
                     <p class="text-base-content/70 leading-relaxed">
-                        {{ __('در دخل برای تفکیک عملیات فاکتور از تحویل فیزیکی کالا، می‌توانید حواله خروج رسمی و رسید تحویل انبار را با امضای انباردار و تحویل‌گیرنده ثبت و چاپ فرمایید.') }}
+                        {{ __('در نپتون برای تفکیک عملیات فاکتور از تحویل فیزیکی کالا، می‌توانید حواله خروج رسمی و رسید تحویل انبار را با امضای انباردار و تحویل‌گیرنده ثبت و چاپ فرمایید.') }}
                     </p>
                 </div>
             </div>
@@ -318,12 +318,12 @@
                 </div>
 
                 <div class="rounded-2xl border border-base-300 bg-base-200/40 p-4 mb-4 text-xs">
-                    <div class="font-black text-sm text-base-content mb-2">{{ __('قانون بنیادین تراز در دخل:') }}</div>
+                    <div class="font-black text-sm text-base-content mb-2">{{ __('قانون بنیادین تراز در نپتون:') }}</div>
                     <div class="font-mono text-center p-3 rounded-xl bg-base-100 border border-base-300 font-bold text-sm text-primary">
                         مجموع مبالغ بدهکار (Debit) == مجموع مبالغ بستانکار (Credit)
                     </div>
                     <p class="text-[11px] text-base-content/70 mt-2 text-center">
-                        {{ __('هیچ سند حسابی در دخل بدون تراز صفر نهایی ثبت و تایید نمی‌شود تا دفاتر مالیاتی شما از هرگونه خدشه در امان بماند.') }}
+                        {{ __('هیچ سند حسابی در نپتون بدون تراز صفر نهایی ثبت و تایید نمی‌شود تا دفاتر مالیاتی شما از هرگونه خدشه در امان بماند.') }}
                     </p>
                 </div>
 
@@ -387,7 +387,7 @@
                     <div class="p-4 rounded-2xl border border-sky-500/25 bg-sky-50/50 dark:bg-sky-950/20 space-y-1 text-sky-900 dark:text-sky-200">
                         <div class="font-bold text-sm">{{ __('تنظیمات اتصال به کارپوشه:') }}</div>
                         <p class="text-xs leading-relaxed">
-                            {{ __('از منوی «مالیات و سامانه مودیان ⬅ تنظیمات اتصال» می‌توانید شناسه یکتای حافظه مالیاتی و کلید خصوصی CSR خود را بارگذاری کنید. دخل صورتحساب‌ها را با الگوریتم استاندارد امضا کرده و به سامانه مودیان ارسال می‌کند.') }}
+                            {{ __('از منوی «مالیات و سامانه مودیان ⬅ تنظیمات اتصال» می‌توانید شناسه یکتای حافظه مالیاتی و کلید خصوصی CSR خود را بارگذاری کنید. نپتون صورتحساب‌ها را با الگوریتم استاندارد امضا کرده و به سامانه مودیان ارسال می‌کند.') }}
                         </p>
                     </div>
                 </div>
@@ -401,7 +401,7 @@
                     <div>
                         <h2 class="text-lg font-black text-base-content flex items-center gap-2">
                             <span>✨</span>
-                            <span>{{ __('دستیار مالی هوش مصنوعی دخل (AI Copilot) و تنظیمات کلید') }}</span>
+                            <span>{{ __('دستیار مالی هوش مصنوعی نپتون (AI Copilot) و تنظیمات کلید') }}</span>
                         </h2>
                         <p class="text-xs text-base-content/65 mt-1">{{ __('پرسش صوتی و متنی از اسناد مالی، کارکرد کاملاً آفلاین و راهنمای اتصال به موتور ابری Gemini') }}</p>
                     </div>
@@ -417,7 +417,7 @@
                         <div>
                             <div class="font-bold text-sm text-base-content">{{ __('معماری هیبریدی: کارکرد ۱۰۰٪ آفلاین + موتور زایشی ابری اختیاری') }}</div>
                             <p class="text-xs text-base-content/70 mt-0.5">
-                                {{ __('هوش مصنوعی دخل برای کارکرد به هیچ اینترنت یا سرور خارجی وابسته نیست و تمامی اسناد و محاسبات در دیتابیس محلی شما با امنیت مطلق انجام می‌شود.') }}
+                                {{ __('هوش مصنوعی نپتون برای کارکرد به هیچ اینترنت یا سرور خارجی وابسته نیست و تمامی اسناد و محاسبات در دیتابیس محلی شما با امنیت مطلق انجام می‌شود.') }}
                             </p>
                         </div>
                     </div>
@@ -440,7 +440,7 @@
                     <div class="p-4 rounded-2xl border border-base-200 bg-base-100 space-y-2">
                         <div class="font-bold text-sm text-base-content">{{ __('تابلوی زنده قیمت‌های آنلاین و طلا:') }}</div>
                         <p class="text-base-content/70 leading-relaxed">
-                            {{ __('دخل به طور خودکار قیمت‌های روز دلار، درهم، طلای ۱۸ عیار و سکه امامی را استعلام می‌کند. می‌توانید کاردکس انبار و ارزش موجودی را به قیمت لحظه‌ای بازار مقایسه فرمایید تا سود و زیان ناشی از نوسانات تورمی محاسبه شود.') }}
+                            {{ __('نپتون به طور خودکار قیمت‌های روز دلار، درهم، طلای ۱۸ عیار و سکه امامی را استعلام می‌کند. می‌توانید کاردکس انبار و ارزش موجودی را به قیمت لحظه‌ای بازار مقایسه فرمایید تا سود و زیان ناشی از نوسانات تورمی محاسبه شود.') }}
                         </p>
                     </div>
                 </div>
@@ -456,7 +456,7 @@
                     </div>
 
                     <p class="text-xs text-base-content/75 leading-relaxed">
-                        {{ __('گوگل به هر کاربر با حساب جیمیل، سهمیه روزانه رایگان معادل ۱۵ درخواست در دقیقه برای مدل قدرتمند Gemini 2.5 Flash اختصاص می‌دهد. با فعال‌سازی این کلید، تحلیل‌های متنی و استراتژیک عمیق‌تری به زبان فارسی در دخل دریافت خواهید کرد.') }}
+                        {{ __('گوگل به هر کاربر با حساب جیمیل، سهمیه روزانه رایگان معادل ۱۵ درخواست در دقیقه برای مدل قدرتمند Gemini 2.5 Flash اختصاص می‌دهد. با فعال‌سازی این کلید، تحلیل‌های متنی و استراتژیک عمیق‌تری به زبان فارسی در نپتون دریافت خواهید کرد.') }}
                     </p>
 
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
@@ -479,7 +479,7 @@
                             <span class="badge badge-info badge-xs font-mono font-bold text-white">گام ۲</span>
                             <div class="font-bold text-xs mt-1 text-base-content">{{ __('ساخت کلید (Create API Key)') }}</div>
                             <p class="text-[11px] text-base-content/70 mt-1 leading-relaxed">
-                                {{ __('روی دکمه آبی‌رنگ «Create API Key» کلیک کنید و یک پروژه دلخواه (مثلاً Dakhl ERP) انتخاب یا ایجاد نمایید.') }}
+                                {{ __('روی دکمه آبی‌رنگ «Create API Key» کلیک کنید و یک پروژه دلخواه (مثلاً Neptune ERP) انتخاب یا ایجاد نمایید.') }}
                             </p>
                         </div>
 
@@ -495,9 +495,9 @@
                         <!-- Step 4 -->
                         <div class="p-3.5 rounded-2xl border border-base-300 bg-base-200/40 space-y-2">
                             <span class="badge badge-success badge-xs font-mono font-bold text-white">گام ۴</span>
-                            <div class="font-bold text-xs mt-1 text-base-content">{{ __('ثبت در نرم‌افزار دخل') }}</div>
+                            <div class="font-bold text-xs mt-1 text-base-content">{{ __('ثبت در نرم‌افزار نپتون') }}</div>
                             <p class="text-[11px] text-base-content/70 mt-1 leading-relaxed">
-                                {{ __('در صفحه هوش مصنوعی دخل، دکمه «تنظیم کلید هوش مصنوعی» را بزنید و کلید را پیست فرمایید.') }}
+                                {{ __('در صفحه هوش مصنوعی نپتون، دکمه «تنظیم کلید هوش مصنوعی» را بزنید و کلید را پیست فرمایید.') }}
                             </p>
                         </div>
                     </div>
@@ -506,7 +506,7 @@
                     <div class="p-4 rounded-2xl bg-base-200/60 border border-base-300 text-xs space-y-2">
                         <div class="font-bold text-base-content flex items-center gap-1.5">
                             <span>⚙️</span>
-                            <span>{{ __('دو روش برای ذخیره کلید در نرم‌افزار دخل:') }}</span>
+                            <span>{{ __('دو روش برای ذخیره کلید در نرم‌افزار نپتون:') }}</span>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[11px]">
                             <div class="p-2.5 rounded-xl bg-base-100 border border-base-200 space-y-1">
@@ -534,7 +534,7 @@
                             <span>{{ __('نکته ویژه کاربران داخل ایران (رفع محدودیت دسترسی به سرورهای گوگل):') }}</span>
                         </div>
                         <p class="text-[11px] leading-relaxed opacity-90">
-                            {{ __('به دلیل تحریم‌های شرکت گوگل علیه آی‌پی‌های ایران، جهت برقراری ارتباط پایدار سرور یا رایانه با API گوگل، استفاده از سرویس‌های رفع تحریم ایرانی مانند DNS شکن (178.22.122.100 و 185.51.200.2) یا سامانه ۴۰۳ روی رایانه الزامی است. در صورتی که ارتباط قطع شود، دخل بلافاصله و خودکار به حالت آفلاین برمی‌گردد.') }}
+                            {{ __('به دلیل تحریم‌های شرکت گوگل علیه آی‌پی‌های ایران، جهت برقراری ارتباط پایدار سرور یا رایانه با API گوگل، استفاده از سرویس‌های رفع تحریم ایرانی مانند DNS شکن (178.22.122.100 و 185.51.200.2) یا سامانه ۴۰۳ روی رایانه الزامی است. در صورتی که ارتباط قطع شود، نپتون بلافاصله و خودکار به حالت آفلاین برمی‌گردد.') }}
                         </p>
                     </div>
                 </div>

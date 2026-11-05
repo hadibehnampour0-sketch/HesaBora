@@ -8,7 +8,7 @@
         <div class="p-4 bg-slate-900 text-white flex items-center justify-between gap-4">
             <div class="flex items-center gap-3">
                 <span class="badge badge-warning font-mono font-bold">{{ $terminalId }}</span>
-                <span class="font-bold text-sm hidden md:inline">{{ $company?->name ?? 'فروشگاه دخل' }}</span>
+                <span class="font-bold text-sm hidden md:inline">{{ $company?->name ?? 'فروشگاه نپتون' }}</span>
                 <span class="badge badge-success badge-xs"></span>
                 <span class="text-xs text-slate-400">شبکه محلی متصل (LAN Real-Time)</span>
             </div>

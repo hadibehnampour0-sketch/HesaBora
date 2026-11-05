@@ -27,7 +27,7 @@
         <ul class="steps steps-horizontal w-full py-2">
             <li class="step step-primary font-bold text-xs">{{ __('گام ۱: بارگذاری دیتابیس') }}</li>
             <li class="step step-primary font-bold text-xs">{{ __('گام ۲: پایش هوش مصنوعی و تراز افتتاحیه') }}</li>
-            <li class="step text-xs">{{ __('گام ۳: انتقال قطعی و جای‌گذاری در دخل') }}</li>
+            <li class="step text-xs">{{ __('گام ۳: انتقال قطعی و جای‌گذاری در نپتون') }}</li>
         </ul>
 
         {{-- AI Supervisor Cockpit Banner --}}
@@ -41,7 +41,7 @@
                             </svg>
                         </div>
                         <div>
-                            <span class="text-xs text-indigo-300 font-bold uppercase tracking-wider block">{{ __('ناظر هوش مصنوعی دخل (AI Supervisor)') }}</span>
+                            <span class="text-xs text-indigo-300 font-bold uppercase tracking-wider block">{{ __('ناظر هوش مصنوعی نپتون (AI Supervisor)') }}</span>
                             <h2 class="text-lg font-bold text-white flex items-center gap-2">
                                 <span>{{ $aiInspection['detected_source'] }}</span>
                                 <span class="badge badge-success badge-sm text-white font-mono">{{ $aiInspection['source_confidence'] }}% اطمینان</span>
@@ -97,7 +97,7 @@
             </div>
         </div>
 
-        {{-- AI Smart Placement Table (نقشه جای‌گذاری هوشمند فیلدها سر جای خود در دخل) --}}
+        {{-- AI Smart Placement Table (نقشه جای‌گذاری هوشمند فیلدها سر جای خود در نپتون) --}}
         <div class="card bg-base-100 shadow-lg border border-base-200">
             <div class="card-body p-6 space-y-4">
                 <div class="flex items-center justify-between">
@@ -105,7 +105,7 @@
                         <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                         </svg>
-                        <span>{{ __('نقشه جای‌گذاری هوشمند اطلاعات در ماژول‌های دخل (AI Entity Placement Map)') }}</span>
+                        <span>{{ __('نقشه جای‌گذاری هوشمند اطلاعات در ماژول‌های نپتون (AI Entity Placement Map)') }}</span>
                     </h3>
                     <span class="badge badge-primary badge-outline text-xs">تعیین خودکار سرفصل‌ها</span>
                 </div>
@@ -116,7 +116,7 @@
                             <tr>
                                 <th>{{ __('دسته داده‌ها') }}</th>
                                 <th>{{ __('تعداد رکورد') }}</th>
-                                <th>{{ __('جدول و مقصد در دخل') }}</th>
+                                <th>{{ __('جدول و مقصد در نپتون') }}</th>
                                 <th>{{ __('کد سرفصل حسابداری') }}</th>
                                 <th>{{ __('عملیات ناظر هوش مصنوعی') }}</th>
                                 <th>{{ __('وضعیت') }}</th>
@@ -176,7 +176,7 @@
                     <table class="table table-zebra w-full text-sm">
                         <thead class="bg-base-200/50">
                             <tr>
-                                <th>{{ __('سرفصل حسابداری در دخل') }}</th>
+                                <th>{{ __('سرفصل حسابداری در نپتون') }}</th>
                                 <th>{{ __('ماهیت حساب') }}</th>
                                 <th class="text-left">{{ __('مبلغ (ریال)') }}</th>
                             </tr>

@@ -47,7 +47,7 @@
             <div class="pt-3 border-t border-base-200 text-xs text-base-content/60 space-y-1">
                 <div class="flex items-center gap-1.5 font-medium text-base-content/80">
                     <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
-                    {{ __('توانمندی‌های هوش مالی دخل') }}
+                    {{ __('توانمندی‌های هوش مالی نپتون') }}
                 </div>
                 <p class="leading-relaxed text-[11px]">{{ __('استعلام زنده فروش، بدهکاران سنی، چک‌های سررسید، سلامت مالیاتی، کسری انبار و تحلیل‌های راهبردی نقدینگی بدون واسطه.') }}</p>
             </div>
@@ -63,7 +63,7 @@
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h1 class="font-bold text-sm md:text-base">{{ __('دستیار مالی و اقتصادی دخل (Dakhl Copilot)') }}</h1>
+                            <h1 class="font-bold text-sm md:text-base">{{ __('دستیار مالی و اقتصادی نپتون (Neptune Copilot)') }}</h1>
                             @if(!empty($isConfigured))
                                 <span class="badge badge-success badge-xs py-1.5 px-2 text-[10px] font-mono gap-1 text-white">
                                     <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>

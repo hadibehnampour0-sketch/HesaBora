@@ -17,7 +17,7 @@
                         {{ __('مرکز مدیریت پشتیبان‌گیری و نجات داده‌ها (Disaster Recovery)') }}
                     </h1>
                     <p class="text-sm md:text-base text-base-content/70 mt-2 max-w-2xl leading-relaxed">
-                        {{ __('اطلاعات مالی و فاکتورهای شما با ارزش‌ترین دارایی کسب‌وکارتان است. در دخل، پشتیبان‌گیری به صورت چند مسیره (هارد داخلی، فلش‌مموری اکسترنال و ارسال خودکار به تلگرام/بله) با رمزنگاری AES-256 و قابلیت بازیابی اتمیک انجام می‌شود.') }}
+                        {{ __('اطلاعات مالی و فاکتورهای شما با ارزش‌ترین دارایی کسب‌وکارتان است. در نپتون، پشتیبان‌گیری به صورت چند مسیره (هارد داخلی، فلش‌مموری اکسترنال و ارسال خودکار به تلگرام/بله) با رمزنگاری AES-256 و قابلیت بازیابی اتمیک انجام می‌شود.') }}
                     </p>
                 </div>
 
@@ -31,7 +31,7 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                             </svg>
-                            <span>{{ __('تهیه و دانلود فول‌بکاپ (.dakhl)') }}</span>
+                            <span>{{ __('تهیه و دانلود فول‌بکاپ (.neptune)') }}</span>
                         </button>
                     </form>
 
@@ -225,7 +225,7 @@
                             <span class="label-text font-bold text-sm">{{ __('مسیر ذخیره روی دیسک محلی یا فلش‌مموری (USB Drive)') }}</span>
                         </label>
                         <input type="text" name="local_target_path" value="{{ $settings['local_target_path'] }}" 
-                               placeholder="مثال: F:\Dakhl_Backups یا D:\Backups" 
+                               placeholder="مثال: F:\Neptune_Backups یا D:\Backups" 
                                class="input input-bordered input-sm rounded-xl font-mono text-xs w-full text-left" dir="ltr">
                         <span class="text-xs text-base-content/60 mt-1">{{ __('هر زمان این مسیر در دسترس باشد، کپی بکاپ به صورت خودکار به آن منتقل می‌شود.') }}</span>
                     </div>
@@ -280,8 +280,8 @@
                     </div>
 
                     <div class="form-control">
-                        <label class="label font-bold text-xs">{{ __('انتخاب فایل پشتیبان (.dakhl یا .zip)') }}</label>
-                        <input type="file" name="upload_file" accept=".dakhl,.zip" required class="file-input file-input-bordered file-input-sm rounded-xl w-full">
+                        <label class="label font-bold text-xs">{{ __('انتخاب فایل پشتیبان (.neptune یا .zip)') }}</label>
+                        <input type="file" name="upload_file" accept=".neptune,.zip" required class="file-input file-input-bordered file-input-sm rounded-xl w-full">
                     </div>
 
                     <div class="modal-action border-t border-base-200 pt-3">

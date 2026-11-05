@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl" data-theme="emerald">
+<html lang="fa" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دخل | نسل نوین نرم‌افزار حسابداری و ERP اصناف و شرکت‌های ایران</title>
-    <meta name="description" content="دخل؛ سیستم عامل جامع مالی، حسابداری و مدیریت اصناف ایران. ۱۰۰٪ آفلاین اول، اتصال مستقیم و رایگان به سامانه مودیان، پشتیبان‌گیری ۳-۲-۱ خودکار روی فلش و تلگرام، و هوش مصنوعی کوپایلوت مالی.">
+    <title>نپتون | نسل نوین نرم‌افزار حسابداری و ERP اصناف و شرکت‌های ایران</title>
+    <meta name="description" content="نپتون؛ سیستم عامل جامع مالی، حسابداری و مدیریت اصناف ایران. ۱۰۰٪ آفلاین اول، اتصال مستقیم و رایگان به سامانه مودیان، پشتیبان‌گیری ۳-۲-۱ خودکار روی فلش و تلگرام، و هوش مصنوعی کوپایلوت مالی.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     <style>
         body { font-family: system-ui, -apple-system, "Vazirmatn", "Segoe UI", Roboto, Tahoma, sans-serif; }
         .gradient-text {
-            background: linear-gradient(135deg, #059669 0%, #0d9488 50%, #0284c7 100%);
+            background: linear-gradient(135deg, #0284c7 0%, #00f0ff 50%, #0284c7 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .glow-emerald {
-            box-shadow: 0 0 50px -10px rgba(16, 185, 129, 0.25);
+            box-shadow: 0 0 50px -10px rgba(0, 240, 255, 0.28);
         }
         .glass-nav {
             backdrop-filter: blur(16px);
@@ -24,7 +24,7 @@
         }
     </style>
 </head>
-<body class="bg-base-200/40 text-base-content min-h-screen selection:bg-emerald-500 selection:text-white"
+<body class="bg-base-200/40 text-base-content min-h-screen selection:bg-sky-500 selection:text-white"
       x-data="{
           trialModalOpen: false,
           orderModalOpen: false,
@@ -104,12 +104,12 @@
     <header class="bg-base-100/90 glass-nav border-b border-base-300/80 sticky top-0 z-50 shadow-sm transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-500 text-white flex items-center justify-center text-2xl font-black shadow-lg shadow-emerald-600/25">
-                    د
+                <div class="w-12 h-12 rounded-2xl bg-[#0B132B] p-1.5 shadow-lg shadow-cyan-500/30 border border-cyan-500/30 flex items-center justify-center shrink-0">
+                    <img src="/images/neptune-logo.svg" alt="Neptune ERP" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="text-xl font-black tracking-tight text-base-content">دخل</span>
+                        <span class="text-xl font-black tracking-tight text-base-content">نپتون</span>
                         <span class="badge badge-accent badge-xs py-0.5 px-2 font-mono text-[10px] font-bold">ERP v2.5</span>
                     </div>
                     <span class="text-[11px] text-base-content/60 block font-medium">نسل نوین نرم‌افزار مالی و حسابداری ایران</span>
@@ -131,7 +131,7 @@
             <div class="flex items-center gap-2.5">
                 @auth
                     <a href="{{ route('home') }}" class="btn btn-primary btn-sm rounded-xl px-5 font-bold shadow-md shadow-primary/20 text-xs">
-                        <span>{{ __('ورود به پیشخوان دخل') }}</span>
+                        <span>{{ __('ورود به پیشخوان نپتون') }}</span>
                         <span>←</span>
                     </a>
                 @else
@@ -155,19 +155,19 @@
         <!-- HERO SECTION -->
         <section class="relative overflow-hidden pt-12 pb-16 lg:pt-20 lg:pb-24">
             <!-- Background Glows -->
-            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
+            <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-sky-500/10 blur-[120px] rounded-full pointer-events-none -z-10"></div>
             <div class="absolute top-1/3 right-10 w-[300px] h-[300px] bg-teal-500/10 blur-[90px] rounded-full pointer-events-none -z-10"></div>
 
             <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
                 <!-- Badges -->
-                <div class="inline-flex flex-wrap items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-800 text-xs font-bold shadow-sm">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <div class="inline-flex flex-wrap items-center justify-center gap-2 px-4 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/25 text-sky-900 text-xs font-bold shadow-sm">
+                    <span class="w-2.5 h-2.5 rounded-full bg-sky-500 animate-pulse"></span>
                     <span>۱۰۰٪ آفلاین اول</span>
-                    <span class="text-emerald-300">•</span>
+                    <span class="text-cyan-300">•</span>
                     <span>سامانه مودیان رایگان</span>
-                    <span class="text-emerald-300">•</span>
+                    <span class="text-cyan-300">•</span>
                     <span>بکاپ ۳-۲-۱ اتوماتیک به تلگرام</span>
-                    <span class="text-emerald-300">•</span>
+                    <span class="text-cyan-300">•</span>
                     <span>دستیار هوش مصنوعی</span>
                 </div>
 
@@ -176,10 +176,10 @@
                     <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-base-content tracking-tight leading-[1.25]">
                         پایان عصر نرم‌افزارهای قفلی، کند و قدیمی؛
                         <br>
-                        <span class="gradient-text">حسابداری دخل، آینده کسب‌وکار شما</span>
+                        <span class="gradient-text">حسابداری نپتون، آینده کسب‌وکار شما</span>
                     </h1>
                     <p class="text-base sm:text-lg text-base-content/70 leading-relaxed max-w-3xl mx-auto font-normal">
-                        نرم‌افزار جامع حسابداری و مدیریت مالی دخل، برای بازاریان، اصناف و کارآفرینان هوشمند ایران ساخته شده است. بدون ترس از قطع اینترنت کار کنید، فاکتورهای خود را مستقیم و بدون واسطه به سامانه مودیان ارسال کنید و آسوده‌خاطر باشید که داده‌هایتان هرگز از بین نمی‌روند.
+                        نرم‌افزار جامع حسابداری و مدیریت مالی نپتون، برای بازاریان، اصناف و کارآفرینان هوشمند ایران ساخته شده است. بدون ترس از قطع اینترنت کار کنید، فاکتورهای خود را مستقیم و بدون واسطه به سامانه مودیان ارسال کنید و آسوده‌خاطر باشید که داده‌هایتان هرگز از بین نمی‌روند.
                     </p>
                 </div>
 
@@ -201,7 +201,7 @@
                 <!-- Trust Metrics Strip -->
                 <div class="pt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-center">
                     <div class="p-4 rounded-2xl bg-base-100 border border-base-300/60 shadow-sm">
-                        <div class="text-2xl lg:text-3xl font-black text-emerald-600 font-mono">+۱۵,۰۰۰</div>
+                        <div class="text-2xl lg:text-3xl font-black text-sky-600 font-mono">+۱۵,۰۰۰</div>
                         <div class="text-xs text-base-content/60 font-semibold mt-1">سند مالی روزانه در سراسر کشور</div>
                     </div>
                     <div class="p-4 rounded-2xl bg-base-100 border border-base-300/60 shadow-sm">
@@ -226,8 +226,8 @@
                             <div class="flex items-center gap-2">
                                 <div class="w-3 h-3 rounded-full bg-rose-500"></div>
                                 <div class="w-3 h-3 rounded-full bg-amber-500"></div>
-                                <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
-                                <span class="text-xs font-mono text-base-content/40 mr-2">dakhl-desktop-erp // cockpit</span>
+                                <div class="w-3 h-3 rounded-full bg-sky-500"></div>
+                                <span class="text-xs font-mono text-base-content/40 mr-2">neptune-desktop-erp // cockpit</span>
                             </div>
                             <div class="flex items-center gap-3 text-xs">
                                 <span class="badge badge-success badge-sm gap-1 font-bold">
@@ -243,8 +243,8 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-right">
                             <div class="p-4 rounded-2xl bg-base-200/60 border border-base-300/50">
                                 <div class="text-xs text-base-content/60 font-bold mb-1">فروش ماه جاری (تراز لحظه‌ای)</div>
-                                <div class="text-xl font-black text-emerald-600 font-mono">۲,۴۸۵,۴۰۰,۰۰۰ <span class="text-xs font-normal">تومان</span></div>
-                                <div class="text-[11px] text-emerald-700 font-bold mt-1">↑ ۱۸٪ رشد نسبت به ماه قبل</div>
+                                <div class="text-xl font-black text-sky-600 font-mono">۲,۴۸۵,۴۰۰,۰۰۰ <span class="text-xs font-normal">تومان</span></div>
+                                <div class="text-[11px] text-sky-700 font-bold mt-1">↑ ۱۸٪ رشد نسبت به ماه قبل</div>
                             </div>
                             <div class="p-4 rounded-2xl bg-base-200/60 border border-base-300/50">
                                 <div class="text-xs text-base-content/60 font-bold mb-1">وضعیت کارپوشه سامانه مودیان</div>
@@ -252,9 +252,9 @@
                                 <div class="text-[11px] text-base-content/60 font-medium mt-1">ارسال مستقیم با کلید اختصاصی CSR</div>
                             </div>
                             <div class="p-4 rounded-2xl bg-base-200/60 border border-base-300/50">
-                                <div class="text-xs text-base-content/60 font-bold mb-1">دستیار مالی هوش مصنوعی دخل</div>
+                                <div class="text-xs text-base-content/60 font-bold mb-1">دستیار مالی هوش مصنوعی نپتون</div>
                                 <div class="text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200/60 p-2 rounded-xl mt-1">
-                                    💡 تحلیل دخل: ۲ چک به مبلغ ۳۴۰ م.ت طی ۳ روز آینده سررسید می‌شوند؛ مانده بانک ملی کافی است.
+                                    💡 تحلیل نپتون: ۲ چک به مبلغ ۳۴۰ م.ت طی ۳ روز آینده سررسید می‌شوند؛ مانده بانک ملی کافی است.
                                 </div>
                             </div>
                         </div>
@@ -263,27 +263,27 @@
             </div>
         </section>
 
-        <!-- WHY DAKHL / PAIN POINTS VS SOLUTIONS -->
+        <!-- WHY NEPTUNE / PAIN POINTS VS SOLUTIONS -->
         <section id="features" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
             <div class="text-center max-w-3xl mx-auto space-y-4">
-                <span class="badge badge-primary badge-outline text-xs font-bold px-3 py-1">چرا دخل انتخاب اول اصناف است؟</span>
+                <span class="badge badge-primary badge-outline text-xs font-bold px-3 py-1">چرا نپتون انتخاب اول اصناف است؟</span>
                 <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-base-content">
                     حل ریشه‌ای چالش‌هایی که سال‌ها درگیرشان بودید
                 </h2>
                 <p class="text-sm sm:text-base text-base-content/70">
-                    نرم‌افزارهای نسل قبل بر اساس فناوری‌های ۲۰ سال پیش ساخته شده‌اند. دخل از روز اول برای پاسخ به واقعیت‌های اقتصادی و فناوری امروز بازار ایران طراحی شده است.
+                    نرم‌افزارهای نسل قبل بر اساس فناوری‌های ۲۰ سال پیش ساخته شده‌اند. نپتون از روز اول برای پاسخ به واقعیت‌های اقتصادی و فناوری امروز بازار ایران طراحی شده است.
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Feature 1: Offline First -->
                 <div class="card bg-base-100 border border-base-300 p-6 rounded-3xl shadow-sm hover:shadow-md transition space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center text-2xl font-bold">
+                    <div class="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-600 flex items-center justify-center text-2xl font-bold">
                         ⚡
                     </div>
                     <h3 class="text-lg font-black text-base-content">۱۰۰٪ آفلاین اول؛ پایان لنگ ماندن پای صندوق</h3>
                     <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                        اینترنت ملی شد؟ فیبر نوری قطع شد؟ با دخل حتی متوجه قطعی نخواهید شد. پایگاه‌داده محلی پرسرعت به شما امکان می‌دهد با نهایت سرعت فاکتور بزنید و هنگامی که اینترنت متصل شد، شعب و تبلت‌ها به صورت خودکار و بدون تداخل با یکدیگر همگام (Sync) می‌شوند.
+                        اینترنت ملی شد؟ فیبر نوری قطع شد؟ با نپتون حتی متوجه قطعی نخواهید شد. پایگاه‌داده محلی پرسرعت به شما امکان می‌دهد با نهایت سرعت فاکتور بزنید و هنگامی که اینترنت متصل شد، شعب و تبلت‌ها به صورت خودکار و بدون تداخل با یکدیگر همگام (Sync) می‌شوند.
                     </p>
                 </div>
 
@@ -294,7 +294,7 @@
                     </div>
                     <h3 class="text-lg font-black text-base-content">سامانه مودیان رایگان دائمی در تمام پلن‌ها</h3>
                     <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                        برخلاف شرکت‌های سنتی که برای ماژول مودیان مبالغ گزاف چند میلیونی سالانه دریافت می‌کنند، در دخل سامانه مودیان به صورت مادام‌العمر در پایه تمام پلن‌ها رایگان است. اتصال مستقیم به کارپوشه، امضای دیجیتال و دریافت توکن بدون نیاز به پرداخت حتی ۱ ریال به شرکت‌های معتمد!
+                        برخلاف شرکت‌های سنتی که برای ماژول مودیان مبالغ گزاف چند میلیونی سالانه دریافت می‌کنند، در نپتون سامانه مودیان به صورت مادام‌العمر در پایه تمام پلن‌ها رایگان است. اتصال مستقیم به کارپوشه، امضای دیجیتال و دریافت توکن بدون نیاز به پرداخت حتی ۱ ریال به شرکت‌های معتمد!
                     </p>
                 </div>
 
@@ -305,7 +305,7 @@
                     </div>
                     <h3 class="text-lg font-black text-base-content">موتور بکاپ ۳-۲-۱ اتوماتیک روی فلش و تلگرام</h3>
                     <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                        سوختن هارد، ویروس باج‌گیر، یا سرقت سیستم؟ هیچ فاجعه‌ای حساب‌های شما را نابود نمی‌کند. دخل هنگام خروج از نرم‌افزار، یک نسخه رمزنگاری‌شده AES-256 را روی فلش‌مموری و یک نسخه امن صفر-دانش را مستقیم به ربات تلگرام شخصی شما می‌فرستد.
+                        سوختن هارد، ویروس باج‌گیر، یا سرقت سیستم؟ هیچ فاجعه‌ای حساب‌های شما را نابود نمی‌کند. نپتون هنگام خروج از نرم‌افزار، یک نسخه رمزنگاری‌شده AES-256 را روی فلش‌مموری و یک نسخه امن صفر-دانش را مستقیم به ربات تلگرام شخصی شما می‌فرستد.
                     </p>
                 </div>
 
@@ -316,7 +316,7 @@
                     </div>
                     <h3 class="text-lg font-black text-base-content">به‌روزرسانی اتومیک با ۱ کلیک و قابلیت Rollback</h3>
                     <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                        قوانین جدید مالیاتی تصویب شد؟ دخل با یک کلیک خود را به‌روز می‌کند؛ بدون نیاز به حضور نصاب یا دیسک‌های نصب قدیمی. قبل از هر به‌روزرسانی اسنپ‌شات اضطراری گرفته می‌شود و داده‌ها و اسناد مالی شما به هیچ وجه دستکاری نمی‌شوند.
+                        قوانین جدید مالیاتی تصویب شد؟ نپتون با یک کلیک خود را به‌روز می‌کند؛ بدون نیاز به حضور نصاب یا دیسک‌های نصب قدیمی. قبل از هر به‌روزرسانی اسنپ‌شات اضطراری گرفته می‌شود و داده‌ها و اسناد مالی شما به هیچ وجه دستکاری نمی‌شوند.
                     </p>
                 </div>
 
@@ -327,7 +327,7 @@
                     </div>
                     <h3 class="text-lg font-black text-base-content">دستیار مالی هوش مصنوعی (AI Copilot)</h3>
                     <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                        حسابداری دخل فراتر از یک دفتر ساده است؛ هوش مصنوعی دخل سودآوری اقلام فاکتور را می‌سنجد، کسری نقدینگی را قبل از سررسید چک‌ها هشدار می‌دهد، و کالاهای کم‌گردش را برای جلوگیری از راکد ماندن سرمایه به شما پیشنهاد می‌کند.
+                        حسابداری نپتون فراتر از یک دفتر ساده است؛ هوش مصنوعی نپتون سودآوری اقلام فاکتور را می‌سنجد، کسری نقدینگی را قبل از سررسید چک‌ها هشدار می‌دهد، و کالاهای کم‌گردش را برای جلوگیری از راکد ماندن سرمایه به شما پیشنهاد می‌کند.
                     </p>
                 </div>
 
@@ -338,7 +338,7 @@
                     </div>
                     <h3 class="text-lg font-black text-base-content">مهاجرت از هلو، سپیدار و دشت در ۳ دقیقه</h3>
                     <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                        نگران انتقال اطلاعات سال‌های گذشته‌تان هستید؟ با موتور هوشمند مهاجرت دخل، فایل اکسل کالاها، اشخاص و مانده حساب‌های نرم‌افزار قبلی خود را بارگذاری کنید تا در کمتر از ۳ دقیقه تمام حساب‌هایتان با تراز افتتاحیه آماده به کار شود.
+                        نگران انتقال اطلاعات سال‌های گذشته‌تان هستید؟ با موتور هوشمند مهاجرت نپتون، فایل اکسل کالاها، اشخاص و مانده حساب‌های نرم‌افزار قبلی خود را بارگذاری کنید تا در کمتر از ۳ دقیقه تمام حساب‌هایتان با تراز افتتاحیه آماده به کار شود.
                     </p>
                 </div>
             </div>
@@ -352,7 +352,7 @@
                     ۱۶ صنف تخصصی با فرمول‌ها و محاسبات بومی بازار
                 </h2>
                 <p class="text-sm sm:text-base text-base-content/70">
-                    نیازی به خرید ماژول‌های جداگانه یا شخصی‌سازی‌های پرهزینه ندارید؛ دخل فرمول‌های ریاضی و استانداردهای صنف شما را می‌شناسد.
+                    نیازی به خرید ماژول‌های جداگانه یا شخصی‌سازی‌های پرهزینه ندارید؛ نپتون فرمول‌های ریاضی و استانداردهای صنف شما را می‌شناسد.
                 </p>
             </div>
 
@@ -493,10 +493,10 @@
             <div class="text-center max-w-3xl mx-auto space-y-4">
                 <span class="badge badge-primary badge-outline text-xs font-bold px-3 py-1">مقایسه بی‌طرفانه</span>
                 <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-base-content">
-                    چرا دخل از هلو، سپیدار و دشت سبقت گرفت؟
+                    چرا نپتون از هلو، سپیدار و دشت سبقت گرفت؟
                 </h2>
                 <p class="text-sm sm:text-base text-base-content/70">
-                    جدول مقایسه قابلیت‌ها و هزینه‌های مالکیت دخل در مقایسه با نرم‌افزارهای سنتی بازار:
+                    جدول مقایسه قابلیت‌ها و هزینه‌های مالکیت نپتون در مقایسه با نرم‌افزارهای سنتی بازار:
                 </p>
             </div>
 
@@ -505,7 +505,7 @@
                     <thead>
                         <tr class="bg-base-200/80 text-xs font-black text-base-content border-b border-base-300">
                             <th class="py-4 px-6 text-sm">قابلیت و معیار ارزیابی</th>
-                            <th class="py-4 px-6 text-emerald-600 font-black text-base bg-emerald-500/10">نرم‌افزار مدرن «دخل»</th>
+                            <th class="py-4 px-6 text-sky-600 font-black text-base bg-sky-500/10">نرم‌افزار مدرن «نپتون»</th>
                             <th class="py-4 px-6 text-base-content/70">نرم‌افزار هلو</th>
                             <th class="py-4 px-6 text-base-content/70">سپیدار سیستم</th>
                             <th class="py-4 px-6 text-base-content/70">نرم‌افزار دشت</th>
@@ -514,56 +514,56 @@
                     <tbody class="text-xs sm:text-sm divide-y divide-base-200">
                         <tr>
                             <td class="font-bold py-4 px-6">ارسال به سامانه مودیان</td>
-                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ ۱۰۰٪ رایگان و دائمی (همه پلن‌ها)</td>
+                            <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ ۱۰۰٪ رایگان و دائمی (همه پلن‌ها)</td>
                             <td class="py-4 px-6 text-rose-600">✗ ماژول جداگانه سالانه</td>
                             <td class="py-4 px-6 text-rose-600">✗ ماژول گران‌قیمت با پشتیبانی</td>
                             <td class="py-4 px-6 text-rose-600">✗ ماژول سالانه اشتراکی</td>
                         </tr>
                         <tr>
                             <td class="font-bold py-4 px-6">کارکرد ۱۰۰٪ آفلاین اول</td>
-                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ بله (بدون نیاز به اینترنت)</td>
+                            <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ بله (بدون نیاز به اینترنت)</td>
                             <td class="py-4 px-6 text-amber-600">△ آفلاین اما بدون سینک مدرن</td>
                             <td class="py-4 px-6 text-amber-600">△ نیازمند سرور و شبکه محلی</td>
                             <td class="py-4 px-6 text-amber-600">△ وابسته به ارتباط شبکه</td>
                         </tr>
                         <tr>
                             <td class="font-bold py-4 px-6">بکاپ اتوماتیک ۳-۲-۱ به فلش و تلگرام</td>
-                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ بله، اتوماتیک با رمزنگاری AES-256</td>
+                            <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ بله، اتوماتیک با رمزنگاری AES-256</td>
                             <td class="py-4 px-6 text-rose-600">✗ دستی، روی همان هارد دیسک</td>
                             <td class="py-4 px-6 text-amber-600">△ نیازمند ادمین شبکه و SQL</td>
                             <td class="py-4 px-6 text-rose-600">✗ دستی بدون ارسال تلگرام</td>
                         </tr>
                         <tr>
                             <td class="font-bold py-4 px-6">نوع قفل لایسنس</td>
-                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ دیجیتال Ed25519 امن بدون قطعه USB</td>
+                            <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ دیجیتال Ed25519 امن بدون قطعه USB</td>
                             <td class="py-4 px-6 text-rose-600">✗ دانگل سخت‌افزاری شکننده</td>
                             <td class="py-4 px-6 text-rose-600">✗ قفل سخت‌افزاری و هزینه تعویض</td>
                             <td class="py-4 px-6 text-amber-600">△ قفل سخت‌افزاری/اینترنتی</td>
                         </tr>
                         <tr>
                             <td class="font-bold py-4 px-6">دستیار مالی هوش مصنوعی (AI Copilot)</td>
-                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ دارد (تحلیل سود، نقدینگی و چک)</td>
+                            <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ دارد (تحلیل سود، نقدینگی و چک)</td>
                             <td class="py-4 px-6 text-rose-600">✗ ندارد</td>
                             <td class="py-4 px-6 text-rose-600">✗ ندارد</td>
                             <td class="py-4 px-6 text-rose-600">✗ ندارد</td>
                         </tr>
                         <tr>
                             <td class="font-bold py-4 px-6">ارزیابی انبار به نرخ دلار روز</td>
-                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ دارد (محاسبه سود واقعی تورمی)</td>
+                            <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ دارد (محاسبه سود واقعی تورمی)</td>
                             <td class="py-4 px-6 text-rose-600">✗ ندارد</td>
                             <td class="py-4 px-6 text-amber-600">△ فقط در پلن گران ارزی</td>
                             <td class="py-4 px-6 text-rose-600">✗ ندارد</td>
                         </tr>
                         <tr>
                             <td class="font-bold py-4 px-6">به‌روزرسانی نرم‌افزار</td>
-                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ اتومیک با ۱ کلیک + بازگشت اضطراری</td>
+                            <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ اتومیک با ۱ کلیک + بازگشت اضطراری</td>
                             <td class="py-4 px-6 text-rose-600">✗ نیازمند نصاب، CD یا دردسر پشتیبانی</td>
                             <td class="py-4 px-6 text-amber-600">△ بسته‌های حجیم آپدیت سالانه</td>
                             <td class="py-4 px-6 text-amber-600">△ اینترنتی محدود</td>
                         </tr>
                         <tr>
                             <td class="font-bold py-4 px-6">زمان یادگیری کاربر عادی</td>
-                            <td class="py-4 px-6 font-black text-emerald-700 bg-emerald-500/10">✓ کمتر از ۱۵ دقیقه</td>
+                            <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ کمتر از ۱۵ دقیقه</td>
                             <td class="py-4 px-6 text-rose-600">✗ نیازمند دوره‌های چند هفته‌ای</td>
                             <td class="py-4 px-6 text-rose-600">✗ نیازمند حسابدار مسلط به کدینگ</td>
                             <td class="py-4 px-6 text-amber-600">△ چند روز</td>
@@ -599,15 +599,15 @@
                             <p class="text-xs text-base-content/60 mt-1">مخصوص مغازه‌ها، فروشگاه‌ها و خرده‌فروشی‌ها</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-emerald-600 font-mono">۴,۸۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۴,۸۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۱ کاربر همزمان</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۱ شرکت / صنف فعال</li>
-                            <li class="flex items-center gap-1.5 font-bold text-emerald-700"><span class="text-emerald-500">✓</span> سامانه مودیان رایگان</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> اتصال به کارتخوان PC-POS</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> بکاپ اتوماتیک به تلگرام</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> ۱ کاربر همزمان</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> ۱ شرکت / صنف فعال</li>
+                            <li class="flex items-center gap-1.5 font-bold text-sky-700"><span class="text-sky-500">✓</span> سامانه مودیان رایگان</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> اتصال به کارتخوان PC-POS</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> بکاپ اتوماتیک به تلگرام</li>
                         </ul>
                     </div>
                     <button @click="openOrder('shop')" class="btn btn-outline btn-primary w-full rounded-2xl font-bold text-xs">
@@ -630,16 +630,16 @@
                             <p class="text-xs text-base-content/60 mt-1">بازرگانی‌ها، عمده‌فروشان و شرکت‌های متوسط</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-emerald-600 font-mono">۱۱,۵۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۱۱,۵۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> تا ۳ کاربر همزمان</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۳ شرکت + ۲ صنف فعال</li>
-                            <li class="flex items-center gap-1.5 font-bold text-emerald-700"><span class="text-emerald-500">✓</span> چندارزی و دلاریابی روز</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> مراکز هزینه و پروژه‌ها</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> پیش‌فاکتور و سود فاکتور</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> مغایرت‌گیری هوشمند بانک</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> تا ۳ کاربر همزمان</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> ۳ شرکت + ۲ صنف فعال</li>
+                            <li class="flex items-center gap-1.5 font-bold text-sky-700"><span class="text-sky-500">✓</span> چندارزی و دلاریابی روز</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> مراکز هزینه و پروژه‌ها</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> پیش‌فاکتور و سود فاکتور</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> مغایرت‌گیری هوشمند بانک</li>
                         </ul>
                     </div>
                     <button @click="openOrder('commercial')" class="btn btn-primary w-full rounded-2xl font-black text-xs shadow-md shadow-primary/30">
@@ -659,15 +659,15 @@
                             <p class="text-xs text-base-content/60 mt-1">شرکت‌های پخش مواد غذایی، دارویی و کالا</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-emerald-600 font-mono">۱۸,۹۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۱۸,۹۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۵ کاربر دسکتاپ + تبلت‌ها</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> انبار ماشین و حواله بارگیری</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> مسیربندی و کاتالوگ تبلت</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> پورسانت ویزیتور و موزع</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۱۶ صنف فعال بدون محدودیت</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> ۵ کاربر دسکتاپ + تبلت‌ها</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> انبار ماشین و حواله بارگیری</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> مسیربندی و کاتالوگ تبلت</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> پورسانت ویزیتور و موزع</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> ۱۶ صنف فعال بدون محدودیت</li>
                         </ul>
                     </div>
                     <button @click="openOrder('distribution')" class="btn btn-outline btn-primary w-full rounded-2xl font-bold text-xs">
@@ -687,15 +687,15 @@
                             <p class="text-xs text-base-content/60 mt-1">کارگاه‌ها، کارخانه‌ها و واحدهای مونتاژ</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-emerald-600 font-mono">۲۱,۵۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۲۱,۵۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۵ کاربر همزمان دسکتاپ</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> درخت محصول و فرمول ساخت (BOM)</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> بهای تمام‌شده و ضایعات تولید</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> استهلاک دارایی‌های ثابت</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> ۱۶ صنف فعال بدون محدودیت</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> ۵ کاربر همزمان دسکتاپ</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> درخت محصول و فرمول ساخت (BOM)</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> بهای تمام‌شده و ضایعات تولید</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> استهلاک دارایی‌های ثابت</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> ۱۶ صنف فعال بدون محدودیت</li>
                         </ul>
                     </div>
                     <button @click="openOrder('manufacturing')" class="btn btn-outline btn-primary w-full rounded-2xl font-bold text-xs">
@@ -715,15 +715,15 @@
                             <p class="text-xs text-base-content/60 mt-1">هلدینگ‌ها، زنجیره‌ای‌ها و سازمان‌های بزرگ</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-emerald-600 font-mono">۳۴,۰۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۳۴,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سفارشی و جامع)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
-                            <li class="flex items-center gap-1.5 font-bold text-emerald-700"><span class="text-emerald-500">✓</span> کاربران نامحدود</li>
-                            <li class="flex items-center gap-1.5 font-bold text-emerald-700"><span class="text-emerald-500">✓</span> شرکت‌های نامحدود هلدینگ</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> تمامی ماژول‌های سیستم (*)</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> وب‌سرویس و API یکپارچه‌سازی</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-500">✓</span> پشتیبانی VIP اختصاصی ۲۴/۷</li>
+                            <li class="flex items-center gap-1.5 font-bold text-sky-700"><span class="text-sky-500">✓</span> کاربران نامحدود</li>
+                            <li class="flex items-center gap-1.5 font-bold text-sky-700"><span class="text-sky-500">✓</span> شرکت‌های نامحدود هلدینگ</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> تمامی ماژول‌های سیستم (*)</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> وب‌سرویس و API یکپارچه‌سازی</li>
+                            <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> پشتیبانی VIP اختصاصی ۲۴/۷</li>
                         </ul>
                     </div>
                     <button @click="openOrder('enterprise')" class="btn btn-outline btn-accent w-full rounded-2xl font-bold text-xs">
@@ -736,7 +736,7 @@
             <div class="rounded-3xl bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-8 max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
                 <div class="space-y-2 text-center sm:text-right">
                     <h3 class="text-xl font-black">نیاز به محاسبه دقیق بر اساس تعداد کاربر و شعب دارید؟</h3>
-                    <p class="text-xs text-white/80">از ابزار محاسبه‌گر آنلاین ماژولار دخل استفاده کنید و پیش‌فاکتور خود را فوراً تحویل بگیرید.</p>
+                    <p class="text-xs text-white/80">از ابزار محاسبه‌گر آنلاین ماژولار نپتون استفاده کنید و پیش‌فاکتور خود را فوراً تحویل بگیرید.</p>
                 </div>
                 <a href="{{ route('pricing') }}#calculator" class="btn btn-accent rounded-2xl px-6 font-black text-xs shadow-lg shrink-0">
                     ورود به محاسبه‌گر قیمت ←
@@ -749,7 +749,7 @@
             <div class="text-center max-w-3xl mx-auto space-y-4">
                 <span class="badge badge-accent badge-outline text-xs font-bold px-3 py-1">آرامش خاطر ۱۰۰٪</span>
                 <h2 class="text-3xl sm:text-4xl font-black tracking-tight text-base-content">
-                    چگونه معماری ۳-۲-۱ دخل، اسناد مالی شما را جاودانه می‌کند؟
+                    چگونه معماری ۳-۲-۱ نپتون، اسناد مالی شما را جاودانه می‌کند؟
                 </h2>
                 <p class="text-sm sm:text-base text-base-content/70">
                     برخلاف نرم‌افزارهای قدیمی که با یک خرابی هارد، حاصل سال‌ها زحمت حسابدار دود می‌شود و به هوا می‌رود:
@@ -758,7 +758,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-right">
                 <div class="p-6 rounded-3xl bg-base-100 border border-base-300 space-y-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-black">۱</div>
+                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-600 flex items-center justify-center font-black">۱</div>
                     <h4 class="font-black text-base text-base-content">نسخه محلی اول (روی سیستم)</h4>
                     <p class="text-xs text-base-content/70 leading-relaxed">
                         داده‌ها با بالاترین سرعت روی حافظه SSD سیستم شما ذخیره و پردازش می‌شوند. تمامی فیلدهای حساس با کلید محلی رمزنگاری شده‌اند.
@@ -768,14 +768,14 @@
                     <div class="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-600 flex items-center justify-center font-black">۲</div>
                     <h4 class="font-black text-base text-base-content">کپی اتوماتیک به فلش (هنگام خروج)</h4>
                     <p class="text-xs text-base-content/70 leading-relaxed">
-                        هر بار که دکمه خروج را می‌زنید، دخل بدون معطلی یک پکیج جامع `.dakhl` را روی فلش‌مموری متصل به سیستم کپی می‌کند تا همیشه یک نسخه فیزیکی همراه داشته باشید.
+                        هر بار که دکمه خروج را می‌زنید، نپتون بدون معطلی یک پکیج جامع `.neptune` را روی فلش‌مموری متصل به سیستم کپی می‌کند تا همیشه یک نسخه فیزیکی همراه داشته باشید.
                     </p>
                 </div>
                 <div class="p-6 rounded-3xl bg-base-100 border border-base-300 space-y-3">
                     <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center font-black">۳</div>
                     <h4 class="font-black text-base text-base-content">ارسال صفر-دانش به تلگرام مدیر</h4>
                     <p class="text-xs text-base-content/70 leading-relaxed">
-                        دخل نسخه فشرده پایگاه‌داده و اسناد را به چت تلگرام خصوصی شما دیسپچ می‌کند. حتی اگر مغازه یا دفتر کار دچار سرقت یا آتش‌سوزی شود، تمام اسناد در تلگرام شما محفوظ است.
+                        نپتون نسخه فشرده پایگاه‌داده و اسناد را به چت تلگرام خصوصی شما دیسپچ می‌کند. حتی اگر مغازه یا دفتر کار دچار سرقت یا آتش‌سوزی شود، تمام اسناد در تلگرام شما محفوظ است.
                     </p>
                 </div>
             </div>
@@ -792,10 +792,10 @@
                 <div class="collapse collapse-plus bg-base-100 border border-base-300 rounded-2xl">
                     <input type="radio" name="faq-accordion" checked="checked" />
                     <div class="collapse-title text-sm sm:text-base font-bold text-base-content">
-                        آیا دخل برای ارسال به سامانه مودیان نیاز به پرداخت هزینه به شرکت‌های معتمد (TSP) دارد؟
+                        آیا نپتون برای ارسال به سامانه مودیان نیاز به پرداخت هزینه به شرکت‌های معتمد (TSP) دارد؟
                     </div>
                     <div class="collapse-content text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                        خیر! دخل به طور مستقیم به سرورهای کارپوشه سازمان امور مالیاتی کشور متصل می‌شود و فاکتورها را با کلید اختصاصی مودی (CSR / Private Key) امضا و ارسال می‌کند. شما هیچ نیازی به پرداخت هزینه سالانه یا درصدی به شرکت‌های معتمد نخواهید داشت.
+                        خیر! نپتون به طور مستقیم به سرورهای کارپوشه سازمان امور مالیاتی کشور متصل می‌شود و فاکتورها را با کلید اختصاصی مودی (CSR / Private Key) امضا و ارسال می‌کند. شما هیچ نیازی به پرداخت هزینه سالانه یا درصدی به شرکت‌های معتمد نخواهید داشت.
                     </div>
                 </div>
 
@@ -805,27 +805,27 @@
                         اگر کامپیوتر ما بسوزد یا عوض شود، تکلیف لایسنس نرم‌افزار چه می‌شود؟
                     </div>
                     <div class="collapse-content text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                        هیچ مشکلی پیش نمی‌آید! به لطف ساختار لایسنسینگ رمزنگاری‌شده دخل، جابه‌جایی سیستم با صدور توکن ره‌بایند (Rebind) در چند ثانیه انجام می‌شود و نیازی به پرداخت هزینه جریمه یا خرید مجدد قفل سخت‌افزاری نخواهید داشت.
+                        هیچ مشکلی پیش نمی‌آید! به لطف ساختار لایسنسینگ رمزنگاری‌شده نپتون، جابه‌جایی سیستم با صدور توکن ره‌بایند (Rebind) در چند ثانیه انجام می‌شود و نیازی به پرداخت هزینه جریمه یا خرید مجدد قفل سخت‌افزاری نخواهید داشت.
                     </div>
                 </div>
 
                 <div class="collapse collapse-plus bg-base-100 border border-base-300 rounded-2xl">
                     <input type="radio" name="faq-accordion" />
                     <div class="collapse-title text-sm sm:text-base font-bold text-base-content">
-                        چگونه می‌توانم اطلاعات قبلی خود را از هلو یا سپیدار به دخل منتقل کنم؟
+                        چگونه می‌توانم اطلاعات قبلی خود را از هلو یا سپیدار به نپتون منتقل کنم؟
                     </div>
                     <div class="collapse-content text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                        دخل مجهز به موتور هوشمند مهاجرت است. شما خروجی اکسل اشخاص، کالاها و مانده‌ها را در پنل مهاجرت دخل بارگذاری می‌کنید و نرم‌افزار به صورت خودکار تراز افتتاحیه و کارتکس کالاها را در کمتر از ۳ دقیقه تنظیم می‌کند.
+                        نپتون مجهز به موتور هوشمند مهاجرت است. شما خروجی اکسل اشخاص، کالاها و مانده‌ها را در پنل مهاجرت نپتون بارگذاری می‌کنید و نرم‌افزار به صورت خودکار تراز افتتاحیه و کارتکس کالاها را در کمتر از ۳ دقیقه تنظیم می‌کند.
                     </div>
                 </div>
 
                 <div class="collapse collapse-plus bg-base-100 border border-base-300 rounded-2xl">
                     <input type="radio" name="faq-accordion" />
                     <div class="collapse-title text-sm sm:text-base font-bold text-base-content">
-                        آیا دخل روی شبکه محلی، تبلت و لپ‌تاپ هم کار می‌کند؟
+                        آیا نپتون روی شبکه محلی، تبلت و لپ‌تاپ هم کار می‌کند؟
                     </div>
                     <div class="collapse-content text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                        بله! معماری مدرن وب و دسکتاپ دخل به شما اجازه می‌دهد از هر دستگاهی درون شبکه (کامپیوتر صندوق، تبلت ویزیتور، گوشی همراه مدیر) به سیستم متصل شوید و نقش‌های کاربری با سطح دسترسی دقیق تعریف کنید.
+                        بله! معماری مدرن وب و دسکتاپ نپتون به شما اجازه می‌دهد از هر دستگاهی درون شبکه (کامپیوتر صندوق، تبلت ویزیتور، گوشی همراه مدیر) به سیستم متصل شوید و نقش‌های کاربری با سطح دسترسی دقیق تعریف کنید.
                     </div>
                 </div>
             </div>
@@ -838,7 +838,7 @@
                     د
                 </div>
                 <div class="space-y-2">
-                    <h2 class="text-2xl sm:text-4xl font-black text-base-content">آماده‌اید دخل و خرج کسب‌وکارتان را متحول کنید؟</h2>
+                    <h2 class="text-2xl sm:text-4xl font-black text-base-content">آماده‌اید نپتون و خرج کسب‌وکارتان را متحول کنید؟</h2>
                     <p class="text-xs sm:text-sm text-base-content/70 max-w-xl mx-auto">
                         همین حالا نسخه آزمایشی ۱۴ روزه را بدون نیاز به کارت بانکی دریافت کنید و تفاوت یک نرم‌افزار حسابداری مدرن را از نزدیک تجربه کنید.
                     </p>
@@ -861,11 +861,11 @@
     <footer class="bg-base-100 border-t border-base-300 py-12 text-xs text-base-content/70">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-black text-base">
+                <div class="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black text-base">
                     د
                 </div>
                 <div>
-                    <span class="font-black text-base-content text-sm block">سامانه مالی و حسابداری دخل (Dakhl ERP)</span>
+                    <span class="font-black text-base-content text-sm block">سامانه مالی و حسابداری نپتون (Neptune ERP)</span>
                     <span class="text-[11px] text-base-content/50">توسعه‌یافته مطابق قوانین مالیاتی و تجاری جمهوری اسلامی ایران</span>
                 </div>
             </div>
@@ -878,7 +878,7 @@
             </div>
 
             <div class="text-[11px] text-base-content/50">
-                © {{ date('Y') }} تمامی حقوق مادی و معنوی متعلق به نرم‌افزار حسابداری «دخل» است.
+                © {{ date('Y') }} تمامی حقوق مادی و معنوی متعلق به نرم‌افزار حسابداری «نپتون» است.
             </div>
         </div>
     </footer>
@@ -904,7 +904,7 @@
 
                     <div class="p-4 rounded-2xl bg-base-200 border border-base-300 space-y-2">
                         <div class="text-xs text-base-content/60 font-bold">کلید فعال‌سازی آزمایشی شما:</div>
-                        <div class="p-3 bg-base-100 rounded-xl border border-base-300 font-mono text-[11px] break-all select-all text-emerald-700" x-text="trialResult.license_key"></div>
+                        <div class="p-3 bg-base-100 rounded-xl border border-base-300 font-mono text-[11px] break-all select-all text-sky-700" x-text="trialResult.license_key"></div>
                         <div class="flex items-center justify-between text-[11px] text-base-content/50 pt-1">
                             <span>اعتبار: ۱۴ روز کامل</span>
                             <span>دسترسی به تمام ۱۶ صنف و ماژول‌ها</span>
@@ -912,7 +912,7 @@
                     </div>
 
                     <div class="text-xs text-base-content/70 leading-relaxed bg-info/10 p-3 rounded-xl border border-info/20">
-                        📌 <strong>نحوه استفاده:</strong> وارد منوی «مدیریت لایسنس» در نرم‌افزار دخل شوید و کلید بالا را در کادر فعال‌سازی الصاق کنید.
+                        📌 <strong>نحوه استفاده:</strong> وارد منوی «مدیریت لایسنس» در نرم‌افزار نپتون شوید و کلید بالا را در کادر فعال‌سازی الصاق کنید.
                     </div>
 
                     <button @click="navigator.clipboard.writeText(trialResult.license_key); alert('کد لایسنس با موفقیت کپی شد!')" class="btn btn-primary w-full rounded-2xl font-bold text-xs">
@@ -925,7 +925,7 @@
             <template x-if="!trialResult">
                 <form @submit.prevent="submitTrial()" class="space-y-4">
                     <p class="text-xs text-base-content/70 leading-relaxed">
-                        نام و شماره موبایل خود را وارد کنید تا لایسنس ۱۴ روزه دخل با دسترسی نامحدود به تمامی ماژول‌ها و اصناف فوراً برای شما صادر شود:
+                        نام و شماره موبایل خود را وارد کنید تا لایسنس ۱۴ روزه نپتون با دسترسی نامحدود به تمامی ماژول‌ها و اصناف فوراً برای شما صادر شود:
                     </p>
 
                     <template x-if="trialError">
@@ -973,7 +973,7 @@
             <div class="flex items-center justify-between border-b border-base-200 pb-4">
                 <div class="flex items-center gap-2">
                     <span class="text-2xl">⚡</span>
-                    <h3 class="font-black text-lg text-base-content">ثبت سفارش آنلاین نرم‌افزار دخل</h3>
+                    <h3 class="font-black text-lg text-base-content">ثبت سفارش آنلاین نرم‌افزار نپتون</h3>
                 </div>
                 <button @click="orderModalOpen = false" class="btn btn-ghost btn-sm btn-circle text-lg">✕</button>
             </div>
@@ -997,12 +997,12 @@
                         </div>
                         <div class="flex justify-between items-center text-xs border-t border-base-300 pt-2">
                             <span class="text-base-content/60">مبلغ نهایی:</span>
-                            <span class="font-black text-emerald-600 text-sm font-mono" x-text="orderResult.total_price_formatted"></span>
+                            <span class="font-black text-sky-600 text-sm font-mono" x-text="orderResult.total_price_formatted"></span>
                         </div>
                     </div>
 
-                    <div class="text-xs text-base-content/70 leading-relaxed bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 text-emerald-900">
-                        📞 کارشناس صدور لایسنس دخل تا دقایقی دیگر جهت ارائه فاکتور رسمی و کلید فعال‌سازی نهایی با شماره شما تماس خواهد گرفت.
+                    <div class="text-xs text-base-content/70 leading-relaxed bg-sky-500/10 p-3 rounded-xl border border-sky-500/25 text-sky-950">
+                        📞 کارشناس صدور لایسنس نپتون تا دقایقی دیگر جهت ارائه فاکتور رسمی و کلید فعال‌سازی نهایی با شماره شما تماس خواهد گرفت.
                     </div>
 
                     <button @click="orderModalOpen = false" class="btn btn-primary w-full rounded-2xl font-bold text-xs">
@@ -1014,7 +1014,7 @@
             <!-- Order Form -->
             <template x-if="!orderResult">
                 <form @submit.prevent="submitOrder()" class="space-y-4">
-                    <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-800 flex justify-between items-center">
+                    <div class="p-3 rounded-xl bg-sky-500/10 border border-sky-500/25 text-xs font-bold text-sky-900 flex justify-between items-center">
                         <span>پکیج در حال خرید:</span>
                         <span class="badge badge-primary font-bold" x-text="plansData[selectedPlan] ? plansData[selectedPlan].title : selectedPlan"></span>
                     </div>

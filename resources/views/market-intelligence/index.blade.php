@@ -413,7 +413,7 @@
                                 <h2 class="text-lg font-bold">{{ __('شبکه تبادل نرخ عمده‌فروشی هم‌صنفان (B2B)') }}</h2>
                                 <span class="badge badge-accent badge-sm font-semibold">تأییدشده</span>
                             </div>
-                            <p class="text-xs text-base-content/60">{{ __('نرخ‌های پخش و عمده‌فروشی ثبت‌شده توسط بنکداران برای همکاران دخل جهت تأمین کالا، سفارش تیراژ و هماهنگی قیمت کف بازار.') }}</p>
+                            <p class="text-xs text-base-content/60">{{ __('نرخ‌های پخش و عمده‌فروشی ثبت‌شده توسط بنکداران برای همکاران نپتون جهت تأمین کالا، سفارش تیراژ و هماهنگی قیمت کف بازار.') }}</p>
                         </div>
 
                         {{-- Guild Filter --}}
@@ -511,7 +511,7 @@
                 <div class="card-body p-4 sm:p-6">
                     <div class="mb-4">
                         <h2 class="text-lg font-bold">{{ __('پیکربندی منابع دریافت قیمت‌ها (Bring Your Own API)') }}</h2>
-                        <p class="text-xs text-base-content/60">{{ __('سرویس هوشمند دخل به طور پیش‌فرض آخرین نرخ‌های زنده و واقعی بازار را دریافت می‌کند. همچنین می‌توانید وب‌سرویس اختصاصی خود را متصل فرمایید.') }}</p>
+                        <p class="text-xs text-base-content/60">{{ __('سرویس هوشمند نپتون به طور پیش‌فرض آخرین نرخ‌های زنده و واقعی بازار را دریافت می‌کند. همچنین می‌توانید وب‌سرویس اختصاصی خود را متصل فرمایید.') }}</p>
                     </div>
 
                     <form method="POST" action="{{ route('market-intelligence.save-settings') }}" class="space-y-6">
@@ -649,7 +649,7 @@
                     <div class="form-control">
                         <label class="label cursor-pointer justify-start gap-3">
                             <input type="checkbox" name="is_wholesale_broadcast" value="1" x-model="productModalData.is_wholesale_broadcast" class="checkbox checkbox-primary checkbox-sm">
-                            <span class="label-text text-xs font-bold">{{ __('انتشار قیمت عمده‌فروشی در تابلوی همکاران دخل') }}</span>
+                            <span class="label-text text-xs font-bold">{{ __('انتشار قیمت عمده‌فروشی در تابلوی همکاران نپتون') }}</span>
                         </label>
                     </div>
 

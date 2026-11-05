@@ -604,7 +604,7 @@
                 <li><a href="{{ route('configs.index') }}">{{ __('تنظیمات عمومی سامانه') }}</a></li>
             @endcan
             <li><a href="{{ route('guide.index') }}" class="font-bold text-primary flex items-center justify-between"><span>{{ __('راهنمای جامع و مصور نرم‌افزار') }}</span><span class="badge badge-primary badge-xs">آموزش</span></a></li>
-            <li><a href="{{ route('about') }}">{{ __('درباره سامانه دخل') }}</a></li>
+            <li><a href="{{ route('about') }}">{{ __('درباره سامانه نپتون') }}</a></li>
         </ul>
     </details>
 </li>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>هویت بصری بین‌المللی و نمونه لوگوهای مدرن دخل (Google Flow & FinTech Edition)</title>
+    <title>هویت بصری بین‌المللی و نمونه لوگوهای مدرن نپتون (Google Flow & FinTech Edition)</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,10 +25,10 @@
             <span>✨</span> زبان طراحی Google Flow و استانداردهای بین‌المللی فین‌تک (Stripe / Mercury / Linear)
         </div>
         <h1 class="text-3xl md:text-5xl font-black tracking-tight text-white leading-tight">
-            مجموعه هویت بصری بین‌المللی و لوگوهای پیشنهادی «دخل»
+            مجموعه هویت بصری بین‌المللی و لوگوهای پیشنهادی «نپتون»
         </h1>
         <p class="text-slate-400 max-w-3xl mx-auto text-sm md:text-base leading-relaxed">
-            طراحی شده با الهام از خط سیر جدید استودیوی طراحی Google Flow، تلفیق روبان‌های سیال ۳ بعدی، منشور کریستالی، و نمادپردازی تراز مالی جهانی با حفظ اصالت نام «دخل»
+            طراحی شده با الهام از خط سیر جدید استودیوی طراحی Google Flow، تلفیق روبان‌های سیال ۳ بعدی، منشور کریستالی، و نمادپردازی تراز مالی جهانی با حفظ اصالت نام «نپتون»
         </p>
     </div>
 
@@ -50,7 +50,7 @@
             <!-- Mockup Card 1: Google Flow Fluid Helix Ribbon -->
             <div class="studio-card bg-slate-900/80 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between group hover:border-cyan-500/50">
                 <div class="relative overflow-hidden bg-slate-950 aspect-video">
-                    <img src="/images/dakhl_concept1_flow.jpg" alt="Dakhl Google Flow Ribbon Concept" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <img src="/images/dakhl_concept1_flow.jpg" alt="Neptune Google Flow Ribbon Concept" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     <div class="absolute top-3 right-3 badge badge-sm bg-blue-600/90 text-white font-bold border-none shadow-md">
                         طرح ۱: Google Flow Helix
                     </div>
@@ -73,7 +73,7 @@
             <!-- Mockup Card 2: Glassmorphism Prism Minimalist -->
             <div class="studio-card bg-slate-900/80 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between group hover:border-indigo-500/50">
                 <div class="relative overflow-hidden bg-slate-950 aspect-video">
-                    <img src="/images/dakhl_concept2_prism.jpg" alt="Dakhl Glass Prism Concept" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <img src="/images/dakhl_concept2_prism.jpg" alt="Neptune Glass Prism Concept" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     <div class="absolute top-3 right-3 badge badge-sm bg-indigo-600/90 text-white font-bold border-none shadow-md">
                         طرح ۲: Minimalist Prism
                     </div>
@@ -84,7 +84,7 @@
                         <span class="text-xs font-mono text-indigo-400">GF-02</span>
                     </div>
                     <p class="text-xs text-slate-400 leading-relaxed">
-                        سبک مینیمال سوئیسی (Linear & Mercury). منشور مات هندسی با انکسار لطیف نور، تایپوگرافی سنگین انترپرایز DAKHL و شعار FINANCIAL OS در استودیوی تیره، مناسب نرم‌افزارهای یکپارچه شرکتی و بزرگ.
+                        سبک مینیمال سوئیسی (Linear & Mercury). منشور مات هندسی با انکسار لطیف نور، تایپوگرافی سنگین انترپرایز NEPTUNE و شعار FINANCIAL OS در استودیوی تیره، مناسب نرم‌افزارهای یکپارچه شرکتی و بزرگ.
                     </p>
                     <div class="pt-3 border-t border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
                         <span>الهام: Linear, Mercury & Raycast</span>
@@ -96,7 +96,7 @@
             <!-- Mockup Card 3: Futuristic Vault Node & AI Orbit -->
             <div class="studio-card bg-slate-900/80 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between group hover:border-emerald-500/50">
                 <div class="relative overflow-hidden bg-slate-950 aspect-video">
-                    <img src="/images/dakhl_concept3_vault.jpg" alt="Dakhl Kinetic Vault Node Concept" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <img src="/images/dakhl_concept3_vault.jpg" alt="Neptune Kinetic Vault Node Concept" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     <div class="absolute top-3 right-3 badge badge-sm bg-emerald-600/90 text-white font-bold border-none shadow-md">
                         طرح ۳: AI Kinetic Vault
                     </div>
@@ -258,7 +258,7 @@
                             <span>تبادل پیوسته (Borderless Nexus)</span>
                         </div>
                         <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-                            گره تعاملی بی‌مرز الهام‌گرفته از Wise و Revolut، مناسب قابلیت‌های جدید تهاتر اقلام بین‌فروشگاهی و تسویه‌های دوطرفه دخل.
+                            گره تعاملی بی‌مرز الهام‌گرفته از Wise و Revolut، مناسب قابلیت‌های جدید تهاتر اقلام بین‌فروشگاهی و تسویه‌های دوطرفه نپتون.
                         </p>
                     </div>
                 </div>
@@ -311,7 +311,7 @@
                 </div>
             </div>
 
-            <!-- SVG Concept 5: Neo-Persian Fluid Typogram «دخل» -->
+            <!-- SVG Concept 5: Neo-Persian Fluid Typogram «نپتون» -->
             <div class="studio-card bg-slate-900 border border-slate-800 rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-amber-400/50 hover:shadow-2xl hover:shadow-amber-500/10">
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
@@ -329,7 +329,7 @@
                                     <stop offset="100%" stop-color="#D97706" />
                                 </linearGradient>
                             </defs>
-                            <!-- Continuous Persian Script 'Dakhl' as an aerodynamic infinity crest -->
+                            <!-- Continuous Persian Script 'Neptune' as an aerodynamic infinity crest -->
                             <path d="M128 45 C128 85 110 115 85 115 C60 115 50 90 70 75 C90 60 110 75 100 100 C92 120 70 135 45 130 C30 126 32 105 48 108" stroke="url(#vg5-gold)" stroke-width="14" stroke-linecap="round"/>
                             <!-- Diamond Dot of Kha -->
                             <rect x="74" y="34" width="14" height="14" rx="3" transform="rotate(45 74 34)" fill="#FBBF24" />
@@ -338,10 +338,10 @@
 
                     <div>
                         <div class="text-xl font-black text-white flex items-center justify-between">
-                            <span>کالیگرافی مدرن بازار (Neo-Dakhl)</span>
+                            <span>کالیگرافی مدرن بازار (Neo-Neptune)</span>
                         </div>
                         <p class="text-xs text-slate-400 mt-1 leading-relaxed">
-                            ترکیب خط شکسته نستعلیق ایرانی با انحناهای نرم فین‌تک مدرن و نقطه الماسی طلایی، نماد درآمد حلال و رونق دخل کسب‌وکار.
+                            ترکیب خط شکسته نستعلیق ایرانی با انحناهای نرم فین‌تک مدرن و نقطه الماسی طلایی، نماد درآمد حلال و رونق مالی کسب‌وکار.
                         </p>
                     </div>
                 </div>
@@ -352,7 +352,7 @@
                 </div>
             </div>
 
-            <!-- SVG Concept 6: DAKHL Apex Wordmark Lockup -->
+            <!-- SVG Concept 6: NEPTUNE Apex Wordmark Lockup -->
             <div class="studio-card bg-slate-900 border border-slate-800 rounded-3xl p-6 relative overflow-hidden flex flex-col justify-between hover:border-pink-400/50 hover:shadow-2xl hover:shadow-pink-500/10">
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
@@ -422,7 +422,7 @@
                         <div>
                             <div class="font-black text-sm text-slate-900 flex items-center gap-1.5">
                                 <span>دَخــل</span>
-                                <span class="text-[10px] text-cyan-600 font-mono font-bold">DAKHL</span>
+                                <span class="text-[10px] text-cyan-600 font-mono font-bold">NEPTUNE</span>
                             </div>
                             <div class="text-[10px] text-slate-400">سیستم عامل جامع حسابداری و ERP</div>
                         </div>
@@ -476,7 +476,7 @@
                     </div>
 
                     <div class="space-y-1">
-                        <div class="font-black text-sm text-white">Dakhl App Launcher (512x512)</div>
+                        <div class="font-black text-sm text-white">Neptune App Launcher (512x512)</div>
                         <div class="text-xs text-slate-400">گوشه‌های ارگانیک Squircle مطابق استانداردهای iOS و Material 3</div>
                         <div class="text-[11px] text-cyan-400 font-mono">public/favicon.ico & PWA manifest ready</div>
                     </div>
@@ -497,7 +497,7 @@
                         </div>
                         <div>
                             <div class="font-black text-base text-slate-900">صورتحساب الکترونیکی فروش کالا و خدمات</div>
-                            <div class="text-[10px] text-slate-500 font-mono">طراحی شده تحت بستر نرم‌افزاری دخل (DAKHL ERP)</div>
+                            <div class="text-[10px] text-slate-500 font-mono">طراحی شده تحت بستر نرم‌افزاری نپتون (NEPTUNE ERP)</div>
                         </div>
                     </div>
                     <div class="text-left font-mono text-xs text-slate-400">

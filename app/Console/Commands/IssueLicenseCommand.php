@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
  */
 class IssueLicenseCommand extends Command
 {
-    protected $signature = 'dakhl:issue-license
+    protected $signature = 'neptune:issue-license
                             {--customer= : نام خریدار یا شرکت}
                             {--edition=basic : پلن لایسنس (basic, shop, professional, commercial, distribution, manufacturing, enterprise)}
                             {--fingerprint=* : شناسه سخت‌افزار ماشین مشتری (یا * برای تمام سیستم‌ها)}
@@ -19,12 +19,14 @@ class IssueLicenseCommand extends Command
                             {--companies= : سقف تعداد شرکت‌ها (خالی = مقدار پیش‌فرض پلن)}
                             {--users= : سقف تعداد کاربران همزمان LAN (خالی = مقدار پیش‌فرض پلن)}';
 
-    protected $description = 'تولید و صدور کلید لایسنس رسمی و رمزنگاری‌شده نرم‌افزار دخل';
+    protected $aliases = ['dakhl:issue-license'];
+
+    protected $description = 'تولید و صدور کلید لایسنس رسمی و رمزنگاری‌شده نرم‌افزار نپتون';
 
     public function handle(LicenseService $licenseService): int
     {
         $isInteractive = $this->input->isInteractive();
-        $customer = $this->option('customer') ?: ($isInteractive ? $this->ask('نام مشتری یا شرکت خریدار چیست؟', 'مشتری تجاری دخل') : 'مشتری تجاری دخل');
+        $customer = $this->option('customer') ?: ($isInteractive ? $this->ask('نام مشتری یا شرکت خریدار چیست؟', 'مشتری تجاری نپتون') : 'مشتری تجاری نپتون');
         $edition = strtolower($this->option('edition') ?: ($isInteractive ? $this->choice(
             'کدام نسخه را می‌خواهید صادر کنید؟',
             ['basic', 'professional', 'distribution', 'manufacturing', 'enterprise'],
@@ -71,7 +73,7 @@ class IssueLicenseCommand extends Command
 
         $this->newLine();
         $this->info('========================================================================');
-        $this->info('  🎉 کلید لایسنس رسمی و امضاشده نرم‌افزار دخل با موفقیت صادر شد:');
+        $this->info('  🎉 کلید لایسنس رسمی و امضاشده نرم‌افزار نپتون با موفقیت صادر شد:');
         $this->info('========================================================================');
         $this->line("<fg=yellow;options=bold>{$licenseKey}</>");
         $this->info('========================================================================');

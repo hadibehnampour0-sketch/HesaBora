@@ -35,7 +35,7 @@
                     💡
                 </div>
                 <div>
-                    <h3 class="font-bold text-indigo-950 text-sm">قابلیت استعلام صوتی و متنی با هوش مصنوعی دخل</h3>
+                    <h3 class="font-bold text-indigo-950 text-sm">قابلیت استعلام صوتی و متنی با هوش مصنوعی نپتون</h3>
                     <p class="text-xs text-indigo-800 mt-0.5">
                         کافیست در چت کوپایلوت بنویسید یا بگویید: <code class="bg-indigo-100 text-indigo-900 px-1.5 py-0.5 rounded font-bold font-mono">«به علی قیمت گلس چند دادم؟»</code> تا هوش مصنوعی فوراً قیمت را برای شما بازخوانی کند!
                     </p>

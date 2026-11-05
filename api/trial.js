@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
   }
 
   const body = req.body || {};
-  const customerName = body.customer_name || 'کاربر آزمایشی دخل';
+  const customerName = body.customer_name || 'کاربر آزمایشی نپتون';
   const phone = body.phone || '۰۹۱۲۰۰۰۰۰۰۰';
   const businessType = body.business_type || 'فروشگاهی';
 
@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
 
   const payload = {
     v: 2,
-    kid: 'dakhl-root-2026',
+    kid: 'neptune-root-2026',
     lic_id: crypto.randomUUID(),
     org: `${customerName} (${phone}) - ${businessType}`,
     tier: 'trial',
@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
     expires_at: expiresAt,
     grace_days: 14,
     fingerprint: '*',
-    issuer: 'Dakhl Licensing Authority (Cloud Trial Gateway)',
+    issuer: 'Neptune Licensing Authority (Cloud Trial Gateway)',
     nonce: crypto.randomBytes(8).toString('hex')
   };
 
@@ -51,13 +51,13 @@ module.exports = async (req, res) => {
   const signature = crypto.sign(null, Buffer.from(canonicalJson, 'utf8'), privateKey);
   const sigBase64 = signature.toString('base64url');
 
-  const licenseKey = `DAKHL-LIC-v2.${payloadBase64}.${sigBase64}`;
+  const licenseKey = `NEPTUNE-LIC-v2.${payloadBase64}.${sigBase64}`;
 
   return res.status(200).json({
     success: true,
-    message: 'لایسنس آزمایشی ۱۴ روزه با دسترسی کامل به تمام ماژول‌ها برای شما صادر شد.',
+    message: 'لایسنس آزمایشی ۱۴ روزه نرم‌افزار نپتون با دسترسی کامل به تمام ماژول‌ها برای شما صادر شد.',
     license_key: licenseKey,
-    edition: 'نسخه آزمایشی نامحدود (Trial)',
+    edition: 'نسخه آزمایشی نامحدود نپتون (Trial)',
     days: 14,
     expires_at: new Date(expiresAt * 1000).toISOString().split('T')[0]
   });

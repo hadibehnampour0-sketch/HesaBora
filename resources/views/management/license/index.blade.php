@@ -15,7 +15,7 @@
                 </div>
                 <h1 class="text-xl md:text-2xl font-black text-base-content flex items-center gap-2">
                     <span class="text-2xl">🔐</span>
-                    {{ __('سیستم صدور، ارزیابی و فعال‌سازی لایسنس ماژولار دخل') }}
+                    {{ __('سیستم صدور، ارزیابی و فعال‌سازی لایسنس ماژولار نپتون') }}
                 </h1>
             </div>
 
@@ -145,16 +145,16 @@
                         <h3 class="text-lg font-bold text-base-content">{{ __('فعال‌سازی و ارتقای لایسنس جدید') }}</h3>
                     </div>
                     <p class="text-xs text-base-content/60 mb-4">
-                        {{ __('کد لایسنس دریافتی از تیم فروش دخل یا کارگزار رسمی خود را در کادر زیر جای‌گذاری نموده و دکمه فعال‌سازی را فشار دهید. فعال‌سازی به صورت ۱۰۰٪ آفلاین و با امضای دیجیتال نامتقارن اعتبارسنجی می‌شود.') }}
+                        {{ __('کد لایسنس دریافتی از تیم فروش نپتون یا کارگزار رسمی خود را در کادر زیر جای‌گذاری نموده و دکمه فعال‌سازی را فشار دهید. فعال‌سازی به صورت ۱۰۰٪ آفلاین و با امضای دیجیتال نامتقارن اعتبارسنجی می‌شود.') }}
                     </p>
 
                     <form action="{{ route('license.activate') }}" method="POST" class="space-y-4">
                         @csrf
                         <div class="space-y-1">
-                            <label class="block text-xs font-bold text-base-content/70">{{ __('کلید رمزنگاری لایسنس (DAKHL-LIC-v2...):') }}</label>
+                            <label class="block text-xs font-bold text-base-content/70">{{ __('کلید رمزنگاری لایسنس (NEPTUNE-LIC-v2...):') }}</label>
                             <textarea name="license_key"
                                       rows="3"
-                                      placeholder="DAKHL-LIC-v2.eyJraWQiOiJkYWtobC1yb290LTIwMjYiLCJ0aWVyIjoicHJvZmVzc2lvbmFs...c4b2a8f..."
+                                      placeholder="NEPTUNE-LIC-v2.eyJraWQiOiJkYWtobC1yb290LTIwMjYiLCJ0aWVyIjoicHJvZmVzc2lvbmFs...c4b2a8f..."
                                       required
                                       class="textarea textarea-bordered w-full rounded-2xl font-mono text-xs focus:outline-primary bg-base-200/30 leading-relaxed dir-ltr"></textarea>
                         </div>
@@ -241,7 +241,7 @@
         <div class="bg-gradient-to-tr from-base-100 via-base-100 to-primary/5 border border-base-300 rounded-3xl p-6 shadow-sm">
             <div class="text-center max-w-xl mx-auto mb-8">
                 <span class="text-xs font-bold text-primary uppercase tracking-wider">{{ __('پلن‌های تجاری و تجاری‌سازی') }}</span>
-                <h3 class="text-2xl font-black text-base-content mt-1">{{ __('بسته‌های اشتراک تجاری و فروش ماژولار دخل') }}</h3>
+                <h3 class="text-2xl font-black text-base-content mt-1">{{ __('بسته‌های اشتراک تجاری و فروش ماژولار نپتون') }}</h3>
                 <p class="text-xs text-base-content/60 mt-1">
                     {{ __('برای کسب‌وکارهای در حال رشد، پلن متناسب با نیازهای خود را انتخاب کنید و تنها به ازای قابلیت‌هایی که استفاده می‌کنید هزینه بپردازید.') }}
                 </p>
@@ -310,10 +310,10 @@
             <div class="mt-8 pt-6 border-t border-base-200 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-base-content/70 max-w-4xl mx-auto">
                 <div class="flex items-center gap-2">
                     <span class="text-lg">📞</span>
-                    <span>{{ __('واحد فروش و امور نمایندگان دخل:') }} <strong class="text-base-content font-mono font-bold">۰۲۱-۸۸۸۸۴۴۲۲</strong></span>
+                    <span>{{ __('واحد فروش و امور نمایندگان نپتون:') }} <strong class="text-base-content font-mono font-bold">۰۲۱-۸۸۸۸۴۴۲۲</strong></span>
                 </div>
                 <div>
-                    <span>{{ __('پشتیبانی آنلاین تلگرام و بله:') }} <strong class="text-primary font-mono">@DakhlERP_Sales</strong></span>
+                    <span>{{ __('پشتیبانی آنلاین تلگرام و بله:') }} <strong class="text-primary font-mono">@NeptuneERP_Sales</strong></span>
                 </div>
             </div>
         </div>

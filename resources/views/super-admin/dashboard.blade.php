@@ -6,7 +6,7 @@
         <div class="flex items-center gap-3">
             <span class="text-3xl">🚀</span>
             <div>
-                <h3 class="font-extrabold text-sm sm:text-base">ورود به محیط کاربری و داشبورد نرم‌افزار دخل</h3>
+                <h3 class="font-extrabold text-sm sm:text-base">ورود به محیط کاربری و داشبورد نرم‌افزار نپتون</h3>
                 <p class="text-xs text-emerald-100 mt-0.5">شما در حال حاضر در پنل مدیریت کل پلتفرم (Super Admin) هستید. جهت مشاهده میز کار اصلی، حسابداری، فاکتورها، اقساط و هوش مصنوعی کلیک کنید.</p>
             </div>
         </div>

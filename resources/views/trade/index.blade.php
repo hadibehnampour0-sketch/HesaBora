@@ -54,7 +54,7 @@
                 ⚡
             </div>
             <div>
-                <div class="text-xs text-indigo-700 font-bold">مزیت حسابداری دخل</div>
+                <div class="text-xs text-indigo-700 font-bold">مزیت حسابداری نپتون</div>
                 <div class="text-xs text-indigo-900 mt-0.5 font-medium leading-relaxed">عدم ایجاد بار مالیاتی بیهوده برای قرض و تبادل موقت اقلام</div>
             </div>
         </div>

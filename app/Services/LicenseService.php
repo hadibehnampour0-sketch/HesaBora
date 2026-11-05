@@ -65,7 +65,7 @@ class LicenseService
 
     public const MODULE_MIGRATION_TOOLS = 'migration_tools';
 
-    private const CACHE_KEY = 'dakhl_active_license';
+    private const CACHE_KEY = 'neptune_active_license';
 
     /**
      * Generate a deterministic machine fingerprint for offline node-locking.
@@ -75,7 +75,7 @@ class LicenseService
         $components = $this->getMachineFingerprintComponents();
         $hash = strtoupper(hash('sha256', implode('|', $components)));
 
-        return 'DAKHL-'.substr($hash, 0, 4).'-'.substr($hash, 4, 4).'-'.substr($hash, 8, 4).'-'.substr($hash, 12, 4);
+        return 'NEP-'.substr($hash, 0, 4).'-'.substr($hash, 4, 4).'-'.substr($hash, 8, 4).'-'.substr($hash, 12, 4);
     }
 
     /**
@@ -165,10 +165,10 @@ class LicenseService
         $token = trim($licenseKey);
 
         $parts = explode('.', $token);
-        if (count($parts) !== 3 || $parts[0] !== 'DAKHL-LIC-v2') {
+        if (count($parts) !== 3 || !in_array($parts[0], ['NEPTUNE-LIC-v2', 'DAKHL-LIC-v2'], true)) {
             return [
                 'valid' => false,
-                'reason' => 'فرمت کد لایسنس نامعتبر است (باید با DAKHL-LIC-v2 آغاز شود).',
+                'reason' => 'فرمت کد لایسنس نامعتبر است (باید با NEPTUNE-LIC-v2 آغاز شود).',
                 'payload' => null,
                 'signature' => null,
             ];
@@ -457,13 +457,13 @@ class LicenseService
                 : Carbon::parse($data['expires_at'])->timestamp;
         }
 
-        $kid ??= config('license.default_kid', 'dakhl-root-2026');
+        $kid ??= config('license.default_kid', 'neptune-root-2026');
 
         $payload = [
             'v' => 2,
             'kid' => $kid,
             'lic_id' => $data['lic_id'] ?? Uuid::uuid4()->toString(),
-            'org' => $data['org'] ?? ($data['customer_name'] ?? 'مشتری گرامی دخل'),
+            'org' => $data['org'] ?? ($data['customer_name'] ?? 'مشتری گرامی نپتون'),
             'customer_national_id' => $data['customer_national_id'] ?? null,
             'tier' => $data['tier'] ?? ($data['edition'] ?? 'professional'),
             'modules' => $data['modules'] ?? ['*'],
@@ -477,7 +477,7 @@ class LicenseService
             'expires_at' => $expiresAt,
             'grace_days' => (int) ($data['grace_days'] ?? ($data['grace_period_days'] ?? 14)),
             'fingerprint' => $data['fingerprint'] ?? ($data['hardware_fingerprint'] ?? '*'),
-            'issuer' => 'Dakhl Licensing Authority',
+            'issuer' => 'Neptune Licensing Authority',
             'nonce' => Str::random(16),
         ];
 
@@ -502,7 +502,7 @@ class LicenseService
         $signatureBinary = LicenseCrypto::sign($canonicalJson, hex2bin($secretKeyHex));
 
         return sprintf(
-            'DAKHL-LIC-v2.%s.%s',
+            'NEPTUNE-LIC-v2.%s.%s',
             LicenseCrypto::base64UrlEncode($canonicalJson),
             LicenseCrypto::base64UrlEncode($signatureBinary)
         );
@@ -522,7 +522,7 @@ class LicenseService
     /**
      * Re-bind an active license to a new hardware fingerprint using a cryptographically signed re-bind token.
      *
-     * Format: DAKHL-LIC-REBIND-v2.{base64Url(canonicalJson)}.{base64Url(sig)}
+     * Format: NEPTUNE-LIC-REBIND-v2.{base64Url(canonicalJson)}.{base64Url(sig)}
      *
      * @return array{success: bool, message: string, license: ?License}
      */
@@ -531,10 +531,10 @@ class LicenseService
         $token = trim($rebindToken);
         $parts = explode('.', $token);
 
-        if (count($parts) !== 3 || $parts[0] !== 'DAKHL-LIC-REBIND-v2') {
+        if (count($parts) !== 3 || !in_array($parts[0], ['NEPTUNE-LIC-REBIND-v2', 'DAKHL-LIC-REBIND-v2'], true)) {
             return [
                 'success' => false,
-                'message' => 'فرمت توکن انتقال لایسنس نامعتبر است (باید با DAKHL-LIC-REBIND-v2 آغاز شود).',
+                'message' => 'فرمت توکن انتقال لایسنس نامعتبر است (باید با NEPTUNE-LIC-REBIND-v2 آغاز شود).',
                 'license' => null,
             ];
         }
@@ -621,7 +621,7 @@ class LicenseService
         $sigBinary = LicenseCrypto::sign($canonicalJson, hex2bin($secretKeyHex));
 
         return sprintf(
-            'DAKHL-LIC-REBIND-v2.%s.%s',
+            'NEPTUNE-LIC-REBIND-v2.%s.%s',
             LicenseCrypto::base64UrlEncode($canonicalJson),
             LicenseCrypto::base64UrlEncode($sigBinary)
         );
@@ -680,7 +680,7 @@ class LicenseService
     {
         $trialData = [
             'edition' => 'trial',
-            'customer_name' => 'کاربر آزمایشی دخل',
+            'customer_name' => 'کاربر آزمایشی نپتون',
             'hardware_fingerprint' => '*',
             'modules' => ['*'],
             'max_companies' => 2,

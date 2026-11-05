@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>{{ __('دخل همراه | پخش مویرگی و انبارداری') }}</title>
+    <title>{{ __('نپتون همراه | پخش مویرگی و انبارداری') }}</title>
     <link rel="manifest" href="{{ route('mobile.manifest') }}">
     <meta name="theme-color" content="#06b6d4">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -30,7 +30,7 @@
             </div>
             <div>
                 <h1 class="text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
-                    <span>دخل همراه</span>
+                    <span>نپتون همراه</span>
                     <span class="text-xs font-normal text-cyan-400" x-text="roleTitle()"></span>
                 </h1>
                 <p class="text-[10px] text-slate-400" x-text="routeTitle"></p>
@@ -356,7 +356,7 @@
 
             <button type="button" @click="submitOrder()" :disabled="isSubmittingOrder"
                     class="btn btn-primary w-full rounded-xl gap-2 text-sm shadow-xl shadow-cyan-500/20">
-                <span x-show="!isSubmittingOrder">ثبت نهایی و صدور سند در دخل</span>
+                <span x-show="!isSubmittingOrder">ثبت نهایی و صدور سند در نپتون</span>
                 <span x-show="isSubmittingOrder" class="loading loading-spinner loading-xs"></span>
             </button>
         </div>

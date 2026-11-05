@@ -3,12 +3,12 @@
         <div class="w-full max-w-md">
             <div class="card p-8 rounded-3xl border border-base-300 bg-base-100 shadow-2xl shadow-slate-900/10 transition-all">
                 <div class="flex flex-col items-center mb-6 text-center">
-                    <div class="w-20 h-20 rounded-2xl bg-[#090D16] p-2.5 shadow-xl shadow-cyan-500/10 border border-slate-800 mb-3 flex items-center justify-center">
-                        <img src="/images/logo.svg" alt="{{ config('app.name') }}" class="w-full h-full object-contain drop-shadow-md">
+                    <div class="w-20 h-20 rounded-2xl bg-[#090D16] p-2.5 shadow-xl shadow-cyan-500/20 border border-slate-800 mb-3 flex items-center justify-center">
+                        <img src="/images/neptune-logo.svg" alt="{{ config('app.name') }}" class="w-full h-full object-contain drop-shadow-md">
                     </div>
-                    <h1 class="font-black text-2xl tracking-tight text-base-content">{{ __('سامانه مالی و حسابداری دخل') }}</h1>
+                    <h1 class="font-black text-2xl tracking-tight text-base-content">{{ __('سامانه مالی و حسابداری نپتون') }}</h1>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mt-2">
-                        <span>✨</span> {{ __('سیستم عامل مالی و مالیاتی کسب‌وکار') }}
+                        <span>✨</span> {{ __('سیستم‌عامل جامع مالی و هوشمند نپتون') }}
                     </span>
                 </div>
 

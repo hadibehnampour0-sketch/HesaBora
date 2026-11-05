@@ -82,7 +82,7 @@
                     <span>کلید <kbd class="px-1 py-0.2 rounded bg-base-300 font-mono">Enter</kbd> جهت انتخاب</span>
                 </div>
                 <div class="font-bold text-primary flex items-center gap-1">
-                    <span>دخل</span>
+                    <span>نپتون</span>
                     <span class="badge badge-primary badge-xs">Copilot</span>
                 </div>
             </div>

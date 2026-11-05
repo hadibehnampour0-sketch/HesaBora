@@ -1,4 +1,4 @@
-<x-app-layout :title="__('تنظیمات ظاهری و پوسته سامانه دخل')">
+<x-app-layout :title="__('تنظیمات ظاهری و پوسته سامانه نپتون')">
     <div class="space-y-8 max-w-6xl mx-auto py-4 px-2" x-data="{
         selectedTheme: localStorage.getItem('ui_theme') || @json($currentTheme ?? session('dakhl_ui_theme', 'flow')),
         selectedAccent: localStorage.getItem('dakhl_accent_color') || @json($currentAccent ?? session('dakhl_accent_color', 'cyan')),
@@ -62,7 +62,7 @@
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-6 rounded-3xl border border-base-300 bg-base-100 shadow-sm transition-all">
             <div class="flex items-center gap-4">
                 <div class="w-14 h-14 rounded-2xl bg-slate-900 border border-slate-800 p-2.5 shadow-lg flex items-center justify-center shrink-0">
-                    <img src="/images/logo.svg" alt="Dakhl" class="w-full h-full object-contain">
+                    <img src="/images/logo.svg" alt="Neptune" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
@@ -70,7 +70,7 @@
                         <span class="badge badge-primary badge-sm font-bold">نسل جدید</span>
                     </div>
                     <p class="text-xs text-base-content/60 mt-1">
-                        {{ __('شخصی‌سازی سبک طراحی، تم روز و شب، رنگ شاخص سازمانی و تراکم اطلاعات دفاتر حسابداری دخل') }}
+                        {{ __('شخصی‌سازی سبک طراحی، تم روز و شب، رنگ شاخص سازمانی و تراکم اطلاعات دفاتر حسابداری نپتون') }}
                     </p>
                 </div>
             </div>
@@ -217,7 +217,7 @@
                             <div>
                                 <h3 class="font-black text-base">گوگل فلو (Google Flow Quantum)</h3>
                                 <p class="text-xs text-base-content/70 mt-1 leading-relaxed">
-                                    طراحی سیال، گرادیان‌های نئونی، کارت‌های نورانی و هماهنگی کامل با لوگوی جدید کوانتومی دخل.
+                                    طراحی سیال، گرادیان‌های نئونی، کارت‌های نورانی و هماهنگی کامل با لوگوی جدید کوانتومی نپتون.
                                 </p>
                             </div>
                         </div>

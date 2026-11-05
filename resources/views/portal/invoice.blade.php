@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشاهده فاکتور {{ $invoice?->number ?? '' }} | {{ $link->company?->name ?? 'سیستم حسابداری دخل' }}</title>
+    <title>مشاهده فاکتور {{ $invoice?->number ?? '' }} | {{ $link->company?->name ?? 'سیستم حسابداری نپتون' }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
     <style>
@@ -30,7 +30,7 @@
             <div class="card-body p-6">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-5">
                     <div>
-                        <h1 class="text-2xl font-black text-primary">{{ $link->company?->name ?? 'دخل (سیستم جامع مالی)' }}</h1>
+                        <h1 class="text-2xl font-black text-primary">{{ $link->company?->name ?? 'نپتون (سیستم جامع مالی)' }}</h1>
                         <p class="text-sm text-slate-500 mt-1">سامانه پرداخت و مشاهده فاکتور الکترونیک</p>
                     </div>
                     <div class="text-left">

@@ -13,15 +13,15 @@
     $homeProfileDesc = $homeProfilesDesc[$homeVariant] ?? $homeProfilesDesc['business'];
 @endphp
 
-<section data-home-variant="{{ $homeVariant }}" class="relative isolate overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-r from-base-100 via-base-100 to-emerald-500/5 p-4 shadow-sm sm:p-5">
-    <div aria-hidden="true" class="absolute -end-20 -top-24 size-64 rounded-full blur-3xl bg-emerald-500/10"></div>
+<section data-home-variant="{{ $homeVariant }}" class="relative isolate overflow-hidden rounded-3xl border border-sky-500/20 bg-gradient-to-r from-base-100 via-base-100 to-sky-500/5 p-4 shadow-sm sm:p-5">
+    <div aria-hidden="true" class="absolute -end-20 -top-24 size-64 rounded-full blur-3xl bg-sky-500/10"></div>
     <div aria-hidden="true" class="absolute -bottom-24 start-1/3 size-48 rounded-full bg-cyan-500/10 blur-3xl"></div>
 
     <div class="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="flex items-center gap-3.5">
-            <div class="relative size-12 shrink-0 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-black text-xl shadow-md shadow-emerald-500/20">
-                <span>د</span>
-                <span class="absolute -bottom-0.5 -right-0.5 size-3 rounded-full bg-emerald-400 ring-2 ring-base-100 animate-pulse"></span>
+            <div class="relative size-12 shrink-0 rounded-2xl bg-[#0B132B] p-1.5 shadow-md shadow-sky-500/20 border border-slate-800 flex items-center justify-center">
+                <img src="/images/neptune-logo.svg" alt="Neptune" class="w-full h-full object-contain">
+                <span class="absolute -bottom-0.5 -right-0.5 size-3 rounded-full bg-cyan-400 ring-2 ring-base-100 animate-pulse"></span>
             </div>
 
             <div>
@@ -30,7 +30,7 @@
                         {{ __('Welcome back, :name', ['name' => auth()->user()->name]) }}
                     </h1>
                     <span class="badge badge-sm badge-primary badge-outline font-semibold">
-                        {{ optional(auth()->user()->activeCompany)->name ?? 'محیط کاری دخل' }}
+                        {{ optional(auth()->user()->activeCompany)->name ?? 'محیط کاری نپتون' }}
                     </span>
                     <span class="badge badge-sm badge-ghost text-xs font-mono">
                         سال مالی {{ session('fiscal_year', '۱۴۰۵') }}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مجموعه طراحی‌های مدرن صفحات دخل (Google Flow & FinTech UI Showcase)</title>
+    <title>مجموعه طراحی‌های مدرن صفحات نپتون (Google Flow & FinTech UI Showcase)</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
@@ -25,11 +25,11 @@
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-2xl bg-slate-900 border border-slate-800 p-2 shadow-lg flex items-center justify-center">
-                    <img src="/images/logo.svg" alt="Dakhl Logo" class="w-full h-full object-contain">
+                    <img src="/images/logo.svg" alt="Neptune Logo" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <h1 class="text-2xl font-black text-white">طراحی نسل جدید صفحات «دخل»</h1>
+                        <h1 class="text-2xl font-black text-white">طراحی نسل جدید صفحات «نپتون»</h1>
                         <span class="badge badge-sm badge-info font-bold text-xs">Google Flow UI</span>
                     </div>
                     <p class="text-xs text-slate-400 mt-1">
@@ -93,7 +93,7 @@
                 <!-- Brand Lockup -->
                 <div class="flex items-center gap-3 px-2 py-2 border-b border-slate-800/80">
                     <div class="w-10 h-10 rounded-xl bg-slate-950 border border-cyan-500/30 p-1.5 shadow-md flex items-center justify-center">
-                        <img src="/images/logo.svg" alt="Dakhl" class="w-full h-full object-contain">
+                        <img src="/images/logo.svg" alt="Neptune" class="w-full h-full object-contain">
                     </div>
                     <div>
                         <div class="font-black text-sm text-white tracking-wide">دَخــل <span class="text-[9px] text-cyan-400 font-mono">FLOW</span></div>
@@ -230,7 +230,7 @@
                             </div>
                             <div>
                                 <div class="font-bold text-sm text-white flex items-center gap-2">
-                                    <span>دستیار هوشمند مالی و صوتی دخل</span>
+                                    <span>دستیار هوشمند مالی و صوتی نپتون</span>
                                     <span class="badge badge-xs badge-success text-[10px]">آنلاین</span>
                                 </div>
                                 <div class="text-xs text-slate-400 mt-0.5">ثبت آنی اسناد با صحبت محاوره‌ای: «۲۰۰ تومن دادم علی»، «وضعیت چک‌های هفته بعد»</div>

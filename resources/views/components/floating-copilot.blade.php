@@ -4,7 +4,7 @@
        @mouseenter="hovered = true"
        @mouseleave="hovered = false"
        class="relative group flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900/90 dark:bg-slate-800/90 text-white shadow-lg shadow-black/15 hover:shadow-black/25 hover:scale-105 active:scale-95 transition-all duration-200 border border-slate-700/60 backdrop-blur-md"
-       title="{{ __('دستیار مالی هوش مصنوعی دخل') }}">
+       title="{{ __('دستیار مالی هوش مصنوعی نپتون') }}">
 
         <!-- AI Icon -->
         <span class="w-6 h-6 rounded-lg bg-primary/20 text-primary-content flex items-center justify-center text-xs shrink-0">

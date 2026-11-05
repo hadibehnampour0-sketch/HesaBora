@@ -7,11 +7,11 @@
                 <div class="space-y-2">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-semibold">
                         <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
-                        {{ __('پایش و نگاشت هوشمند با هوش مصنوعی دخل') }}
+                        {{ __('پایش و نگاشت هوشمند با هوش مصنوعی نپتون') }}
                     </div>
                     <h1 class="text-2xl md:text-3xl font-black">{{ __('مهاجرت و انتقال دیتابیس نرم‌افزار قدیمی') }}</h1>
                     <p class="text-sm md:text-base text-white/80 max-w-2xl leading-relaxed">
-                        {{ __('در تمامی نسخه‌های دخل، هر زمان که بخواهید می‌توانید با چند کلیک ساده اطلاعات نرم‌افزار قبلی خود (هلو، سپیدار، پارسیان، محک، رافع، شایگان یا دیتابیس‌های SQL و اکسل) را به دخل منتقل کنید. هوش مصنوعی دخل داده‌ها را پایش، عیب‌یابی و دقیقاً سر جای مناسب در سیستم قرار می‌دهد.') }}
+                        {{ __('در تمامی نسخه‌های نپتون، هر زمان که بخواهید می‌توانید با چند کلیک ساده اطلاعات نرم‌افزار قبلی خود (هلو، سپیدار، پارسیان، محک، رافع، شایگان یا دیتابیس‌های SQL و اکسل) را به نپتون منتقل کنید. هوش مصنوعی نپتون داده‌ها را پایش، عیب‌یابی و دقیقاً سر جای مناسب در سیستم قرار می‌دهد.') }}
                     </p>
                 </div>
                 <div class="shrink-0 flex items-center justify-center w-24 h-24 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-inner">
@@ -26,7 +26,7 @@
         <ul class="steps steps-horizontal w-full py-2">
             <li class="step step-primary font-bold text-xs">{{ __('گام ۱: بارگذاری دیتابیس / فایل') }}</li>
             <li class="step text-xs">{{ __('گام ۲: پایش هوش مصنوعی و تراز افتتاحیه') }}</li>
-            <li class="step text-xs">{{ __('گام ۳: انتقال قطعی و جای‌گذاری در دخل') }}</li>
+            <li class="step text-xs">{{ __('گام ۳: انتقال قطعی و جای‌گذاری در نپتون') }}</li>
         </ul>
 
         {{-- Form Card --}}
@@ -94,7 +94,7 @@
                             <label class="border border-base-300 rounded-xl p-4 flex items-center gap-3 cursor-pointer hover:border-primary transition-all has-[:checked]:border-primary has-[:checked]:bg-primary/5 shadow-xs">
                                 <input type="radio" name="source_type" value="universal_json" class="radio radio-primary" />
                                 <div>
-                                    <div class="font-bold text-sm">{{ __('قالب جامع دخل (JSON)') }}</div>
+                                    <div class="font-bold text-sm">{{ __('قالب جامع نپتون (JSON)') }}</div>
                                     <div class="text-[11px] text-base-content/60">{{ __('فرمت استاندارد و ساختاریافته') }}</div>
                                 </div>
                             </label>
@@ -127,7 +127,7 @@
                             <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
-                            <span>{{ __('هوش مصنوعی دخل پیش از ثبت نهایی، کلیه ترازها و خطاها را به شما نشان خواهد داد.') }}</span>
+                            <span>{{ __('هوش مصنوعی نپتون پیش از ثبت نهایی، کلیه ترازها و خطاها را به شما نشان خواهد داد.') }}</span>
                         </div>
                         <button type="submit" class="btn btn-primary btn-md px-8 gap-2 shadow-lg">
                             <span>{{ __('پایش و عیب‌یابی با هوش مصنوعی (مرحله ۲)') }}</span>

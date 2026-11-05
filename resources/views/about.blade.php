@@ -14,11 +14,11 @@
         <section class="card border border-base-300 bg-base-100 shadow-xs rounded-3xl overflow-hidden">
             <div class="card-body p-5 flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
                 <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-slate-900 border border-slate-800 p-2 shadow-sm">
-                    <img src="/images/logo.svg" alt="Dakhl" class="h-10 w-10 object-contain drop-shadow" style="width: 40px; height: 40px;">
+                    <img src="/images/logo.svg" alt="Neptune" class="h-10 w-10 object-contain drop-shadow" style="width: 40px; height: 40px;">
                 </div>
                 <div class="text-center sm:text-start flex-1 min-w-0">
                     <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-                        <h2 class="text-xl font-black tracking-tight text-base-content">{{ config('app.name', 'Dakhl') }}</h2>
+                        <h2 class="text-xl font-black tracking-tight text-base-content">{{ config('app.name', 'Neptune') }}</h2>
                         <span class="badge badge-primary badge-sm font-bold font-mono">{{ __('about.version') }} {{ $version }}</span>
                         <span @class([
                             'badge badge-sm font-semibold',

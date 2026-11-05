@@ -142,7 +142,7 @@
             <tr style="border: none;">
                 <td style="border: none; text-align: right; width: 33%;">
                     @if($template->header_config['show_company_name'] ?? true)
-                        <div style="font-weight: bold; font-size: 12pt;">{{ $company?->name ?? 'فروشگاه و شرکت دخل' }}</div>
+                        <div style="font-weight: bold; font-size: 12pt;">{{ $company?->name ?? 'فروشگاه و شرکت نپتون' }}</div>
                     @endif
                     @if($template->header_config['show_economic_code'] ?? true)
                         <div style="font-size: 8.5pt;">کد اقتصادی: {{ $company?->economic_code ?? '-' }}</div>
@@ -173,7 +173,7 @@
         </div>
         <div class="party-box">
             <div class="party-title">مشخصات فروشنده</div>
-            <div>نام فروشنده: <strong>{{ $company?->name ?? 'دخل' }}</strong></div>
+            <div>نام فروشنده: <strong>{{ $company?->name ?? 'نپتون' }}</strong></div>
             <div>تلفن: {{ $company?->phone ?? '-' }}</div>
             <div>نشانی: {{ $company?->address ?? '-' }}</div>
         </div>

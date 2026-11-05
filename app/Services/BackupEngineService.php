@@ -92,7 +92,7 @@ class BackupEngineService
         $timestamp = now()->format('Y-m-d_H-i-s');
         $jalaliStamp = function_exists('jdate') ? toEnglish(jdate('Y-m-d')) : now()->format('Y-m-d');
 
-        $filename = "Dakhl-Backup-{$companySlug}-{$jalaliStamp}_{$timestamp}.dakhl";
+        $filename = "Neptune-Backup-{$companySlug}-{$jalaliStamp}_{$timestamp}.neptune";
         $zipPath = $this->backupDir . DIRECTORY_SEPARATOR . $filename;
 
         $zip = new ZipArchive();
@@ -109,8 +109,8 @@ class BackupEngineService
         }
 
         $manifest = [
-            'system' => 'Dakhl Accounting & ERP',
-            'version' => config('app.version', '2.4.0'),
+            'system' => 'Neptune Accounting & ERP',
+            'version' => config('app.version', '2.5.0'),
             'created_at_gregorian' => now()->toIso8601String(),
             'created_at_jalali' => $jalaliStamp,
             'company_name' => $activeCompany?->name ?? 'General',
@@ -176,7 +176,7 @@ class BackupEngineService
 
         // Generic SQL table dump for MySQL or SQLite fallback
         $tables = \Illuminate\Support\Facades\Schema::getTableListing();
-        $sqlDump = "-- Dakhl Full SQL Backup generated on " . now()->toIso8601String() . PHP_EOL;
+        $sqlDump = "-- Neptune Full SQL Backup generated on " . now()->toIso8601String() . PHP_EOL;
 
         foreach ($tables as $table) {
             $cleanTable = preg_replace('/^main\./', '', $table);
@@ -244,7 +244,7 @@ class BackupEngineService
 
         foreach ($files as $file) {
             $ext = strtolower($file->getExtension());
-            if (! in_array($ext, ['dakhl', 'zip'])) {
+            if (! in_array($ext, ['neptune', 'dakhl', 'zip'])) {
                 continue;
             }
 
@@ -407,7 +407,7 @@ class BackupEngineService
         }
 
         try {
-            $caption = "📦 نسخه پشتیبان دخل (ERP Dakhl)\n"
+            $caption = "📦 نسخه پشتیبان نپتون (Neptune ERP)\n"
                 . "📅 تاریخ: " . ($manifest['created_at_jalali'] ?? now()->format('Y-m-d')) . "\n"
                 . "🏢 شرکت: " . ($manifest['company_name'] ?? 'سیستم') . "\n"
                 . "⚖️ حجم: " . round(filesize($filePath) / (1024 * 1024), 2) . " MB\n"

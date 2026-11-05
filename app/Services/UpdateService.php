@@ -67,7 +67,7 @@ class UpdateService
                             'sha256' => $remote['sha256'] ?? null,
                             'package_size' => $remote['package_size'] ?? '8.4 MB',
                             'is_mandatory' => (bool) ($remote['is_mandatory'] ?? false),
-                            'summary' => $remote['summary'] ?? 'بروزرسانی جدید سامانه دخل',
+                            'summary' => $remote['summary'] ?? 'بروزرسانی جدید سامانه نپتون',
                             'changelog' => $remote['changelog'] ?? [
                                 'features' => [],
                                 'improvements' => [],

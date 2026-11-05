@@ -33,7 +33,7 @@
                         <input type="hidden" name="customer_id" value="{{ $extraction->matched_customer_id }}">
                         <button type="submit" class="btn btn-success btn-sm gap-1">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            {{ __('تأیید و صدور فاکتور خرید در دخل') }}
+                            {{ __('تأیید و صدور فاکتور خرید در نپتون') }}
                         </button>
                     </form>
                 @else
@@ -93,7 +93,7 @@
                                 <input type="text" name="vendor_national_code" value="{{ old('vendor_national_code', $extraction->vendor_national_code) }}" class="input input-bordered input-sm w-full mt-1 text-left font-mono">
                             </div>
                             <div>
-                                <label class="label-text font-semibold text-primary">{{ __('انتخاب طرف‌حساب در دخل:') }}</label>
+                                <label class="label-text font-semibold text-primary">{{ __('انتخاب طرف‌حساب در نپتون:') }}</label>
                                 <select name="matched_customer_id" class="select select-bordered select-sm w-full mt-1">
                                     <option value="">{{ __('+ ایجاد خودکار طرف‌حساب جدید از روی نام بالا') }}</option>
                                     @foreach($customers as $c)

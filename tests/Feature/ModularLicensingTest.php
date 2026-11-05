@@ -31,7 +31,7 @@ class ModularLicensingTest extends TestCase
         parent::setUp();
 
         $this->company = Company::firstOrCreate(['id' => 1], [
-            'name' => 'Dakhl Licensing Test Co',
+            'name' => 'Neptune Licensing Test Co',
             'fiscal_year' => 1405,
         ]);
         $this->user = User::factory()->create();
@@ -81,7 +81,7 @@ class ModularLicensingTest extends TestCase
         ];
 
         $key = $this->licenseService->issueLicenseKey($payload);
-        $this->assertStringStartsWith('DAKHL-LIC-v2.', $key);
+        $this->assertStringStartsWith('NEPTUNE-LIC-v2.', $key);
 
         // Verification of untampered key should succeed
         $result = $this->licenseService->verifyLicenseKey($key, null, false);
@@ -91,9 +91,9 @@ class ModularLicensingTest extends TestCase
 
         // Tampering with payload should fail verification
         $parts = explode('.', $key);
-        $tamperedJson = json_encode(['tier' => 'enterprise', 'modules' => ['*'], 'kid' => 'dakhl-root-2026']);
+        $tamperedJson = json_encode(['tier' => 'enterprise', 'modules' => ['*'], 'kid' => 'neptune-root-2026']);
         $tamperedPayload = LicenseCrypto::base64UrlEncode($tamperedJson);
-        $tamperedKey = "DAKHL-LIC-v2.{$tamperedPayload}.{$parts[2]}";
+        $tamperedKey = "NEPTUNE-LIC-v2.{$tamperedPayload}.{$parts[2]}";
 
         $tamperedResult = $this->licenseService->verifyLicenseKey($tamperedKey, null, false);
         $this->assertFalse($tamperedResult['valid']);
@@ -103,7 +103,7 @@ class ModularLicensingTest extends TestCase
     public function test_license_hardware_fingerprint_enforcement(): void
     {
         $currentHw = $this->licenseService->generateMachineFingerprint();
-        $foreignHw = 'DAKHL-9999-8888-7777-6666';
+        $foreignHw = 'NEP-9999-8888-7777-6666';
 
         // Key locked to foreign hardware
         $keyForeign = $this->licenseService->issueLicenseKey([
@@ -131,7 +131,7 @@ class ModularLicensingTest extends TestCase
     {
         // 1. Expired 2 days ago with 7-day grace period => valid (in grace period)
         $expiredInGrace = License::create([
-            'license_key' => 'DAKHL-LIC-v2.test1.sig',
+            'license_key' => 'NEPTUNE-LIC-v2.test1.sig',
             'license_hash' => hash('sha256', 'test1'),
             'edition' => 'basic',
             'customer_name' => 'تست ۱',
@@ -151,7 +151,7 @@ class ModularLicensingTest extends TestCase
 
         // 2. Expired 15 days ago with 7-day grace period => invalid (past grace period)
         $expiredPastGrace = License::create([
-            'license_key' => 'DAKHL-LIC-v2.test2.sig',
+            'license_key' => 'NEPTUNE-LIC-v2.test2.sig',
             'license_hash' => hash('sha256', 'test2'),
             'edition' => 'basic',
             'customer_name' => 'تست ۲',
@@ -227,9 +227,9 @@ class ModularLicensingTest extends TestCase
         // GET /license
         $response = $this->get(route('license.index'));
         $response->assertStatus(200);
-        $response->assertSee('سیستم صدور، ارزیابی و فعال‌سازی لایسنس ماژولار دخل');
+        $response->assertSee('سیستم صدور، ارزیابی و فعال‌سازی لایسنس ماژولار نپتون');
         $response->assertSee('ماتریس ماژول‌ها و حقوق دسترسی فعال');
-        $response->assertSee('بسته‌های اشتراک تجاری و فروش ماژولار دخل');
+        $response->assertSee('بسته‌های اشتراک تجاری و فروش ماژولار نپتون');
 
         // GET /license/status
         $apiResponse = $this->get(route('license.status'));
@@ -394,7 +394,7 @@ class ModularLicensingTest extends TestCase
         ];
 
         $key = $this->licenseService->issueLicenseKey($payload);
-        $this->assertStringStartsWith('DAKHL-LIC-v2.', $key);
+        $this->assertStringStartsWith('NEPTUNE-LIC-v2.', $key);
 
         $actResult = $this->licenseService->activateLicenseKey($key);
         $this->assertTrue($actResult['success']);
@@ -410,11 +410,11 @@ class ModularLicensingTest extends TestCase
         $response = $this->get(route('pricing'));
 
         $response->assertOk()
-            ->assertSee('دخل')
+            ->assertSee('نپتون')
             ->assertSee('نسخه برنزی')
             ->assertSee('نسخه نقره‌ای')
             ->assertSee('نسخه طلایی')
-            ->assertSee('۱۶ ماژول قدرتمند دخل', false);
+            ->assertSee('۱۶ ماژول قدرتمند نپتون', false);
     }
 
     public function test_flagship_landing_page_renders_successfully(): void
@@ -422,7 +422,7 @@ class ModularLicensingTest extends TestCase
         $response = $this->get(route('landing'));
 
         $response->assertOk()
-            ->assertSee('دخل')
+            ->assertSee('نپتون')
             ->assertSee('۱۶ صنف تخصصی')
             ->assertSee('سامانه مودیان')
             ->assertSee('بکاپ ۳-۲-۱')
@@ -470,20 +470,20 @@ class ModularLicensingTest extends TestCase
 
     public function test_legacy_v1_license_token_rejection_as_invalid_format(): void
     {
-        $v1Token = 'DAKHL-LIC-v1.eyJlZGl0aW9uIjoiZW50ZXJwcmlzZSJ9.mock_signature_12345';
+        $v1Token = 'NEPTUNE-LIC-v1.eyJlZGl0aW9uIjoiZW50ZXJwcmlzZSJ9.mock_signature_12345';
 
         $verify = $this->licenseService->verifyLicenseKey($v1Token);
         $this->assertFalse($verify['valid']);
-        $this->assertStringContainsString('DAKHL-LIC-v2', $verify['reason']);
+        $this->assertStringContainsString('NEPTUNE-LIC-v2', $verify['reason']);
 
         $activate = $this->licenseService->activateLicenseKey($v1Token);
         $this->assertFalse($activate['success']);
-        $this->assertStringContainsString('DAKHL-LIC-v2', $activate['message']);
+        $this->assertStringContainsString('NEPTUNE-LIC-v2', $activate['message']);
     }
 
     public function test_revoked_kid_rejection(): void
     {
-        config(['license.revoked_kids' => ['dakhl-compromised-2025']]);
+        config(['license.revoked_kids' => ['neptune-compromised-2025']]);
 
         $payload = [
             'edition' => 'enterprise',
@@ -492,7 +492,7 @@ class ModularLicensingTest extends TestCase
         ];
 
         // Sign with compromised kid
-        $key = $this->licenseService->issueLicenseKey($payload, null, 'dakhl-compromised-2025');
+        $key = $this->licenseService->issueLicenseKey($payload, null, 'neptune-compromised-2025');
 
         $result = $this->licenseService->verifyLicenseKey($key);
         $this->assertFalse($result['valid']);
@@ -542,8 +542,8 @@ class ModularLicensingTest extends TestCase
             'modules' => ['*'],
         ];
 
-        // Issue using the legitimate kid 'dakhl-root-2026' but signed by rogue key
-        $rogueKey = $this->licenseService->issueLicenseKey($payload, $untrustedSecretKeyHex, 'dakhl-root-2026');
+        // Issue using the legitimate kid 'neptune-root-2026' but signed by rogue key
+        $rogueKey = $this->licenseService->issueLicenseKey($payload, $untrustedSecretKeyHex, 'neptune-root-2026');
 
         $result = $this->licenseService->verifyLicenseKey($rogueKey);
         $this->assertFalse($result['valid']);
@@ -655,12 +655,12 @@ class ModularLicensingTest extends TestCase
 
     public function test_v1_hmac_format_completely_dropped_and_rejected(): void
     {
-        // Any legacy v1 token or token not formatted as DAKHL-LIC-v2 is rejected
-        $v1Token = 'DAKHL-LIC-v1.eyJ0aWVyIjoiZW50ZXJwcmlzZSJ9.invalidhmacsighere';
+        // Any legacy v1 token or token not formatted as NEPTUNE-LIC-v2 is rejected
+        $v1Token = 'NEPTUNE-LIC-v1.eyJ0aWVyIjoiZW50ZXJwcmlzZSJ9.invalidhmacsighere';
         $result = $this->licenseService->verifyLicenseKey($v1Token);
 
         $this->assertFalse($result['valid']);
-        $this->assertEquals('فرمت کد لایسنس نامعتبر است (باید با DAKHL-LIC-v2 آغاز شود).', $result['reason']);
+        $this->assertEquals('فرمت کد لایسنس نامعتبر است (باید با NEPTUNE-LIC-v2 آغاز شود).', $result['reason']);
         $this->assertNull($result['payload']);
     }
 
@@ -686,7 +686,7 @@ class ModularLicensingTest extends TestCase
 
         // Simulate database record with future updated_at
         $futureLicense = License::create([
-            'license_key' => 'DAKHL-LIC-v2.future.sig',
+            'license_key' => 'NEPTUNE-LIC-v2.future.sig',
             'license_hash' => hash('sha256', 'future'),
             'edition' => 'basic',
             'customer_name' => 'تست ساعت آینده',
@@ -716,7 +716,7 @@ class ModularLicensingTest extends TestCase
 
         $verified = $this->licenseService->verifyMachineFingerprint(
             $currentFp,
-            currentFingerprint: 'DAKHL-DIFFERENT-HOST-FP',
+            currentFingerprint: 'NEP-DIFFERENT-HOST-FP',
             hardwareProfile: $driftedComponents
         );
 
@@ -728,7 +728,7 @@ class ModularLicensingTest extends TestCase
         $initialKey = $this->licenseService->issueLicenseKey([
             'edition' => 'professional',
             'customer_name' => 'شرکت آذرخش نوین',
-            'hardware_fingerprint' => 'DAKHL-1111-2222-3333-4444',
+            'hardware_fingerprint' => 'NEP-1111-2222-3333-4444',
             'modules' => [LicenseService::MODULE_CORE_ACCOUNTING],
         ]);
 
@@ -736,10 +736,10 @@ class ModularLicensingTest extends TestCase
         $this->assertTrue($actResult['success']);
         $activeLicense = $actResult['license'];
 
-        $this->assertEquals('DAKHL-1111-2222-3333-4444', $activeLicense->hardware_fingerprint);
+        $this->assertEquals('NEP-1111-2222-3333-4444', $activeLicense->hardware_fingerprint);
 
-        // Issue a signed re-bind token to new hardware DAKHL-8888-9999-0000-1111
-        $newHardwareFp = 'DAKHL-8888-9999-0000-1111';
+        // Issue a signed re-bind token to new hardware NEP-8888-9999-0000-1111
+        $newHardwareFp = 'NEP-8888-9999-0000-1111';
         $rebindToken = $this->licenseService->issueRebindToken([
             'lic_id' => $activeLicense->metadata['lic_id'] ?? 'lic-123',
             'rebind_to' => $newHardwareFp,
