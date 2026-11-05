@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -12,92 +14,209 @@ namespace NeptuneERP
         private const int Port = 8000;
         private const string Host = "127.0.0.1";
         private const string AppUrl = "http://127.0.0.1:8000";
+        private const string MutexId = "Global\\NeptuneFinancialOS_SingleInstanceMutex_2026";
+
+        private static Process _phpProcess = null;
+        private static NotifyIcon _trayIcon = null;
+        private static string _baseDir;
 
         [STAThread]
         static void Main(string[] args)
         {
-            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
+            _baseDir = AppDomain.CurrentDomain.BaseDirectory;
 
             // Handle --stop command
             if (args.Length > 0 && (args[0] == "--stop" || args[0] == "-stop" || args[0] == "/stop"))
             {
-                StopServer(baseDir);
+                StopAllPhpInstances(_baseDir);
                 return;
             }
 
-            // Verify PHP executable exists
-            string phpExe = Path.Combine(baseDir, @"php\php.exe");
-            string publicDir = Path.Combine(baseDir, "public");
-
-            if (!File.Exists(phpExe))
+            // Ensure Single Instance
+            bool isFirstInstance;
+            using (Mutex mutex = new Mutex(true, MutexId, out isFirstInstance))
             {
-                MessageBox.Show(
-                    "فایل اجرایی موتور PHP در مسیر زیر یافت نشد:\n" + phpExe + "\nلطفاً از صحت نصب برنامه اطمینان حاصل فرمایید.",
-                    "سامانه مالی نپتون - خطا",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error,
-                    MessageBoxDefaultButton.Button1,
-                    MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign
-                );
-                return;
-            }
-
-            // Check if server is already running
-            Process phpProcess = null;
-            if (!IsServerRunning(Host, Port))
-            {
-                phpProcess = StartPhpServer(phpExe, publicDir);
-
-                // Wait up to 5 seconds for server to start listening
-                bool isUp = false;
-                for (int i = 0; i < 25; i++)
+                if (!isFirstInstance)
                 {
-                    Thread.Sleep(200);
-                    if (IsServerRunning(Host, Port))
-                    {
-                        isUp = true;
-                        break;
-                    }
+                    // If another instance is already running, just launch the browser window and exit
+                    LaunchBrowserApp(AppUrl);
+                    return;
                 }
 
-                if (!isUp)
+                // Verify PHP executable exists
+                string phpExe = Path.Combine(_baseDir, @"php\php.exe");
+                string publicDir = Path.Combine(_baseDir, "public");
+
+                if (!File.Exists(phpExe))
                 {
                     MessageBox.Show(
-                        "راه‌اندازی سرویس داخلی نپتون با مشکل مواجه شد. لطفاً بررسی کنید پورت ۸۰۰۰ اشغال نباشد.",
-                        "سامانه مالی نپتون - هشدار",
+                        "فایل اجرایی موتور پردازشی در مسیر زیر یافت نشد:\n" + phpExe + "\nلطفاً از نصب صحیح برنامه اطمینان حاصل فرمایید.",
+                        "سامانه مالی نپتون - خطا",
                         MessageBoxButtons.OK,
-                        MessageBoxIcon.Warning,
+                        MessageBoxIcon.Error,
                         MessageBoxDefaultButton.Button1,
                         MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign
                     );
+                    return;
                 }
-            }
 
-            // Launch Browser in Dedicated App Window Mode
-            Process browserProcess = LaunchBrowserApp(AppUrl);
-
-            // If we started both PHP and the browser, monitor browser lifecycle
-            if (phpProcess != null && browserProcess != null)
-            {
-                try
+                // Start PHP server if not already running
+                if (!IsPortOpen(Host, Port))
                 {
-                    browserProcess.WaitForExit();
-                }
-                catch { }
+                    _phpProcess = StartPhpServer(phpExe, publicDir);
 
-                // Once the browser window is closed by the user, terminate our background PHP server cleanly
-                try
-                {
-                    if (!phpProcess.HasExited)
+                    // Wait up to 6 seconds for server socket to respond
+                    bool isUp = false;
+                    for (int i = 0; i < 30; i++)
                     {
-                        phpProcess.Kill();
+                        Thread.Sleep(200);
+                        if (IsPortOpen(Host, Port))
+                        {
+                            isUp = true;
+                            break;
+                        }
+                    }
+
+                    if (!isUp)
+                    {
+                        MessageBox.Show(
+                            "راه‌اندازی سرویس داخلی نپتون با تاخیر مواجه شد. لطفاً بررسی کنید پورت ۸۰۰۰ توسط برنامه دیگری اشغال نشده باشد.",
+                            "سامانه مالی نپتون - هشدار",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning,
+                            MessageBoxDefaultButton.Button1,
+                            MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign
+                        );
                     }
                 }
-                catch { }
+
+                // Register process exit cleanup
+                AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+                Application.ApplicationExit += OnProcessExit;
+
+                // Setup System Tray Icon
+                SetupTrayIcon();
+
+                // Open Browser Window
+                LaunchBrowserApp(AppUrl);
+
+                // Run Application Message Loop (Keeps server alive in system tray!)
+                Application.Run();
             }
         }
 
-        private static bool IsServerRunning(string host, int port)
+        private static void SetupTrayIcon()
+        {
+            _trayIcon = new NotifyIcon();
+
+            // Try to load icon from exe or file
+            try
+            {
+                string iconPath = Path.Combine(_baseDir, @"public\images\neptune.ico");
+                if (File.Exists(iconPath))
+                {
+                    _trayIcon.Icon = new Icon(iconPath);
+                }
+                else
+                {
+                    _trayIcon.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+                }
+            }
+            catch
+            {
+                _trayIcon.Icon = SystemIcons.Application;
+            }
+
+            _trayIcon.Text = "سامانه جامع مالی نپتون (در حال اجرا)";
+            _trayIcon.Visible = true;
+
+            // Context Menu
+            ContextMenu contextMenu = new ContextMenu();
+
+            MenuItem openItem = new MenuItem("🌐 باز کردن سامانه نپتون", (s, e) => LaunchBrowserApp(AppUrl));
+            openItem.DefaultItem = true;
+
+            MenuItem restartItem = new MenuItem("🔄 راه‌اندازی مجدد سرور", (s, e) => RestartServer());
+
+            MenuItem exitItem = new MenuItem("❌ خروج کامل از برنامه", (s, e) => ExitApplication());
+
+            contextMenu.MenuItems.Add(openItem);
+            contextMenu.MenuItems.Add(restartItem);
+            contextMenu.MenuItems.Add("-");
+            contextMenu.MenuItems.Add(exitItem);
+
+            _trayIcon.ContextMenu = contextMenu;
+
+            // Double click opens app
+            _trayIcon.DoubleClick += (s, e) => LaunchBrowserApp(AppUrl);
+
+            // Show friendly notification balloon
+            try
+            {
+                _trayIcon.ShowBalloonTip(
+                    3000,
+                    "سامانه مالی نپتون فعال شد",
+                    "برای مدیریت مالی، آیکون نپتون در کنار ساعت ویندوز در دسترس شماست.",
+                    ToolTipIcon.Info
+                );
+            }
+            catch { }
+        }
+
+        private static void RestartServer()
+        {
+            StopCurrentPhp();
+            Thread.Sleep(500);
+
+            string phpExe = Path.Combine(_baseDir, @"php\php.exe");
+            string publicDir = Path.Combine(_baseDir, "public");
+
+            if (!IsPortOpen(Host, Port))
+            {
+                _phpProcess = StartPhpServer(phpExe, publicDir);
+            }
+
+            LaunchBrowserApp(AppUrl);
+        }
+
+        private static void ExitApplication()
+        {
+            if (_trayIcon != null)
+            {
+                _trayIcon.Visible = false;
+                _trayIcon.Dispose();
+                _trayIcon = null;
+            }
+
+            StopCurrentPhp();
+            Application.Exit();
+            Environment.Exit(0);
+        }
+
+        private static void OnProcessExit(object sender, EventArgs e)
+        {
+            StopCurrentPhp();
+        }
+
+        private static void StopCurrentPhp()
+        {
+            try
+            {
+                if (_phpProcess != null && !_phpProcess.HasExited)
+                {
+                    _phpProcess.Kill();
+                    _phpProcess = null;
+                }
+            }
+            catch { }
+
+            StopAllPhpInstances(_baseDir);
+        }
+
+        private static bool IsPortOpen(string host, int port)
         {
             try
             {
@@ -138,7 +257,7 @@ namespace NeptuneERP
             }
         }
 
-        private static Process LaunchBrowserApp(string url)
+        private static void LaunchBrowserApp(string url)
         {
             string edge = FindBrowserExecutable("Microsoft\\Edge\\Application\\msedge.exe");
             string chrome = FindBrowserExecutable("Google\\Chrome\\Application\\chrome.exe");
@@ -156,7 +275,8 @@ namespace NeptuneERP
                         Arguments = appArgs,
                         UseShellExecute = false
                     };
-                    return Process.Start(psi);
+                    Process.Start(psi);
+                    return;
                 }
                 catch { }
             }
@@ -164,12 +284,11 @@ namespace NeptuneERP
             // Fallback: Default system browser
             try
             {
-                return Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
             }
             catch (Exception ex)
             {
                 MessageBox.Show("خطا در باز کردن مرورگر: " + ex.Message, "نپتون");
-                return null;
             }
         }
 
@@ -195,13 +314,12 @@ namespace NeptuneERP
             return null;
         }
 
-        private static void StopServer(string baseDir)
+        private static void StopAllPhpInstances(string baseDir)
         {
             try
             {
                 var processes = Process.GetProcessesByName("php");
                 string expectedExe = Path.Combine(baseDir, @"php\php.exe").ToLowerInvariant();
-                int killed = 0;
 
                 foreach (var p in processes)
                 {
@@ -210,25 +328,12 @@ namespace NeptuneERP
                         if (p.MainModule != null && p.MainModule.FileName.ToLowerInvariant() == expectedExe)
                         {
                             p.Kill();
-                            killed++;
                         }
                     }
                     catch { }
                 }
-
-                MessageBox.Show(
-                    string.Format("سرویس سامانه مالی نپتون با موفقیت متوقف شد ({0} فرایند).", killed),
-                    "سامانه مالی نپتون",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information,
-                    MessageBoxDefaultButton.Button1,
-                    MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign
-                );
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("خطا در توقف سرویس: " + ex.Message, "نپتون");
-            }
+            catch { }
         }
     }
 }
