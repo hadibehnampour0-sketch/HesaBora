@@ -338,7 +338,40 @@
                     </div>
                     <h3 class="text-lg font-black text-base-content">مهاجرت از هلو، سپیدار و دشت در ۳ دقیقه</h3>
                     <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                        نگران انتقال اطلاعات سال‌های گذشته‌تان هستید؟ با موتور هوشمند مهاجرت نپتون، فایل اکسل کالاها، اشخاص و مانده حساب‌های نرم‌افزار قبلی خود را بارگذاری کنید تا در کمتر از ۳ دقیقه تمام حساب‌هایتان با تراز افتتاحیه آماده به کار شود.
+                        نگران انتقال اطلاعات سال‌های گذشته‌تان هستید؟ با موتور هوشمند مهاجرت نپتون، فایل دیتابیس کالاها، اشخاص و مانده حساب‌های نرم‌افزار قبلی خود را بارگذاری کنید تا در کمتر از ۳ دقیقه تمام حساب‌هایتان با تراز افتتاحیه آماده به کار شود.
+                    </p>
+                </div>
+
+                <!-- Feature 7: Zero-Install LAN -->
+                <div class="card bg-base-100 border border-primary/30 p-6 rounded-3xl shadow-md hover:shadow-lg transition space-y-4 bg-gradient-to-b from-base-100 to-primary/5">
+                    <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-2xl font-bold">
+                        🔌
+                    </div>
+                    <h3 class="text-lg font-black text-base-content">اتصال شبکه محلی بدون نصب روی کلاینت‌ها (هزینه کاربر: ۰ ریال)</h3>
+                    <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        برخلاف شرکت‌های سنتی که برای هر کامپیوتر داخل مغازه ۱۰ تا ۲۰ میلیون تومان پول کاربر شبکه می‌گیرند! در نپتون نرم‌افزار فقط روی سیستم اصلی نصب می‌شود و بقیه صندوق‌ها، انبار و تبلت‌ها با یک مرورگر ساده در شبکه محلی متصل می‌شوند.
+                    </p>
+                </div>
+
+                <!-- Feature 8: Multi-Branch & Distributed Warehouses -->
+                <div class="card bg-base-100 border border-teal-500/30 p-6 rounded-3xl shadow-md hover:shadow-lg transition space-y-4 bg-gradient-to-b from-base-100 to-teal-500/5">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-600 flex items-center justify-center text-2xl font-bold">
+                        🏬
+                    </div>
+                    <h3 class="text-lg font-black text-base-content">انبار مرکزی مشترک + انبار مستقل هر شعبه</h3>
+                    <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        چندین شعبه در نقاط مختلف شهر دارید؟ برای هر شعبه انبار مستقل تعریف کنید در کنار یک انبار دپوی مرکزی مشترک. تمام شعب در لحظه می‌توانند موجودی دقیق شعب دیگر را ببینند و نیازی به تماس‌های مکرر تلفنی برای موجودی گرفتن نیست.
+                    </p>
+                </div>
+
+                <!-- Feature 9: Cross-Branch Stock Transfer & Smart Reservation -->
+                <div class="card bg-base-100 border border-amber-500/30 p-6 rounded-3xl shadow-md hover:shadow-lg transition space-y-4 bg-gradient-to-b from-base-100 to-amber-500/5">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-2xl font-bold">
+                        🚚
+                    </div>
+                    <h3 class="text-lg font-black text-base-content">درخواست کالا بین شعب، رزرو در راه و بالانس اتوماتیک قیمت</h3>
+                    <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        مشتری در شعبه شما کالایی می‌خواهد که تمام شده؟ با یک کلیک درخواست انتقال از شعبه دیگر ثبت کنید. سیستم کالا را در شعبه مبدا «رزرو» می‌کند تا اشتباهاً فروخته نشود و پس از انتقال، بهای تمام‌شده میانگین (WAC) را خودکار متوازن می‌کند.
                     </p>
                 </div>
             </div>
@@ -562,6 +595,20 @@
                             <td class="py-4 px-6 text-amber-600">△ اینترنتی محدود</td>
                         </tr>
                         <tr>
+                            <td class="font-bold py-4 px-6">هزینه کاربر و سیستم اضافه در شبکه</td>
+                            <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ کاملاً رایگان (بدون نصب، اتصال با مرورگر)</td>
+                            <td class="py-4 px-6 text-rose-600">✗ کیت شبکه ۳ تا ۳۷ میلیون تومان</td>
+                            <td class="py-4 px-6 text-rose-600">✗ ۲۰ میلیون تومان به ازای هر سیستم!</td>
+                            <td class="py-4 px-6 text-rose-600">✗ ۳.۵ تا ۱۰ میلیون تومان</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold py-4 px-6">مدیریت شعب و انتقال هوشمند بین‌انبارها</td>
+                            <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ انبار مرکزی + انبار شعب + رزرو و بالانس WAC</td>
+                            <td class="py-4 px-6 text-rose-600">✗ نیازمند ماژول چندانبار جداگانه</td>
+                            <td class="py-4 px-6 text-amber-600">△ نیازمند بسته گران شعب و انبار</td>
+                            <td class="py-4 px-6 text-rose-600">✗ فقط تک‌شعبه و انبار ساده</td>
+                        </tr>
+                        <tr>
                             <td class="font-bold py-4 px-6">زمان یادگیری کاربر عادی</td>
                             <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ کمتر از ۱۵ دقیقه</td>
                             <td class="py-4 px-6 text-rose-600">✗ نیازمند دوره‌های چند هفته‌ای</td>
@@ -599,7 +646,7 @@
                             <p class="text-xs text-base-content/60 mt-1">مخصوص مغازه‌ها، فروشگاه‌ها و خرده‌فروشی‌ها</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۴,۸۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۵,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -630,7 +677,7 @@
                             <p class="text-xs text-base-content/60 mt-1">بازرگانی‌ها، عمده‌فروشان و شرکت‌های متوسط</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۱۱,۵۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۱۵,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -659,7 +706,7 @@
                             <p class="text-xs text-base-content/60 mt-1">شرکت‌های پخش مواد غذایی، دارویی و کالا</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۱۸,۹۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۳۵,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -687,7 +734,7 @@
                             <p class="text-xs text-base-content/60 mt-1">کارگاه‌ها، کارخانه‌ها و واحدهای مونتاژ</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۲۱,۵۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۵۰,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -715,7 +762,7 @@
                             <p class="text-xs text-base-content/60 mt-1">هلدینگ‌ها، زنجیره‌ای‌ها و سازمان‌های بزرگ</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۳۴,۰۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۸۰,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سفارشی و جامع)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">

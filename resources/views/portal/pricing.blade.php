@@ -109,7 +109,7 @@
                             <p class="text-[11px] text-base-content/60 mt-1 leading-relaxed">ویژه مغازه‌ها، بوتیک‌ها، خرده‌فروشی و اصناف خرد</p>
                         </div>
                         <div class="flex items-baseline gap-1 py-3 border-y border-base-200">
-                            <span class="text-2xl font-black text-base-content font-mono">۴,۸۰۰,۰۰۰</span>
+                            <span class="text-2xl font-black text-base-content font-mono">۵,۰۰۰,۰۰۰</span>
                             <span class="text-[10px] text-base-content/60">تومان/سالانه</span>
                         </div>
                         <ul class="space-y-2 text-xs text-base-content/80">
@@ -143,7 +143,7 @@
                             <p class="text-[11px] text-base-content/60 mt-1 leading-relaxed">ویژه دفاتر بازرگانی، واردات/صادرات و عمده‌فروشان</p>
                         </div>
                         <div class="flex items-baseline gap-1 py-3 border-y border-base-200">
-                            <span class="text-2xl font-black text-primary font-mono">۱۱,۵۰۰,۰۰۰</span>
+                            <span class="text-2xl font-black text-primary font-mono">۱۵,۰۰۰,۰۰۰</span>
                             <span class="text-[10px] text-base-content/60">تومان/سالانه</span>
                         </div>
                         <ul class="space-y-2 text-xs text-base-content/90 font-medium">
@@ -175,7 +175,7 @@
                             <p class="text-[11px] text-base-content/60 mt-1 leading-relaxed">ویژه شرکت‌های توزیع، فروش گرم و سرد و بنکداری</p>
                         </div>
                         <div class="flex items-baseline gap-1 py-3 border-y border-base-200">
-                            <span class="text-2xl font-black text-base-content font-mono">۱۸,۹۰۰,۰۰۰</span>
+                            <span class="text-2xl font-black text-base-content font-mono">۳۵,۰۰۰,۰۰۰</span>
                             <span class="text-[10px] text-base-content/60">تومان/سالانه</span>
                         </div>
                         <ul class="space-y-2 text-xs text-base-content/80">
@@ -207,7 +207,7 @@
                             <p class="text-[11px] text-base-content/60 mt-1 leading-relaxed">ویژه کارگاه‌ها، صنایع تبدیلی و کارخانه‌های تولیدی</p>
                         </div>
                         <div class="flex items-baseline gap-1 py-3 border-y border-base-200">
-                            <span class="text-2xl font-black text-base-content font-mono">۲۱,۵۰۰,۰۰۰</span>
+                            <span class="text-2xl font-black text-base-content font-mono">۵۰,۰۰۰,۰۰۰</span>
                             <span class="text-[10px] text-base-content/60">تومان/سالانه</span>
                         </div>
                         <ul class="space-y-2 text-xs text-base-content/80">
@@ -239,7 +239,7 @@
                             <p class="text-[11px] text-base-content/60 mt-1 leading-relaxed">دسترسی نامحدود به تمامی ماژول‌ها، شعبات و هوش مصنوعی</p>
                         </div>
                         <div class="flex items-baseline gap-1 py-3 border-y border-base-200">
-                            <span class="text-2xl font-black text-base-content font-mono">۳۴,۰۰۰,۰۰۰</span>
+                            <span class="text-2xl font-black text-base-content font-mono">۸۰,۰۰۰,۰۰۰</span>
                             <span class="text-[10px] text-base-content/60">تومان/سالانه</span>
                         </div>
                         <ul class="space-y-2 text-xs text-base-content/80">
@@ -303,7 +303,7 @@
         <!-- Interactive Custom Configurator & Add-on Calculator -->
         <section id="calculator" class="bg-base-100 border border-base-300 rounded-3xl p-6 sm:p-10 shadow-sm scroll-mt-28" x-data="{
             basePlan: 'basic',
-            basePrices: { basic: 4800000, professional: 11500000, distribution: 18900000, manufacturing: 21500000, enterprise: 34000000 },
+            basePrices: { basic: 5000000, professional: 15000000, distribution: 35000000, manufacturing: 50000000, enterprise: 80000000 },
             addonPrices: {
                 pos_retail: 1500000,
                 distribution: 4500000,
@@ -333,7 +333,7 @@
 
             calculateTotal() {
                 if (this.basePlan === 'enterprise') return this.basePrices.enterprise + (this.extraUsers * this.userPrice);
-                let sum = this.basePrices[this.basePlan] || 4800000;
+                let sum = this.basePrices[this.basePlan] || 5000000;
                 for (const key of this.selectedAddons) {
                     if (!this.isAddonDisabled(key) && this.addonPrices[key]) {
                         sum += this.addonPrices[key];
