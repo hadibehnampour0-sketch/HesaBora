@@ -1,15 +1,13 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fa" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نپتون | نسل نوین نرم‌افزار حسابداری و ERP اصناف و شرکت‌های ایران</title>
     <meta name="description" content="نپتون؛ سیستم عامل جامع مالی، حسابداری و مدیریت اصناف ایران. ۱۰۰٪ آفلاین اول، اتصال مستقیم و رایگان به سامانه مودیان، پشتیبان‌گیری ۳-۲-۱ خودکار روی فلش و تلگرام، و هوش مصنوعی کوپایلوت مالی.">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
-    <style>
-        body { font-family: system-ui, -apple-system, "Vazirmatn", "Segoe UI", Roboto, Tahoma, sans-serif; }
+    <link rel="icon" type="image/svg+xml" href="/images/neptune-logo.svg">
+    <link rel="preload" as="style" href="/build/assets/app-k-XILFBr.css" /><link rel="modulepreload" as="script" href="/build/assets/app-poG9tdS_.js" /><link rel="stylesheet" href="/build/assets/app-k-XILFBr.css" /><script type="module" src="/build/assets/app-poG9tdS_.js"></script>    <style>
+        body { font-family: Vazirmatn, system-ui, -apple-system, "Segoe UI", Roboto, Tahoma, sans-serif !important; }
         .gradient-text {
             background: linear-gradient(135deg, #0284c7 0%, #00f0ff 50%, #0284c7 100%);
             -webkit-background-clip: text;
@@ -23,6 +21,51 @@
             -webkit-backdrop-filter: blur(16px);
         }
     </style>
+
+<!--[NativePHP Livewire Dispatcher]-->
+<script type="module">
+window.addEventListener('message', (event) => {
+    if (event.data.type === 'native-event') {
+        const { event: eventName, payload } = event.data;
+
+        LivewireDispatcher.handle(eventName, payload);
+    }
+});
+
+const LivewireDispatcher = {
+    handle: function (eventName, payload) {
+        // Livewire 3
+        if (window.Livewire) {
+            window.Livewire.dispatch('native:' + eventName, payload);
+        }
+
+        // Livewire 2
+        if (window.livewire) {
+            window.livewire.components.components().forEach((component) => {
+                if (Array.isArray(component.listeners)) {
+                    component.listeners.forEach((event) => {
+                        if (event.startsWith('native')) {
+                            let event_parts = event.split(/(native:|native-)|:|,/);
+
+                            if (event_parts[1] === 'native:') {
+                                event_parts.splice(2, 0, 'private', undefined, 'nativephp', undefined);
+                            }
+
+                            let [s1, signature, channel_type, s2, channel, s3, event_name] = event_parts;
+
+                            if (eventName === event_name) {
+                                // @ts-ignore
+                                window.livewire.emit(event, payload);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    },
+};
+
+</script>
 </head>
 <body class="bg-base-200/40 text-base-content min-h-screen selection:bg-sky-500 selection:text-white"
       x-data="{
@@ -38,15 +81,15 @@
           orderLoading: false,
           orderError: null,
           activeIndustryTab: 'gold',
-          plansData: {&quot;basic&quot;:{&quot;id&quot;:&quot;basic&quot;,&quot;alias&quot;:&quot;shop&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u0628\u0631\u0646\u0632\u06cc (\u0641\u0631\u0648\u0634\u06af\u0627\u0647\u06cc \u0648 \u0627\u0635\u0646\u0627\u0641 \u062e\u0631\u062f)&quot;,&quot;price&quot;:&quot;\u06f4,\u06f8\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647&quot;,&quot;description&quot;:&quot;\u0645\u0646\u0627\u0633\u0628 \u0628\u0631\u0627\u06cc \u0641\u0631\u0648\u0634\u06af\u0627\u0647\u200c\u0647\u0627\u060c \u0645\u063a\u0627\u0632\u0647\u200c\u0647\u0627\u060c \u0628\u0648\u062a\u06cc\u06a9\u200c\u0647\u0627 \u0648 \u0627\u0635\u0646\u0627\u0641 \u062e\u0631\u062f \u0646\u06cc\u0627\u0632\u0645\u0646\u062f \u0635\u0646\u062f\u0648\u0642 \u0641\u0631\u0648\u0634\u06af\u0627\u0647\u06cc \u0633\u0631\u06cc\u0639 \u0648 \u0633\u0627\u0645\u0627\u0646\u0647 \u0645\u0648\u062f\u06cc\u0627\u0646.&quot;,&quot;popular&quot;:false,&quot;max_companies&quot;:1,&quot;max_users&quot;:1,&quot;max_industries&quot;:1,&quot;badge&quot;:&quot;\u067e\u0627\u06cc\u0647 \u0627\u0635\u0646\u0627\u0641&quot;,&quot;badge_color&quot;:&quot;badge-ghost&quot;,&quot;modules&quot;:[&quot;core_accounting&quot;,&quot;sales_purchase&quot;,&quot;inventory_warehouse&quot;,&quot;cheques_treasury&quot;,&quot;tax_moadian&quot;,&quot;pos_retail&quot;,&quot;migration_tools&quot;]},&quot;professional&quot;:{&quot;id&quot;:&quot;professional&quot;,&quot;alias&quot;:&quot;commercial&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u0646\u0642\u0631\u0647\u200c\u0627\u06cc (\u0628\u0627\u0632\u0631\u06af\u0627\u0646\u06cc \u0648 \u0634\u0631\u06a9\u062a\u06cc)&quot;,&quot;price&quot;:&quot;\u06f1\u06f1,\u06f5\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647&quot;,&quot;description&quot;:&quot;\u0648\u06cc\u0698\u0647 \u062f\u0641\u0627\u062a\u0631 \u0628\u0627\u0632\u0631\u06af\u0627\u0646\u06cc\u060c \u0639\u0645\u062f\u0647\u200c\u0641\u0631\u0648\u0634\u0627\u0646 \u0648 \u0634\u0631\u06a9\u062a\u200c\u0647\u0627\u06cc \u062e\u062f\u0645\u0627\u062a\u06cc \u0646\u06cc\u0627\u0632\u0645\u0646\u062f \u0686\u0646\u062f \u0627\u0631\u0632\u06cc\u060c \u0645\u0631\u0627\u06a9\u0632 \u0647\u0632\u06cc\u0646\u0647\u060c \u067e\u06cc\u0634\u200c\u0641\u0627\u06a9\u062a\u0648\u0631 \u0648 \u0686\u06a9\u200c\u0647\u0627\u06cc \u0635\u06cc\u0627\u062f\u06cc.&quot;,&quot;popular&quot;:true,&quot;max_companies&quot;:3,&quot;max_users&quot;:3,&quot;max_industries&quot;:2,&quot;badge&quot;:&quot;\u067e\u0631\u0641\u0631\u0648\u0634\u200c\u062a\u0631\u06cc\u0646&quot;,&quot;badge_color&quot;:&quot;badge-primary&quot;,&quot;modules&quot;:[&quot;core_accounting&quot;,&quot;sales_purchase&quot;,&quot;inventory_warehouse&quot;,&quot;cheques_treasury&quot;,&quot;tax_moadian&quot;,&quot;pos_retail&quot;,&quot;customer_loyalty&quot;,&quot;sms_automation&quot;,&quot;official_inquiries&quot;,&quot;installment_financing&quot;,&quot;telephony_voip&quot;,&quot;hr_payroll&quot;,&quot;migration_tools&quot;]},&quot;distribution&quot;:{&quot;id&quot;:&quot;distribution&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u067e\u062e\u0634 \u0645\u0648\u06cc\u0631\u06af\u06cc \u0648 \u062a\u0648\u0632\u06cc\u0639 (Capillary Distribution)&quot;,&quot;price&quot;:&quot;\u06f1\u06f8,\u06f9\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647&quot;,&quot;description&quot;:&quot;\u0648\u06cc\u0698\u0647 \u0634\u0631\u06a9\u062a\u200c\u0647\u0627\u06cc \u067e\u062e\u0634 \u06af\u0631\u0645 \u0648 \u0633\u0631\u062f\u060c \u0648\u06cc\u0632\u06cc\u062a\u0648\u0631\u06cc \u0645\u06cc\u062f\u0627\u0646\u06cc\u060c \u0627\u0646\u0628\u0627\u0631 \u0645\u0627\u0634\u06cc\u0646 (\u0648\u0627\u0646)\u060c \u0645\u0633\u06cc\u0631\u0628\u0646\u062f\u06cc \u0641\u0631\u0648\u0634 \u0648 \u062a\u0633\u0648\u06cc\u0647 \u0631\u0648\u0632\u0627\u0646\u0647.&quot;,&quot;popular&quot;:false,&quot;max_companies&quot;:5,&quot;max_users&quot;:5,&quot;max_industries&quot;:16,&quot;badge&quot;:&quot;\u062a\u062e\u0635\u0635\u06cc \u062a\u0648\u0632\u06cc\u0639&quot;,&quot;badge_color&quot;:&quot;badge-secondary&quot;,&quot;modules&quot;:[&quot;core_accounting&quot;,&quot;sales_purchase&quot;,&quot;inventory_warehouse&quot;,&quot;cheques_treasury&quot;,&quot;tax_moadian&quot;,&quot;distribution&quot;,&quot;pos_retail&quot;,&quot;customer_loyalty&quot;,&quot;sms_automation&quot;,&quot;official_inquiries&quot;,&quot;installment_financing&quot;,&quot;telephony_voip&quot;,&quot;hr_payroll&quot;,&quot;migration_tools&quot;]},&quot;manufacturing&quot;:{&quot;id&quot;:&quot;manufacturing&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u062a\u0648\u0644\u06cc\u062f\u06cc \u0648 \u0635\u0646\u0639\u062a\u06cc (Manufacturing)&quot;,&quot;price&quot;:&quot;\u06f2\u06f1,\u06f5\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647&quot;,&quot;description&quot;:&quot;\u0648\u06cc\u0698\u0647 \u06a9\u0627\u0631\u062e\u0627\u0646\u062c\u0627\u062a \u0648 \u06a9\u0627\u0631\u06af\u0627\u0647\u200c\u0647\u0627\u06cc \u062a\u0648\u0644\u06cc\u062f\u06cc\u060c \u0641\u0631\u0645\u0648\u0644 \u0633\u0627\u062e\u062a (BOM)\u060c \u0628\u0647\u0627\u06cc \u062a\u0645\u0627\u0645\u200c\u0634\u062f\u0647 \u06a9\u0627\u0644\u0627\u06cc \u0633\u0627\u062e\u062a\u0647\u200c\u0634\u062f\u0647\u060c \u062e\u0637\u0648\u0637 \u062a\u0648\u0644\u06cc\u062f \u0648 \u0633\u0631\u0628\u0627\u0631.&quot;,&quot;popular&quot;:false,&quot;max_companies&quot;:5,&quot;max_users&quot;:5,&quot;max_industries&quot;:16,&quot;badge&quot;:&quot;\u062a\u062e\u0635\u0635\u06cc \u062a\u0648\u0644\u06cc\u062f&quot;,&quot;badge_color&quot;:&quot;badge-warning&quot;,&quot;modules&quot;:[&quot;core_accounting&quot;,&quot;sales_purchase&quot;,&quot;inventory_warehouse&quot;,&quot;cheques_treasury&quot;,&quot;tax_moadian&quot;,&quot;production_bom&quot;,&quot;pos_retail&quot;,&quot;customer_loyalty&quot;,&quot;sms_automation&quot;,&quot;official_inquiries&quot;,&quot;installment_financing&quot;,&quot;telephony_voip&quot;,&quot;hr_payroll&quot;,&quot;migration_tools&quot;]},&quot;enterprise&quot;:{&quot;id&quot;:&quot;enterprise&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u0637\u0644\u0627\u06cc\u06cc (\u0633\u0627\u0632\u0645\u0627\u0646\u06cc \u0648 \u0647\u0644\u062f\u06cc\u0646\u06af)&quot;,&quot;price&quot;:&quot;\u06f3\u06f4,\u06f0\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647 (\u06cc\u0627 \u062f\u0627\u0626\u0645\u06cc)&quot;,&quot;description&quot;:&quot;\u0628\u0631\u0627\u06cc \u06a9\u0627\u0631\u062e\u0627\u0646\u062c\u0627\u062a\u060c \u0634\u0631\u06a9\u062a\u200c\u0647\u0627\u06cc \u067e\u062e\u0634 \u0645\u0648\u06cc\u0631\u06af\u06cc \u0648 \u0647\u0644\u062f\u06cc\u0646\u06af\u200c\u0647\u0627\u06cc\u06cc \u06a9\u0647 \u0628\u0647 \u062a\u0645\u0627\u0645\u06cc \u0627\u0645\u06a9\u0627\u0646\u0627\u062a \u0628\u062f\u0648\u0646 \u0647\u06cc\u0686\u200c\u06af\u0648\u0646\u0647 \u0645\u062d\u062f\u0648\u062f\u06cc\u062a\u06cc \u0646\u06cc\u0627\u0632 \u062f\u0627\u0631\u0646\u062f.&quot;,&quot;popular&quot;:false,&quot;max_companies&quot;:-1,&quot;max_users&quot;:-1,&quot;max_industries&quot;:16,&quot;badge&quot;:&quot;\u06a9\u0627\u0645\u0644\u200c\u062a\u0631\u06cc\u0646 \u067e\u06a9\u06cc\u062c&quot;,&quot;badge_color&quot;:&quot;badge-accent&quot;,&quot;modules&quot;:[&quot;*&quot;]}},
+          plansData: {&quot;basic&quot;:{&quot;id&quot;:&quot;basic&quot;,&quot;alias&quot;:&quot;shop&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u0628\u0631\u0646\u0632\u06cc (\u0641\u0631\u0648\u0634\u06af\u0627\u0647\u06cc \u0648 \u0627\u0635\u0646\u0627\u0641 \u062e\u0631\u062f)&quot;,&quot;price&quot;:&quot;\u06f5,\u06f0\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647&quot;,&quot;description&quot;:&quot;\u0645\u0646\u0627\u0633\u0628 \u0628\u0631\u0627\u06cc \u0641\u0631\u0648\u0634\u06af\u0627\u0647\u200c\u0647\u0627\u060c \u0645\u063a\u0627\u0632\u0647\u200c\u0647\u0627\u060c \u0628\u0648\u062a\u06cc\u06a9\u200c\u0647\u0627 \u0648 \u0627\u0635\u0646\u0627\u0641 \u062e\u0631\u062f \u0646\u06cc\u0627\u0632\u0645\u0646\u062f \u0635\u0646\u062f\u0648\u0642 \u0641\u0631\u0648\u0634\u06af\u0627\u0647\u06cc \u0633\u0631\u06cc\u0639 \u0648 \u0633\u0627\u0645\u0627\u0646\u0647 \u0645\u0648\u062f\u06cc\u0627\u0646.&quot;,&quot;popular&quot;:false,&quot;max_companies&quot;:1,&quot;max_users&quot;:1,&quot;max_industries&quot;:1,&quot;badge&quot;:&quot;\u067e\u0627\u06cc\u0647 \u0627\u0635\u0646\u0627\u0641&quot;,&quot;badge_color&quot;:&quot;badge-ghost&quot;,&quot;modules&quot;:[&quot;core_accounting&quot;,&quot;sales_purchase&quot;,&quot;inventory_warehouse&quot;,&quot;cheques_treasury&quot;,&quot;tax_moadian&quot;,&quot;pos_retail&quot;,&quot;migration_tools&quot;]},&quot;professional&quot;:{&quot;id&quot;:&quot;professional&quot;,&quot;alias&quot;:&quot;commercial&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u0646\u0642\u0631\u0647\u200c\u0627\u06cc (\u0628\u0627\u0632\u0631\u06af\u0627\u0646\u06cc \u0648 \u0634\u0631\u06a9\u062a\u06cc)&quot;,&quot;price&quot;:&quot;\u06f1\u06f5,\u06f0\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647&quot;,&quot;description&quot;:&quot;\u0648\u06cc\u0698\u0647 \u062f\u0641\u0627\u062a\u0631 \u0628\u0627\u0632\u0631\u06af\u0627\u0646\u06cc\u060c \u0639\u0645\u062f\u0647\u200c\u0641\u0631\u0648\u0634\u0627\u0646 \u0648 \u0634\u0631\u06a9\u062a\u200c\u0647\u0627\u06cc \u062e\u062f\u0645\u0627\u062a\u06cc \u0646\u06cc\u0627\u0632\u0645\u0646\u062f \u0686\u0646\u062f \u0627\u0631\u0632\u06cc\u060c \u0645\u0631\u0627\u06a9\u0632 \u0647\u0632\u06cc\u0646\u0647\u060c \u067e\u06cc\u0634\u200c\u0641\u0627\u06a9\u062a\u0648\u0631 \u0648 \u0686\u06a9\u200c\u0647\u0627\u06cc \u0635\u06cc\u0627\u062f\u06cc.&quot;,&quot;popular&quot;:true,&quot;max_companies&quot;:3,&quot;max_users&quot;:3,&quot;max_industries&quot;:2,&quot;badge&quot;:&quot;\u067e\u0631\u0641\u0631\u0648\u0634\u200c\u062a\u0631\u06cc\u0646&quot;,&quot;badge_color&quot;:&quot;badge-primary&quot;,&quot;modules&quot;:[&quot;core_accounting&quot;,&quot;sales_purchase&quot;,&quot;inventory_warehouse&quot;,&quot;cheques_treasury&quot;,&quot;tax_moadian&quot;,&quot;pos_retail&quot;,&quot;customer_loyalty&quot;,&quot;sms_automation&quot;,&quot;official_inquiries&quot;,&quot;installment_financing&quot;,&quot;telephony_voip&quot;,&quot;hr_payroll&quot;,&quot;migration_tools&quot;]},&quot;distribution&quot;:{&quot;id&quot;:&quot;distribution&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u067e\u062e\u0634 \u0645\u0648\u06cc\u0631\u06af\u06cc \u0648 \u062a\u0648\u0632\u06cc\u0639 (Capillary Distribution)&quot;,&quot;price&quot;:&quot;\u06f3\u06f5,\u06f0\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647&quot;,&quot;description&quot;:&quot;\u0648\u06cc\u0698\u0647 \u0634\u0631\u06a9\u062a\u200c\u0647\u0627\u06cc \u067e\u062e\u0634 \u06af\u0631\u0645 \u0648 \u0633\u0631\u062f\u060c \u0648\u06cc\u0632\u06cc\u062a\u0648\u0631\u06cc \u0645\u06cc\u062f\u0627\u0646\u06cc\u060c \u0627\u0646\u0628\u0627\u0631 \u0645\u0627\u0634\u06cc\u0646 (\u0648\u0627\u0646)\u060c \u0645\u0633\u06cc\u0631\u0628\u0646\u062f\u06cc \u0641\u0631\u0648\u0634 \u0648 \u062a\u0633\u0648\u06cc\u0647 \u0631\u0648\u0632\u0627\u0646\u0647.&quot;,&quot;popular&quot;:false,&quot;max_companies&quot;:5,&quot;max_users&quot;:5,&quot;max_industries&quot;:16,&quot;badge&quot;:&quot;\u062a\u062e\u0635\u0635\u06cc \u062a\u0648\u0632\u06cc\u0639&quot;,&quot;badge_color&quot;:&quot;badge-secondary&quot;,&quot;modules&quot;:[&quot;core_accounting&quot;,&quot;sales_purchase&quot;,&quot;inventory_warehouse&quot;,&quot;cheques_treasury&quot;,&quot;tax_moadian&quot;,&quot;distribution&quot;,&quot;pos_retail&quot;,&quot;customer_loyalty&quot;,&quot;sms_automation&quot;,&quot;official_inquiries&quot;,&quot;installment_financing&quot;,&quot;telephony_voip&quot;,&quot;hr_payroll&quot;,&quot;migration_tools&quot;]},&quot;manufacturing&quot;:{&quot;id&quot;:&quot;manufacturing&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u062a\u0648\u0644\u06cc\u062f\u06cc \u0648 \u0635\u0646\u0639\u062a\u06cc (Manufacturing)&quot;,&quot;price&quot;:&quot;\u06f5\u06f0,\u06f0\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647&quot;,&quot;description&quot;:&quot;\u0648\u06cc\u0698\u0647 \u06a9\u0627\u0631\u062e\u0627\u0646\u062c\u0627\u062a \u0648 \u06a9\u0627\u0631\u06af\u0627\u0647\u200c\u0647\u0627\u06cc \u062a\u0648\u0644\u06cc\u062f\u06cc\u060c \u0641\u0631\u0645\u0648\u0644 \u0633\u0627\u062e\u062a (BOM)\u060c \u0628\u0647\u0627\u06cc \u062a\u0645\u0627\u0645\u200c\u0634\u062f\u0647 \u06a9\u0627\u0644\u0627\u06cc \u0633\u0627\u062e\u062a\u0647\u200c\u0634\u062f\u0647\u060c \u062e\u0637\u0648\u0637 \u062a\u0648\u0644\u06cc\u062f \u0648 \u0633\u0631\u0628\u0627\u0631.&quot;,&quot;popular&quot;:false,&quot;max_companies&quot;:5,&quot;max_users&quot;:5,&quot;max_industries&quot;:16,&quot;badge&quot;:&quot;\u062a\u062e\u0635\u0635\u06cc \u062a\u0648\u0644\u06cc\u062f&quot;,&quot;badge_color&quot;:&quot;badge-warning&quot;,&quot;modules&quot;:[&quot;core_accounting&quot;,&quot;sales_purchase&quot;,&quot;inventory_warehouse&quot;,&quot;cheques_treasury&quot;,&quot;tax_moadian&quot;,&quot;production_bom&quot;,&quot;pos_retail&quot;,&quot;customer_loyalty&quot;,&quot;sms_automation&quot;,&quot;official_inquiries&quot;,&quot;installment_financing&quot;,&quot;telephony_voip&quot;,&quot;hr_payroll&quot;,&quot;migration_tools&quot;]},&quot;enterprise&quot;:{&quot;id&quot;:&quot;enterprise&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u0637\u0644\u0627\u06cc\u06cc (\u0633\u0627\u0632\u0645\u0627\u0646\u06cc \u0648 \u0647\u0644\u062f\u06cc\u0646\u06af)&quot;,&quot;price&quot;:&quot;\u06f8\u06f0,\u06f0\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647 (\u06cc\u0627 \u062f\u0627\u0626\u0645\u06cc)&quot;,&quot;description&quot;:&quot;\u0628\u0631\u0627\u06cc \u06a9\u0627\u0631\u062e\u0627\u0646\u062c\u0627\u062a\u060c \u0634\u0631\u06a9\u062a\u200c\u0647\u0627\u06cc \u067e\u062e\u0634 \u0645\u0648\u06cc\u0631\u06af\u06cc \u0648 \u0647\u0644\u062f\u06cc\u0646\u06af\u200c\u0647\u0627\u06cc\u06cc \u06a9\u0647 \u0628\u0647 \u062a\u0645\u0627\u0645\u06cc \u0627\u0645\u06a9\u0627\u0646\u0627\u062a \u0628\u062f\u0648\u0646 \u0647\u06cc\u0686\u200c\u06af\u0648\u0646\u0647 \u0645\u062d\u062f\u0648\u062f\u06cc\u062a\u06cc \u0646\u06cc\u0627\u0632 \u062f\u0627\u0631\u0646\u062f.&quot;,&quot;popular&quot;:false,&quot;max_companies&quot;:-1,&quot;max_users&quot;:-1,&quot;max_industries&quot;:16,&quot;badge&quot;:&quot;\u06a9\u0627\u0645\u0644\u200c\u062a\u0631\u06cc\u0646 \u067e\u06a9\u06cc\u062c&quot;,&quot;badge_color&quot;:&quot;badge-accent&quot;,&quot;modules&quot;:[&quot;*&quot;]}},
           submitTrial() {
               this.trialLoading = true;
               this.trialError = null;
-              fetch('/trial/request', {
+              fetch('http://127.0.0.1:8000/trial/request', {
                   method: 'POST',
                   headers: {
                       'Content-Type': 'application/json',
-                      'X-CSRF-TOKEN': '',
+                      'X-CSRF-TOKEN': 'tvwtx5Bfbg5EOk2HVvoYxagJvaypIgCZlVDkDgRv',
                       'Accept': 'application/json'
                   },
                   body: JSON.stringify(this.trialForm)
@@ -69,11 +112,11 @@
               this.orderLoading = true;
               this.orderError = null;
               this.orderForm.plan = this.selectedPlan;
-              fetch('/order/submit', {
+              fetch('http://127.0.0.1:8000/order/submit', {
                   method: 'POST',
                   headers: {
                       'Content-Type': 'application/json',
-                      'X-CSRF-TOKEN': '',
+                      'X-CSRF-TOKEN': 'tvwtx5Bfbg5EOk2HVvoYxagJvaypIgCZlVDkDgRv',
                       'Accept': 'application/json'
                   },
                   body: JSON.stringify(this.orderForm)
@@ -122,21 +165,26 @@
                 <a href="#comparison" class="hover:text-primary transition">مقایسه با رقبا</a>
                 <a href="#backup-engine" class="hover:text-primary transition">امنیت و بکاپ ۳-۲-۱</a>
                 <a href="#pricing" class="hover:text-primary transition">پکیج‌ها و تعرفه‌ها</a>
-                <a href="/pricing" class="hover:text-primary transition text-primary flex items-center gap-1">
+                <a href="http://127.0.0.1:8000/pricing" class="hover:text-primary transition text-primary flex items-center gap-1">
                     <span>⚡</span> <span>محاسبه‌گر آنلاین</span>
                 </a>
                 <a href="#faq" class="hover:text-primary transition">پرسش‌های متداول</a>
             </nav>
 
             <div class="flex items-center gap-2.5">
-                                    <button @click="trialModalOpen = true" class="btn btn-outline btn-primary btn-sm rounded-xl px-4 text-xs font-bold hidden sm:inline-flex">
-                        <span>🎁</span>
-                        <span>نسخه آزمایشی رایگان</span>
-                    </button>
-                    <a href="/login" class="btn btn-ghost btn-sm rounded-xl px-3 text-xs font-bold">
-                        ورود
+                <a href="http://127.0.0.1:8000/login" class="btn btn-primary btn-sm rounded-xl px-4 font-bold shadow-md shadow-primary/25 text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
+                    <svg class="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                    <span>بازگشت به ورود</span>
+                </a>
+                                    <a href="http://127.0.0.1:8000/download/windows" class="btn btn-primary btn-sm rounded-xl px-4 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-primary/25 hover:scale-105 active:scale-95 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>دانلود نسخه ویندوز</span>
                     </a>
-                    <a href="#pricing" class="btn btn-primary btn-sm rounded-xl px-5 font-bold shadow-md shadow-primary/25 text-xs">
+                    <button @click="trialModalOpen = true" class="btn btn-outline btn-primary btn-sm rounded-xl px-4 text-xs font-bold hidden sm:inline-flex">
+                        <span>🎁</span>
+                        <span>لایسنس آزمایشی</span>
+                    </button>
+                    <a href="#pricing" class="btn btn-accent btn-sm rounded-xl px-4 font-bold text-xs hidden md:inline-flex">
                         خرید نرم‌افزار
                     </a>
                             </div>
@@ -178,16 +226,16 @@
 
                 <!-- CTA Actions -->
                 <div class="flex flex-wrap items-center justify-center gap-3.5 pt-2">
-                    <button @click="trialModalOpen = true" class="btn btn-primary btn-lg rounded-2xl px-8 font-black shadow-xl shadow-primary/30 text-sm hover:scale-[1.02] transition-transform">
-                        <span>دریافت رایگان نسخه آزمایشی ۱۴ روزه</span>
-                        <span class="text-lg">⚡</span>
-                    </button>
-                    <a href="#pricing" class="btn btn-outline btn-lg rounded-2xl px-7 font-bold text-sm hover:scale-[1.02] transition-transform">
-                        <span>مشاهده ۵ پکیج تجاری و قیمت‌ها</span>
-                        <span>↓</span>
+                    <a href="http://127.0.0.1:8000/download/windows" class="btn btn-primary btn-lg rounded-2xl px-8 font-black shadow-xl shadow-primary/30 text-sm hover:scale-[1.02] transition-transform flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>دانلود مستقیم فایل نصبی ویندوز (نسخه ۲.۵)</span>
                     </a>
-                    <a href="/pricing" class="btn btn-ghost btn-lg rounded-2xl px-5 font-bold text-xs text-base-content/70">
-                        <span>محاسبه‌گر سفارشی لایسنس ←</span>
+                    <button @click="trialModalOpen = true" class="btn btn-outline btn-lg rounded-2xl px-6 font-bold text-sm hover:scale-[1.02] transition-transform flex items-center gap-2">
+                        <span>🎁</span>
+                        <span>دریافت لایسنس آزمایشی ۱۴ روزه</span>
+                    </button>
+                    <a href="#pricing" class="btn btn-ghost btn-lg rounded-2xl px-5 font-bold text-xs text-base-content/70">
+                        <span>مشاهده ۵ پکیج تجاری ↓</span>
                     </a>
                 </div>
 
@@ -331,7 +379,40 @@
                     </div>
                     <h3 class="text-lg font-black text-base-content">مهاجرت از هلو، سپیدار و دشت در ۳ دقیقه</h3>
                     <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
-                        نگران انتقال اطلاعات سال‌های گذشته‌تان هستید؟ با موتور هوشمند مهاجرت نپتون، فایل اکسل کالاها، اشخاص و مانده حساب‌های نرم‌افزار قبلی خود را بارگذاری کنید تا در کمتر از ۳ دقیقه تمام حساب‌هایتان با تراز افتتاحیه آماده به کار شود.
+                        نگران انتقال اطلاعات سال‌های گذشته‌تان هستید؟ با موتور هوشمند مهاجرت نپتون، فایل دیتابیس کالاها، اشخاص و مانده حساب‌های نرم‌افزار قبلی خود را بارگذاری کنید تا در کمتر از ۳ دقیقه تمام حساب‌هایتان با تراز افتتاحیه آماده به کار شود.
+                    </p>
+                </div>
+
+                <!-- Feature 7: Zero-Install LAN -->
+                <div class="card bg-base-100 border border-primary/30 p-6 rounded-3xl shadow-md hover:shadow-lg transition space-y-4 bg-gradient-to-b from-base-100 to-primary/5">
+                    <div class="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-2xl font-bold">
+                        🔌
+                    </div>
+                    <h3 class="text-lg font-black text-base-content">اتصال شبکه محلی بدون نصب روی کلاینت‌ها (هزینه کاربر: ۰ ریال)</h3>
+                    <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        برخلاف شرکت‌های سنتی که برای هر کامپیوتر داخل مغازه ۱۰ تا ۲۰ میلیون تومان پول کاربر شبکه می‌گیرند! در نپتون نرم‌افزار فقط روی سیستم اصلی نصب می‌شود و بقیه صندوق‌ها، انبار و تبلت‌ها با یک مرورگر ساده در شبکه محلی متصل می‌شوند.
+                    </p>
+                </div>
+
+                <!-- Feature 8: Multi-Branch & Distributed Warehouses -->
+                <div class="card bg-base-100 border border-teal-500/30 p-6 rounded-3xl shadow-md hover:shadow-lg transition space-y-4 bg-gradient-to-b from-base-100 to-teal-500/5">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-600 flex items-center justify-center text-2xl font-bold">
+                        🏬
+                    </div>
+                    <h3 class="text-lg font-black text-base-content">انبار مرکزی مشترک + انبار مستقل هر شعبه</h3>
+                    <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        چندین شعبه در نقاط مختلف شهر دارید؟ برای هر شعبه انبار مستقل تعریف کنید در کنار یک انبار دپوی مرکزی مشترک. تمام شعب در لحظه می‌توانند موجودی دقیق شعب دیگر را ببینند و نیازی به تماس‌های مکرر تلفنی برای موجودی گرفتن نیست.
+                    </p>
+                </div>
+
+                <!-- Feature 9: Cross-Branch Stock Transfer & Smart Reservation -->
+                <div class="card bg-base-100 border border-amber-500/30 p-6 rounded-3xl shadow-md hover:shadow-lg transition space-y-4 bg-gradient-to-b from-base-100 to-amber-500/5">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-2xl font-bold">
+                        🚚
+                    </div>
+                    <h3 class="text-lg font-black text-base-content">درخواست کالا بین شعب، رزرو در راه و بالانس اتوماتیک قیمت</h3>
+                    <p class="text-xs sm:text-sm text-base-content/70 leading-relaxed">
+                        مشتری در شعبه شما کالایی می‌خواهد که تمام شده؟ با یک کلیک درخواست انتقال از شعبه دیگر ثبت کنید. سیستم کالا را در شعبه مبدا «رزرو» می‌کند تا اشتباهاً فروخته نشود و پس از انتقال، بهای تمام‌شده میانگین (WAC) را خودکار متوازن می‌کند.
                     </p>
                 </div>
             </div>
@@ -555,6 +636,20 @@
                             <td class="py-4 px-6 text-amber-600">△ اینترنتی محدود</td>
                         </tr>
                         <tr>
+                            <td class="font-bold py-4 px-6">هزینه کاربر و سیستم اضافه در شبکه</td>
+                            <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ کاملاً رایگان (بدون نصب، اتصال با مرورگر)</td>
+                            <td class="py-4 px-6 text-rose-600">✗ کیت شبکه ۳ تا ۳۷ میلیون تومان</td>
+                            <td class="py-4 px-6 text-rose-600">✗ ۲۰ میلیون تومان به ازای هر سیستم!</td>
+                            <td class="py-4 px-6 text-rose-600">✗ ۳.۵ تا ۱۰ میلیون تومان</td>
+                        </tr>
+                        <tr>
+                            <td class="font-bold py-4 px-6">مدیریت شعب و انتقال هوشمند بین‌انبارها</td>
+                            <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ انبار مرکزی + انبار شعب + رزرو و بالانس WAC</td>
+                            <td class="py-4 px-6 text-rose-600">✗ نیازمند ماژول چندانبار جداگانه</td>
+                            <td class="py-4 px-6 text-amber-600">△ نیازمند بسته گران شعب و انبار</td>
+                            <td class="py-4 px-6 text-rose-600">✗ فقط تک‌شعبه و انبار ساده</td>
+                        </tr>
+                        <tr>
                             <td class="font-bold py-4 px-6">زمان یادگیری کاربر عادی</td>
                             <td class="py-4 px-6 font-black text-sky-700 bg-sky-500/10">✓ کمتر از ۱۵ دقیقه</td>
                             <td class="py-4 px-6 text-rose-600">✗ نیازمند دوره‌های چند هفته‌ای</td>
@@ -592,7 +687,7 @@
                             <p class="text-xs text-base-content/60 mt-1">مخصوص مغازه‌ها، فروشگاه‌ها و خرده‌فروشی‌ها</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۴,۸۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۵,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -623,7 +718,7 @@
                             <p class="text-xs text-base-content/60 mt-1">بازرگانی‌ها، عمده‌فروشان و شرکت‌های متوسط</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۱۱,۵۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۱۵,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -652,7 +747,7 @@
                             <p class="text-xs text-base-content/60 mt-1">شرکت‌های پخش مواد غذایی، دارویی و کالا</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۱۸,۹۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۳۵,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -680,7 +775,7 @@
                             <p class="text-xs text-base-content/60 mt-1">کارگاه‌ها، کارخانه‌ها و واحدهای مونتاژ</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۲۱,۵۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۵۰,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -708,7 +803,7 @@
                             <p class="text-xs text-base-content/60 mt-1">هلدینگ‌ها، زنجیره‌ای‌ها و سازمان‌های بزرگ</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۳۴,۰۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono">۸۰,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60">تومان (سفارشی و جامع)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -731,7 +826,7 @@
                     <h3 class="text-xl font-black">نیاز به محاسبه دقیق بر اساس تعداد کاربر و شعب دارید؟</h3>
                     <p class="text-xs text-white/80">از ابزار محاسبه‌گر آنلاین ماژولار نپتون استفاده کنید و پیش‌فاکتور خود را فوراً تحویل بگیرید.</p>
                 </div>
-                <a href="/pricing#calculator" class="btn btn-accent rounded-2xl px-6 font-black text-xs shadow-lg shrink-0">
+                <a href="http://127.0.0.1:8000/pricing#calculator" class="btn btn-accent rounded-2xl px-6 font-black text-xs shadow-lg shrink-0">
                     ورود به محاسبه‌گر قیمت ←
                 </a>
             </div>
@@ -827,22 +922,26 @@
         <!-- BOTTOM CALL TO ACTION -->
         <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="rounded-3xl bg-base-100 border border-base-300 p-8 sm:p-12 text-center space-y-6 shadow-xl relative overflow-hidden">
-                <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center text-3xl font-black mx-auto shadow-lg shadow-emerald-600/30">
-                    د
+                <div class="w-16 h-16 rounded-3xl bg-[#090D16] p-2 flex items-center justify-center mx-auto shadow-lg shadow-cyan-500/25 border border-cyan-500/30">
+                    <img src="/images/neptune-logo.svg" alt="Neptune ERP" class="w-full h-full object-contain">
                 </div>
                 <div class="space-y-2">
-                    <h2 class="text-2xl sm:text-4xl font-black text-base-content">آماده‌اید نپتون و خرج کسب‌وکارتان را متحول کنید؟</h2>
+                    <h2 class="text-2xl sm:text-4xl font-black text-base-content">آماده‌اید دخل و خرج کسب‌وکارتان را با نپتون متحول کنید؟</h2>
                     <p class="text-xs sm:text-sm text-base-content/70 max-w-xl mx-auto">
-                        همین حالا نسخه آزمایشی ۱۴ روزه را بدون نیاز به کارت بانکی دریافت کنید و تفاوت یک نرم‌افزار حسابداری مدرن را از نزدیک تجربه کنید.
+                        همین حالا فایل نصبی ویندوز را با یک کلیک دریافت کنید، بدون نیاز به کارت بانکی یا اینترنت لایسنس تستی ۱۴ روزه را فعال کنید و سرعت نسل نوین حسابداری را بچشید.
                     </p>
                 </div>
                 <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
-                    <button @click="trialModalOpen = true" class="btn btn-primary btn-lg rounded-2xl px-8 font-black text-sm shadow-xl shadow-primary/25">
+                    <a href="http://127.0.0.1:8000/download/windows" class="btn btn-primary btn-lg rounded-2xl px-8 font-black text-sm shadow-xl shadow-primary/25 flex items-center gap-2 hover:scale-105 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>دانلود مستقیم فایل نصبی ویندوز (۲۱۷ مگابایت)</span>
+                    </a>
+                    <button @click="trialModalOpen = true" class="btn btn-outline btn-lg rounded-2xl px-6 font-bold text-sm">
                         دریافت فوری لایسنس آزمایشی ۱۴ روزه ⚡
                     </button>
-                    <a href="tel:02191000000" class="btn btn-outline btn-lg rounded-2xl px-6 font-bold text-sm">
+                    <a href="tel:02191000000" class="btn btn-ghost btn-lg rounded-2xl px-4 font-bold text-xs text-base-content/70">
                         <span>📞</span>
-                        <span>تماس با واحد فروش و مشاوره</span>
+                        <span>تماس با مشاوره فروش</span>
                     </a>
                 </div>
             </div>
@@ -854,8 +953,8 @@
     <footer class="bg-base-100 border-t border-base-300 py-12 text-xs text-base-content/70">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black text-base">
-                    د
+                <div class="w-9 h-9 rounded-xl bg-[#090D16] p-1.5 flex items-center justify-center shadow-md border border-cyan-500/30">
+                    <img src="/images/neptune-logo.svg" alt="Neptune ERP" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <span class="font-black text-base-content text-sm block">سامانه مالی و حسابداری نپتون (Neptune ERP)</span>
@@ -866,8 +965,8 @@
             <div class="flex flex-wrap items-center gap-6 font-semibold">
                 <a href="#features" class="hover:text-primary transition">امکانات</a>
                 <a href="#industries" class="hover:text-primary transition">اصناف</a>
-                <a href="/pricing" class="hover:text-primary transition">تعرفه‌ها</a>
-                <a href="/login" class="hover:text-primary transition">ورود کاربران</a>
+                <a href="http://127.0.0.1:8000/pricing" class="hover:text-primary transition">تعرفه‌ها</a>
+                <a href="http://127.0.0.1:8000/login" class="hover:text-primary transition">ورود کاربران</a>
             </div>
 
             <div class="text-[11px] text-base-content/50">
@@ -911,6 +1010,11 @@
                     <button @click="navigator.clipboard.writeText(trialResult.license_key); alert('کد لایسنس با موفقیت کپی شد!')" class="btn btn-primary w-full rounded-2xl font-bold text-xs">
                         کپی کلید فعال‌سازی 📋
                     </button>
+
+                    <a href="http://127.0.0.1:8000/download/windows" class="btn btn-accent btn-outline w-full rounded-2xl font-bold text-xs gap-1.5 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>دانلود فایل نصبی ویندوز نپتون (۲۱۷ مگابایت)</span>
+                    </a>
                 </div>
             </template>
 
