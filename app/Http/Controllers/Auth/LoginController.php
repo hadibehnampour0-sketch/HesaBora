@@ -7,16 +7,37 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class LoginController extends Controller
 {
     public function showLoginForm()
     {
+        if (! app()->environment('testing')) {
+            try {
+                if (! file_exists(storage_path('installed')) || ! Schema::hasTable('users')) {
+                    return redirect()->route('install.index');
+                }
+            } catch (\Throwable) {
+                return redirect()->route('install.index');
+            }
+        }
+
         return view('auth.login');
     }
 
     public function login(Request $request)
     {
+        if (! app()->environment('testing')) {
+            try {
+                if (! file_exists(storage_path('installed')) || ! Schema::hasTable('users')) {
+                    return redirect()->route('install.index');
+                }
+            } catch (\Throwable) {
+                return redirect()->route('install.index');
+            }
+        }
+
         $credentials = $request->validate([
             'username' => ['required', 'string', 'max:255'],
             'password' => ['required'],
@@ -46,7 +67,7 @@ class LoginController extends Controller
 
         if (! $authenticated) {
             return back()->withErrors([
-                'username' => __('The provided credentials do not match our records.'),
+                'username' => __('نام کاربری یا کلمه عبور وارد شده نادرست است.'),
             ])->onlyInput('username', 'remember');
         }
 

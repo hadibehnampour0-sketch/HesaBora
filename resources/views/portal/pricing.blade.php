@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تعرفه‌ها و پکیج‌های لایسنس ماژولار | نرم‌افزار حسابداری و مالی نپتون</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="/images/neptune-logo.svg">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        body { font-family: system-ui, -apple-system, "Vazirmatn", "Segoe UI", Roboto, Tahoma, sans-serif; }
+        body { font-family: Vazirmatn, system-ui, -apple-system, "Segoe UI", Roboto, Tahoma, sans-serif !important; }
     </style>
 </head>
 <body class="bg-base-200/50 text-base-content min-h-screen">
@@ -42,16 +41,17 @@
             </nav>
 
             <div class="flex items-center gap-2">
+                <a href="{{ route('login') }}" class="btn btn-primary btn-sm rounded-xl px-4 font-bold shadow-md shadow-primary/25 text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
+                    <svg class="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                    <span>{{ __('بازگشت به ورود') }}</span>
+                </a>
                 @auth
-                    <a href="{{ route('home') }}" class="btn btn-primary btn-sm rounded-xl px-5 font-bold shadow-md shadow-primary/20 text-xs">
-                        <span>{{ __('ورود به پیشخوان نپتون') }}</span>
+                    <a href="{{ route('home') }}" class="btn btn-outline btn-primary btn-sm rounded-xl px-4 font-bold text-xs">
+                        <span>{{ __('پیشخوان') }}</span>
                         <span>←</span>
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="btn btn-outline btn-sm rounded-xl px-4 text-xs font-bold">
-                        {{ __('ورود کاربران') }}
-                    </a>
-                    <a href="#plans" class="btn btn-primary btn-sm rounded-xl px-5 font-bold shadow-md shadow-primary/20 text-xs">
+                    <a href="#plans" class="btn btn-accent btn-sm rounded-xl px-4 font-bold text-xs hidden sm:inline-flex">
                         {{ __('خرید اشتراک') }}
                     </a>
                 @endauth

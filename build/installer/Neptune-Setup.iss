@@ -173,11 +173,14 @@ begin
     AppDir := ExpandConstant('{app}');
     PhpExe := AppDir + '\php\php.exe';
 
-    // Generate Encryption Key and clear stale cache on install
+    // Setup Application Environment, Key, Database Schema and Baseline Admin
     if FileExists(PhpExe) and FileExists(AppDir + '\artisan') then
     begin
       Exec(PhpExe, 'artisan key:generate --force', AppDir, SW_HIDE, ewWaitUntilTerminated, ResultCode);
+      Exec(PhpExe, 'artisan migrate --force', AppDir, SW_HIDE, ewWaitUntilTerminated, ResultCode);
+      Exec(PhpExe, 'artisan db:seed --force', AppDir, SW_HIDE, ewWaitUntilTerminated, ResultCode);
       Exec(PhpExe, 'artisan optimize:clear', AppDir, SW_HIDE, ewWaitUntilTerminated, ResultCode);
+      SaveStringToFile(AppDir + '\storage\installed', '{"installed_at":"' + GetDateTimeString('yyyy-mm-dd hh:nn:ss', '-', ':') + '","version":"2.5.0"}', False);
     end;
   end;
 end;

@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نپتون | نسل نوین نرم‌افزار حسابداری و ERP اصناف و شرکت‌های ایران</title>
     <meta name="description" content="نپتون؛ سیستم عامل جامع مالی، حسابداری و مدیریت اصناف ایران. ۱۰۰٪ آفلاین اول، اتصال مستقیم و رایگان به سامانه مودیان، پشتیبان‌گیری ۳-۲-۱ خودکار روی فلش و تلگرام، و هوش مصنوعی کوپایلوت مالی.">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="/images/neptune-logo.svg">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        body { font-family: system-ui, -apple-system, "Vazirmatn", "Segoe UI", Roboto, Tahoma, sans-serif; }
+        body { font-family: Vazirmatn, system-ui, -apple-system, "Segoe UI", Roboto, Tahoma, sans-serif !important; }
         .gradient-text {
             background: linear-gradient(135deg, #0284c7 0%, #00f0ff 50%, #0284c7 100%);
             -webkit-background-clip: text;
@@ -129,20 +128,21 @@
             </nav>
 
             <div class="flex items-center gap-2.5">
+                <a href="{{ route('login') }}" class="btn btn-primary btn-sm rounded-xl px-4 font-bold shadow-md shadow-primary/25 text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
+                    <svg class="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                    <span>{{ __('بازگشت به ورود') }}</span>
+                </a>
                 @auth
-                    <a href="{{ route('home') }}" class="btn btn-primary btn-sm rounded-xl px-5 font-bold shadow-md shadow-primary/20 text-xs">
-                        <span>{{ __('ورود به پیشخوان نپتون') }}</span>
+                    <a href="{{ route('home') }}" class="btn btn-outline btn-primary btn-sm rounded-xl px-4 font-bold text-xs">
+                        <span>{{ __('پیشخوان') }}</span>
                         <span>←</span>
                     </a>
                 @else
                     <button @click="trialModalOpen = true" class="btn btn-outline btn-primary btn-sm rounded-xl px-4 text-xs font-bold hidden sm:inline-flex">
                         <span>🎁</span>
-                        <span>{{ __('نسخه آزمایشی رایگان') }}</span>
+                        <span>{{ __('نسخه آزمایشی') }}</span>
                     </button>
-                    <a href="{{ route('login') }}" class="btn btn-ghost btn-sm rounded-xl px-3 text-xs font-bold">
-                        {{ __('ورود') }}
-                    </a>
-                    <a href="#pricing" class="btn btn-primary btn-sm rounded-xl px-5 font-bold shadow-md shadow-primary/25 text-xs">
+                    <a href="#pricing" class="btn btn-accent btn-sm rounded-xl px-4 font-bold text-xs hidden md:inline-flex">
                         {{ __('خرید نرم‌افزار') }}
                     </a>
                 @endauth

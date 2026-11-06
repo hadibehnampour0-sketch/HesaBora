@@ -113,11 +113,11 @@ class UsernameLoginTest extends TestCase
         $this->seed(DatabaseSeeder::class);
 
         $this->assertDatabaseHas('users', [
-            'email' => 'admin@dakhl.local',
+            'email' => 'admin@neptune.local',
             'username' => 'admin',
         ]);
 
-        $admin = User::where('email', 'admin@dakhl.local')->first();
+        $admin = User::where('email', 'admin@neptune.local')->first();
 
         $this->assertNotNull($admin);
         $this->assertTrue(Hash::check('1234', $admin->password));
@@ -136,7 +136,7 @@ class UsernameLoginTest extends TestCase
 
         $response->assertRedirect();
         $this->assertAuthenticated();
-        $this->assertSame('admin@dakhl.local', auth()->user()->email);
+        $this->assertSame('admin@neptune.local', auth()->user()->email);
     }
 
     /**

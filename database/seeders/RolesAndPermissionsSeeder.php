@@ -469,7 +469,7 @@ class RolesAndPermissionsSeeder extends Seeder
             // the open follow-up to force a password change on first login
             // before any public release, since "1234" must never remain the
             // active password on a real deployment.
-            $email = 'admin@dakhl.local';
+            $email = 'admin@neptune.local';
             $username = 'admin';
             $password = '1234';
 
