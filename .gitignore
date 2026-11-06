@@ -22,6 +22,7 @@ yarn-error.log
 /build/output
 /build/php
 /build/installer/Neptune.exe
+/public/downloads/*.exe
 script/*.sql*
 script/*/*.sql*
 storage/*.sqlite*

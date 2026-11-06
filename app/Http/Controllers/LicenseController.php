@@ -190,8 +190,30 @@ class LicenseController extends Controller
             'plan_title' => $selectedPlan['name'] ?? $selectedPlan['title'] ?? $validated['plan'],
             'total_price_irr' => $totalPrice,
             'total_price_formatted' => number_format($totalPrice).' تومان',
-            'message' => 'سفارش لایسنس شما با موفقیت ثبت شد. کارشناسان دخل جهت فعال‌سازی نهایی و صدور فاکتور با شما تماس خواهند گرفت.',
+            'message' => 'سفارش لایسنس شما با موفقیت ثبت شد. کارشناسان نپتون جهت فعال‌سازی نهایی و هماهنگی با شما تماس خواهند گرفت.',
         ]);
+    }
+
+    /**
+     * Download the standalone Windows Desktop Installer (.exe).
+     */
+    public function downloadInstaller()
+    {
+        $filePath = public_path('downloads/Neptune-ERP-Setup-v2.5.exe');
+        if (! file_exists($filePath)) {
+            $backupPath = base_path('build/output/Neptune-ERP-Setup-v2.5.exe');
+            if (file_exists($backupPath)) {
+                $filePath = $backupPath;
+            } else {
+                return redirect()->route('landing')->with('error', 'فایل نصبی ویندوز نپتون در حال حاضر در دسترس نیست.');
+            }
+        }
+
+        return response()->download(
+            $filePath,
+            'Neptune-ERP-Setup-v2.5.exe',
+            ['Content-Type' => 'application/vnd.microsoft.portable-executable']
+        );
     }
 
     /**

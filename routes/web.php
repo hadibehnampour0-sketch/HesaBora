@@ -38,6 +38,7 @@ Route::post('/integrations/digikala/webhook/{token}', [Controllers\IntegrationWe
 // Public Landing, Pricing, Product Capabilities & Online License Ordering Portal
 Route::get('/landing', [Controllers\LicenseController::class, 'landing'])->name('landing');
 Route::get('/pricing', [Controllers\LicenseController::class, 'publicPricing'])->name('pricing');
+Route::get('/download/windows', [Controllers\LicenseController::class, 'downloadInstaller'])->name('download.installer');
 Route::post('/trial/request', [Controllers\LicenseController::class, 'requestTrial'])->middleware('throttle:10,1')->name('trial.request');
 Route::post('/order/submit', [Controllers\LicenseController::class, 'submitOrder'])->middleware('throttle:10,1')->name('order.submit');
 Route::view('/logo-showcase', 'logo-showcase')->name('logo.showcase');

@@ -41,9 +41,13 @@
             </nav>
 
             <div class="flex items-center gap-2">
-                <a href="{{ route('login') }}" class="btn btn-primary btn-sm rounded-xl px-4 font-bold shadow-md shadow-primary/25 text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
+                <a href="{{ route('download.installer') }}" class="btn btn-primary btn-sm rounded-xl px-3 font-bold shadow-md shadow-primary/25 text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>{{ __('دانلود ویندوز') }}</span>
+                </a>
+                <a href="{{ route('login') }}" class="btn btn-outline btn-primary btn-sm rounded-xl px-4 font-bold text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
                     <svg class="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
-                    <span>{{ __('بازگشت به ورود') }}</span>
+                    <span>{{ __('ورود') }}</span>
                 </a>
                 @auth
                     <a href="{{ route('home') }}" class="btn btn-outline btn-primary btn-sm rounded-xl px-4 font-bold text-xs">
@@ -77,11 +81,15 @@
             </p>
 
             <div class="flex flex-wrap justify-center gap-3 pt-2">
-                <a href="#plans" class="btn btn-primary rounded-2xl px-6 font-bold shadow-lg shadow-primary/25 text-sm">
+                <a href="{{ route('download.installer') }}" class="btn btn-primary rounded-2xl px-6 font-bold shadow-lg shadow-primary/25 text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>دانلود فایل نصبی ویندوز (نسخه ۲.۵)</span>
+                </a>
+                <a href="#plans" class="btn btn-outline rounded-2xl px-6 font-bold text-sm">
                     <span>مشاهده ۵ پکیج تجاری</span>
                     <span>⚡</span>
                 </a>
-                <a href="#calculator" class="btn btn-outline rounded-2xl px-6 text-sm font-bold">
+                <a href="#calculator" class="btn btn-ghost rounded-2xl px-5 text-sm font-bold text-base-content/70">
                     <span>محاسبه‌گر آنلاین لایسنس</span>
                 </a>
             </div>

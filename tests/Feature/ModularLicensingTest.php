@@ -429,6 +429,15 @@ class ModularLicensingTest extends TestCase
             ->assertSee('نسخه آزمایشی ۱۴ روزه');
     }
 
+    public function test_installer_download_endpoint(): void
+    {
+        $response = $this->get(route('download.installer'));
+
+        $response->assertOk();
+        $this->assertStringContainsString('attachment', $response->headers->get('content-disposition', ''));
+        $this->assertStringContainsString('Neptune-ERP-Setup-v2.5.exe', $response->headers->get('content-disposition', ''));
+    }
+
     public function test_instant_trial_request_endpoint(): void
     {
         $response = $this->postJson(route('trial.request'), [

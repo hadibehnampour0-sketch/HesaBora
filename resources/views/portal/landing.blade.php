@@ -138,9 +138,13 @@
                         <span>←</span>
                     </a>
                 @else
+                    <a href="{{ route('download.installer') }}" class="btn btn-primary btn-sm rounded-xl px-4 text-xs font-bold flex items-center gap-1.5 shadow-md shadow-primary/25 hover:scale-105 active:scale-95 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>{{ __('دانلود نسخه ویندوز') }}</span>
+                    </a>
                     <button @click="trialModalOpen = true" class="btn btn-outline btn-primary btn-sm rounded-xl px-4 text-xs font-bold hidden sm:inline-flex">
                         <span>🎁</span>
-                        <span>{{ __('نسخه آزمایشی') }}</span>
+                        <span>{{ __('لایسنس آزمایشی') }}</span>
                     </button>
                     <a href="#pricing" class="btn btn-accent btn-sm rounded-xl px-4 font-bold text-xs hidden md:inline-flex">
                         {{ __('خرید نرم‌افزار') }}
@@ -185,16 +189,16 @@
 
                 <!-- CTA Actions -->
                 <div class="flex flex-wrap items-center justify-center gap-3.5 pt-2">
-                    <button @click="trialModalOpen = true" class="btn btn-primary btn-lg rounded-2xl px-8 font-black shadow-xl shadow-primary/30 text-sm hover:scale-[1.02] transition-transform">
-                        <span>دریافت رایگان نسخه آزمایشی ۱۴ روزه</span>
-                        <span class="text-lg">⚡</span>
-                    </button>
-                    <a href="#pricing" class="btn btn-outline btn-lg rounded-2xl px-7 font-bold text-sm hover:scale-[1.02] transition-transform">
-                        <span>مشاهده ۵ پکیج تجاری و قیمت‌ها</span>
-                        <span>↓</span>
+                    <a href="{{ route('download.installer') }}" class="btn btn-primary btn-lg rounded-2xl px-8 font-black shadow-xl shadow-primary/30 text-sm hover:scale-[1.02] transition-transform flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>دانلود مستقیم فایل نصبی ویندوز (نسخه ۲.۵)</span>
                     </a>
-                    <a href="{{ route('pricing') }}" class="btn btn-ghost btn-lg rounded-2xl px-5 font-bold text-xs text-base-content/70">
-                        <span>محاسبه‌گر سفارشی لایسنس ←</span>
+                    <button @click="trialModalOpen = true" class="btn btn-outline btn-lg rounded-2xl px-6 font-bold text-sm hover:scale-[1.02] transition-transform flex items-center gap-2">
+                        <span>🎁</span>
+                        <span>دریافت لایسنس آزمایشی ۱۴ روزه</span>
+                    </button>
+                    <a href="#pricing" class="btn btn-ghost btn-lg rounded-2xl px-5 font-bold text-xs text-base-content/70">
+                        <span>مشاهده ۵ پکیج تجاری ↓</span>
                     </a>
                 </div>
 
@@ -881,22 +885,26 @@
         <!-- BOTTOM CALL TO ACTION -->
         <section class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="rounded-3xl bg-base-100 border border-base-300 p-8 sm:p-12 text-center space-y-6 shadow-xl relative overflow-hidden">
-                <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center text-3xl font-black mx-auto shadow-lg shadow-emerald-600/30">
-                    د
+                <div class="w-16 h-16 rounded-3xl bg-[#090D16] p-2 flex items-center justify-center mx-auto shadow-lg shadow-cyan-500/25 border border-cyan-500/30">
+                    <img src="/images/neptune-logo.svg" alt="Neptune ERP" class="w-full h-full object-contain">
                 </div>
                 <div class="space-y-2">
-                    <h2 class="text-2xl sm:text-4xl font-black text-base-content">آماده‌اید نپتون و خرج کسب‌وکارتان را متحول کنید؟</h2>
+                    <h2 class="text-2xl sm:text-4xl font-black text-base-content">آماده‌اید دخل و خرج کسب‌وکارتان را با نپتون متحول کنید؟</h2>
                     <p class="text-xs sm:text-sm text-base-content/70 max-w-xl mx-auto">
-                        همین حالا نسخه آزمایشی ۱۴ روزه را بدون نیاز به کارت بانکی دریافت کنید و تفاوت یک نرم‌افزار حسابداری مدرن را از نزدیک تجربه کنید.
+                        همین حالا فایل نصبی ویندوز را با یک کلیک دریافت کنید، بدون نیاز به کارت بانکی یا اینترنت لایسنس تستی ۱۴ روزه را فعال کنید و سرعت نسل نوین حسابداری را بچشید.
                     </p>
                 </div>
                 <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
-                    <button @click="trialModalOpen = true" class="btn btn-primary btn-lg rounded-2xl px-8 font-black text-sm shadow-xl shadow-primary/25">
+                    <a href="{{ route('download.installer') }}" class="btn btn-primary btn-lg rounded-2xl px-8 font-black text-sm shadow-xl shadow-primary/25 flex items-center gap-2 hover:scale-105 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>دانلود مستقیم فایل نصبی ویندوز (۲۱۷ مگابایت)</span>
+                    </a>
+                    <button @click="trialModalOpen = true" class="btn btn-outline btn-lg rounded-2xl px-6 font-bold text-sm">
                         دریافت فوری لایسنس آزمایشی ۱۴ روزه ⚡
                     </button>
-                    <a href="tel:02191000000" class="btn btn-outline btn-lg rounded-2xl px-6 font-bold text-sm">
+                    <a href="tel:02191000000" class="btn btn-ghost btn-lg rounded-2xl px-4 font-bold text-xs text-base-content/70">
                         <span>📞</span>
-                        <span>تماس با واحد فروش و مشاوره</span>
+                        <span>تماس با مشاوره فروش</span>
                     </a>
                 </div>
             </div>
@@ -908,8 +916,8 @@
     <footer class="bg-base-100 border-t border-base-300 py-12 text-xs text-base-content/70">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center font-black text-base">
-                    د
+                <div class="w-9 h-9 rounded-xl bg-[#090D16] p-1.5 flex items-center justify-center shadow-md border border-cyan-500/30">
+                    <img src="/images/neptune-logo.svg" alt="Neptune ERP" class="w-full h-full object-contain">
                 </div>
                 <div>
                     <span class="font-black text-base-content text-sm block">سامانه مالی و حسابداری نپتون (Neptune ERP)</span>
@@ -965,6 +973,11 @@
                     <button @click="navigator.clipboard.writeText(trialResult.license_key); alert('کد لایسنس با موفقیت کپی شد!')" class="btn btn-primary w-full rounded-2xl font-bold text-xs">
                         کپی کلید فعال‌سازی 📋
                     </button>
+
+                    <a href="{{ route('download.installer') }}" class="btn btn-accent btn-outline w-full rounded-2xl font-bold text-xs gap-1.5 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        <span>دانلود فایل نصبی ویندوز نپتون (۲۱۷ مگابایت)</span>
+                    </a>
                 </div>
             </template>
 
