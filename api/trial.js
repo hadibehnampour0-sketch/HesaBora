@@ -1,5 +1,28 @@
 const crypto = require('crypto');
 
+// Ed25519 root signing key (matches Neptune root public key b79f7b64c4e0f5a6f5e1ad74c2a6d1ee34a03d595472825cada05b46b4002e11)
+const SEED_HEX = 'ea8fd18b6b0d8ffa8278dd934399f09379a5da4f763f2af53ee6f1cc73d2e3a1';
+const PKCS8_DER = Buffer.concat([
+  Buffer.from('302e020100300506032b657004220420', 'hex'),
+  Buffer.from(SEED_HEX, 'hex')
+]);
+const ROOT_PRIV_KEY = crypto.createPrivateKey({ key: PKCS8_DER, format: 'der', type: 'pkcs8' });
+
+function ksortRecursive(obj) {
+  if (Array.isArray(obj)) {
+    return obj.map(ksortRecursive);
+  }
+  if (obj !== null && typeof obj === 'object') {
+    return Object.keys(obj)
+      .sort()
+      .reduce((acc, key) => {
+        acc[key] = ksortRecursive(obj[key]);
+        return acc;
+      }, {});
+  }
+  return obj;
+}
+
 module.exports = async (req, res) => {
   // Allow CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -43,12 +66,12 @@ module.exports = async (req, res) => {
     nonce: crypto.randomBytes(8).toString('hex')
   };
 
-  const canonicalJson = JSON.stringify(payload);
+  const sortedPayload = ksortRecursive(payload);
+  const canonicalJson = JSON.stringify(sortedPayload);
   const payloadBase64 = Buffer.from(canonicalJson, 'utf8').toString('base64url');
 
-  // Sign using Ed25519
-  const { privateKey } = crypto.generateKeyPairSync('ed25519');
-  const signature = crypto.sign(null, Buffer.from(canonicalJson, 'utf8'), privateKey);
+  // Sign using real root Ed25519 key
+  const signature = crypto.sign(null, Buffer.from(canonicalJson, 'utf8'), ROOT_PRIV_KEY);
   const sigBase64 = signature.toString('base64url');
 
   const licenseKey = `NEPTUNE-LIC-v2.${payloadBase64}.${sigBase64}`;

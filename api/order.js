@@ -26,17 +26,17 @@ module.exports = async (req, res) => {
   };
 
   const planPrices = {
-    shop: 4800000,
-    basic: 4800000,
-    commercial: 11500000,
-    professional: 11500000,
-    distribution: 18900000,
-    manufacturing: 21500000,
-    enterprise: 34000000
+    shop: 5000000,
+    basic: 5000000,
+    commercial: 15000000,
+    professional: 15000000,
+    distribution: 35000000,
+    manufacturing: 50000000,
+    enterprise: 80000000
   };
 
   const selectedPlan = body.plan || 'shop';
-  const basePrice = planPrices[selectedPlan] || 4800000;
+  const basePrice = planPrices[selectedPlan] || 5000000;
   const companiesCost = (parseInt(body.extra_companies, 10) || 0) * 1500000;
   const usersCost = (parseInt(body.extra_users, 10) || 0) * 1200000;
   const totalPrice = basePrice + companiesCost + usersCost;

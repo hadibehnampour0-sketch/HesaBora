@@ -3,6 +3,9 @@
   "cleanUrls": true,
   "outputDirectory": "public",
   "rewrites": [
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/portal/admin", "destination": "/admin.html" },
+    { "source": "/api/admin-license", "destination": "/api/admin-license" },
     { "source": "/trial/request", "destination": "/api/trial" },
     { "source": "/login/trial/request", "destination": "/api/trial" },
     { "source": "/order/submit", "destination": "/api/order" },
