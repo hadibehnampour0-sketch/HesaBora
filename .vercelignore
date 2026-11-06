@@ -12,7 +12,9 @@ scratch
 # Desktop Electron & NativePHP binaries
 vendor
 nativephp
-build
+/build
+!public/build
+!public/build/**
 
 # Test suites, documentation & internal scripts
 tests
@@ -34,3 +36,4 @@ auth.json
 # Local runtime storage
 storage
 
+public/downloads/*.exe
