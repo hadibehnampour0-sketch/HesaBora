@@ -1,0 +1,188 @@
+{
+  "Software": "Sepidar System - Hamkaran System (سیستم مالی و بازرگانی سپیدار)",
+  "CompanyTitle": "شرکت توزیع و پخش سراسری البرز سلامت دارو (سهامی خاص)",
+  "FiscalYear": 1404,
+  "Parties": [
+    {
+      "PartyCode": "10101",
+      "PartyName": "داروخانه شبانه‌روزی دکتر کمالی (تهران)",
+      "Mobile": "09121894523",
+      "Phone": "02188771122",
+      "NationalCode": "0043921845",
+      "EconomicCode": "411589321456",
+      "DebitBalance": 680000000,
+      "CreditBalance": 0,
+      "Remain": 680000000,
+      "PartyGroupTitle": "داروخانه‌های شبانه‌روزی مرکز",
+      "Address": "تهران، میدان ونک، ابتدای خیابان ملاصدرا، پلاک ۲۴"
+    },
+    {
+      "PartyCode": "10102",
+      "PartyName": "داروخانه دکتر رزم‌آرا (کرج)",
+      "Mobile": "09123498712",
+      "Phone": "02634455667",
+      "NationalCode": "0321894761",
+      "EconomicCode": "411789654123",
+      "DebitBalance": 415000000,
+      "CreditBalance": 0,
+      "Remain": 415000000,
+      "PartyGroupTitle": "مشتریان استان البرز",
+      "Address": "کرج، خیابان بهشتی، بین دهقان ویلا و سه راه گوهردشت"
+    },
+    {
+      "PartyCode": "10103",
+      "PartyName": "بیمارستان تخصصی پارس (واحد تدارکات و دارو)",
+      "Mobile": "09128912345",
+      "Phone": "02188960051",
+      "NationalCode": "10100498712",
+      "EconomicCode": "411298456123",
+      "DebitBalance": 1250000000,
+      "CreditBalance": 0,
+      "Remain": 1250000000,
+      "PartyGroupTitle": "مراکز درمانی و بیمارستانی",
+      "Address": "تهران، بلوار کشاورز، پلاک ۶۷"
+    },
+    {
+      "PartyCode": "20101",
+      "PartyName": "شرکت داروسازی اکسیر (سهامی عام)",
+      "Mobile": "02188884400",
+      "Phone": "02188884400",
+      "NationalCode": "10100982314",
+      "EconomicCode": "411122334455",
+      "DebitBalance": 0,
+      "CreditBalance": 1940000000,
+      "Remain": -1940000000,
+      "PartyGroupTitle": "تامین‌کنندگان اقلام دارویی",
+      "Address": "تهران، خیابان ولیعصر، بالاتر از ظفر، برج اکسیر"
+    },
+    {
+      "PartyCode": "20102",
+      "PartyName": "شرکت صنایع بهداشتی فیروز",
+      "Mobile": "02832221199",
+      "Phone": "02832221199",
+      "NationalCode": "10860124578",
+      "EconomicCode": "411654987321",
+      "DebitBalance": 0,
+      "CreditBalance": 720000000,
+      "Remain": -720000000,
+      "PartyGroupTitle": "تامین‌کنندگان اقلام بهداشتی",
+      "Address": "قزوین، شهرک صنعتی البرز، خیابان حکمت چهارم"
+    },
+    {
+      "PartyCode": "10104",
+      "PartyName": "مرکز پخش مکمل‌های ورزشی تندرستی (پیمان نیک‌پور)",
+      "Mobile": "09125556677",
+      "Phone": "02122334455",
+      "NationalCode": "0071239845",
+      "DebitBalance": 280000000,
+      "CreditBalance": 0,
+      "Remain": 280000000,
+      "PartyGroupTitle": "مکمل‌ها و باشگاه‌های ورزشی",
+      "Address": "تهران، سعادت‌آباد، میدان کاج، مجتمع تجاری سروستان"
+    }
+  ],
+  "Items": [
+    {
+      "ItemCode": "MED-101",
+      "ItemName": "قرص استامینوفن کدیین ۳۰۰/۲۰ (جعبه ۱۰۰ عددی)",
+      "Barcode": "6260023456781",
+      "UnitName": "جعبه",
+      "PurchasePrice": 420000,
+      "SalePrice": 560000,
+      "StockQuantity": 650,
+      "ItemGroupTitle": "داروهای عمومی و مسکن"
+    },
+    {
+      "ItemCode": "MED-102",
+      "ItemName": "شربت دیفن‌هیدرامین کامپاند ۶۰ سی‌سی (کارتن ۴۸ عددی)",
+      "Barcode": "6260023456798",
+      "UnitName": "کارتن",
+      "PurchasePrice": 1450000,
+      "SalePrice": 1890000,
+      "StockQuantity": 120,
+      "ItemGroupTitle": "داروهای تنفسی و ضدسرفه"
+    },
+    {
+      "ItemCode": "MED-103",
+      "ItemName": "کپسول امپرازول ۲۰ میلی‌گرم (بسته ۳۰ عددی)",
+      "Barcode": "6260023456804",
+      "UnitName": "بسته",
+      "PurchasePrice": 380000,
+      "SalePrice": 490000,
+      "StockQuantity": 400,
+      "ItemGroupTitle": "داروهای گوارشی"
+    },
+    {
+      "ItemCode": "COS-201",
+      "ItemName": "شامپو بچه ملایم فیروز ۲۰۰ میلی‌لیتر (کارتن ۲۴ عددی)",
+      "Barcode": "6260123987456",
+      "UnitName": "کارتن",
+      "PurchasePrice": 1100000,
+      "SalePrice": 1390000,
+      "StockQuantity": 180,
+      "ItemGroupTitle": "محصولات بهداشتی و مراقبت فردی"
+    },
+    {
+      "ItemCode": "SUP-301",
+      "ItemName": "قرص جوشان ویتامین C ۱۰۰۰ میلی‌گرم یوروویتال (بسته ۲۰ عددی)",
+      "Barcode": "4046228001234",
+      "UnitName": "تیوپ",
+      "PurchasePrice": 850000,
+      "SalePrice": 1150000,
+      "StockQuantity": 320,
+      "ItemGroupTitle": "مکمل‌های غذایی و ویتامین‌ها"
+    },
+    {
+      "ItemCode": "MED-104",
+      "ItemName": "سرم سدیم کلراید ۰.۹ درصد ۵۰۰ سی‌سی (کارتن ۲۰ عددی)",
+      "Barcode": "6260023456811",
+      "UnitName": "کارتن",
+      "PurchasePrice": 980000,
+      "SalePrice": 1280000,
+      "StockQuantity": 250,
+      "ItemGroupTitle": "سرم‌ها و فرآورده‌های تزریقی"
+    }
+  ],
+  "Cheques": [
+    {
+      "ChequeNumber": "SEP-1404-01",
+      "SayadNumber": "7804112233445566",
+      "PartyName": "داروخانه شبانه‌روزی دکتر کمالی (تهران)",
+      "Amount": 350000000,
+      "ChequeDate": "1404/11/20",
+      "DueDate": "1405/02/15",
+      "Type": 1,
+      "BankName": "بانک ملت"
+    },
+    {
+      "ChequeNumber": "SEP-1404-02",
+      "SayadNumber": "7804223344556677",
+      "PartyName": "داروخانه دکتر رزم‌آرا (کرج)",
+      "Amount": 220000000,
+      "ChequeDate": "1404/12/05",
+      "DueDate": "1405/03/10",
+      "Type": 1,
+      "BankName": "بانک رفاه کارگران"
+    },
+    {
+      "ChequeNumber": "SEP-1404-03",
+      "SayadNumber": "7804334455667788",
+      "PartyName": "بیمارستان تخصصی پارس (واحد تدارکات و دارو)",
+      "Amount": 600000000,
+      "ChequeDate": "1404/12/15",
+      "DueDate": "1405/04/01",
+      "Type": 1,
+      "BankName": "بانک ملی ایران"
+    },
+    {
+      "ChequeNumber": "SEP-PAY-01",
+      "SayadNumber": "7804998877665544",
+      "PartyName": "شرکت داروسازی اکسیر (سهامی عام)",
+      "Amount": 800000000,
+      "ChequeDate": "1404/12/25",
+      "DueDate": "1405/04/20",
+      "Type": 2,
+      "BankName": "بانک تجارت"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "system_note": "این فایل حاوی سناریوهای واقعی و خطاهای متداول دیتابیس‌های قدیمی است تا قدرت پالایش و خودترمیمی هوش مصنوعی نپتون را محک بزند.",
+  "customers": [
+    {
+      "name": "آقای علیرضا صبوری (مشتری بدهکار خوش‌حساب)",
+      "mobile": "09121987654",
+      "national_code": "0064567891",
+      "balance": 85000000,
+      "is_creditor": false,
+      "group_name": "مشتریان وفادار"
+    },
+    {
+      "name": "شرکت پخش مواد اولیه پارس شیمی (تامین‌کننده بستانکار)",
+      "mobile": "02188997766",
+      "national_code": "10100456123",
+      "balance": -140000000,
+      "is_creditor": true,
+      "group_name": "تامین‌کنندگان عمده"
+    },
+    {
+      "name": "+تزریق فرمول سنتی اکسل جهت تست امنیت",
+      "mobile": "09351112233",
+      "national_code": "0012345678",
+      "balance": 25000000,
+      "is_creditor": false,
+      "group_name": "تست‌های امنیتی هوش مصنوعی"
+    }
+  ],
+  "products": [
+    {
+      "name": "روغن موتور ۴ لیتری بهران سوپر رانا 5W-40",
+      "code": "OIL-BHR-5W40",
+      "barcode": "6260198451122",
+      "unit": "قوطی",
+      "purchase_price": 4800000,
+      "sell_price": 5900000,
+      "initial_stock": 25,
+      "group_name": "روانکارها و روغن موتور"
+    },
+    {
+      "name": "فیلتر روغن پژو ۲۰۶ (دارای موجودی منفی در سیستم قدیمی)",
+      "code": "FLT-206-NEG",
+      "barcode": "6260198451139",
+      "unit": "عدد",
+      "purchase_price": 850000,
+      "sell_price": 1100000,
+      "initial_stock": -4,
+      "group_name": "فیلترها"
+    },
+    {
+      "name": "فیلتر هوای سمند ملی EF7 سرکان",
+      "code": "FLT-SMD-EF7",
+      "barcode": "6260198451146",
+      "unit": "عدد",
+      "purchase_price": 1200000,
+      "sell_price": 1550000,
+      "initial_stock": 40,
+      "group_name": "فیلترها"
+    }
+  ],
+  "cheques": [
+    {
+      "cheque_number": "CHQ-7701",
+      "sayad_number": "1405112233445566",
+      "customer_name": "آقای علیرضا صبوری (مشتری بدهکار خوش‌حساب)",
+      "amount": 50000000,
+      "write_date": "1404/12/01",
+      "due_date": "1405/02/15",
+      "direction": "receivable",
+      "bank_name": "بانک ملت"
+    },
+    {
+      "cheque_number": "CHQ-7702-WARN",
+      "sayad_number": "140511223344",
+      "customer_name": "شرکت پخش مواد اولیه پارس شیمی (تامین‌کننده بستانکار)",
+      "amount": 80000000,
+      "write_date": "1404/12/10",
+      "due_date": "1405/03/20",
+      "direction": "payable",
+      "bank_name": "بانک ملی ایران"
+    }
+  ]
+}

@@ -206,7 +206,7 @@ class CompetitorMigrationService
             [
                 'category' => 'چک‌ها و اسناد مالی',
                 'count' => count($payload->cheques),
-                'target_table' => 'cheques (خزانه‌داری دخل)',
+                'target_table' => 'cheques (خزانه‌داری نپتون)',
                 'account_code' => '10501 (اسناد دریافتنی) / 20201 (اسناد پرداختنی)',
                 'ai_action' => 'اعتبارسنجی ساختار ۱۶ رقمی صیاد، تفکیک دریافتنی/پرداختنی و ثبت در وضعیت در جریان وصول',
                 'status' => 'آماده انتقال',
@@ -227,7 +227,7 @@ class CompetitorMigrationService
         $equity = $recon['opening_equity'] ?? 0;
 
         $commentary = [
-            "هوش مصنوعی دخل با موفقیت ساختار دیتابیس ارسالی را پایش کرد و الگوی داده‌ها را منطبق بر «{$detectedSource}» با ضریب اطمینان {$sourceConfidence}٪ شناسایی نمود.",
+            "هوش مصنوعی نپتون با موفقیت ساختار دیتابیس ارسالی را پایش کرد و الگوی داده‌ها را منطبق بر «{$detectedSource}» با ضریب اطمینان {$sourceConfidence}٪ شناسایی نمود.",
             "پایش معادله بنیادین حسابداری: مجموع دارایی‌های شناسایی‌شده برابر با " . number_format($totalAssets) . " ریال و مجموع بدهی‌ها برابر با " . number_format($totalLiabilities) . " ریال است. سند افتتاحیه به صورت کاملاً متوازن با سرمایه انتقالی " . number_format($equity) . " ریال آماده درج در دفاتر رسمی است.",
         ];
 
