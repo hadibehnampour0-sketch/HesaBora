@@ -128,6 +128,20 @@ class LicenseController extends Controller
 
         $licenseKey = $this->licenseService->issueLicenseKey($trialData);
 
+        // Persist lead to database for sales CRM and tracking
+        try {
+            \App\Models\PortalLead::create([
+                'customer_name' => $validated['customer_name'],
+                'phone' => $validated['phone'],
+                'business_type' => $validated['business_type'] ?? null,
+                'ip_address' => $request->ip(),
+                'status' => 'new',
+                'trial_license_key' => $licenseKey,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to persist portal lead: ' . $e->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'لایسنس آزمایشی ۱۴ روزه با دسترسی کامل به تمام ماژول‌ها برای شما صادر شد.',
@@ -184,6 +198,24 @@ class LicenseController extends Controller
 
         $orderReference = 'DK-ORD-'.date('Ymd').'-'.strtoupper(substr(md5(uniqid()), 0, 6));
 
+        // Persist order to database for portal admin management
+        try {
+            \App\Models\PortalOrder::create([
+                'order_reference' => $orderReference,
+                'plan' => $validated['plan'],
+                'customer_name' => $validated['customer_name'],
+                'phone' => $validated['phone'],
+                'company_name' => $validated['company_name'] ?? null,
+                'hardware_fingerprint' => $validated['hardware_fingerprint'] ?? null,
+                'extra_companies' => $extraCompanies,
+                'extra_users' => $extraUsers,
+                'total_price' => $totalPrice,
+                'status' => 'pending',
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to persist portal order: ' . $e->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'order_reference' => $orderReference,
@@ -199,14 +231,20 @@ class LicenseController extends Controller
      */
     public function downloadInstaller()
     {
+        $githubReleaseUrl = 'https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.5.0/Neptune-ERP-Setup-v2.5.exe';
+
         $filePath = public_path('downloads/Neptune-ERP-Setup-v2.5.exe');
         if (! file_exists($filePath)) {
             $backupPath = base_path('build/output/Neptune-ERP-Setup-v2.5.exe');
             if (file_exists($backupPath)) {
                 $filePath = $backupPath;
             } else {
-                return redirect()->route('landing')->with('error', 'فایل نصبی ویندوز نپتون در حال حاضر در دسترس نیست.');
+                return redirect()->away($githubReleaseUrl);
             }
+        }
+
+        if (request()->has('cdn') || request()->isSecure()) {
+            return redirect()->away($githubReleaseUrl);
         }
 
         return response()->download(

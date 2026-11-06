@@ -110,6 +110,15 @@ Route::middleware(['auth', 'permission:access-super-admin-panel', 'ensure-featur
         Route::resource('permissions', Controllers\Management\PermissionController::class)->except(['show']);
         Route::resource('roles', Controllers\Management\RoleController::class)->except(['show']);
     });
+
+    // Neptune Commercial Portal & Site Admin (CRM, Leads, Orders & License Hub)
+    Route::prefix('portal')->name('management.portal.')->group(function () {
+        Route::get('/', [Controllers\Management\PortalAdminController::class, 'index'])->name('index');
+        Route::post('/leads/{lead}', [Controllers\Management\PortalAdminController::class, 'updateLead'])->name('leads.update');
+        Route::post('/orders/{order}', [Controllers\Management\PortalAdminController::class, 'updateOrder'])->name('orders.update');
+        Route::post('/orders/{order}/issue-license', [Controllers\Management\PortalAdminController::class, 'issueOrderLicense'])->name('orders.issue-license');
+        Route::post('/issue-custom-license', [Controllers\Management\PortalAdminController::class, 'issueCustomLicense'])->name('issue-custom-license');
+    });
 });
 
 Route::group(['middleware' => ['auth', 'ensure-employee', 'ensure-feature-enabled:email_verification'], 'prefix' => 'employee-portal', 'as' => 'employee-portal.'], function () {

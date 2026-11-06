@@ -14,6 +14,8 @@
     { "source": "/", "destination": "/index.html" }
   ],
   "redirects": [
+    { "source": "/download/windows", "destination": "https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.5.0/Neptune-ERP-Setup-v2.5.exe", "permanent": false },
+    { "source": "/downloads/:path*", "destination": "https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.5.0/Neptune-ERP-Setup-v2.5.exe", "permanent": false },
     { "source": "/login/login", "destination": "/", "permanent": false },
     { "source": "/login", "destination": "/", "permanent": false }
   ]

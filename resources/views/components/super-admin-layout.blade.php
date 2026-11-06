@@ -17,6 +17,12 @@
             'M4 13h6V4H4v9Zm0 7h6v-4H4v4Zm10 0h6v-9h-6v9Zm0-16v4h6V4h-6Z',
         ],
         [
+            __('پورتال و لایسنس نپتون'),
+            route('management.portal.index'),
+            request()->routeIs('management.portal.*'),
+            'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+        ],
+        [
             __('Companies'),
             route('companies.index'),
             request()->routeIs('companies.*'),
