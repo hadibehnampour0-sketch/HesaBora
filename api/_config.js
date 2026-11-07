@@ -3,9 +3,7 @@ const path = require('path');
 
 let cachedConfig = null;
 let lastFetchTime = 0;
-const CACHE_TTL_MS = 1500; // 1.5 seconds in-memory cache for ultra-fast responses
-
-const BLOB_URL = 'https://exo0zviqm1abshhg.public.blob.vercel-storage.com/neptune-settings.json';
+const CACHE_TTL_MS = 1000; // 1 second in-memory cache
 
 function getDefaultConfig() {
   try {
@@ -64,28 +62,35 @@ async function getLiveConfig() {
     return cachedConfig;
   }
 
-  // 1. Try to fetch from persistent Vercel Blob
-  try {
-    const res = await fetch(`${BLOB_URL}?t=${now}`, { cache: 'no-store' });
-    if (res.ok) {
-      const data = await res.json();
-      if (data && data.site && data.plans) {
-        // Ensure alias sync (shop/basic, commercial/professional)
-        if (data.plans.basic && !data.plans.shop) data.plans.shop = data.plans.basic;
-        if (data.plans.shop && !data.plans.basic) data.plans.basic = data.plans.shop;
-        if (data.plans.professional && !data.plans.commercial) data.plans.commercial = data.plans.professional;
-        if (data.plans.commercial && !data.plans.professional) data.plans.professional = data.plans.commercial;
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (token) {
+    try {
+      const { list } = require('@vercel/blob');
+      const res = await list({ prefix: 'settings/config-', token });
+      if (res && Array.isArray(res.blobs) && res.blobs.length > 0) {
+        // Sort descending by uploadedAt to get the newest
+        const sorted = res.blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+        const latest = sorted[0];
+        const fetchRes = await fetch(latest.url, { cache: 'no-store' });
+        if (fetchRes.ok) {
+          const data = await fetchRes.json();
+          if (data && data.site && data.plans) {
+            if (data.plans.basic && !data.plans.shop) data.plans.shop = data.plans.basic;
+            if (data.plans.shop && !data.plans.basic) data.plans.basic = data.plans.shop;
+            if (data.plans.professional && !data.plans.commercial) data.plans.commercial = data.plans.professional;
+            if (data.plans.commercial && !data.plans.professional) data.plans.professional = data.plans.commercial;
 
-        cachedConfig = data;
-        lastFetchTime = now;
-        return cachedConfig;
+            cachedConfig = data;
+            lastFetchTime = now;
+            return cachedConfig;
+          }
+        }
       }
+    } catch (err) {
+      console.warn('Could not list/fetch timestamped config from Blob:', err.message);
     }
-  } catch (err) {
-    console.warn('Could not fetch config from Blob, using local fallback:', err.message);
   }
 
-  // 2. Fallback to cached or default
   if (!cachedConfig) {
     cachedConfig = getDefaultConfig();
     lastFetchTime = now;
@@ -95,32 +100,47 @@ async function getLiveConfig() {
 }
 
 async function saveLiveConfig(newConfig) {
-  // Ensure dual alias consistency
+  // Ensure dual alias consistency and integer prices
   if (newConfig.plans) {
-    if (newConfig.plans.basic && !newConfig.plans.shop) newConfig.plans.shop = newConfig.plans.basic;
-    if (newConfig.plans.shop && !newConfig.plans.basic) newConfig.plans.basic = newConfig.plans.shop;
-    if (newConfig.plans.professional && !newConfig.plans.commercial) newConfig.plans.commercial = newConfig.plans.professional;
-    if (newConfig.plans.commercial && !newConfig.plans.professional) newConfig.plans.professional = newConfig.plans.commercial;
+    for (let k in newConfig.plans) {
+      if (newConfig.plans[k].price !== undefined) {
+        const num = parseInt(newConfig.plans[k].price.toString().replace(/[^0-9]/g, ''), 10) || 0;
+        newConfig.plans[k].price = num;
+        newConfig.plans[k].priceFormatted = new Intl.NumberFormat('fa-IR').format(num);
+      }
+    }
+    if (newConfig.plans.basic) newConfig.plans.shop = Object.assign({}, newConfig.plans.basic, { id: 'shop', alias: 'basic' });
+    if (newConfig.plans.professional) newConfig.plans.commercial = Object.assign({}, newConfig.plans.professional, { id: 'commercial', alias: 'professional' });
   }
 
   cachedConfig = newConfig;
   lastFetchTime = Date.now();
 
-  // Try saving to Vercel Blob
-  try {
-    const { put } = require('@vercel/blob');
-    const token = process.env.BLOB_READ_WRITE_TOKEN;
-    if (token) {
-      const blob = await put('neptune-settings.json', JSON.stringify(newConfig), {
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  if (token) {
+    try {
+      const { put, list, del } = require('@vercel/blob');
+      const time = Date.now();
+      const filename = `settings/config-${time}.json`;
+      const blob = await put(filename, JSON.stringify(newConfig), {
         access: 'public',
         addRandomSuffix: false,
-        allowOverwrite: true,
-        token: token
+        token
       });
+
+      // Async cleanup of older configs (keep latest 2)
+      list({ prefix: 'settings/config-', token }).then(res => {
+        if (res && res.blobs && res.blobs.length > 2) {
+          const sorted = res.blobs.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+          const toDelete = sorted.slice(2).map(b => b.url);
+          if (toDelete.length > 0) del(toDelete, { token }).catch(() => {});
+        }
+      }).catch(() => {});
+
       return { success: true, url: blob.url };
+    } catch (err) {
+      console.error('Failed to save timestamped config to Vercel Blob:', err);
     }
-  } catch (err) {
-    console.error('Failed to save to Vercel Blob:', err);
   }
 
   return { success: true, localOnly: true };

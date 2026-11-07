@@ -458,7 +458,7 @@
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
-                                    <input type="number" x-model="plans.basic.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <input type="number" x-model.number="plans.basic.price" @input="plans.basic.priceFormatted = new Intl.NumberFormat('fa-IR').format(plans.basic.price || 0)" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
@@ -478,7 +478,7 @@
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
-                                    <input type="number" x-model="plans.professional.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <input type="number" x-model.number="plans.professional.price" @input="plans.professional.priceFormatted = new Intl.NumberFormat('fa-IR').format(plans.professional.price || 0)" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
@@ -498,7 +498,7 @@
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
-                                    <input type="number" x-model="plans.distribution.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <input type="number" x-model.number="plans.distribution.price" @input="plans.distribution.priceFormatted = new Intl.NumberFormat('fa-IR').format(plans.distribution.price || 0)" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
@@ -518,7 +518,7 @@
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
-                                    <input type="number" x-model="plans.manufacturing.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <input type="number" x-model.number="plans.manufacturing.price" @input="plans.manufacturing.priceFormatted = new Intl.NumberFormat('fa-IR').format(plans.manufacturing.price || 0)" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
@@ -538,7 +538,7 @@
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
-                                    <input type="number" x-model="plans.enterprise.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <input type="number" x-model.number="plans.enterprise.price" @input="plans.enterprise.priceFormatted = new Intl.NumberFormat('fa-IR').format(plans.enterprise.price || 0)" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
@@ -859,20 +859,35 @@
                     if (localStorage.getItem('neptune_admin_auth') === 'true') {
                         this.isLoggedIn = true;
                     }
-                    // Fetch live server config
+                    // 1. Fetch live server config from cloud FIRST with cache-busting
                     try {
-                        const res = await fetch('/api/settings');
-                        const data = await res.json();
-                        if (data && data.config) {
-                            if (data.config.site) Object.assign(this.siteContent, data.config.site);
-                            if (data.config.plans) Object.assign(this.plans, data.config.plans);
-                            if (Array.isArray(data.config.coupons)) this.coupons = data.config.coupons;
+                        const res = await fetch('/api/settings?t=' + Date.now(), { cache: 'no-store' });
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data && data.config) {
+                                if (data.config.site) {
+                                    Object.assign(this.siteContent, data.config.site);
+                                    if (data.config.site.version) this.siteSettings.version = data.config.site.version;
+                                    if (data.config.site.downloadUrl) this.siteSettings.downloadUrl = data.config.site.downloadUrl;
+                                }
+                                if (data.config.plans) {
+                                    Object.assign(this.plans, data.config.plans);
+                                }
+                                if (Array.isArray(data.config.coupons)) {
+                                    this.coupons = data.config.coupons;
+                                }
+                                // Update local cache to match server
+                                localStorage.setItem('neptune_site_plans', JSON.stringify(this.plans));
+                                localStorage.setItem('neptune_site_content', JSON.stringify(this.siteContent));
+                                localStorage.setItem('neptune_site_coupons', JSON.stringify(this.coupons));
+                                return;
+                            }
                         }
                     } catch (e) {
-                        console.log('Using local cached config');
+                        console.warn('Network issue fetching live config, checking offline cache:', e);
                     }
 
-                    // Local overrides if any
+                    // 2. Only use localStorage if server request failed (offline fallback)
                     const savedPlans = localStorage.getItem('neptune_site_plans');
                     if (savedPlans) {
                         try { this.plans = Object.assign(this.plans, JSON.parse(savedPlans)); } catch(e) {}

@@ -53,6 +53,137 @@ const LivewireDispatcher = {
 };
 
 </script>
+<script>
+function pricingPageApp() {
+    return {
+        siteConfig: {
+            site: {
+                version: 'v2.5.0',
+                downloadUrl: 'https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.5.0/Neptune-ERP-Setup-v2.5.exe',
+                phone: '021-88884422',
+                telegram: '@NeptuneERP'
+            }
+        },
+        plansData: {
+            basic: { price: 5000000, priceFormatted: '۵,۰۰۰,۰۰۰', name: 'نسخه برنزی (اصناف)' },
+            shop: { price: 5000000, priceFormatted: '۵,۰۰۰,۰۰۰', name: 'نسخه برنزی (اصناف)' },
+            professional: { price: 15000000, priceFormatted: '۱۵,۰۰۰,۰۰۰', name: 'نسخه نقره‌ای (بازرگانی)' },
+            commercial: { price: 15000000, priceFormatted: '۱۵,۰۰۰,۰۰۰', name: 'نسخه نقره‌ای (بازرگانی)' },
+            distribution: { price: 35000000, priceFormatted: '۳۵,۰۰۰,۰۰۰', name: 'نسخه طلایی (توزیع)' },
+            manufacturing: { price: 50000000, priceFormatted: '۵۰,۰۰۰,۰۰۰', name: 'نسخه پلاتینیوم (تولیدی)' },
+            enterprise: { price: 80000000, priceFormatted: '۸۰,۰۰۰,۰۰۰', name: 'نسخه الماس (سازمانی)' }
+        },
+        basePlan: 'basic',
+        basePrices: { basic: 5000000, professional: 15000000, distribution: 35000000, manufacturing: 50000000, enterprise: 80000000 },
+        couponCode: '',
+        couponLoading: false,
+        couponDiscount: 0,
+        couponMessage: '',
+        couponError: '',
+        selectedAddons: [],
+        extraUsers: 0,
+        userPrice: 750000,
+        addonPrices: {
+            pos_retail: 1500000,
+            distribution: 4500000,
+            production_bom: 5500000,
+            hr_payroll: 2500000,
+            sms_automation: 1200000,
+            customer_loyalty: 1400000,
+            telephony_voip: 1100000,
+            official_inquiries: 800000,
+            installment_financing: 1500000,
+            ai_copilot: 3200000,
+            migration_tools: 800000
+        },
+        formatPrice(val) {
+            if (val === undefined || val === null) return '۰';
+            const num = parseInt(val.toString().replace(/[^0-9]/g, ''), 10) || 0;
+            return new Intl.NumberFormat('fa-IR').format(num);
+        },
+        async init() {
+            try {
+                const res = await fetch('/api/settings?t=' + Date.now(), { cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.config) {
+                        if (data.config.site) Object.assign(this.siteConfig.site, data.config.site);
+                        if (data.config.plans) {
+                            Object.assign(this.plansData, data.config.plans);
+                            for (let k in data.config.plans) {
+                                if (data.config.plans[k].price !== undefined) {
+                                    const num = parseInt(data.config.plans[k].price.toString().replace(/[^0-9]/g, ''), 10) || 0;
+                                    this.basePrices[k] = num;
+                                }
+                            }
+                            if (this.plansData.shop) this.basePrices.basic = parseInt(this.plansData.shop.price, 10);
+                            if (this.plansData.basic) this.basePrices.basic = parseInt(this.plansData.basic.price, 10);
+                            if (this.plansData.commercial) this.basePrices.professional = parseInt(this.plansData.commercial.price, 10);
+                            if (this.plansData.professional) this.basePrices.professional = parseInt(this.plansData.professional.price, 10);
+                        }
+                    }
+                }
+            } catch(e) {
+                console.warn('Pricing init settings error:', e);
+            }
+        },
+        calculateSubtotal() {
+            if (this.basePlan === 'enterprise') return (this.basePrices.enterprise || 80000000) + (this.extraUsers * this.userPrice);
+            let sum = this.basePrices[this.basePlan] || 5000000;
+            for (const key of this.selectedAddons) {
+                if (!this.isAddonDisabled(key) && this.addonPrices[key]) {
+                    sum += this.addonPrices[key];
+                }
+            }
+            sum += (this.extraUsers * this.userPrice);
+            return sum;
+        },
+        calculateTotal() {
+            return Math.max(0, this.calculateSubtotal() - this.couponDiscount);
+        },
+        isAddonDisabled(key) {
+            if (this.basePlan === 'enterprise') return true;
+            if (this.basePlan === 'distribution' && key === 'distribution') return true;
+            if (this.basePlan === 'manufacturing' && key === 'production_bom') return true;
+            if (['professional', 'distribution', 'manufacturing'].includes(this.basePlan)) {
+                return ['pos_retail', 'customer_loyalty', 'sms_automation', 'hr_payroll', 'telephony_voip', 'official_inquiries', 'installment_financing', 'migration_tools'].includes(key);
+            }
+            return false;
+        },
+        async applyCoupon() {
+            if (!this.couponCode.trim()) {
+                this.couponError = 'لطفاً کد تخفیف را وارد کنید.';
+                this.couponMessage = '';
+                return;
+            }
+            this.couponLoading = true;
+            this.couponError = '';
+            this.couponMessage = '';
+            try {
+                const subtotal = this.calculateSubtotal();
+                const res = await fetch('/api/coupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: this.couponCode, subtotal: subtotal })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    this.couponDiscount = data.discount_amount;
+                    this.couponMessage = '✓ ' + (data.description || 'کد تخفیف اعمال شد') + ': ' + data.discount_amount_formatted + ' کسر شد.';
+                    this.couponError = '';
+                } else {
+                    this.couponDiscount = 0;
+                    this.couponError = data.message || 'کد تخفیف نامعتبر است.';
+                }
+            } catch(err) {
+                this.couponError = 'خطا در اعتبارسنجی کد تخفیف.';
+            } finally {
+                this.couponLoading = false;
+            }
+        }
+    };
+}
+</script>
 </head>
 <body class="bg-base-200/50 text-base-content min-h-screen">
 
@@ -154,7 +285,7 @@ const LivewireDispatcher = {
                             <p class="text-[11px] text-base-content/60 mt-1 leading-relaxed">ویژه مغازه‌ها، بوتیک‌ها، خرده‌فروشی و اصناف خرد</p>
                         </div>
                         <div class="flex items-baseline gap-1 py-3 border-y border-base-200">
-                            <span class="text-2xl font-black text-base-content font-mono" x-text="plansData.basic ? plansData.basic.priceFormatted : (plansData.shop ? plansData.shop.priceFormatted : '۵,۰۰۰,۰۰۰')">۵,۰۰۰,۰۰۰</span>
+                            <span class="text-2xl font-black text-base-content font-mono" x-text="formatPrice(plansData.basic ? plansData.basic.price : (plansData.shop ? plansData.shop.price : 5000000))">۵,۰۰۰,۰۰۰</span>
                             <span class="text-[10px] text-base-content/60">تومان/سالانه</span>
                         </div>
                         <ul class="space-y-2 text-xs text-base-content/80">
@@ -188,7 +319,7 @@ const LivewireDispatcher = {
                             <p class="text-[11px] text-base-content/60 mt-1 leading-relaxed">ویژه دفاتر بازرگانی، واردات/صادرات و عمده‌فروشان</p>
                         </div>
                         <div class="flex items-baseline gap-1 py-3 border-y border-base-200">
-                            <span class="text-2xl font-black text-primary font-mono" x-text="plansData.professional ? plansData.professional.priceFormatted : (plansData.commercial ? plansData.commercial.priceFormatted : '۱۵,۰۰۰,۰۰۰')">۱۵,۰۰۰,۰۰۰</span>
+                            <span class="text-2xl font-black text-primary font-mono" x-text="formatPrice(plansData.professional ? plansData.professional.price : (plansData.commercial ? plansData.commercial.price : 15000000))">۱۵,۰۰۰,۰۰۰</span>
                             <span class="text-[10px] text-base-content/60">تومان/سالانه</span>
                         </div>
                         <ul class="space-y-2 text-xs text-base-content/90 font-medium">
@@ -220,7 +351,7 @@ const LivewireDispatcher = {
                             <p class="text-[11px] text-base-content/60 mt-1 leading-relaxed">ویژه شرکت‌های توزیع، فروش گرم و سرد و بنکداری</p>
                         </div>
                         <div class="flex items-baseline gap-1 py-3 border-y border-base-200">
-                            <span class="text-2xl font-black text-base-content font-mono" x-text="plansData.distribution ? plansData.distribution.priceFormatted : '۳۵,۰۰۰,۰۰۰'">۳۵,۰۰۰,۰۰۰</span>
+                            <span class="text-2xl font-black text-base-content font-mono" x-text="formatPrice(plansData.distribution ? plansData.distribution.price : 35000000)">۳۵,۰۰۰,۰۰۰</span>
                             <span class="text-[10px] text-base-content/60">تومان/سالانه</span>
                         </div>
                         <ul class="space-y-2 text-xs text-base-content/80">
@@ -252,7 +383,7 @@ const LivewireDispatcher = {
                             <p class="text-[11px] text-base-content/60 mt-1 leading-relaxed">ویژه کارگاه‌ها، صنایع تبدیلی و کارخانه‌های تولیدی</p>
                         </div>
                         <div class="flex items-baseline gap-1 py-3 border-y border-base-200">
-                            <span class="text-2xl font-black text-base-content font-mono" x-text="plansData.manufacturing ? plansData.manufacturing.priceFormatted : '۵۰,۰۰۰,۰۰۰'">۵۰,۰۰۰,۰۰۰</span>
+                            <span class="text-2xl font-black text-base-content font-mono" x-text="formatPrice(plansData.manufacturing ? plansData.manufacturing.price : 50000000)">۵۰,۰۰۰,۰۰۰</span>
                             <span class="text-[10px] text-base-content/60">تومان/سالانه</span>
                         </div>
                         <ul class="space-y-2 text-xs text-base-content/80">
@@ -284,7 +415,7 @@ const LivewireDispatcher = {
                             <p class="text-[11px] text-base-content/60 mt-1 leading-relaxed">دسترسی نامحدود به تمامی ماژول‌ها، شعبات و هوش مصنوعی</p>
                         </div>
                         <div class="flex items-baseline gap-1 py-3 border-y border-base-200">
-                            <span class="text-2xl font-black text-base-content font-mono" x-text="plansData.enterprise ? plansData.enterprise.priceFormatted : '۸۰,۰۰۰,۰۰۰'">۸۰,۰۰۰,۰۰۰</span>
+                            <span class="text-2xl font-black text-base-content font-mono" x-text="formatPrice(plansData.enterprise ? plansData.enterprise.price : 80000000)">۸۰,۰۰۰,۰۰۰</span>
                             <span class="text-[10px] text-base-content/60">تومان/سالانه</span>
                         </div>
                         <ul class="space-y-2 text-xs text-base-content/80">
@@ -810,126 +941,5 @@ const LivewireDispatcher = {
     </footer>
 
 
-<script>
-function pricingPageApp() {
-    return {
-        siteConfig: {
-            site: {
-                version: 'v2.5.0',
-                downloadUrl: 'https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.5.0/Neptune-ERP-Setup-v2.5.exe',
-                phone: '021-88884422',
-                telegram: '@NeptuneERP'
-            }
-        },
-        plansData: {
-            basic: { price: 5000000, priceFormatted: '۵,۰۰۰,۰۰۰', name: 'نسخه برنزی (اصناف)' },
-            shop: { price: 5000000, priceFormatted: '۵,۰۰۰,۰۰۰', name: 'نسخه برنزی (اصناف)' },
-            professional: { price: 15000000, priceFormatted: '۱۵,۰۰۰,۰۰۰', name: 'نسخه نقره‌ای (بازرگانی)' },
-            commercial: { price: 15000000, priceFormatted: '۱۵,۰۰۰,۰۰۰', name: 'نسخه نقره‌ای (بازرگانی)' },
-            distribution: { price: 35000000, priceFormatted: '۳۵,۰۰۰,۰۰۰', name: 'نسخه طلایی (توزیع)' },
-            manufacturing: { price: 50000000, priceFormatted: '۵۰,۰۰۰,۰۰۰', name: 'نسخه پلاتینیوم (تولیدی)' },
-            enterprise: { price: 80000000, priceFormatted: '۸۰,۰۰۰,۰۰۰', name: 'نسخه الماس (سازمانی)' }
-        },
-        basePlan: 'basic',
-        basePrices: { basic: 5000000, professional: 15000000, distribution: 35000000, manufacturing: 50000000, enterprise: 80000000 },
-        couponCode: '',
-        couponLoading: false,
-        couponDiscount: 0,
-        couponMessage: '',
-        couponError: '',
-        selectedAddons: [],
-        extraUsers: 0,
-        userPrice: 750000,
-        addonPrices: {
-            pos_retail: 1500000,
-            distribution: 4500000,
-            production_bom: 5500000,
-            hr_payroll: 2500000,
-            sms_automation: 1200000,
-            customer_loyalty: 1400000,
-            telephony_voip: 1100000,
-            official_inquiries: 800000,
-            installment_financing: 1500000,
-            ai_copilot: 3200000,
-            migration_tools: 800000
-        },
-        async init() {
-            try {
-                const res = await fetch('/api/settings?t=' + Date.now());
-                const data = await res.json();
-                if (data && data.config) {
-                    if (data.config.site) Object.assign(this.siteConfig.site, data.config.site);
-                    if (data.config.plans) {
-                        Object.assign(this.plansData, data.config.plans);
-                        for (let k in data.config.plans) {
-                            if (data.config.plans[k].price) {
-                                this.basePrices[k] = parseInt(data.config.plans[k].price, 10);
-                            }
-                        }
-                        if (data.config.plans.shop) this.basePrices.basic = parseInt(data.config.plans.shop.price, 10);
-                        if (data.config.plans.commercial) this.basePrices.professional = parseInt(data.config.plans.commercial.price, 10);
-                    }
-                }
-            } catch(e) {
-                console.warn('Pricing init settings error:', e);
-            }
-        },
-        calculateSubtotal() {
-            if (this.basePlan === 'enterprise') return (this.basePrices.enterprise || 80000000) + (this.extraUsers * this.userPrice);
-            let sum = this.basePrices[this.basePlan] || 5000000;
-            for (const key of this.selectedAddons) {
-                if (!this.isAddonDisabled(key) && this.addonPrices[key]) {
-                    sum += this.addonPrices[key];
-                }
-            }
-            sum += (this.extraUsers * this.userPrice);
-            return sum;
-        },
-        calculateTotal() {
-            return Math.max(0, this.calculateSubtotal() - this.couponDiscount);
-        },
-        isAddonDisabled(key) {
-            if (this.basePlan === 'enterprise') return true;
-            if (this.basePlan === 'distribution' && key === 'distribution') return true;
-            if (this.basePlan === 'manufacturing' && key === 'production_bom') return true;
-            if (['professional', 'distribution', 'manufacturing'].includes(this.basePlan)) {
-                return ['pos_retail', 'customer_loyalty', 'sms_automation', 'hr_payroll', 'telephony_voip', 'official_inquiries', 'installment_financing', 'migration_tools'].includes(key);
-            }
-            return false;
-        },
-        async applyCoupon() {
-            if (!this.couponCode.trim()) {
-                this.couponError = 'لطفاً کد تخفیف را وارد کنید.';
-                this.couponMessage = '';
-                return;
-            }
-            this.couponLoading = true;
-            this.couponError = '';
-            this.couponMessage = '';
-            try {
-                const subtotal = this.calculateSubtotal();
-                const res = await fetch('/api/coupon', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ code: this.couponCode, subtotal: subtotal })
-                });
-                const data = await res.json();
-                if (data.success) {
-                    this.couponDiscount = data.discount_amount;
-                    this.couponMessage = '✓ ' + (data.description || 'کد تخفیف اعمال شد') + ': ' + data.discount_amount_formatted + ' کسر شد.';
-                    this.couponError = '';
-                } else {
-                    this.couponDiscount = 0;
-                    this.couponError = data.message || 'کد تخفیف نامعتبر است.';
-                }
-            } catch(err) {
-                this.couponError = 'خطا در اعتبارسنجی کد تخفیف.';
-            } finally {
-                this.couponLoading = false;
-            }
-        }
-    };
-}
-</script>
 </body>
 </html>

@@ -96,6 +96,11 @@ const LivewireDispatcher = {
                   supportHours: 'شنبه تا پنج‌شنبه ۸:۰۰ الی ۱۸:۰۰'
               }
           },
+          formatPrice(val) {
+              if (val === undefined || val === null) return '۰';
+              const num = parseInt(val.toString().replace(/[^0-9]/g, ''), 10) || 0;
+              return new Intl.NumberFormat('fa-IR').format(num);
+          },
           plansData: {
               shop: { id: 'shop', name: 'اصناف و فروشگاهی', price: 5000000, priceFormatted: '۵,۰۰۰,۰۰۰', period: 'سالانه' },
               basic: { id: 'basic', name: 'اصناف و فروشگاهی', price: 5000000, priceFormatted: '۵,۰۰۰,۰۰۰', period: 'سالانه' },
@@ -107,7 +112,7 @@ const LivewireDispatcher = {
           },
           async init() {
               try {
-                  const res = await fetch('/api/settings?t=' + Date.now());
+                  const res = await fetch('/api/settings?t=' + Date.now(), { cache: 'no-store' });
                   const data = await res.json();
                   if (data && data.config) {
                       if (data.config.site) Object.assign(this.siteConfig.site, data.config.site);
@@ -168,7 +173,6 @@ const LivewireDispatcher = {
           orderLoading: false,
           orderError: null,
           activeIndustryTab: 'gold',
-          plansData: {&quot;basic&quot;:{&quot;id&quot;:&quot;basic&quot;,&quot;alias&quot;:&quot;shop&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u0628\u0631\u0646\u0632\u06cc (\u0641\u0631\u0648\u0634\u06af\u0627\u0647\u06cc \u0648 \u0627\u0635\u0646\u0627\u0641 \u062e\u0631\u062f)&quot;,&quot;price&quot;:&quot;\u06f5,\u06f0\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647&quot;,&quot;description&quot;:&quot;\u0645\u0646\u0627\u0633\u0628 \u0628\u0631\u0627\u06cc \u0641\u0631\u0648\u0634\u06af\u0627\u0647\u200c\u0647\u0627\u060c \u0645\u063a\u0627\u0632\u0647\u200c\u0647\u0627\u060c \u0628\u0648\u062a\u06cc\u06a9\u200c\u0647\u0627 \u0648 \u0627\u0635\u0646\u0627\u0641 \u062e\u0631\u062f \u0646\u06cc\u0627\u0632\u0645\u0646\u062f \u0635\u0646\u062f\u0648\u0642 \u0641\u0631\u0648\u0634\u06af\u0627\u0647\u06cc \u0633\u0631\u06cc\u0639 \u0648 \u0633\u0627\u0645\u0627\u0646\u0647 \u0645\u0648\u062f\u06cc\u0627\u0646.&quot;,&quot;popular&quot;:false,&quot;max_companies&quot;:1,&quot;max_users&quot;:1,&quot;max_industries&quot;:1,&quot;badge&quot;:&quot;\u067e\u0627\u06cc\u0647 \u0627\u0635\u0646\u0627\u0641&quot;,&quot;badge_color&quot;:&quot;badge-ghost&quot;,&quot;modules&quot;:[&quot;core_accounting&quot;,&quot;sales_purchase&quot;,&quot;inventory_warehouse&quot;,&quot;cheques_treasury&quot;,&quot;tax_moadian&quot;,&quot;pos_retail&quot;,&quot;migration_tools&quot;]},&quot;professional&quot;:{&quot;id&quot;:&quot;professional&quot;,&quot;alias&quot;:&quot;commercial&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u0646\u0642\u0631\u0647\u200c\u0627\u06cc (\u0628\u0627\u0632\u0631\u06af\u0627\u0646\u06cc \u0648 \u0634\u0631\u06a9\u062a\u06cc)&quot;,&quot;price&quot;:&quot;\u06f1\u06f5,\u06f0\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647&quot;,&quot;description&quot;:&quot;\u0648\u06cc\u0698\u0647 \u062f\u0641\u0627\u062a\u0631 \u0628\u0627\u0632\u0631\u06af\u0627\u0646\u06cc\u060c \u0639\u0645\u062f\u0647\u200c\u0641\u0631\u0648\u0634\u0627\u0646 \u0648 \u0634\u0631\u06a9\u062a\u200c\u0647\u0627\u06cc \u062e\u062f\u0645\u0627\u062a\u06cc \u0646\u06cc\u0627\u0632\u0645\u0646\u062f \u0686\u0646\u062f \u0627\u0631\u0632\u06cc\u060c \u0645\u0631\u0627\u06a9\u0632 \u0647\u0632\u06cc\u0646\u0647\u060c \u067e\u06cc\u0634\u200c\u0641\u0627\u06a9\u062a\u0648\u0631 \u0648 \u0686\u06a9\u200c\u0647\u0627\u06cc \u0635\u06cc\u0627\u062f\u06cc.&quot;,&quot;popular&quot;:true,&quot;max_companies&quot;:3,&quot;max_users&quot;:3,&quot;max_industries&quot;:2,&quot;badge&quot;:&quot;\u067e\u0631\u0641\u0631\u0648\u0634\u200c\u062a\u0631\u06cc\u0646&quot;,&quot;badge_color&quot;:&quot;badge-primary&quot;,&quot;modules&quot;:[&quot;core_accounting&quot;,&quot;sales_purchase&quot;,&quot;inventory_warehouse&quot;,&quot;cheques_treasury&quot;,&quot;tax_moadian&quot;,&quot;pos_retail&quot;,&quot;customer_loyalty&quot;,&quot;sms_automation&quot;,&quot;official_inquiries&quot;,&quot;installment_financing&quot;,&quot;telephony_voip&quot;,&quot;hr_payroll&quot;,&quot;migration_tools&quot;]},&quot;distribution&quot;:{&quot;id&quot;:&quot;distribution&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u067e\u062e\u0634 \u0645\u0648\u06cc\u0631\u06af\u06cc \u0648 \u062a\u0648\u0632\u06cc\u0639 (Capillary Distribution)&quot;,&quot;price&quot;:&quot;\u06f3\u06f5,\u06f0\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647&quot;,&quot;description&quot;:&quot;\u0648\u06cc\u0698\u0647 \u0634\u0631\u06a9\u062a\u200c\u0647\u0627\u06cc \u067e\u062e\u0634 \u06af\u0631\u0645 \u0648 \u0633\u0631\u062f\u060c \u0648\u06cc\u0632\u06cc\u062a\u0648\u0631\u06cc \u0645\u06cc\u062f\u0627\u0646\u06cc\u060c \u0627\u0646\u0628\u0627\u0631 \u0645\u0627\u0634\u06cc\u0646 (\u0648\u0627\u0646)\u060c \u0645\u0633\u06cc\u0631\u0628\u0646\u062f\u06cc \u0641\u0631\u0648\u0634 \u0648 \u062a\u0633\u0648\u06cc\u0647 \u0631\u0648\u0632\u0627\u0646\u0647.&quot;,&quot;popular&quot;:false,&quot;max_companies&quot;:5,&quot;max_users&quot;:5,&quot;max_industries&quot;:16,&quot;badge&quot;:&quot;\u062a\u062e\u0635\u0635\u06cc \u062a\u0648\u0632\u06cc\u0639&quot;,&quot;badge_color&quot;:&quot;badge-secondary&quot;,&quot;modules&quot;:[&quot;core_accounting&quot;,&quot;sales_purchase&quot;,&quot;inventory_warehouse&quot;,&quot;cheques_treasury&quot;,&quot;tax_moadian&quot;,&quot;distribution&quot;,&quot;pos_retail&quot;,&quot;customer_loyalty&quot;,&quot;sms_automation&quot;,&quot;official_inquiries&quot;,&quot;installment_financing&quot;,&quot;telephony_voip&quot;,&quot;hr_payroll&quot;,&quot;migration_tools&quot;]},&quot;manufacturing&quot;:{&quot;id&quot;:&quot;manufacturing&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u062a\u0648\u0644\u06cc\u062f\u06cc \u0648 \u0635\u0646\u0639\u062a\u06cc (Manufacturing)&quot;,&quot;price&quot;:&quot;\u06f5\u06f0,\u06f0\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647&quot;,&quot;description&quot;:&quot;\u0648\u06cc\u0698\u0647 \u06a9\u0627\u0631\u062e\u0627\u0646\u062c\u0627\u062a \u0648 \u06a9\u0627\u0631\u06af\u0627\u0647\u200c\u0647\u0627\u06cc \u062a\u0648\u0644\u06cc\u062f\u06cc\u060c \u0641\u0631\u0645\u0648\u0644 \u0633\u0627\u062e\u062a (BOM)\u060c \u0628\u0647\u0627\u06cc \u062a\u0645\u0627\u0645\u200c\u0634\u062f\u0647 \u06a9\u0627\u0644\u0627\u06cc \u0633\u0627\u062e\u062a\u0647\u200c\u0634\u062f\u0647\u060c \u062e\u0637\u0648\u0637 \u062a\u0648\u0644\u06cc\u062f \u0648 \u0633\u0631\u0628\u0627\u0631.&quot;,&quot;popular&quot;:false,&quot;max_companies&quot;:5,&quot;max_users&quot;:5,&quot;max_industries&quot;:16,&quot;badge&quot;:&quot;\u062a\u062e\u0635\u0635\u06cc \u062a\u0648\u0644\u06cc\u062f&quot;,&quot;badge_color&quot;:&quot;badge-warning&quot;,&quot;modules&quot;:[&quot;core_accounting&quot;,&quot;sales_purchase&quot;,&quot;inventory_warehouse&quot;,&quot;cheques_treasury&quot;,&quot;tax_moadian&quot;,&quot;production_bom&quot;,&quot;pos_retail&quot;,&quot;customer_loyalty&quot;,&quot;sms_automation&quot;,&quot;official_inquiries&quot;,&quot;installment_financing&quot;,&quot;telephony_voip&quot;,&quot;hr_payroll&quot;,&quot;migration_tools&quot;]},&quot;enterprise&quot;:{&quot;id&quot;:&quot;enterprise&quot;,&quot;name&quot;:&quot;\u0646\u0633\u062e\u0647 \u0637\u0644\u0627\u06cc\u06cc (\u0633\u0627\u0632\u0645\u0627\u0646\u06cc \u0648 \u0647\u0644\u062f\u06cc\u0646\u06af)&quot;,&quot;price&quot;:&quot;\u06f8\u06f0,\u06f0\u06f0\u06f0,\u06f0\u06f0\u06f0&quot;,&quot;period&quot;:&quot;\u0633\u0627\u0644\u0627\u0646\u0647 (\u06cc\u0627 \u062f\u0627\u0626\u0645\u06cc)&quot;,&quot;description&quot;:&quot;\u0628\u0631\u0627\u06cc \u06a9\u0627\u0631\u062e\u0627\u0646\u062c\u0627\u062a\u060c \u0634\u0631\u06a9\u062a\u200c\u0647\u0627\u06cc \u067e\u062e\u0634 \u0645\u0648\u06cc\u0631\u06af\u06cc \u0648 \u0647\u0644\u062f\u06cc\u0646\u06af\u200c\u0647\u0627\u06cc\u06cc \u06a9\u0647 \u0628\u0647 \u062a\u0645\u0627\u0645\u06cc \u0627\u0645\u06a9\u0627\u0646\u0627\u062a \u0628\u062f\u0648\u0646 \u0647\u06cc\u0686\u200c\u06af\u0648\u0646\u0647 \u0645\u062d\u062f\u0648\u062f\u06cc\u062a\u06cc \u0646\u06cc\u0627\u0632 \u062f\u0627\u0631\u0646\u062f.&quot;,&quot;popular&quot;:false,&quot;max_companies&quot;:-1,&quot;max_users&quot;:-1,&quot;max_industries&quot;:16,&quot;badge&quot;:&quot;\u06a9\u0627\u0645\u0644\u200c\u062a\u0631\u06cc\u0646 \u067e\u06a9\u06cc\u062c&quot;,&quot;badge_color&quot;:&quot;badge-accent&quot;,&quot;modules&quot;:[&quot;*&quot;]}},
           submitTrial() {
               this.trialLoading = true;
               this.trialError = null;
@@ -780,7 +784,7 @@ const LivewireDispatcher = {
                             <p class="text-xs text-base-content/60 mt-1">مخصوص مغازه‌ها، فروشگاه‌ها و خرده‌فروشی‌ها</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="plansData.shop ? plansData.shop.priceFormatted : (plansData.basic ? plansData.basic.priceFormatted : '۵,۰۰۰,۰۰۰')">۵,۰۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="formatPrice(plansData.shop ? plansData.shop.price : (plansData.basic ? plansData.basic.price : 5000000))">۵,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60" x-text="(plansData.shop ? plansData.shop.period : 'سالانه') + ' / دائمی'">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -811,7 +815,7 @@ const LivewireDispatcher = {
                             <p class="text-xs text-base-content/60 mt-1">بازرگانی‌ها، عمده‌فروشان و شرکت‌های متوسط</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="plansData.commercial ? plansData.commercial.priceFormatted : (plansData.professional ? plansData.professional.priceFormatted : '۱۵,۰۰۰,۰۰۰')">۱۵,۰۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="formatPrice(plansData.commercial ? plansData.commercial.price : (plansData.professional ? plansData.professional.price : 15000000))">۱۵,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60" x-text="(plansData.commercial ? plansData.commercial.period : 'سالانه') + ' / دائمی'">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -840,7 +844,7 @@ const LivewireDispatcher = {
                             <p class="text-xs text-base-content/60 mt-1">شرکت‌های پخش مواد غذایی، دارویی و کالا</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="plansData.distribution ? plansData.distribution.priceFormatted : '۳۵,۰۰۰,۰۰۰'">۳۵,۰۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="formatPrice(plansData.distribution ? plansData.distribution.price : 35000000)">۳۵,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60" x-text="(plansData.distribution ? plansData.distribution.period : 'سالانه') + ' / دائمی'">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -868,7 +872,7 @@ const LivewireDispatcher = {
                             <p class="text-xs text-base-content/60 mt-1">کارگاه‌ها، کارخانه‌ها و واحدهای مونتاژ</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="plansData.manufacturing ? plansData.manufacturing.priceFormatted : '۵۰,۰۰۰,۰۰۰'">۵۰,۰۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="formatPrice(plansData.manufacturing ? plansData.manufacturing.price : 50000000)">۵۰,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60" x-text="(plansData.manufacturing ? plansData.manufacturing.period : 'سالانه') + ' / دائمی'">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
@@ -896,7 +900,7 @@ const LivewireDispatcher = {
                             <p class="text-xs text-base-content/60 mt-1">هلدینگ‌ها، زنجیره‌ای‌ها و سازمان‌های بزرگ</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="plansData.enterprise ? plansData.enterprise.priceFormatted : '۸۰,۰۰۰,۰۰۰'">۸۰,۰۰۰,۰۰۰</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="formatPrice(plansData.enterprise ? plansData.enterprise.price : 80000000)">۸۰,۰۰۰,۰۰۰</div>
                             <div class="text-xs text-base-content/60" x-text="(plansData.enterprise ? plansData.enterprise.period : 'سالانه یا دائمی')">تومان (سالانه یا دائمی)</div>
                         </div>
                         <div class="pt-2">
