@@ -36,3 +36,4 @@ __pycache__/
 .vercel
 .env*
 !build/installer/.env.standalone
+.env*

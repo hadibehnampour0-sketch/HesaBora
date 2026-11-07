@@ -74,6 +74,10 @@
     <template x-if="isLoggedIn">
         <div class="min-h-screen flex flex-col bg-slate-950">
 
+            <!-- Toast Notification for Cloud Sync -->
+            <div x-show="syncMessage" x-transition class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold py-2.5 px-4 text-center sticky top-0 z-50 shadow-lg flex items-center justify-center gap-2">
+                <span x-text="syncMessage"></span>
+            </div>
             <!-- Navbar -->
             <header class="border-b border-slate-800 bg-slate-900/70 backdrop-blur-md sticky top-0 z-50 px-4 lg:px-8 py-3.5 flex items-center justify-between">
                 <div class="flex items-center gap-3">
@@ -776,6 +780,8 @@
                 loginError: '',
                 loginForm: { username: '', password: '' },
                 activeTab: 'dashboard',
+                syncing: false,
+                syncMessage: '',
                 copiedKey: false,
                 generatedKey: '',
                 isGenerating: false,
@@ -958,23 +964,53 @@
                 async savePricingSettings() {
                     localStorage.setItem('neptune_site_plans', JSON.stringify(this.plans));
                     await this.syncWithApi();
-                    alert('قیمت‌ها و مشخصات پلن‌ها با موفقیت ذخیره و روی سایت اعمال شدند.');
+                    alert('قیمت‌ها و مشخصات پلن‌ها با موفقیت ذخیره و در سراسر سایت اعمال شدند.');
                 },
 
                 async saveContentSettings() {
                     localStorage.setItem('neptune_site_content', JSON.stringify(this.siteContent));
                     await this.syncWithApi();
-                    alert('اطلاعات، بنرها و متون سایت با موفقیت ذخیره و به‌روزرسانی شدند.');
+                    alert('اطلاعات، بنرها و متون سایت با موفقیت در فضای ابری ذخیره شدند.');
                 },
 
                 async saveAllToServer() {
                     await this.syncWithApi();
-                    alert('تمامی تنظیمات وب‌سایت، پلن‌ها و کوپن‌ها با موفقیت در سرور ابری ذخیره شدند.');
+                    alert('تمامی تنظیمات وب‌سایت، قیمت پلن‌ها و کوپن‌ها با موفقیت در سرور ابری ذخیره شدند و روی سایت فعال هستند.');
                 },
 
                 async syncWithApi() {
+                    this.syncing = true;
+                    this.syncMessage = 'در حال ذخیره‌سازی و انتشار روی سرور ابری نپتون...';
                     try {
-                        await fetch('/api/settings', {
+                        // Ensure symmetric plan aliases and Persian formatted numbers
+                        if (this.plans.basic) {
+                            this.plans.basic.price = parseInt(this.plans.basic.price, 10);
+                            this.plans.basic.priceFormatted = new Intl.NumberFormat('fa-IR').format(this.plans.basic.price);
+                            this.plans.shop = Object.assign({}, this.plans.basic, { id: 'shop', alias: 'basic' });
+                        }
+                        if (this.plans.professional) {
+                            this.plans.professional.price = parseInt(this.plans.professional.price, 10);
+                            this.plans.professional.priceFormatted = new Intl.NumberFormat('fa-IR').format(this.plans.professional.price);
+                            this.plans.commercial = Object.assign({}, this.plans.professional, { id: 'commercial', alias: 'professional' });
+                        }
+                        if (this.plans.distribution) {
+                            this.plans.distribution.price = parseInt(this.plans.distribution.price, 10);
+                            this.plans.distribution.priceFormatted = new Intl.NumberFormat('fa-IR').format(this.plans.distribution.price);
+                        }
+                        if (this.plans.manufacturing) {
+                            this.plans.manufacturing.price = parseInt(this.plans.manufacturing.price, 10);
+                            this.plans.manufacturing.priceFormatted = new Intl.NumberFormat('fa-IR').format(this.plans.manufacturing.price);
+                        }
+                        if (this.plans.enterprise) {
+                            this.plans.enterprise.price = parseInt(this.plans.enterprise.price, 10);
+                            this.plans.enterprise.priceFormatted = new Intl.NumberFormat('fa-IR').format(this.plans.enterprise.price);
+                        }
+
+                        // Sync download and version settings
+                        this.siteContent.version = this.siteSettings.version;
+                        this.siteContent.downloadUrl = this.siteSettings.downloadUrl;
+
+                        const res = await fetch('/api/settings', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
@@ -983,8 +1019,16 @@
                                 coupons: this.coupons
                             })
                         });
+                        const data = await res.json();
+                        this.syncMessage = '✓ تغییرات با موفقیت در فضای ابری ذخیره شد و در تمامی صفحات وب‌سایت فعال گردید.';
+                        setTimeout(() => this.syncMessage = '', 5000);
+                        return data;
                     } catch (e) {
                         console.warn('API sync warning:', e);
+                        this.syncMessage = '✕ خطا در ذخیره ابری: ' + e.message;
+                        setTimeout(() => this.syncMessage = '', 5000);
+                    } finally {
+                        this.syncing = false;
                     }
                 },
 

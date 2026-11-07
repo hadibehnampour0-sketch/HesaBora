@@ -87,23 +87,41 @@ const LivewireDispatcher = {
                   heroSubtitle: 'راهکار جامع مدیریت مالی، حسابداری دوبل، انبارداری هوشمند، چک‌های صیادی و اتصال مستقیم به سامانه مودیان برای اصناف، شرکت‌ها و هلدینگ‌ها',
                   ctaTrialText: 'دریافت لایسنس آزمایشی ۱۴ روزه',
                   ctaDownloadText: 'دانلود مستقیم فایل نصبی ویندوز (نسخه ۲.۵)',
+                  downloadUrl: 'https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.5.0/Neptune-ERP-Setup-v2.5.exe',
+                  version: 'v2.5.0',
                   phone: '021-88884422',
-                  telegram: '@NeptuneERP'
+                  phoneDisplay: '۰۲۱-۸۸۸۸۴۴۲۲',
+                  mobile: '09120000000',
+                  telegram: '@NeptuneERP',
+                  supportHours: 'شنبه تا پنج‌شنبه ۸:۰۰ الی ۱۸:۰۰'
               }
+          },
+          plansData: {
+              shop: { id: 'shop', name: 'اصناف و فروشگاهی', price: 5000000, priceFormatted: '۵,۰۰۰,۰۰۰', period: 'سالانه' },
+              basic: { id: 'basic', name: 'اصناف و فروشگاهی', price: 5000000, priceFormatted: '۵,۰۰۰,۰۰۰', period: 'سالانه' },
+              commercial: { id: 'commercial', name: 'تجاری و شرکتی', price: 15000000, priceFormatted: '۱۵,۰۰۰,۰۰۰', period: 'سالانه' },
+              professional: { id: 'professional', name: 'تجاری و شرکتی', price: 15000000, priceFormatted: '۱۵,۰۰۰,۰۰۰', period: 'سالانه' },
+              distribution: { id: 'distribution', name: 'پخش مویرگی و ویزیتور', price: 35000000, priceFormatted: '۳۵,۰۰۰,۰۰۰', period: 'سالانه' },
+              manufacturing: { id: 'manufacturing', name: 'تولیدی و صنعتی', price: 50000000, priceFormatted: '۵۰,۰۰۰,۰۰۰', period: 'سالانه' },
+              enterprise: { id: 'enterprise', name: 'جامع و هلدینگ', price: 80000000, priceFormatted: '۸۰,۰۰۰,۰۰۰', period: 'سالانه یا دائمی' }
           },
           async init() {
               try {
-                  const res = await fetch('/api/settings');
+                  const res = await fetch('/api/settings?t=' + Date.now());
                   const data = await res.json();
                   if (data && data.config) {
                       if (data.config.site) Object.assign(this.siteConfig.site, data.config.site);
-                      if (data.config.plans) this.plansData = Object.assign(this.plansData, data.config.plans);
+                      if (data.config.plans) {
+                          Object.assign(this.plansData, data.config.plans);
+                          if (data.config.plans.basic && !this.plansData.shop) this.plansData.shop = data.config.plans.basic;
+                          if (data.config.plans.shop && !this.plansData.basic) this.plansData.basic = data.config.plans.shop;
+                          if (data.config.plans.professional && !this.plansData.commercial) this.plansData.commercial = data.config.plans.professional;
+                          if (data.config.plans.commercial && !this.plansData.professional) this.plansData.professional = data.config.plans.commercial;
+                      }
                   }
-              } catch(e) {}
-              const lp = localStorage.getItem('neptune_site_plans');
-              if (lp) { try { Object.assign(this.plansData, JSON.parse(lp)); } catch(e){} }
-              const lc = localStorage.getItem('neptune_site_content');
-              if (lc) { try { Object.assign(this.siteConfig.site, JSON.parse(lc)); } catch(e){} }
+              } catch(e) {
+                  console.warn('Init settings warning:', e);
+              }
           },
           async applyCoupon() {
               if (!this.couponCode.trim()) {
@@ -292,24 +310,22 @@ const LivewireDispatcher = {
                 <!-- Main Title -->
                 <div class="space-y-4 max-w-4xl mx-auto">
                     <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-base-content tracking-tight leading-[1.25]">
-                        پایان عصر نرم‌افزارهای قفلی، کند و قدیمی؛
-                        <br>
-                        <span class="gradient-text">حسابداری نپتون، آینده کسب‌وکار شما</span>
+                        <span x-text="siteConfig.site.heroTitle || 'سامانه یکپارچه مالی، ابری و آفلاین نپتون'"></span>
                     </h1>
-                    <p class="text-base sm:text-lg text-base-content/70 leading-relaxed max-w-3xl mx-auto font-normal">
+                    <p class="text-base sm:text-lg text-base-content/70 leading-relaxed max-w-3xl mx-auto font-normal" x-text="siteConfig.site.heroSubtitle || 'نرم‌افزار جامع حسابداری و مدیریت مالی نپتون، برای بازاریان، اصناف و کارآفرینان هوشمند ایران ساخته شده است.'">
                         نرم‌افزار جامع حسابداری و مدیریت مالی نپتون، برای بازاریان، اصناف و کارآفرینان هوشمند ایران ساخته شده است. بدون ترس از قطع اینترنت کار کنید، فاکتورهای خود را مستقیم و بدون واسطه به سامانه مودیان ارسال کنید و آسوده‌خاطر باشید که داده‌هایتان هرگز از بین نمی‌روند.
                     </p>
                 </div>
 
                 <!-- CTA Actions -->
                 <div class="flex flex-wrap items-center justify-center gap-3.5 pt-2">
-                    <a href="/download/windows" class="btn btn-primary btn-lg rounded-2xl px-8 font-black shadow-xl shadow-primary/30 text-sm hover:scale-[1.02] transition-transform flex items-center gap-2">
+                    <a :href="siteConfig.site.downloadUrl || '/download/windows'" class="btn btn-primary btn-lg rounded-2xl px-8 font-black shadow-xl shadow-primary/30 text-sm hover:scale-[1.02] transition-transform flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        <span>دانلود مستقیم فایل نصبی ویندوز (نسخه ۲.۵)</span>
+                        <span x-text="siteConfig.site.ctaDownloadText || 'دانلود مستقیم فایل نصبی ویندوز (نسخه ۲.۵)'">دانلود مستقیم فایل نصبی ویندوز (نسخه ۲.۵)</span>
                     </a>
                     <button @click="trialModalOpen = true" class="btn btn-outline btn-lg rounded-2xl px-6 font-bold text-sm hover:scale-[1.02] transition-transform flex items-center gap-2">
                         <span>🎁</span>
-                        <span>دریافت لایسنس آزمایشی ۱۴ روزه</span>
+                        <span x-text="siteConfig.site.ctaTrialText || 'دریافت لایسنس آزمایشی ۱۴ روزه'">دریافت لایسنس آزمایشی ۱۴ روزه</span>
                     </button>
                     <a href="#pricing" class="btn btn-ghost btn-lg rounded-2xl px-5 font-bold text-xs text-base-content/70">
                         <span>مشاهده ۵ پکیج تجاری ↓</span>
@@ -764,8 +780,8 @@ const LivewireDispatcher = {
                             <p class="text-xs text-base-content/60 mt-1">مخصوص مغازه‌ها، فروشگاه‌ها و خرده‌فروشی‌ها</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۵,۰۰۰,۰۰۰</div>
-                            <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="plansData.shop ? plansData.shop.priceFormatted : (plansData.basic ? plansData.basic.priceFormatted : '۵,۰۰۰,۰۰۰')">۵,۰۰۰,۰۰۰</div>
+                            <div class="text-xs text-base-content/60" x-text="(plansData.shop ? plansData.shop.period : 'سالانه') + ' / دائمی'">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
                             <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> ۱ کاربر همزمان</li>
@@ -795,8 +811,8 @@ const LivewireDispatcher = {
                             <p class="text-xs text-base-content/60 mt-1">بازرگانی‌ها، عمده‌فروشان و شرکت‌های متوسط</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۱۵,۰۰۰,۰۰۰</div>
-                            <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="plansData.commercial ? plansData.commercial.priceFormatted : (plansData.professional ? plansData.professional.priceFormatted : '۱۵,۰۰۰,۰۰۰')">۱۵,۰۰۰,۰۰۰</div>
+                            <div class="text-xs text-base-content/60" x-text="(plansData.commercial ? plansData.commercial.period : 'سالانه') + ' / دائمی'">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
                             <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> تا ۳ کاربر همزمان</li>
@@ -824,8 +840,8 @@ const LivewireDispatcher = {
                             <p class="text-xs text-base-content/60 mt-1">شرکت‌های پخش مواد غذایی، دارویی و کالا</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۳۵,۰۰۰,۰۰۰</div>
-                            <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="plansData.distribution ? plansData.distribution.priceFormatted : '۳۵,۰۰۰,۰۰۰'">۳۵,۰۰۰,۰۰۰</div>
+                            <div class="text-xs text-base-content/60" x-text="(plansData.distribution ? plansData.distribution.period : 'سالانه') + ' / دائمی'">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
                             <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> ۵ کاربر دسکتاپ + تبلت‌ها</li>
@@ -852,8 +868,8 @@ const LivewireDispatcher = {
                             <p class="text-xs text-base-content/60 mt-1">کارگاه‌ها، کارخانه‌ها و واحدهای مونتاژ</p>
                         </div>
                         <div class="pt-2">
-                            <div class="text-2xl font-black text-sky-600 font-mono">۵۰,۰۰۰,۰۰۰</div>
-                            <div class="text-xs text-base-content/60">تومان (سالانه / دائمی)</div>
+                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="plansData.manufacturing ? plansData.manufacturing.priceFormatted : '۵۰,۰۰۰,۰۰۰'">۵۰,۰۰۰,۰۰۰</div>
+                            <div class="text-xs text-base-content/60" x-text="(plansData.manufacturing ? plansData.manufacturing.period : 'سالانه') + ' / دائمی'">تومان (سالانه / دائمی)</div>
                         </div>
                         <ul class="text-xs space-y-2 text-base-content/80 pt-2 border-t border-base-200">
                             <li class="flex items-center gap-1.5"><span class="text-sky-500">✓</span> ۵ کاربر همزمان دسکتاپ</li>
@@ -878,6 +894,10 @@ const LivewireDispatcher = {
                         <div>
                             <h3 class="text-xl font-black text-base-content">جامع و هلدینگ</h3>
                             <p class="text-xs text-base-content/60 mt-1">هلدینگ‌ها، زنجیره‌ای‌ها و سازمان‌های بزرگ</p>
+                        </div>
+                        <div class="pt-2">
+                            <div class="text-2xl font-black text-sky-600 font-mono" x-text="plansData.enterprise ? plansData.enterprise.priceFormatted : '۸۰,۰۰۰,۰۰۰'">۸۰,۰۰۰,۰۰۰</div>
+                            <div class="text-xs text-base-content/60" x-text="(plansData.enterprise ? plansData.enterprise.period : 'سالانه یا دائمی')">تومان (سالانه یا دائمی)</div>
                         </div>
                         <div class="pt-2">
                             <div class="text-2xl font-black text-sky-600 font-mono">۸۰,۰۰۰,۰۰۰</div>
@@ -1043,7 +1063,14 @@ const LivewireDispatcher = {
                 <a href="#features" class="hover:text-primary transition">امکانات</a>
                 <a href="#industries" class="hover:text-primary transition">اصناف</a>
                 <a href="/pricing" class="hover:text-primary transition">تعرفه‌ها</a>
-                <a href="/login" class="hover:text-primary transition">ورود کاربران</a>
+                <a :href="'tel:' + (siteConfig.site.phone || '02188884422')" class="text-sky-600 hover:underline flex items-center gap-1">
+                    <span>📞</span>
+                    <span x-text="siteConfig.site.phoneDisplay || siteConfig.site.phone || '۰۲۱-۸۸۸۸۴۴۲۲'"></span>
+                </a>
+                <a :href="'https://t.me/' + (siteConfig.site.telegram || 'NeptuneERP').replace('@', '')" target="_blank" class="text-cyan-600 hover:underline flex items-center gap-1">
+                    <span>✈️</span>
+                    <span x-text="siteConfig.site.telegram || '@NeptuneERP'"></span>
+                </a>
             </div>
 
             <div class="text-[11px] text-base-content/50">
@@ -1190,7 +1217,7 @@ const LivewireDispatcher = {
                 <form @submit.prevent="submitOrder()" class="space-y-4">
                     <div class="p-3 rounded-xl bg-sky-500/10 border border-sky-500/25 text-xs font-bold text-sky-900 flex justify-between items-center">
                         <span>پکیج در حال خرید:</span>
-                        <span class="badge badge-primary font-bold" x-text="plansData[selectedPlan] ? plansData[selectedPlan].title : selectedPlan"></span>
+                        <span class="badge badge-primary font-bold" x-text="plansData[selectedPlan] ? (plansData[selectedPlan].name || plansData[selectedPlan].title) : selectedPlan"></span>
                     </div>
 
                     <template x-if="orderError">

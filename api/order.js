@@ -1,24 +1,4 @@
-const fs = require('fs');
-const path = require('path');
-
-function getActiveCoupons() {
-  try {
-    const configPath = path.join(process.cwd(), 'public', 'site-config.json');
-    if (fs.existsSync(configPath)) {
-      const data = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      if (Array.isArray(data.coupons)) {
-        return data.coupons;
-      }
-    }
-  } catch (e) {}
-
-  return [
-    { code: "NEPTUNE20", discountPercent: 20, maxDiscount: 10000000, active: true },
-    { code: "START50", discountPercent: 50, maxDiscount: 2500000, active: true },
-    { code: "VIP15", discountPercent: 15, maxDiscount: 15000000, active: true },
-    { code: "OFFER10", discountPercent: 10, maxDiscount: 5000000, active: true }
-  ];
-}
+const { getLiveConfig } = require('./_config');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -37,39 +17,34 @@ module.exports = async (req, res) => {
   const customerName = body.customer_name || 'خریدار گرامی';
   const phone = body.phone || '۰۹۱۲۰۰۰۰۰۰۰';
 
-  const planTitles = {
-    shop: 'نسخه برنزی (اصناف و فروشگاهی)',
-    basic: 'نسخه برنزی (اصناف و فروشگاهی)',
-    commercial: 'نسخه نقره‌ای (بازرگانی و شرکتی)',
-    professional: 'نسخه نقره‌ای (بازرگانی و شرکتی)',
-    distribution: 'نسخه طلایی (پخش مویرگی و ویزیتوری)',
-    manufacturing: 'نسخه پلاتینیوم (تولیدی و صنعتی)',
-    enterprise: 'نسخه الماس (سازمانی و هلدینگ)'
-  };
-
-  const planPrices = {
-    shop: 5000000,
-    basic: 5000000,
-    commercial: 15000000,
-    professional: 15000000,
-    distribution: 35000000,
-    manufacturing: 50000000,
-    enterprise: 80000000
-  };
+  const config = await getLiveConfig();
+  const plans = config.plans || {};
+  const coupons = Array.isArray(config.coupons) ? config.coupons : [];
 
   const selectedPlan = body.plan || 'shop';
-  const basePrice = planPrices[selectedPlan] || 5000000;
+  
+  // Resolve plan price and title dynamically from live config
+  let planObj = plans[selectedPlan];
+  if (!planObj) {
+    if (selectedPlan === 'shop' && plans.basic) planObj = plans.basic;
+    if (selectedPlan === 'basic' && plans.shop) planObj = plans.shop;
+    if (selectedPlan === 'commercial' && plans.professional) planObj = plans.professional;
+    if (selectedPlan === 'professional' && plans.commercial) planObj = plans.commercial;
+  }
+
+  const basePrice = (planObj && planObj.price) ? parseInt(planObj.price, 10) : 5000000;
+  const planTitle = (planObj && planObj.name) ? planObj.name : selectedPlan;
+
   const companiesCost = (parseInt(body.extra_companies, 10) || 0) * 1500000;
   const usersCost = (parseInt(body.extra_users, 10) || 0) * 1200000;
   const subtotal = basePrice + companiesCost + usersCost;
 
-  // Coupon handling
+  // Coupon handling from live configuration
   let discountAmount = 0;
   let appliedCoupon = null;
   const couponCode = (body.coupon_code || '').trim().toUpperCase();
 
   if (couponCode) {
-    const coupons = getActiveCoupons();
     const matched = coupons.find(c => c.code.toUpperCase() === couponCode && c.active);
     if (matched) {
       discountAmount = Math.round((subtotal * matched.discountPercent) / 100);
@@ -78,6 +53,7 @@ module.exports = async (req, res) => {
       }
       appliedCoupon = {
         code: matched.code,
+        description: matched.description || `تخفیف ${matched.discountPercent}٪ نپتون`,
         discount_percent: matched.discountPercent,
         discount_amount: discountAmount
       };
@@ -93,7 +69,7 @@ module.exports = async (req, res) => {
   return res.status(200).json({
     success: true,
     order_reference: orderRef,
-    plan_title: planTitles[selectedPlan] || selectedPlan,
+    plan_title: planTitle,
     subtotal_irr: subtotal,
     subtotal_formatted: new Intl.NumberFormat('fa-IR').format(subtotal) + ' تومان',
     discount_amount: discountAmount,
