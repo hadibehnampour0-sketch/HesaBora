@@ -70,6 +70,75 @@ const LivewireDispatcher = {
 <body class="bg-base-200/40 text-base-content min-h-screen selection:bg-sky-500 selection:text-white"
       x-data="{
           trialModalOpen: false,
+          couponCode: '',
+          couponLoading: false,
+          couponDiscount: 0,
+          couponApplied: null,
+          couponMessage: '',
+          couponError: '',
+          siteConfig: {
+              site: {
+                  brandName: 'نپتون',
+                  bannerActive: true,
+                  bannerBadge: 'جشنواره ویژه',
+                  bannerText: 'جشنواره عرضه رسمی نسخه ۲.۵ سامانه مالی نپتون با پشتیبانی رایگان سامانه مودیان',
+                  heroBadge: 'نسخه ۲.۵ منتشر شد (پاییز ۱۴۰۵)',
+                  heroTitle: 'سامانه یکپارچه مالی، ابری و آفلاین نپتون',
+                  heroSubtitle: 'راهکار جامع مدیریت مالی، حسابداری دوبل، انبارداری هوشمند، چک‌های صیادی و اتصال مستقیم به سامانه مودیان برای اصناف، شرکت‌ها و هلدینگ‌ها',
+                  ctaTrialText: 'دریافت لایسنس آزمایشی ۱۴ روزه',
+                  ctaDownloadText: 'دانلود مستقیم فایل نصبی ویندوز (نسخه ۲.۵)',
+                  phone: '021-88884422',
+                  telegram: '@NeptuneERP'
+              }
+          },
+          async init() {
+              try {
+                  const res = await fetch('/api/settings');
+                  const data = await res.json();
+                  if (data && data.config) {
+                      if (data.config.site) Object.assign(this.siteConfig.site, data.config.site);
+                      if (data.config.plans) this.plansData = Object.assign(this.plansData, data.config.plans);
+                  }
+              } catch(e) {}
+              const lp = localStorage.getItem('neptune_site_plans');
+              if (lp) { try { Object.assign(this.plansData, JSON.parse(lp)); } catch(e){} }
+              const lc = localStorage.getItem('neptune_site_content');
+              if (lc) { try { Object.assign(this.siteConfig.site, JSON.parse(lc)); } catch(e){} }
+          },
+          async applyCoupon() {
+              if (!this.couponCode.trim()) {
+                  this.couponError = 'لطفاً کد تخفیف را وارد کنید.';
+                  this.couponMessage = '';
+                  return;
+              }
+              this.couponLoading = true;
+              this.couponError = '';
+              this.couponMessage = '';
+              try {
+                  const curPrice = (this.plansData[this.selectedPlan] && this.plansData[this.selectedPlan].price) || 5000000;
+                  const subtotal = curPrice + (this.orderForm.extra_companies * 1500000) + (this.orderForm.extra_users * 1200000);
+                  const res = await fetch('/api/coupon', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ code: this.couponCode, subtotal: subtotal })
+                  });
+                  const data = await res.json();
+                  if (data.success) {
+                      this.couponDiscount = data.discount_amount;
+                      this.couponApplied = data;
+                      this.couponMessage = '✓ ' + (data.description || 'کد تخفیف اعمال شد') + ': ' + data.discount_amount_formatted + ' کسر گردید.';
+                      this.couponError = '';
+                  } else {
+                      this.couponDiscount = 0;
+                      this.couponApplied = null;
+                      this.couponError = data.message || 'کد تخفیف نامعتبر است.';
+                  }
+              } catch(err) {
+                  this.couponError = 'خطا در اعتبارسنجی کد تخفیف.';
+              } finally {
+                  this.couponLoading = false;
+              }
+          },
           orderModalOpen: false,
           selectedPlan: 'shop',
           trialForm: { customer_name: '', phone: '', business_type: 'فروشگاهی' },
@@ -85,7 +154,7 @@ const LivewireDispatcher = {
           submitTrial() {
               this.trialLoading = true;
               this.trialError = null;
-              fetch('http://127.0.0.1:8000/trial/request', {
+              fetch('/trial/request', {
                   method: 'POST',
                   headers: {
                       'Content-Type': 'application/json',
@@ -112,7 +181,8 @@ const LivewireDispatcher = {
               this.orderLoading = true;
               this.orderError = null;
               this.orderForm.plan = this.selectedPlan;
-              fetch('http://127.0.0.1:8000/order/submit', {
+              this.orderForm.coupon_code = this.couponCode;
+              fetch('/order/submit', {
                   method: 'POST',
                   headers: {
                       'Content-Type': 'application/json',
@@ -143,6 +213,13 @@ const LivewireDispatcher = {
           }
       }">
 
+    <!-- Dynamic Top Banner -->
+    <div x-show="siteConfig.site.bannerActive" class="bg-gradient-to-r from-sky-600 via-cyan-600 to-sky-700 text-white text-xs py-2 px-4 text-center font-bold relative z-50 flex items-center justify-center gap-2 shadow-sm">
+        <span class="badge badge-warning badge-xs font-bold text-slate-950 px-2" x-text="siteConfig.site.bannerBadge || 'جشنواره'">جشنواره ویژه</span>
+        <span x-text="siteConfig.site.bannerText">جشنواره عرضه رسمی نسخه ۲.۵ سامانه مالی نپتون با پشتیبانی رایگان سامانه مودیان</span>
+        <a href="#pricing" class="underline hover:text-cyan-200 mr-2 text-[11px]">مشاهده تخفیف‌ها ←</a>
+    </div>
+
     <!-- Top Navigation Header -->
     <header class="bg-base-100/90 glass-nav border-b border-base-300/80 sticky top-0 z-50 shadow-sm transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
@@ -165,14 +242,14 @@ const LivewireDispatcher = {
                 <a href="#comparison" class="hover:text-primary transition">مقایسه با رقبا</a>
                 <a href="#backup-engine" class="hover:text-primary transition">امنیت و بکاپ ۳-۲-۱</a>
                 <a href="#pricing" class="hover:text-primary transition">پکیج‌ها و تعرفه‌ها</a>
-                <a href="http://127.0.0.1:8000/pricing" class="hover:text-primary transition text-primary flex items-center gap-1">
+                <a href="/pricing" class="hover:text-primary transition text-primary flex items-center gap-1">
                     <span>⚡</span> <span>محاسبه‌گر آنلاین</span>
                 </a>
                 <a href="#faq" class="hover:text-primary transition">پرسش‌های متداول</a>
             </nav>
 
             <div class="flex items-center gap-2.5">
-                <a href="http://127.0.0.1:8000/login" class="btn btn-primary btn-sm rounded-xl px-4 font-bold shadow-md shadow-primary/25 text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
+                <a href="/login" class="btn btn-primary btn-sm rounded-xl px-4 font-bold shadow-md shadow-primary/25 text-xs flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
                     <svg class="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
                     <span>بازگشت به ورود</span>
                 </a>
@@ -826,7 +903,7 @@ const LivewireDispatcher = {
                     <h3 class="text-xl font-black">نیاز به محاسبه دقیق بر اساس تعداد کاربر و شعب دارید؟</h3>
                     <p class="text-xs text-white/80">از ابزار محاسبه‌گر آنلاین ماژولار نپتون استفاده کنید و پیش‌فاکتور خود را فوراً تحویل بگیرید.</p>
                 </div>
-                <a href="http://127.0.0.1:8000/pricing#calculator" class="btn btn-accent rounded-2xl px-6 font-black text-xs shadow-lg shrink-0">
+                <a href="/pricing#calculator" class="btn btn-accent rounded-2xl px-6 font-black text-xs shadow-lg shrink-0">
                     ورود به محاسبه‌گر قیمت ←
                 </a>
             </div>
@@ -965,8 +1042,8 @@ const LivewireDispatcher = {
             <div class="flex flex-wrap items-center gap-6 font-semibold">
                 <a href="#features" class="hover:text-primary transition">امکانات</a>
                 <a href="#industries" class="hover:text-primary transition">اصناف</a>
-                <a href="http://127.0.0.1:8000/pricing" class="hover:text-primary transition">تعرفه‌ها</a>
-                <a href="http://127.0.0.1:8000/login" class="hover:text-primary transition">ورود کاربران</a>
+                <a href="/pricing" class="hover:text-primary transition">تعرفه‌ها</a>
+                <a href="/login" class="hover:text-primary transition">ورود کاربران</a>
             </div>
 
             <div class="text-[11px] text-base-content/50">
@@ -1143,6 +1220,50 @@ const LivewireDispatcher = {
                         <div class="space-y-1">
                             <label class="text-[11px] font-bold text-base-content/60">کاربر اضافه (+۱.۲ م.ت)</label>
                             <input type="number" min="0" max="50" x-model.number="orderForm.extra_users" class="input input-bordered w-full rounded-xl text-xs bg-base-200/50 font-mono" />
+                        </div>
+                    </div>
+
+                    <!-- Discount Coupon Box -->
+                    <div class="p-3 bg-base-200/70 rounded-2xl border border-base-300 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <label class="text-[11px] font-bold text-base-content/80 flex items-center gap-1">
+                                <span>🏷️</span>
+                                <span>کد تخفیف اختصاصی:</span>
+                            </label>
+                            <span x-show="couponDiscount > 0" class="badge badge-success badge-xs font-mono font-bold text-white" x-text="new Intl.NumberFormat('fa-IR').format(couponDiscount) + ' ت تخفیف'"></span>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" x-model="couponCode" placeholder="مثال: NEPTUNE20"
+                                   class="input input-bordered input-sm flex-1 font-mono uppercase text-xs rounded-xl bg-base-100" />
+                            <button type="button" @click="applyCoupon()" :disabled="couponLoading" class="btn btn-sm btn-outline btn-primary rounded-xl text-xs">
+                                <span x-show="!couponLoading">اعمال کد</span>
+                                <span x-show="couponLoading" class="loading loading-spinner loading-xs"></span>
+                            </button>
+                        </div>
+                        <template x-if="couponMessage">
+                            <div class="text-[11px] text-emerald-600 font-bold flex items-center gap-1" x-text="couponMessage"></div>
+                        </template>
+                        <template x-if="couponError">
+                            <div class="text-[11px] text-rose-500 font-bold flex items-center gap-1" x-text="couponError"></div>
+                        </template>
+                    </div>
+
+                    <!-- Live Calculation Card -->
+                    <div class="p-3.5 rounded-2xl bg-base-300/40 border border-base-300 text-xs space-y-1.5">
+                        <div class="flex justify-between text-base-content/70">
+                            <span>مبلغ پایه + افزونه‌ها:</span>
+                            <span class="font-mono font-bold" x-text="new Intl.NumberFormat('fa-IR').format(((plansData[selectedPlan] ? plansData[selectedPlan].price : 5000000) + (orderForm.extra_companies * 1500000) + (orderForm.extra_users * 1200000))) + ' تومان'"></span>
+                        </div>
+                        <template x-if="couponDiscount > 0">
+                            <div class="flex justify-between text-emerald-600 font-bold">
+                                <span>کسر تخفیف کوپن:</span>
+                                <span class="font-mono" x-text="'- ' + new Intl.NumberFormat('fa-IR').format(couponDiscount) + ' تومان'"></span>
+                            </div>
+                        </template>
+                        <div class="divider my-1"></div>
+                        <div class="flex justify-between text-primary font-black text-sm">
+                            <span>مبلغ نهایی فاکتور:</span>
+                            <span class="font-mono" x-text="new Intl.NumberFormat('fa-IR').format(Math.max(0, ((plansData[selectedPlan] ? plansData[selectedPlan].price : 5000000) + (orderForm.extra_companies * 1500000) + (orderForm.extra_users * 1200000)) - couponDiscount)) + ' تومان'"></span>
                         </div>
                     </div>
 

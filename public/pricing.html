@@ -402,6 +402,66 @@ const LivewireDispatcher = {
         <section id="calculator" class="bg-base-100 border border-base-300 rounded-3xl p-6 sm:p-10 shadow-sm scroll-mt-28" x-data="{
             basePlan: 'basic',
             basePrices: { basic: 5000000, professional: 15000000, distribution: 35000000, manufacturing: 50000000, enterprise: 80000000 },
+            couponCode: '',
+            couponLoading: false,
+            couponDiscount: 0,
+            couponMessage: '',
+            couponError: '',
+            async init() {
+                try {
+                    const res = await fetch('/api/settings');
+                    const data = await res.json();
+                    if (data && data.config && data.config.plans) {
+                        for (let k in data.config.plans) {
+                            if (data.config.plans[k].price) {
+                                this.basePrices[k] = parseInt(data.config.plans[k].price, 10);
+                            }
+                        }
+                    }
+                } catch(e) {}
+            },
+            async applyCoupon() {
+                if (!this.couponCode.trim()) {
+                    this.couponError = 'لطفاً کد تخفیف را وارد کنید.';
+                    this.couponMessage = '';
+                    return;
+                }
+                this.couponLoading = true;
+                this.couponError = '';
+                this.couponMessage = '';
+                try {
+                    const subtotal = this.calculateSubtotal();
+                    const res = await fetch('/api/coupon', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ code: this.couponCode, subtotal: subtotal })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        this.couponDiscount = data.discount_amount;
+                        this.couponMessage = '✓ ' + (data.description || 'کد تخفیف اعمال شد') + ': ' + data.discount_amount_formatted + ' کسر شد.';
+                        this.couponError = '';
+                    } else {
+                        this.couponDiscount = 0;
+                        this.couponError = data.message || 'کد تخفیف نامعتبر است.';
+                    }
+                } catch(err) {
+                    this.couponError = 'خطا در اعتبارسنجی کد تخفیف.';
+                } finally {
+                    this.couponLoading = false;
+                }
+            },
+            calculateSubtotal() {
+                if (this.basePlan === 'enterprise') return this.basePrices.enterprise + (this.extraUsers * this.userPrice);
+                let sum = this.basePrices[this.basePlan] || 5000000;
+                for (const key of this.selectedAddons) {
+                    if (!this.isAddonDisabled(key) && this.addonPrices[key]) {
+                        sum += this.addonPrices[key];
+                    }
+                }
+                sum += (this.extraUsers * this.userPrice);
+                return sum;
+            },
             addonPrices: {
                 pos_retail: 1500000,
                 distribution: 4500000,
@@ -430,15 +490,7 @@ const LivewireDispatcher = {
             },
 
             calculateTotal() {
-                if (this.basePlan === 'enterprise') return this.basePrices.enterprise + (this.extraUsers * this.userPrice);
-                let sum = this.basePrices[this.basePlan] || 5000000;
-                for (const key of this.selectedAddons) {
-                    if (!this.isAddonDisabled(key) && this.addonPrices[key]) {
-                        sum += this.addonPrices[key];
-                    }
-                }
-                sum += (this.extraUsers * this.userPrice);
-                return sum;
+                return Math.max(0, this.calculateSubtotal() - this.couponDiscount);
             }
         }">
             <div class="max-w-3xl mb-8">
@@ -460,7 +512,7 @@ const LivewireDispatcher = {
                                     <input type="radio" x-model="basePlan" value="basic" class="radio radio-primary radio-xs" />
                                     <span>فروشگاهی (برنزی)</span>
                                 </div>
-                                <span class="font-mono text-[10px] text-primary">۴.۸ م</span>
+                                <span class="font-mono text-[10px] text-primary" x-text="(basePrices.basic/1000000) + ' م.ت'">۵ م.ت</span>
                             </label>
 
                             <label class="flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition text-xs"
@@ -469,7 +521,7 @@ const LivewireDispatcher = {
                                     <input type="radio" x-model="basePlan" value="professional" class="radio radio-primary radio-xs" />
                                     <span>بازرگانی (نقره‌ای)</span>
                                 </div>
-                                <span class="font-mono text-[10px] text-primary">۱۱.۵ م</span>
+                                <span class="font-mono text-[10px] text-primary" x-text="(basePrices.professional/1000000) + ' م.ت'">۱۵ م.ت</span>
                             </label>
 
                             <label class="flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition text-xs"
@@ -478,7 +530,7 @@ const LivewireDispatcher = {
                                     <input type="radio" x-model="basePlan" value="distribution" class="radio radio-primary radio-xs" />
                                     <span>پخش مویرگی</span>
                                 </div>
-                                <span class="font-mono text-[10px] text-secondary">۱۸.۹ م</span>
+                                <span class="font-mono text-[10px] text-secondary" x-text="(basePrices.distribution/1000000) + ' م.ت'">۳۵ م.ت</span>
                             </label>
 
                             <label class="flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition text-xs"
@@ -487,7 +539,7 @@ const LivewireDispatcher = {
                                     <input type="radio" x-model="basePlan" value="manufacturing" class="radio radio-primary radio-xs" />
                                     <span>تولیدی و صنعتی</span>
                                 </div>
-                                <span class="font-mono text-[10px] text-amber-600">۲۱.۵ م</span>
+                                <span class="font-mono text-[10px] text-amber-600" x-text="(basePrices.manufacturing/1000000) + ' م.ت'">۵۰ م.ت</span>
                             </label>
 
                             <label class="flex items-center justify-between p-3 rounded-2xl border cursor-pointer transition text-xs sm:col-span-2"
@@ -496,7 +548,7 @@ const LivewireDispatcher = {
                                     <input type="radio" x-model="basePlan" value="enterprise" class="radio radio-primary radio-xs" />
                                     <span>جامع سازمانی و هلدینگ (طلایی)</span>
                                 </div>
-                                <span class="font-mono text-[10px] text-accent">۳۴.۰ م (همه امکانات باز)</span>
+                                <span class="font-mono text-[10px] text-accent" x-text="(basePrices.enterprise/1000000) + ' م.ت (همه امکانات باز)'">۸۰ م.ت (همه امکانات باز)</span>
                             </label>
                         </div>
                     </div>
@@ -540,6 +592,23 @@ const LivewireDispatcher = {
                         <div>
                             <div class="text-xs text-base-content/60">مجموع سرمایه‌گذاری سالانه:</div>
                             <div class="text-3xl font-black text-primary font-mono mt-1" x-text="new Intl.NumberFormat('fa-IR').format(calculateTotal()) + ' تومان'"></div>
+                        </div>
+
+                        <!-- Coupon Code Box in Calculator -->
+                        <div class="p-3 bg-base-100/80 rounded-2xl border border-primary/20 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-[11px] font-bold text-base-content/70">کد تخفیف دارید؟</span>
+                                <span x-show="couponDiscount > 0" class="badge badge-success badge-xs font-mono font-bold text-white" x-text="new Intl.NumberFormat('fa-IR').format(couponDiscount) + ' ت تخفیف'"></span>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <input type="text" x-model="couponCode" placeholder="مثال: NEPTUNE20" class="input input-bordered input-xs flex-1 font-mono uppercase text-xs rounded-xl bg-base-200/50" />
+                                <button type="button" @click="applyCoupon()" :disabled="couponLoading" class="btn btn-xs btn-primary rounded-xl text-[11px] font-bold">
+                                    <span x-show="!couponLoading">اعمال</span>
+                                    <span x-show="couponLoading" class="loading loading-spinner loading-xs"></span>
+                                </button>
+                            </div>
+                            <div x-show="couponMessage" class="text-[10px] text-emerald-600 font-bold" x-text="couponMessage"></div>
+                            <div x-show="couponError" class="text-[10px] text-rose-500 font-bold" x-text="couponError"></div>
                         </div>
 
                         <div class="divider my-2"></div>

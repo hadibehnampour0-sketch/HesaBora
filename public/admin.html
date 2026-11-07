@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پنل مدیریت وب‌سایت و لایسنس نپتون | Neptune Portal Admin</title>
+    <title>پنل مدیریت وب‌سایت، تعرفه‌ها، کوپن‌ها و لایسنس نپتون | Neptune Portal Admin</title>
     <link rel="icon" type="image/svg+xml" href="/images/neptune-logo.svg">
     <link rel="stylesheet" href="/assets/app-k-XILFBr.css" />
     <script type="module" src="/assets/app-poG9tdS_.js"></script>
@@ -37,7 +37,7 @@
                 </div>
                 <div class="space-y-1">
                     <h1 class="text-2xl font-black text-white">ورود به پنل مدیریت وب‌سایت نپتون</h1>
-                    <p class="text-xs text-slate-400">مرکز فرماندهی آنلاین، تغییرات سایت و صدور لایسنس‌ها</p>
+                    <p class="text-xs text-slate-400">مرکز فرماندهی آنلاین، تغییرات سایت، کدهای تخفیف و لایسنس‌ها</p>
                 </div>
 
                 <form @submit.prevent="login()" class="space-y-4 text-right">
@@ -90,6 +90,10 @@
                 </div>
 
                 <div class="flex items-center gap-3">
+                    <button @click="saveAllToServer()" class="btn btn-success btn-xs rounded-lg text-white font-bold gap-1 shadow-md shadow-emerald-500/20">
+                        <span>💾</span>
+                        <span>ذخیره آنی سرور</span>
+                    </button>
                     <a href="/landing" target="_blank" class="btn btn-ghost btn-xs text-sky-400 text-xs gap-1 hover:bg-sky-500/10 rounded-lg">
                         <span>🌐</span>
                         <span class="hidden sm:inline">مشاهده سایت</span>
@@ -117,11 +121,19 @@
                         <span>داشبورد و آمار سایت</span>
                     </button>
 
+                    <button @click="activeTab = 'coupons'"
+                            :class="activeTab === 'coupons' ? 'bg-sky-600 text-white shadow-lg shadow-sky-500/20 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-900'"
+                            class="px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
+                        <span>🏷️</span>
+                        <span>کدهای تخفیف و جشنواره‌ها</span>
+                        <span class="badge badge-success badge-xs font-bold font-mono" x-text="coupons.filter(c => c.active).length"></span>
+                    </button>
+
                     <button @click="activeTab = 'leads'"
                             :class="activeTab === 'leads' ? 'bg-sky-600 text-white shadow-lg shadow-sky-500/20 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-900'"
                             class="px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
                         <span>👥</span>
-                        <span>درخواست‌های تست رایگان و لیدها</span>
+                        <span>درخواست‌های تست و لیدها</span>
                         <span class="badge badge-warning badge-xs font-bold" x-text="leads.length"></span>
                     </button>
 
@@ -129,21 +141,21 @@
                             :class="activeTab === 'pricing' ? 'bg-sky-600 text-white shadow-lg shadow-sky-500/20 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-900'"
                             class="px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
                         <span>💰</span>
-                        <span>تنظیم قیمت پلن‌ها و تخفیف‌ها</span>
+                        <span>تنظیم قیمت و امکانات ۵ پلن</span>
                     </button>
 
                     <button @click="activeTab = 'license-generator'"
                             :class="activeTab === 'license-generator' ? 'bg-sky-600 text-white shadow-lg shadow-sky-500/20 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-900'"
                             class="px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
                         <span>🔐</span>
-                        <span>صدور آنلاین لایسنس نپتون</span>
+                        <span>صدور آنلاین لایسنس معتبر</span>
                     </button>
 
                     <button @click="activeTab = 'content'"
                             :class="activeTab === 'content' ? 'bg-sky-600 text-white shadow-lg shadow-sky-500/20 font-bold' : 'text-slate-400 hover:text-white hover:bg-slate-900'"
                             class="px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
                         <span>📝</span>
-                        <span>اطلاعات تماس و محتوای سایت</span>
+                        <span>مدیریت متون، بنرها و اطلاعات سایت</span>
                     </button>
 
                     <button @click="activeTab = 'release'"
@@ -182,12 +194,12 @@
 
                         <div class="glass-card p-5 rounded-2xl space-y-2">
                             <div class="flex items-center justify-between text-slate-400 text-xs">
-                                <span>کلیدهای لایسنس صادرشده</span>
-                                <span class="text-emerald-400 text-lg">🔑</span>
+                                <span>کدهای تخفیف فعال</span>
+                                <span class="text-emerald-400 text-lg">🏷️</span>
                             </div>
-                            <div class="text-3xl font-black text-white font-mono" x-text="stats.licensesIssued"></div>
+                            <div class="text-3xl font-black text-white font-mono" x-text="coupons.filter(c => c.active).length"></div>
                             <div class="text-[11px] text-emerald-400 font-bold">
-                                <span>✓</span> <span>رمزنگاری نامتقارن Ed25519</span>
+                                <span>✓</span> <span>اعمال مستقیم و آنلاین روی سایت</span>
                             </div>
                         </div>
 
@@ -210,24 +222,143 @@
                             <span>⚡</span>
                             <span>دسترسی‌های سریع مدیر سایت:</span>
                         </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                            <button @click="activeTab = 'coupons'" class="btn btn-outline btn-success rounded-xl text-xs gap-2">
+                                <span>🏷️</span>
+                                <span>ساخت کد تخفیف جدید</span>
+                            </button>
                             <button @click="activeTab = 'license-generator'" class="btn btn-outline btn-primary rounded-xl text-xs gap-2">
                                 <span>🔑</span>
-                                <span>صدور لایسنس فوری برای خریدار</span>
+                                <span>صدور لایسنس فوری خریدار</span>
                             </button>
                             <button @click="activeTab = 'pricing'" class="btn btn-outline btn-accent rounded-xl text-xs gap-2">
-                                <span>🏷️</span>
-                                <span>تغییر قیمت پلن‌ها و جشنواره تخفیف</span>
+                                <span>💰</span>
+                                <span>تغییر قیمت پلن‌ها</span>
                             </button>
-                            <button @click="exportLeadsCSV()" class="btn btn-outline btn-success rounded-xl text-xs gap-2">
+                            <button @click="exportLeadsCSV()" class="btn btn-outline btn-info rounded-xl text-xs gap-2">
                                 <span>📑</span>
-                                <span>دریافت فایل اکسل سرنخ‌ها</span>
+                                <span>خروجی اکسل سرنخ‌ها</span>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 2: LEADS CRM -->
+                <!-- TAB 2: COUPONS & DISCOUNTS -->
+                <div x-show="activeTab === 'coupons'" class="space-y-6">
+                    <!-- Create Coupon Card -->
+                    <div class="glass-card p-6 rounded-3xl space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                    <span>🏷️</span>
+                                    <span>تعریف و ایجاد کد تخفیف جدید</span>
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-1">کدهای تخفیف بلافاصله در فرم سفارش و خرید آنلاین لایسنس توسط مشتریان قابل اعمال است</p>
+                            </div>
+                            <button @click="addNewCoupon()" class="btn btn-primary btn-sm rounded-xl font-bold text-xs gap-1.5 shadow-md shadow-sky-500/20">
+                                <span>+ افزودن کد تخفیف</span>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+                            <div class="form-control">
+                                <label class="label text-xs font-bold text-slate-300">کد کوپن (حروف انگلیسی):</label>
+                                <input type="text" x-model="newCoupon.code" placeholder="مثال: SPRING30"
+                                       class="input input-bordered input-sm bg-slate-900 border-slate-700 text-white font-mono uppercase text-xs rounded-xl">
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label text-xs font-bold text-slate-300">درصد تخفیف (٪):</label>
+                                <input type="number" min="1" max="100" x-model="newCoupon.discountPercent" placeholder="مثال: 25"
+                                       class="input input-bordered input-sm bg-slate-900 border-slate-700 text-white font-mono text-xs rounded-xl">
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label text-xs font-bold text-slate-300">سقف تخفیف ریالی (تومان):</label>
+                                <input type="number" x-model="newCoupon.maxDiscount" placeholder="0 برای نامحدود"
+                                       class="input input-bordered input-sm bg-slate-900 border-slate-700 text-white font-mono text-xs rounded-xl">
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label text-xs font-bold text-slate-300">شرح / مناسبت تخفیف:</label>
+                                <input type="text" x-model="newCoupon.description" placeholder="جشنواره نوروزی / ویژه بازاریابان"
+                                       class="input input-bordered input-sm bg-slate-900 border-slate-700 text-white text-xs rounded-xl">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Coupons List -->
+                    <div class="glass-card rounded-3xl p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                                <span>📋</span>
+                                <span>لیست کدهای تخفیف ثبت‌شده</span>
+                            </h3>
+                            <button @click="saveCouponsToServer()" class="btn btn-success btn-xs rounded-lg text-white font-bold gap-1">
+                                <span>ذخیره تغییرات کوپن‌ها</span>
+                                <span>✓</span>
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="table text-xs text-right">
+                                <thead>
+                                    <tr class="text-slate-400 border-b border-slate-800">
+                                        <th>کد کوپن</th>
+                                        <th>درصد تخفیف</th>
+                                        <th>سقف ریالی</th>
+                                        <th>شرح جشنواره</th>
+                                        <th>وضعیت فعال‌بودن</th>
+                                        <th>عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="(cpn, idx) in coupons" :key="idx">
+                                        <tr class="border-b border-slate-900 hover:bg-slate-900/50">
+                                            <td>
+                                                <span class="badge badge-info badge-sm font-mono font-bold text-xs" x-text="cpn.code"></span>
+                                            </td>
+                                            <td class="font-bold text-emerald-400 font-mono text-xs" x-text="cpn.discountPercent + '٪'"></td>
+                                            <td class="font-mono text-slate-300" x-text="cpn.maxDiscount ? (new Intl.NumberFormat('fa-IR').format(cpn.maxDiscount) + ' تومان') : 'نامحدود'"></td>
+                                            <td class="text-slate-300" x-text="cpn.description"></td>
+                                            <td>
+                                                <button @click="cpn.active = !cpn.active; saveCouponsToServer()"
+                                                        :class="cpn.active ? 'badge-success text-white' : 'badge-ghost text-slate-400'"
+                                                        class="badge badge-sm font-bold cursor-pointer transition">
+                                                    <span x-text="cpn.active ? 'فعال ✓' : 'غیرفعال ✕'"></span>
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <div class="flex items-center gap-2">
+                                                    <button @click="copyText(cpn.code)" class="btn btn-ghost btn-xs text-sky-400">کپی کد</button>
+                                                    <button @click="deleteCoupon(idx)" class="btn btn-ghost btn-xs text-rose-400">حذف</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Live Coupon Sandbox Tester -->
+                    <div class="p-5 rounded-2xl bg-sky-950/40 border border-sky-800/40 space-y-3">
+                        <div class="text-xs font-bold text-sky-300 flex items-center gap-2">
+                            <span>🧪</span>
+                            <span>تست زنده اعمال کد تخفیف:</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <input type="text" x-model="testCouponCode" placeholder="کد تخفیف را وارد کنید"
+                                   class="input input-bordered input-sm bg-slate-900 font-mono uppercase text-xs rounded-xl w-44">
+                            <input type="number" x-model="testSubtotal" placeholder="مبلغ پایه (تومان)"
+                                   class="input input-bordered input-sm bg-slate-900 font-mono text-xs rounded-xl w-44">
+                            <button @click="testCalculateCoupon()" class="btn btn-primary btn-sm rounded-xl text-xs font-bold">محاسبه آنلاین</button>
+                            <span class="text-xs font-bold text-emerald-400" x-text="testCouponResult"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 3: LEADS CRM -->
                 <div x-show="activeTab === 'leads'" class="space-y-4">
                     <div class="glass-card rounded-3xl overflow-hidden p-6 space-y-4">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -290,32 +421,25 @@
                                             </td>
                                         </tr>
                                     </template>
-                                    <template x-if="leads.length === 0">
-                                        <tr>
-                                            <td colspan="6" class="text-center py-10 text-slate-500">
-                                                هنوز درخواستی ثبت نشده است. به محض تکمیل فرم توسط مشتریان در سایت، به این لیست اضافه می‌شود.
-                                            </td>
-                                        </tr>
-                                    </template>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 3: PRICING & PLANS -->
+                <!-- TAB 4: PRICING & PLANS -->
                 <div x-show="activeTab === 'pricing'" class="space-y-4">
                     <div class="glass-card rounded-3xl p-6 space-y-6">
                         <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-base font-bold text-white flex items-center gap-2">
                                     <span>💰</span>
-                                    <span>تنظیم قیمت ۵ پلن تجاری نپتون در سایت</span>
+                                    <span>تنظیم قیمت، امکانات و مشخصات ۵ پلن تجاری نپتون</span>
                                 </h3>
-                                <p class="text-xs text-slate-400">قیمت‌هایی که در اینجا ثبت کنید مستقیماً بر روی صفحات لندینگ و تعرفه‌های سایت اعمال می‌گردد</p>
+                                <p class="text-xs text-slate-400">تغییر نام، قیمت، نشان، سقف شرکت‌ها و شرح هر پلن به صورت زنده بر روی سایت اعمال می‌شود</p>
                             </div>
                             <button @click="savePricingSettings()" class="btn btn-primary btn-sm rounded-xl font-bold text-xs gap-1.5 shadow-md shadow-sky-500/20">
-                                <span>ذخیره تغییرات</span>
+                                <span>ذخیره تغییرات قیمت‌ها</span>
                                 <span>✓</span>
                             </button>
                         </div>
@@ -323,103 +447,123 @@
                         <!-- 5 Plans Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <!-- Plan 1 -->
-                            <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
                                 <div class="flex justify-between items-center">
-                                    <span class="font-bold text-white text-xs">۱. پلن برنزی اصناف و فروشگاهی</span>
-                                    <span class="badge badge-info badge-xs">پایه</span>
+                                    <span class="font-bold text-white text-xs">۱. پلن اصناف و فروشگاهی</span>
+                                    <input type="text" x-model="plans.basic.badge" class="input input-bordered input-xs bg-slate-950 text-sky-400 w-24 text-center rounded-lg">
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت (تومان):</label>
-                                    <input type="text" x-model="plans.bronze.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
+                                    <input type="number" x-model="plans.basic.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                </div>
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
+                                    <input type="text" x-model="plans.basic.priceFormatted" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">شرح مختصر:</label>
-                                    <input type="text" x-model="plans.bronze.desc" class="input input-bordered input-sm bg-slate-950 text-white text-xs rounded-xl">
+                                    <textarea x-model="plans.basic.description" rows="2" class="textarea textarea-bordered bg-slate-950 text-white text-xs rounded-xl"></textarea>
                                 </div>
                             </div>
 
                             <!-- Plan 2 -->
-                            <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
                                 <div class="flex justify-between items-center">
-                                    <span class="font-bold text-white text-xs">۲. پلن نقره‌ای تجاری و شرکتی</span>
-                                    <span class="badge badge-accent badge-xs">پرفروش</span>
+                                    <span class="font-bold text-white text-xs">۲. پلن تجاری و شرکتی</span>
+                                    <input type="text" x-model="plans.professional.badge" class="input input-bordered input-xs bg-slate-950 text-primary w-24 text-center rounded-lg">
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت (تومان):</label>
-                                    <input type="text" x-model="plans.silver.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
+                                    <input type="number" x-model="plans.professional.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                </div>
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
+                                    <input type="text" x-model="plans.professional.priceFormatted" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">شرح مختصر:</label>
-                                    <input type="text" x-model="plans.silver.desc" class="input input-bordered input-sm bg-slate-950 text-white text-xs rounded-xl">
+                                    <textarea x-model="plans.professional.description" rows="2" class="textarea textarea-bordered bg-slate-950 text-white text-xs rounded-xl"></textarea>
                                 </div>
                             </div>
 
                             <!-- Plan 3 -->
-                            <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
                                 <div class="flex justify-between items-center">
                                     <span class="font-bold text-white text-xs">۳. پلن توزیع و پخش مویرگی</span>
-                                    <span class="badge badge-warning badge-xs">توزیع</span>
+                                    <input type="text" x-model="plans.distribution.badge" class="input input-bordered input-xs bg-slate-950 text-secondary w-24 text-center rounded-lg">
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت (تومان):</label>
-                                    <input type="text" x-model="plans.distribution.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
+                                    <input type="number" x-model="plans.distribution.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                </div>
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
+                                    <input type="text" x-model="plans.distribution.priceFormatted" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">شرح مختصر:</label>
-                                    <input type="text" x-model="plans.distribution.desc" class="input input-bordered input-sm bg-slate-950 text-white text-xs rounded-xl">
+                                    <textarea x-model="plans.distribution.description" rows="2" class="textarea textarea-bordered bg-slate-950 text-white text-xs rounded-xl"></textarea>
                                 </div>
                             </div>
 
                             <!-- Plan 4 -->
-                            <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
                                 <div class="flex justify-between items-center">
                                     <span class="font-bold text-white text-xs">۴. پلن صنعتی و تولیدی</span>
-                                    <span class="badge badge-error badge-xs">بهای تمام‌شده</span>
+                                    <input type="text" x-model="plans.manufacturing.badge" class="input input-bordered input-xs bg-slate-950 text-warning w-24 text-center rounded-lg">
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت (تومان):</label>
-                                    <input type="text" x-model="plans.manufacturing.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
+                                    <input type="number" x-model="plans.manufacturing.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                </div>
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
+                                    <input type="text" x-model="plans.manufacturing.priceFormatted" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">شرح مختصر:</label>
-                                    <input type="text" x-model="plans.manufacturing.desc" class="input input-bordered input-sm bg-slate-950 text-white text-xs rounded-xl">
+                                    <textarea x-model="plans.manufacturing.description" rows="2" class="textarea textarea-bordered bg-slate-950 text-white text-xs rounded-xl"></textarea>
                                 </div>
                             </div>
 
                             <!-- Plan 5 -->
-                            <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
                                 <div class="flex justify-between items-center">
                                     <span class="font-bold text-white text-xs">۵. پلن سازمانی و هلدینگ</span>
-                                    <span class="badge badge-primary badge-xs">جامع</span>
+                                    <input type="text" x-model="plans.enterprise.badge" class="input input-bordered input-xs bg-slate-950 text-accent w-24 text-center rounded-lg">
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت (تومان):</label>
-                                    <input type="text" x-model="plans.enterprise.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
+                                    <input type="number" x-model="plans.enterprise.price" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                </div>
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
+                                    <input type="text" x-model="plans.enterprise.priceFormatted" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
                                 </div>
                                 <div class="form-control">
                                     <label class="label text-[11px] text-slate-400">شرح مختصر:</label>
-                                    <input type="text" x-model="plans.enterprise.desc" class="input input-bordered input-sm bg-slate-950 text-white text-xs rounded-xl">
+                                    <textarea x-model="plans.enterprise.description" rows="2" class="textarea textarea-bordered bg-slate-950 text-white text-xs rounded-xl"></textarea>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 4: ONLINE LICENSE GENERATOR -->
+                <!-- TAB 5: ONLINE LICENSE GENERATOR -->
                 <div x-show="activeTab === 'license-generator'" class="space-y-4">
                     <div class="glass-card rounded-3xl p-6 space-y-6">
                         <div>
                             <h3 class="text-base font-bold text-white flex items-center gap-2">
                                 <span>🔐</span>
-                                <span>موتور تولید و امضای آنلاین لایسنس نپتون</span>
+                                <span>موتور تولید و امضای آنلاین لایسنس معتبر نپتون</span>
                             </h3>
-                            <p class="text-xs text-slate-400 mt-1">تولید لایسنس‌های معتبر کریپتوگرافیک برای خریداران بدون نیاز به نصب نرم‌افزار، مستقیماً از روی وب</p>
+                            <p class="text-xs text-slate-400 mt-1">تولید لایسنس‌های معتبر کریپتوگرافیک با امضای Ed25519 بدون نیاز به نصب نرم‌افزار، مستقیماً از روی وب</p>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <div class="form-control">
                                 <label class="label text-xs text-slate-300">نام خریدار / نام شرکت:</label>
-                                <input type="text" x-model="licenseGen.customer_name" placeholder="مثال: فروشگاه برادران بهنام‌پور"
+                                <input type="text" x-model="licenseGen.customer_name" placeholder="مثال: فروشگاه بهنام‌پور"
                                        class="input input-bordered bg-slate-900 border-slate-700 text-white text-xs rounded-xl">
                             </div>
 
@@ -462,9 +606,10 @@
                         </div>
 
                         <div class="pt-2 flex justify-end">
-                            <button @click="generateLicense()" class="btn btn-primary rounded-xl px-6 font-bold text-xs gap-2">
-                                <span>🔑</span>
-                                <span>تولید و صدور کلید لایسنس</span>
+                            <button @click="generateLicense()" :disabled="isGenerating" class="btn btn-primary rounded-xl px-6 font-bold text-xs gap-2">
+                                <span x-show="!isGenerating">🔑</span>
+                                <span x-show="!isGenerating">تولید و صدور کلید لایسنس</span>
+                                <span x-show="isGenerating" class="loading loading-spinner loading-xs"></span>
                             </button>
                         </div>
 
@@ -483,40 +628,106 @@
                     </div>
                 </div>
 
-                <!-- TAB 5: WEBSITE CONTENT & CONTACT INFO -->
-                <div x-show="activeTab === 'content'" class="space-y-4">
+                <!-- TAB 6: WEBSITE CMS & CONTENT -->
+                <div x-show="activeTab === 'content'" class="space-y-6">
                     <div class="glass-card rounded-3xl p-6 space-y-6">
                         <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-base font-bold text-white flex items-center gap-2">
                                     <span>📝</span>
-                                    <span>اطلاعات تماس و اعلانات وب‌سایت</span>
+                                    <span>مدیریت یکپارچه تمامی متون، بنرها و اطلاعات سایت نپتون</span>
                                 </h3>
-                                <p class="text-xs text-slate-400">تغییر شماره تماس، آیدی تلگرام و اعلانات بالای سایت</p>
+                                <p class="text-xs text-slate-400">هر تغییری در این بخش بلافاصله در صفحات لندینگ و تعرفه‌های سایت نپتون منعکس می‌گردد</p>
                             </div>
-                            <button @click="saveContentSettings()" class="btn btn-primary btn-sm rounded-xl font-bold text-xs">ذخیره تغییرات</button>
+                            <button @click="saveContentSettings()" class="btn btn-primary btn-sm rounded-xl font-bold text-xs gap-1.5 shadow-md shadow-sky-500/20">
+                                <span>ذخیره کلیه تنظیمات سایت</span>
+                                <span>✓</span>
+                            </button>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="form-control">
-                                <label class="label text-xs text-slate-300">شماره تماس پشتیبانی و فروش:</label>
-                                <input type="text" x-model="siteContent.phone" class="input input-bordered bg-slate-900 border-slate-700 text-white text-xs rounded-xl font-mono dir-ltr">
+                        <!-- Banner & Notice -->
+                        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-white text-xs flex items-center gap-2">
+                                    <span>📢</span>
+                                    <span>نوار اطلاعیه و بنر بالای سایت:</span>
+                                </span>
+                                <label class="label cursor-pointer gap-2 p-0">
+                                    <span class="text-xs text-slate-300">نمایش بنر</span>
+                                    <input type="checkbox" x-model="siteContent.bannerActive" class="toggle toggle-primary toggle-sm">
+                                </label>
                             </div>
-
-                            <div class="form-control">
-                                <label class="label text-xs text-slate-300">آیدی کانال / پشتیبانی تلگرام:</label>
-                                <input type="text" x-model="siteContent.telegram" class="input input-bordered bg-slate-900 border-slate-700 text-white text-xs rounded-xl font-mono dir-ltr">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">نشان بنر (Badge):</label>
+                                    <input type="text" x-model="siteContent.bannerBadge" class="input input-bordered input-sm bg-slate-950 text-white text-xs rounded-xl">
+                                </div>
+                                <div class="form-control md:col-span-3">
+                                    <label class="label text-[11px] text-slate-400">متن بنر:</label>
+                                    <input type="text" x-model="siteContent.bannerText" class="input input-bordered input-sm bg-slate-950 text-white text-xs rounded-xl">
+                                </div>
                             </div>
+                        </div>
 
-                            <div class="form-control md:col-span-2">
-                                <label class="label text-xs text-slate-300">متن بنر اطلاعیه بالای سایت:</label>
-                                <input type="text" x-model="siteContent.bannerText" class="input input-bordered bg-slate-900 border-slate-700 text-white text-xs rounded-xl">
+                        <!-- Hero Section Content -->
+                        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+                            <span class="font-bold text-white text-xs flex items-center gap-2">
+                                <span>🚀</span>
+                                <span>بخش معرفی و هیرو (Hero Section):</span>
+                            </span>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">نشان هیرو (Hero Badge):</label>
+                                    <input type="text" x-model="siteContent.heroBadge" class="input input-bordered input-sm bg-slate-950 text-white text-xs rounded-xl">
+                                </div>
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">تیتر اصلی (Hero Title):</label>
+                                    <input type="text" x-model="siteContent.heroTitle" class="input input-bordered input-sm bg-slate-950 text-white text-xs rounded-xl">
+                                </div>
+                                <div class="form-control md:col-span-2">
+                                    <label class="label text-[11px] text-slate-400">زیرتیتر توضیحی (Hero Subtitle):</label>
+                                    <textarea x-model="siteContent.heroSubtitle" rows="2" class="textarea textarea-bordered bg-slate-950 text-white text-xs rounded-xl"></textarea>
+                                </div>
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">متن دکمه دمو (CTA 1):</label>
+                                    <input type="text" x-model="siteContent.ctaTrialText" class="input input-bordered input-sm bg-slate-950 text-white text-xs rounded-xl">
+                                </div>
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">متن دکمه دانلود (CTA 2):</label>
+                                    <input type="text" x-model="siteContent.ctaDownloadText" class="input input-bordered input-sm bg-slate-950 text-white text-xs rounded-xl">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact & Channels -->
+                        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+                            <span class="font-bold text-white text-xs flex items-center gap-2">
+                                <span>📞</span>
+                                <span>راه‌های ارتباطی و پشتیبانی:</span>
+                            </span>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">تلفن پشتیبانی و فروش:</label>
+                                    <input type="text" x-model="siteContent.phone" class="input input-bordered input-sm bg-slate-950 text-white font-mono dir-ltr text-xs rounded-xl">
+                                </div>
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">شماره موبایل / پیام‌رسان:</label>
+                                    <input type="text" x-model="siteContent.mobile" class="input input-bordered input-sm bg-slate-950 text-white font-mono dir-ltr text-xs rounded-xl">
+                                </div>
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">آیدی تلگرام:</label>
+                                    <input type="text" x-model="siteContent.telegram" class="input input-bordered input-sm bg-slate-950 text-white font-mono dir-ltr text-xs rounded-xl">
+                                </div>
+                                <div class="form-control">
+                                    <label class="label text-[11px] text-slate-400">ساعات پاسخگویی:</label>
+                                    <input type="text" x-model="siteContent.supportHours" class="input input-bordered input-sm bg-slate-950 text-white text-xs rounded-xl">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 6: RELEASE & DOWNLOAD HUB -->
+                <!-- TAB 7: RELEASE & DOWNLOAD HUB -->
                 <div x-show="activeTab === 'release'" class="space-y-4">
                     <div class="glass-card rounded-3xl p-6 space-y-6">
                         <div>
@@ -530,12 +741,12 @@
                         <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
                             <div class="flex items-center justify-between text-xs font-bold text-slate-300">
                                 <span>نسخه فعال فعلی:</span>
-                                <span class="font-mono text-sky-400 font-bold" x-text="siteSettings.version"></span>
+                                <input type="text" x-model="siteSettings.version" class="input input-bordered input-xs bg-slate-950 font-mono text-sky-400 w-24 text-center rounded-lg">
                             </div>
                             <div class="form-control">
                                 <label class="label text-xs text-slate-400">آدرس مستقیم دانلود GitHub CDN:</label>
                                 <div class="flex gap-2">
-                                    <input type="text" x-model="siteSettings.downloadUrl" class="input input-bordered input-sm bg-slate-950 font-mono text-xs flex-1 text-slate-300 rounded-xl" readonly>
+                                    <input type="text" x-model="siteSettings.downloadUrl" class="input input-bordered input-sm bg-slate-950 font-mono text-xs flex-1 text-slate-300 rounded-xl">
                                     <button @click="copyText(siteSettings.downloadUrl)" class="btn btn-outline btn-sm rounded-xl text-xs">کپی لینک</button>
                                 </div>
                             </div>
@@ -567,6 +778,7 @@
                 activeTab: 'dashboard',
                 copiedKey: false,
                 generatedKey: '',
+                isGenerating: false,
 
                 stats: {
                     downloads: 142,
@@ -579,18 +791,48 @@
                 },
 
                 siteContent: {
-                    phone: '0917-000-0000',
-                    telegram: '@NeptuneERP',
+                    brandName: 'نپتون',
+                    brandSubtitle: 'نرم‌افزار جامع مالی و حسابداری',
+                    bannerActive: true,
+                    bannerBadge: 'جشنواره ویژه',
                     bannerText: 'جشنواره عرضه رسمی نسخه ۲.۵ سامانه مالی نپتون با پشتیبانی رایگان سامانه مودیان',
+                    heroBadge: 'نسخه ۲.۵ منتشر شد (پاییز ۱۴۰۵)',
+                    heroTitle: 'سامانه یکپارچه مالی، ابری و آفلاین نپتون',
+                    heroSubtitle: 'راهکار جامع مدیریت مالی، حسابداری دوبل، انبارداری هوشمند، چک‌های صیادی و اتصال مستقیم به سامانه مودیان برای اصناف، شرکت‌ها و هلدینگ‌ها',
+                    ctaTrialText: 'دریافت نسخه آزمایشی رایگان',
+                    ctaDownloadText: 'دانلود مستقیم نسخه ویندوز',
+                    phone: '021-88884422',
+                    mobile: '09120000000',
+                    telegram: '@NeptuneERP',
+                    supportHours: 'شنبه تا پنج‌شنبه ۸:۰۰ الی ۱۸:۰۰',
                 },
 
                 plans: {
-                    bronze: { price: '۵,۰۰۰,۰۰۰', desc: 'مناسب اصناف تک‌صندوقه و فروشگاه‌های خرده‌فروشی' },
-                    silver: { price: '۱۵,۰۰۰,۰۰۰', desc: 'کسب‌وکارهای تجاری، چندکاربره و دارای چند انبار' },
-                    distribution: { price: '۳۵,۰۰۰,۰۰۰', desc: 'پخش مویرگی، ویزیتوری آنلاین و مدیریت ناوگان' },
-                    manufacturing: { price: '۵۰,۰۰۰,۰۰۰', desc: 'واحدهای صنعتی با فرمول ساخت و بهای تمام‌شده' },
-                    enterprise: { price: '۸۰,۰۰۰,۰۰۰', desc: 'هلدینگ‌ها، شرکت‌های چند شعبه‌ای با شعب مستقل' },
+                    basic: { name: 'نسخه برنزی (اصناف و فروشگاهی)', price: 5000000, priceFormatted: '۵,۰۰۰,۰۰۰', badge: 'پایه اصناف', description: 'مناسب برای فروشگاه‌ها، مغازه‌ها، بوتیک‌ها و اصناف خرد نیازمند صندوق فروشگاهی سریع و سامانه مودیان.' },
+                    professional: { name: 'نسخه نقره‌ای (بازرگانی و شرکتی)', price: 15000000, priceFormatted: '۱۵,۰۰۰,۰۰۰', badge: 'پرفروش‌ترین', description: 'ویژه دفاتر بازرگانی، عمده‌فروشان و شرکت‌های خدماتی نیازمند چند ارزی، مراکز هزینه، پیش‌فاکتور و چک‌های صیادی.' },
+                    distribution: { name: 'نسخه طلایی (پخش مویرگی و ویزیتوری)', price: 35000000, priceFormatted: '۳۵,۰۰۰,۰۰۰', badge: 'تخصصی توزیع', description: 'ویژه شرکت‌های پخش گرم و سرد، ویزیتوری میدانی، انبار ماشین (وان)، مسیربندی فروش و تسویه روزانه.' },
+                    manufacturing: { name: 'نسخه پلاتینیوم (تولیدی و صنعتی)', price: 50000000, priceFormatted: '۵۰,۰۰۰,۰۰۰', badge: 'تخصصی تولید', description: 'ویژه کارخانجات و کارگاه‌های تولیدی، فرمول ساخت (BOM)، بهای تمام‌شده کالای ساخته‌شده، خطوط تولید و سربار.' },
+                    enterprise: { name: 'نسخه الماس (سازمانی و هلدینگ)', price: 80000000, priceFormatted: '۸۰,۰۰۰,۰۰۰', badge: 'جامع‌ترین', description: 'برای کارخانجات، شرکت‌های پخش مویرگی و هلدینگ‌هایی که به تمامی امکانات بدون هیچ‌گونه محدودیتی نیاز دارند.' },
                 },
+
+                coupons: [
+                    { code: 'NEPTUNE20', discountPercent: 20, maxDiscount: 10000000, description: '۲۰٪ تخفیف ویژه رونمایی نسخه ۲.۵', active: true },
+                    { code: 'START50', discountPercent: 50, maxDiscount: 2500000, description: '۵۰٪ تخفیف ویژه اصناف خرد (تا سقف ۲.۵ م.ت)', active: true },
+                    { code: 'VIP15', discountPercent: 15, maxDiscount: 15000000, description: '۱۵٪ تخفیف ویژه خریداران شرکتی و سازمانی', active: true },
+                    { code: 'OFFER10', discountPercent: 10, maxDiscount: 5000000, description: '۱۰٪ تخفیف عمومی برای تمامی پلن‌ها', active: true }
+                ],
+
+                newCoupon: {
+                    code: '',
+                    discountPercent: 20,
+                    maxDiscount: 0,
+                    description: '',
+                    active: true
+                },
+
+                testCouponCode: 'NEPTUNE20',
+                testSubtotal: 15000000,
+                testCouponResult: '',
 
                 leads: [
                     { customer_name: 'فروشگاه آفتاب', phone: '09121112233', business_type: 'سوپرمارکت', status: 'new', date: '۱۴۰۳/۰۸/۱۶' },
@@ -607,40 +849,43 @@
                     duration: 'lifetime'
                 },
 
-                isGenerating: false,
-
-                initApp() {
+                async initApp() {
                     if (localStorage.getItem('neptune_admin_auth') === 'true') {
                         this.isLoggedIn = true;
                     }
-                    // Load saved stats
-                    const savedStats = localStorage.getItem('neptune_stats');
-                    if (savedStats) {
-                        try { this.stats = Object.assign(this.stats, JSON.parse(savedStats)); } catch(e) {}
+                    // Fetch live server config
+                    try {
+                        const res = await fetch('/api/settings');
+                        const data = await res.json();
+                        if (data && data.config) {
+                            if (data.config.site) Object.assign(this.siteContent, data.config.site);
+                            if (data.config.plans) Object.assign(this.plans, data.config.plans);
+                            if (Array.isArray(data.config.coupons)) this.coupons = data.config.coupons;
+                        }
+                    } catch (e) {
+                        console.log('Using local cached config');
                     }
-                    // Load saved leads
-                    const savedLeads = localStorage.getItem('neptune_leads');
-                    if (savedLeads) {
-                        try { this.leads = JSON.parse(savedLeads); } catch(e) {}
-                    }
-                    // Load saved pricing
+
+                    // Local overrides if any
                     const savedPlans = localStorage.getItem('neptune_site_plans');
                     if (savedPlans) {
                         try { this.plans = Object.assign(this.plans, JSON.parse(savedPlans)); } catch(e) {}
                     }
-                    // Load saved content
                     const savedContent = localStorage.getItem('neptune_site_content');
                     if (savedContent) {
                         try { this.siteContent = Object.assign(this.siteContent, JSON.parse(savedContent)); } catch(e) {}
                     }
-                },
-
-                saveStats() {
-                    localStorage.setItem('neptune_stats', JSON.stringify(this.stats));
+                    const savedCoupons = localStorage.getItem('neptune_site_coupons');
+                    if (savedCoupons) {
+                        try { this.coupons = JSON.parse(savedCoupons); } catch(e) {}
+                    }
+                    const savedLeads = localStorage.getItem('neptune_leads');
+                    if (savedLeads) {
+                        try { this.leads = JSON.parse(savedLeads); } catch(e) {}
+                    }
                 },
 
                 login() {
-                    // Simple, secure master credentials for web portal admin
                     if (this.loginForm.username === 'admin' && (this.loginForm.password === 'neptune2026' || this.loginForm.password === 'admin')) {
                         this.isLoggedIn = true;
                         localStorage.setItem('neptune_admin_auth', 'true');
@@ -653,6 +898,94 @@
                 logout() {
                     this.isLoggedIn = false;
                     localStorage.removeItem('neptune_admin_auth');
+                },
+
+                addNewCoupon() {
+                    if (!this.newCoupon.code.trim()) {
+                        alert('لطفاً کد کوپن را وارد نمایید.');
+                        return;
+                    }
+                    const code = this.newCoupon.code.trim().toUpperCase();
+                    const percent = parseInt(this.newCoupon.discountPercent, 10) || 10;
+                    const maxDisc = parseInt(this.newCoupon.maxDiscount, 10) || 0;
+                    const desc = this.newCoupon.description.trim() || `تخفیف ${percent}٪ نپتون`;
+
+                    this.coupons.unshift({
+                        code: code,
+                        discountPercent: percent,
+                        maxDiscount: maxDisc,
+                        description: desc,
+                        active: true
+                    });
+
+                    this.newCoupon.code = '';
+                    this.newCoupon.description = '';
+                    this.saveCouponsToServer();
+                    alert(`کد تخفیف ${code} با موفقیت افزوده و فعال شد.`);
+                },
+
+                deleteCoupon(index) {
+                    if (confirm('آیا از حذف این کد تخفیف اطمینان دارید؟')) {
+                        this.coupons.splice(index, 1);
+                        this.saveCouponsToServer();
+                    }
+                },
+
+                async saveCouponsToServer() {
+                    localStorage.setItem('neptune_site_coupons', JSON.stringify(this.coupons));
+                    await this.syncWithApi();
+                },
+
+                async testCalculateCoupon() {
+                    if (!this.testCouponCode) return;
+                    try {
+                        const res = await fetch('/api/coupon', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ code: this.testCouponCode, subtotal: this.testSubtotal })
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            this.testCouponResult = `✓ تخفیف: ${data.discount_amount_formatted} | مبلغ نهایی: ${data.final_total_formatted}`;
+                        } else {
+                            this.testCouponResult = '✕ ' + data.message;
+                        }
+                    } catch (e) {
+                        this.testCouponResult = 'خطا در ارتباط با سرور کوپن';
+                    }
+                },
+
+                async savePricingSettings() {
+                    localStorage.setItem('neptune_site_plans', JSON.stringify(this.plans));
+                    await this.syncWithApi();
+                    alert('قیمت‌ها و مشخصات پلن‌ها با موفقیت ذخیره و روی سایت اعمال شدند.');
+                },
+
+                async saveContentSettings() {
+                    localStorage.setItem('neptune_site_content', JSON.stringify(this.siteContent));
+                    await this.syncWithApi();
+                    alert('اطلاعات، بنرها و متون سایت با موفقیت ذخیره و به‌روزرسانی شدند.');
+                },
+
+                async saveAllToServer() {
+                    await this.syncWithApi();
+                    alert('تمامی تنظیمات وب‌سایت، پلن‌ها و کوپن‌ها با موفقیت در سرور ابری ذخیره شدند.');
+                },
+
+                async syncWithApi() {
+                    try {
+                        await fetch('/api/settings', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                site: this.siteContent,
+                                plans: this.plans,
+                                coupons: this.coupons
+                            })
+                        });
+                    } catch (e) {
+                        console.warn('API sync warning:', e);
+                    }
                 },
 
                 saveLeads() {
@@ -699,7 +1032,7 @@
                         if (data && data.license_key) {
                             this.generatedKey = data.license_key;
                             this.stats.licensesIssued++;
-                            this.saveStats();
+                            localStorage.setItem('neptune_stats', JSON.stringify(this.stats));
                         } else {
                             throw new Error('خطا در صدور لایسنس از سرور');
                         }
@@ -726,20 +1059,10 @@
                             .map(b => b.toString(16).padStart(2, '0')).join('');
                         this.generatedKey = 'NEPTUNE-LIC-v2.' + b64 + '.' + dummySig;
                         this.stats.licensesIssued++;
-                        this.saveStats();
+                        localStorage.setItem('neptune_stats', JSON.stringify(this.stats));
                     } finally {
                         this.isGenerating = false;
                     }
-                },
-
-                savePricingSettings() {
-                    localStorage.setItem('neptune_site_plans', JSON.stringify(this.plans));
-                    alert('قیمت‌های جدید در تنظیمات ذخیره شدند.');
-                },
-
-                saveContentSettings() {
-                    localStorage.setItem('neptune_site_content', JSON.stringify(this.siteContent));
-                    alert('اطلاعات تماس و محتوای سایت با موفقیت ذخیره شدند.');
                 },
 
                 copyText(text) {
