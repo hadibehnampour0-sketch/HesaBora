@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fa" dir="rtl" data-theme="light">
 <head>
     <meta charset="UTF-8">
@@ -109,17 +109,25 @@ function pricingPageApp() {
                     if (data && data.config) {
                         if (data.config.site) Object.assign(this.siteConfig.site, data.config.site);
                         if (data.config.plans) {
-                            Object.assign(this.plansData, data.config.plans);
-                            for (let k in data.config.plans) {
-                                if (data.config.plans[k].price !== undefined) {
-                                    const num = parseInt(data.config.plans[k].price.toString().replace(/[^0-9]/g, ''), 10) || 0;
+                            for (const [k, p] of Object.entries(data.config.plans)) {
+                                if (!this.plansData[k]) this.plansData[k] = {};
+                                Object.assign(this.plansData[k], p);
+                                if (p.price !== undefined) {
+                                    const num = parseInt(p.price.toString().replace(/[^0-9]/g, ''), 10) || 0;
                                     this.basePrices[k] = num;
                                 }
                             }
-                            if (this.plansData.shop) this.basePrices.basic = parseInt(this.plansData.shop.price, 10);
-                            if (this.plansData.basic) this.basePrices.basic = parseInt(this.plansData.basic.price, 10);
-                            if (this.plansData.commercial) this.basePrices.professional = parseInt(this.plansData.commercial.price, 10);
-                            if (this.plansData.professional) this.basePrices.professional = parseInt(this.plansData.professional.price, 10);
+                            const basicPrice = (this.plansData.basic && this.plansData.basic.price) || (this.plansData.shop && this.plansData.shop.price) || 5000000;
+                            this.basePrices.basic = basicPrice;
+                            this.basePrices.shop = basicPrice;
+
+                            const proPrice = (this.plansData.professional && this.plansData.professional.price) || (this.plansData.commercial && this.plansData.commercial.price) || 15000000;
+                            this.basePrices.professional = proPrice;
+                            this.basePrices.commercial = proPrice;
+
+                            if (this.plansData.distribution) this.basePrices.distribution = this.plansData.distribution.price;
+                            if (this.plansData.manufacturing) this.basePrices.manufacturing = this.plansData.manufacturing.price;
+                            if (this.plansData.enterprise) this.basePrices.enterprise = this.plansData.enterprise.price;
                         }
                     }
                 }
@@ -185,7 +193,7 @@ function pricingPageApp() {
 }
 </script>
 </head>
-<body class="bg-base-200/50 text-base-content min-h-screen">
+<body class="bg-base-200/50 text-base-content min-h-screen" x-data="pricingPageApp()">
 
     <!-- Top Navigation Header -->
     <header class="bg-base-100 border-b border-base-300 sticky top-0 z-50 shadow-sm backdrop-blur-md bg-base-100/90">

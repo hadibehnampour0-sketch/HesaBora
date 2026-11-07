@@ -451,101 +451,156 @@
                         <!-- 5 Plans Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             <!-- Plan 1 -->
-                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
                                 <div class="flex justify-between items-center">
                                     <span class="font-bold text-white text-xs">۱. پلن اصناف و فروشگاهی</span>
-                                    <input type="text" x-model="plans.basic.badge" class="input input-bordered input-xs bg-slate-950 text-sky-400 w-24 text-center rounded-lg">
+                                    <input type="text" x-model="plans.basic.badge" class="input input-bordered input-xs bg-slate-950 text-sky-400 w-28 text-center rounded-lg" placeholder="نشان پلن">
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
-                                    <input type="number" x-model.number="plans.basic.price" @input="plans.basic.priceFormatted = new Intl.NumberFormat('fa-IR').format(plans.basic.price || 0)" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label class="text-[11px] text-slate-400 font-medium">قیمت سالانه پلن:</label>
+                                        <span class="text-[11px] font-mono font-bold text-emerald-400" x-text="formatIranianPrice(plans.basic.price) + ' تومان'"></span>
+                                    </div>
+                                    <div class="relative">
+                                        <input type="text" 
+                                               dir="ltr"
+                                               :value="plans.basic.price"
+                                               @input="updatePlanPrice('basic', $event.target.value)"
+                                               class="input input-bordered input-sm w-full bg-slate-950 font-mono text-white text-xs rounded-xl pl-16 pr-3 focus:border-sky-500" 
+                                               placeholder="مثال: 6500000 یا ۶,۵۰۰,۰۰۰">
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-bold pointer-events-none">تومان</span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 mt-1 flex items-center justify-between">
+                                        <span>فرمت نمایشی روی سایت:</span>
+                                        <span class="font-mono text-sky-400 font-bold" x-text="(plans.basic.priceFormatted || formatIranianPrice(plans.basic.price)) + ' تومان'"></span>
+                                    </p>
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
-                                    <input type="text" x-model="plans.basic.priceFormatted" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
-                                </div>
-                                <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">شرح مختصر:</label>
+                                    <label class="label text-[11px] text-slate-400 py-1">شرح مختصر امکانات:</label>
                                     <textarea x-model="plans.basic.description" rows="2" class="textarea textarea-bordered bg-slate-950 text-white text-xs rounded-xl"></textarea>
                                 </div>
                             </div>
 
                             <!-- Plan 2 -->
-                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
                                 <div class="flex justify-between items-center">
                                     <span class="font-bold text-white text-xs">۲. پلن تجاری و شرکتی</span>
-                                    <input type="text" x-model="plans.professional.badge" class="input input-bordered input-xs bg-slate-950 text-primary w-24 text-center rounded-lg">
+                                    <input type="text" x-model="plans.professional.badge" class="input input-bordered input-xs bg-slate-950 text-primary w-28 text-center rounded-lg" placeholder="نشان پلن">
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
-                                    <input type="number" x-model.number="plans.professional.price" @input="plans.professional.priceFormatted = new Intl.NumberFormat('fa-IR').format(plans.professional.price || 0)" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label class="text-[11px] text-slate-400 font-medium">قیمت سالانه پلن:</label>
+                                        <span class="text-[11px] font-mono font-bold text-emerald-400" x-text="formatIranianPrice(plans.professional.price) + ' تومان'"></span>
+                                    </div>
+                                    <div class="relative">
+                                        <input type="text" 
+                                               dir="ltr"
+                                               :value="plans.professional.price"
+                                               @input="updatePlanPrice('professional', $event.target.value)"
+                                               class="input input-bordered input-sm w-full bg-slate-950 font-mono text-white text-xs rounded-xl pl-16 pr-3 focus:border-sky-500" 
+                                               placeholder="مثال: 15000000 یا ۱۵,۰۰۰,۰۰۰">
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-bold pointer-events-none">تومان</span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 mt-1 flex items-center justify-between">
+                                        <span>فرمت نمایشی روی سایت:</span>
+                                        <span class="font-mono text-sky-400 font-bold" x-text="(plans.professional.priceFormatted || formatIranianPrice(plans.professional.price)) + ' تومان'"></span>
+                                    </p>
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
-                                    <input type="text" x-model="plans.professional.priceFormatted" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
-                                </div>
-                                <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">شرح مختصر:</label>
+                                    <label class="label text-[11px] text-slate-400 py-1">شرح مختصر امکانات:</label>
                                     <textarea x-model="plans.professional.description" rows="2" class="textarea textarea-bordered bg-slate-950 text-white text-xs rounded-xl"></textarea>
                                 </div>
                             </div>
 
                             <!-- Plan 3 -->
-                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
                                 <div class="flex justify-between items-center">
                                     <span class="font-bold text-white text-xs">۳. پلن توزیع و پخش مویرگی</span>
-                                    <input type="text" x-model="plans.distribution.badge" class="input input-bordered input-xs bg-slate-950 text-secondary w-24 text-center rounded-lg">
+                                    <input type="text" x-model="plans.distribution.badge" class="input input-bordered input-xs bg-slate-950 text-secondary w-28 text-center rounded-lg" placeholder="نشان پلن">
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
-                                    <input type="number" x-model.number="plans.distribution.price" @input="plans.distribution.priceFormatted = new Intl.NumberFormat('fa-IR').format(plans.distribution.price || 0)" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label class="text-[11px] text-slate-400 font-medium">قیمت سالانه پلن:</label>
+                                        <span class="text-[11px] font-mono font-bold text-emerald-400" x-text="formatIranianPrice(plans.distribution.price) + ' تومان'"></span>
+                                    </div>
+                                    <div class="relative">
+                                        <input type="text" 
+                                               dir="ltr"
+                                               :value="plans.distribution.price"
+                                               @input="updatePlanPrice('distribution', $event.target.value)"
+                                               class="input input-bordered input-sm w-full bg-slate-950 font-mono text-white text-xs rounded-xl pl-16 pr-3 focus:border-sky-500" 
+                                               placeholder="مثال: 35000000 یا ۳۵,۰۰۰,۰۰۰">
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-bold pointer-events-none">تومان</span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 mt-1 flex items-center justify-between">
+                                        <span>فرمت نمایشی روی سایت:</span>
+                                        <span class="font-mono text-sky-400 font-bold" x-text="(plans.distribution.priceFormatted || formatIranianPrice(plans.distribution.price)) + ' تومان'"></span>
+                                    </p>
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
-                                    <input type="text" x-model="plans.distribution.priceFormatted" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
-                                </div>
-                                <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">شرح مختصر:</label>
+                                    <label class="label text-[11px] text-slate-400 py-1">شرح مختصر امکانات:</label>
                                     <textarea x-model="plans.distribution.description" rows="2" class="textarea textarea-bordered bg-slate-950 text-white text-xs rounded-xl"></textarea>
                                 </div>
                             </div>
 
                             <!-- Plan 4 -->
-                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
                                 <div class="flex justify-between items-center">
                                     <span class="font-bold text-white text-xs">۴. پلن صنعتی و تولیدی</span>
-                                    <input type="text" x-model="plans.manufacturing.badge" class="input input-bordered input-xs bg-slate-950 text-warning w-24 text-center rounded-lg">
+                                    <input type="text" x-model="plans.manufacturing.badge" class="input input-bordered input-xs bg-slate-950 text-warning w-28 text-center rounded-lg" placeholder="نشان پلن">
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
-                                    <input type="number" x-model.number="plans.manufacturing.price" @input="plans.manufacturing.priceFormatted = new Intl.NumberFormat('fa-IR').format(plans.manufacturing.price || 0)" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label class="text-[11px] text-slate-400 font-medium">قیمت سالانه پلن:</label>
+                                        <span class="text-[11px] font-mono font-bold text-emerald-400" x-text="formatIranianPrice(plans.manufacturing.price) + ' تومان'"></span>
+                                    </div>
+                                    <div class="relative">
+                                        <input type="text" 
+                                               dir="ltr"
+                                               :value="plans.manufacturing.price"
+                                               @input="updatePlanPrice('manufacturing', $event.target.value)"
+                                               class="input input-bordered input-sm w-full bg-slate-950 font-mono text-white text-xs rounded-xl pl-16 pr-3 focus:border-sky-500" 
+                                               placeholder="مثال: 50000000 یا ۵۰,۰۰۰,۰۰۰">
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-bold pointer-events-none">تومان</span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 mt-1 flex items-center justify-between">
+                                        <span>فرمت نمایشی روی سایت:</span>
+                                        <span class="font-mono text-sky-400 font-bold" x-text="(plans.manufacturing.priceFormatted || formatIranianPrice(plans.manufacturing.price)) + ' تومان'"></span>
+                                    </p>
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
-                                    <input type="text" x-model="plans.manufacturing.priceFormatted" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
-                                </div>
-                                <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">شرح مختصر:</label>
+                                    <label class="label text-[11px] text-slate-400 py-1">شرح مختصر امکانات:</label>
                                     <textarea x-model="plans.manufacturing.description" rows="2" class="textarea textarea-bordered bg-slate-950 text-white text-xs rounded-xl"></textarea>
                                 </div>
                             </div>
 
                             <!-- Plan 5 -->
-                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                            <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
                                 <div class="flex justify-between items-center">
                                     <span class="font-bold text-white text-xs">۵. پلن سازمانی و هلدینگ</span>
-                                    <input type="text" x-model="plans.enterprise.badge" class="input input-bordered input-xs bg-slate-950 text-accent w-24 text-center rounded-lg">
+                                    <input type="text" x-model="plans.enterprise.badge" class="input input-bordered input-xs bg-slate-950 text-accent w-28 text-center rounded-lg" placeholder="نشان پلن">
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت به عدد (تومان):</label>
-                                    <input type="number" x-model.number="plans.enterprise.price" @input="plans.enterprise.priceFormatted = new Intl.NumberFormat('fa-IR').format(plans.enterprise.price || 0)" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label class="text-[11px] text-slate-400 font-medium">قیمت سالانه پلن:</label>
+                                        <span class="text-[11px] font-mono font-bold text-emerald-400" x-text="formatIranianPrice(plans.enterprise.price) + ' تومان'"></span>
+                                    </div>
+                                    <div class="relative">
+                                        <input type="text" 
+                                               dir="ltr"
+                                               :value="plans.enterprise.price"
+                                               @input="updatePlanPrice('enterprise', $event.target.value)"
+                                               class="input input-bordered input-sm w-full bg-slate-950 font-mono text-white text-xs rounded-xl pl-16 pr-3 focus:border-sky-500" 
+                                               placeholder="مثال: 80000000 یا ۸۰,۰۰۰,۰۰۰">
+                                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-bold pointer-events-none">تومان</span>
+                                    </div>
+                                    <p class="text-[10px] text-slate-400 mt-1 flex items-center justify-between">
+                                        <span>فرمت نمایشی روی سایت:</span>
+                                        <span class="font-mono text-sky-400 font-bold" x-text="(plans.enterprise.priceFormatted || formatIranianPrice(plans.enterprise.price)) + ' تومان'"></span>
+                                    </p>
                                 </div>
                                 <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">قیمت نمایشی:</label>
-                                    <input type="text" x-model="plans.enterprise.priceFormatted" class="input input-bordered input-sm bg-slate-950 font-mono text-white text-xs rounded-xl">
-                                </div>
-                                <div class="form-control">
-                                    <label class="label text-[11px] text-slate-400">شرح مختصر:</label>
+                                    <label class="label text-[11px] text-slate-400 py-1">شرح مختصر امکانات:</label>
                                     <textarea x-model="plans.enterprise.description" rows="2" class="textarea textarea-bordered bg-slate-950 text-white text-xs rounded-xl"></textarea>
                                 </div>
                             </div>
@@ -871,7 +926,12 @@
                                     if (data.config.site.downloadUrl) this.siteSettings.downloadUrl = data.config.site.downloadUrl;
                                 }
                                 if (data.config.plans) {
-                                    Object.assign(this.plans, data.config.plans);
+                                    for (let k in data.config.plans) {
+                                        if (!this.plans[k]) this.plans[k] = {};
+                                        Object.assign(this.plans[k], data.config.plans[k]);
+                                        this.plans[k].price = this.parseIranianNumber(this.plans[k].price);
+                                        this.plans[k].priceFormatted = this.formatIranianPrice(this.plans[k].price);
+                                    }
                                 }
                                 if (Array.isArray(data.config.coupons)) {
                                     this.coupons = data.config.coupons;
@@ -976,10 +1036,50 @@
                     }
                 },
 
+                parseIranianNumber(val) {
+                    if (val === undefined || val === null) return 0;
+                    const str = val.toString()
+                        .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+                        .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+                        .replace(/[^0-9]/g, '');
+                    return parseInt(str, 10) || 0;
+                },
+
+                formatIranianPrice(val) {
+                    const num = this.parseIranianNumber(val);
+                    return new Intl.NumberFormat('fa-IR').format(num);
+                },
+
+                updatePlanPrice(planKey, val) {
+                    const num = this.parseIranianNumber(val);
+                    if (this.plans[planKey]) {
+                        this.plans[planKey].price = num;
+                        this.plans[planKey].priceFormatted = this.formatIranianPrice(num);
+                        if (planKey === 'basic' && this.plans.shop) {
+                            this.plans.shop.price = num;
+                            this.plans.shop.priceFormatted = this.plans[planKey].priceFormatted;
+                        }
+                        if (planKey === 'professional' && this.plans.commercial) {
+                            this.plans.commercial.price = num;
+                            this.plans.commercial.priceFormatted = this.plans[planKey].priceFormatted;
+                        }
+                    }
+                },
+
                 async savePricingSettings() {
+                    for (let k in this.plans) {
+                        const p = this.plans[k];
+                        let num = this.parseIranianNumber(p.price);
+                        if (!num && p.priceFormatted) num = this.parseIranianNumber(p.priceFormatted);
+                        p.price = num;
+                        p.priceFormatted = this.formatIranianPrice(num);
+                    }
+                    if (this.plans.basic) this.plans.shop = Object.assign({}, this.plans.basic, { id: 'shop', alias: 'basic' });
+                    if (this.plans.professional) this.plans.commercial = Object.assign({}, this.plans.professional, { id: 'commercial', alias: 'professional' });
+
                     localStorage.setItem('neptune_site_plans', JSON.stringify(this.plans));
                     await this.syncWithApi();
-                    alert('قیمت‌ها و مشخصات پلن‌ها با موفقیت ذخیره و در سراسر سایت اعمال شدند.');
+                    alert('قیمت‌ها و مشخصات پلن‌ها با موفقیت در فضای ابری ذخیره شد و در تمامی صفحات وب‌سایت فعال گردید.');
                 },
 
                 async saveContentSettings() {
@@ -997,28 +1097,19 @@
                     this.syncing = true;
                     this.syncMessage = 'در حال ذخیره‌سازی و انتشار روی سرور ابری نپتون...';
                     try {
-                        // Ensure symmetric plan aliases and Persian formatted numbers
+                        // Ensure symmetric plan aliases and clean numbers
+                        for (let k in this.plans) {
+                            const p = this.plans[k];
+                            let num = this.parseIranianNumber(p.price);
+                            if (!num && p.priceFormatted) num = this.parseIranianNumber(p.priceFormatted);
+                            p.price = num;
+                            p.priceFormatted = this.formatIranianPrice(num);
+                        }
                         if (this.plans.basic) {
-                            this.plans.basic.price = parseInt(this.plans.basic.price, 10);
-                            this.plans.basic.priceFormatted = new Intl.NumberFormat('fa-IR').format(this.plans.basic.price);
                             this.plans.shop = Object.assign({}, this.plans.basic, { id: 'shop', alias: 'basic' });
                         }
                         if (this.plans.professional) {
-                            this.plans.professional.price = parseInt(this.plans.professional.price, 10);
-                            this.plans.professional.priceFormatted = new Intl.NumberFormat('fa-IR').format(this.plans.professional.price);
                             this.plans.commercial = Object.assign({}, this.plans.professional, { id: 'commercial', alias: 'professional' });
-                        }
-                        if (this.plans.distribution) {
-                            this.plans.distribution.price = parseInt(this.plans.distribution.price, 10);
-                            this.plans.distribution.priceFormatted = new Intl.NumberFormat('fa-IR').format(this.plans.distribution.price);
-                        }
-                        if (this.plans.manufacturing) {
-                            this.plans.manufacturing.price = parseInt(this.plans.manufacturing.price, 10);
-                            this.plans.manufacturing.priceFormatted = new Intl.NumberFormat('fa-IR').format(this.plans.manufacturing.price);
-                        }
-                        if (this.plans.enterprise) {
-                            this.plans.enterprise.price = parseInt(this.plans.enterprise.price, 10);
-                            this.plans.enterprise.priceFormatted = new Intl.NumberFormat('fa-IR').format(this.plans.enterprise.price);
                         }
 
                         // Sync download and version settings

@@ -5,6 +5,15 @@ let cachedConfig = null;
 let lastFetchTime = 0;
 const CACHE_TTL_MS = 1000; // 1 second in-memory cache
 
+function parseIranianNumber(val) {
+  if (val === undefined || val === null) return 0;
+  const str = val.toString()
+    .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d))
+    .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+    .replace(/[^0-9]/g, '');
+  return parseInt(str, 10) || 0;
+}
+
 function getDefaultConfig() {
   try {
     const configPath = path.join(process.cwd(), 'public', 'site-config.json');
@@ -103,15 +112,35 @@ async function saveLiveConfig(newConfig) {
   // Ensure dual alias consistency and integer prices
   if (newConfig.plans) {
     for (let k in newConfig.plans) {
-      if (newConfig.plans[k].price !== undefined) {
-        const num = parseInt(newConfig.plans[k].price.toString().replace(/[^0-9]/g, ''), 10) || 0;
-        newConfig.plans[k].price = num;
-        newConfig.plans[k].priceFormatted = new Intl.NumberFormat('fa-IR').format(num);
+      const p = newConfig.plans[k];
+      let num = parseIranianNumber(p.price);
+      if (!num && p.priceFormatted) {
+        num = parseIranianNumber(p.priceFormatted);
       }
+      p.price = num;
+      p.priceFormatted = new Intl.NumberFormat('fa-IR').format(num);
     }
-    if (newConfig.plans.basic) newConfig.plans.shop = Object.assign({}, newConfig.plans.basic, { id: 'shop', alias: 'basic' });
-    if (newConfig.plans.professional) newConfig.plans.commercial = Object.assign({}, newConfig.plans.professional, { id: 'commercial', alias: 'professional' });
+    if (newConfig.plans.basic) {
+      newConfig.plans.shop = Object.assign({}, newConfig.plans.basic, { id: 'shop', alias: 'basic' });
+    }
+    if (newConfig.plans.shop && !newConfig.plans.basic) {
+      newConfig.plans.basic = Object.assign({}, newConfig.plans.shop, { id: 'basic', alias: 'shop' });
+    }
+    if (newConfig.plans.professional) {
+      newConfig.plans.commercial = Object.assign({}, newConfig.plans.professional, { id: 'commercial', alias: 'professional' });
+    }
+    if (newConfig.plans.commercial && !newConfig.plans.professional) {
+      newConfig.plans.professional = Object.assign({}, newConfig.plans.commercial, { id: 'professional', alias: 'commercial' });
+    }
   }
+
+  // Try to update local file if writable
+  try {
+    const configPath = path.join(process.cwd(), 'public', 'site-config.json');
+    if (fs.existsSync(configPath)) {
+      fs.writeFileSync(configPath, JSON.stringify(newConfig, null, 2), 'utf8');
+    }
+  } catch (e) {}
 
   cachedConfig = newConfig;
   lastFetchTime = Date.now();
