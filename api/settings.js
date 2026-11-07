@@ -22,6 +22,9 @@ module.exports = async (req, res) => {
     if (body.plans && typeof body.plans === 'object') {
       updated.plans = Object.assign(updated.plans || {}, body.plans);
     }
+    if (body.addons && typeof body.addons === 'object') {
+      updated.addons = Object.assign(updated.addons || {}, body.addons);
+    }
     if (Array.isArray(body.coupons)) {
       updated.coupons = body.coupons;
     }

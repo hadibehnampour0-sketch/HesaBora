@@ -606,6 +606,58 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Addons / Modules Customizer Card -->
+                    <div class="glass-card rounded-3xl p-6 space-y-6">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <div>
+                                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                    <span>🧩</span>
+                                    <span>تنظیم نام، قیمت و توضیحات ماژول‌های افزونه (محاسبه‌گر آنلاین)</span>
+                                </h3>
+                                <p class="text-xs text-slate-400 mt-1">تغییر عنوان، قیمت و متن توضیحی (Tooltip) هر ماژول به صورت لحظه‌ای در محاسبه‌گر قیمت سایت اعمال می‌شود</p>
+                            </div>
+                            <button @click="savePricingSettings()" class="btn btn-primary btn-sm rounded-xl font-bold text-xs gap-1.5 shadow-md shadow-sky-500/20">
+                                <span>ذخیره تغییرات ماژول‌ها</span>
+                                <span>✓</span>
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <template x-for="(addon, key) in addons" :key="key">
+                                <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <div class="flex items-center gap-2 min-w-0 flex-1">
+                                            <span class="text-lg shrink-0 select-none" x-text="addon.icon"></span>
+                                            <input type="text" x-model="addon.title" class="input input-bordered input-xs bg-slate-950 font-bold text-white text-xs rounded-lg w-full" placeholder="عنوان ماژول">
+                                        </div>
+                                        <span class="badge badge-xs badge-ghost text-[10px] shrink-0" x-text="addon.category"></span>
+                                    </div>
+
+                                    <div class="form-control">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <label class="text-[11px] text-slate-400 font-medium">هزینه سالانه ماژول:</label>
+                                            <span class="text-[11px] font-mono font-bold text-emerald-400" x-text="formatIranianPrice(addon.price) + ' تومان'"></span>
+                                        </div>
+                                        <div class="relative">
+                                            <input type="text" 
+                                                   dir="ltr"
+                                                   :value="addon.price"
+                                                   @input="updateAddonPrice(key, $event.target.value)"
+                                                   class="input input-bordered input-sm w-full bg-slate-950 font-mono text-white text-xs rounded-xl pl-16 pr-3 focus:border-sky-500" 
+                                                   placeholder="مثال: 1500000">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs font-bold pointer-events-none">تومان</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-control">
+                                        <label class="label text-[11px] text-slate-400 py-0.5">توضیح کوتاه ماژول (نمایش در هاور Tooltip):</label>
+                                        <textarea x-model="addon.desc" rows="2" class="textarea textarea-bordered bg-slate-950 text-white text-xs rounded-xl leading-relaxed" placeholder="توضیح کارکرد ماژول"></textarea>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- TAB 5: ONLINE LICENSE GENERATOR -->
@@ -876,6 +928,20 @@
                     enterprise: { name: 'نسخه الماس (سازمانی و هلدینگ)', price: 80000000, priceFormatted: '۸۰,۰۰۰,۰۰۰', badge: 'جامع‌ترین', description: 'برای کارخانجات، شرکت‌های پخش مویرگی و هلدینگ‌هایی که به تمامی امکانات بدون هیچ‌گونه محدودیتی نیاز دارند.' },
                 },
 
+                addons: {
+                    pos_retail: { id: "pos_retail", title: "صندوق فروشگاهی سریع (POS)", icon: "🛒", price: 1500000, priceFormatted: "۱,۵۰۰,۰۰۰", category: "فروش و صندوق", desc: "رابط لمسی صندوق، اتصال مستقیم به بارکدخوان، چاپگر فیش، کشوی پول و انواع کارتخوان PC-POS بانکی." },
+                    distribution: { id: "distribution", title: "پخش مویرگی و ویزیتوری", icon: "🚚", price: 4500000, priceFormatted: "۴,۵۰۰,۰۰۰", category: "پخش و توزیع", desc: "مدیریت انبار خودرو (وان)، مسیربندی ویزیتورها، سفارش‌گیری تبلت (سرد و گرم)، کاتالوگ دیجیتال و تسویه فاکتور." },
+                    production_bom: { id: "production_bom", title: "فرمول ساخت و تولید (BOM)", icon: "⚙️", price: 5500000, priceFormatted: "۵,۵۰۰,۰۰۰", category: "تولید و صنعتی", desc: "تعریف ساختار چندمرحله‌ای محصول (BOM)، صدور دستور ساخت، محاسبه مکانیزه بهای تمام‌شده و تسهیم سربار مستقیم." },
+                    hr_payroll: { id: "hr_payroll", title: "حقوق، دستمزد و کارگزینی", icon: "👥", price: 2500000, priceFormatted: "۲,۵۰۰,۰۰۰", category: "منابع انسانی", desc: "احکام کارگزینی، ثبت تردد و اضافه‌کاری، فیش حقوقی اداره کار، دیسکت بیمه تامین اجتماعی و مالیات حقوق." },
+                    sms_automation: { id: "sms_automation", title: "اتوماسیون پیامک هوشمند", icon: "💬", price: 1200000, priceFormatted: "۱,۲۰۰,۰۰۰", category: "ارتباط با مشتری", desc: "ارسال خودکار پیامک صدور فاکتور، یادآوری سررسید چک، مانده‌حساب بدهکاران و تبریک مناسبت‌ها با خط خدماتی." },
+                    customer_loyalty: { id: "customer_loyalty", title: "باشگاه مشتریان و کیف پول", icon: "🎁", price: 1400000, priceFormatted: "۱,۴۰۰,۰۰۰", category: "وفاداری و مارکتینگ", desc: "محاسبه خودکار امتیاز و کش‌بک خرید، تعریف سطوح وفاداری مشتریان و کیف پول شارژی جهت خریدهای بعدی." },
+                    telephony_voip: { id: "telephony_voip", title: "کالرآیدی و تلفن سانترال (VoIP)", icon: "📞", price: 1100000, priceFormatted: "۱,۱۰۰,۰۰۰", category: "ارتباطات تلفنی", desc: "نمایش پاپ‌آپ پرونده مشتری، مانده‌حساب، آخرین سفارش‌ها و وضعیت چک‌ها همزمان با زنگ خوردن تلفن." },
+                    official_inquiries: { id: "official_inquiries", title: "استعلام شاهکار و اصالت شبا", icon: "🔍", price: 800000, priceFormatted: "۸۰۰,۰۰۰", category: "اعتبارسنجی و مالیات", desc: "احراز هویت پیامکی شاهکار (تطابق کدملی و سیم‌کارت)، صحت‌سنجی شماره شبا و نام صاحب‌حساب بانکی." },
+                    installment_financing: { id: "installment_financing", title: "فروش اقساطی و محاسبات سود", icon: "💳", price: 1500000, priceFormatted: "۱,۵۰۰,۰۰۰", category: "مالی و اقساط", desc: "تقسیط فاکتور با فرمول بانکی یا توافقی، محاسبه جریمه دیرکرد روزشمار، چاپ دفترچه اقساط و پیامک یادآوری قسط." },
+                    ai_copilot: { id: "ai_copilot", title: "دستیار مالی هوش مصنوعی و OCR", icon: "✨", price: 3200000, priceFormatted: "۳,۲۰۰,۰۰۰", category: "هوش مصنوعی", desc: "تحلیل مالی هوشمند، تبدیل عکس فاکتور کاغذی به سند مکانیزه حسابداری با OCR فارسی و فرمان صوتی." },
+                    migration_tools: { id: "migration_tools", title: "مهاجرت هوشمند از هلو و سپیدار", icon: "🔄", price: 800000, priceFormatted: "۸۰۰,۰۰۰", category: "ابزارهای داده", desc: "انتقال خودکار ۱۰۰٪ کاردکس، اشخاص، سرفصل‌ها، انبارها و مانده‌حساب‌ها از هلو، سپیدار، پارسیان و همکاران سیستم." }
+                },
+
                 coupons: [
                     { code: 'NEPTUNE20', discountPercent: 20, maxDiscount: 10000000, description: '۲۰٪ تخفیف ویژه رونمایی نسخه ۲.۵', active: true },
                     { code: 'START50', discountPercent: 50, maxDiscount: 2500000, description: '۵۰٪ تخفیف ویژه اصناف خرد (تا سقف ۲.۵ م.ت)', active: true },
@@ -933,11 +999,20 @@
                                         this.plans[k].priceFormatted = this.formatIranianPrice(this.plans[k].price);
                                     }
                                 }
+                                if (data.config.addons) {
+                                    for (let k in data.config.addons) {
+                                        if (!this.addons[k]) this.addons[k] = {};
+                                        Object.assign(this.addons[k], data.config.addons[k]);
+                                        this.addons[k].price = this.parseIranianNumber(this.addons[k].price);
+                                        this.addons[k].priceFormatted = this.formatIranianPrice(this.addons[k].price);
+                                    }
+                                }
                                 if (Array.isArray(data.config.coupons)) {
                                     this.coupons = data.config.coupons;
                                 }
                                 // Update local cache to match server
                                 localStorage.setItem('neptune_site_plans', JSON.stringify(this.plans));
+                                localStorage.setItem('neptune_site_addons', JSON.stringify(this.addons));
                                 localStorage.setItem('neptune_site_content', JSON.stringify(this.siteContent));
                                 localStorage.setItem('neptune_site_coupons', JSON.stringify(this.coupons));
                                 return;
@@ -951,6 +1026,10 @@
                     const savedPlans = localStorage.getItem('neptune_site_plans');
                     if (savedPlans) {
                         try { this.plans = Object.assign(this.plans, JSON.parse(savedPlans)); } catch(e) {}
+                    }
+                    const savedAddons = localStorage.getItem('neptune_site_addons');
+                    if (savedAddons) {
+                        try { this.addons = Object.assign(this.addons, JSON.parse(savedAddons)); } catch(e) {}
                     }
                     const savedContent = localStorage.getItem('neptune_site_content');
                     if (savedContent) {
@@ -1066,6 +1145,14 @@
                     }
                 },
 
+                updateAddonPrice(key, val) {
+                    const num = this.parseIranianNumber(val);
+                    if (this.addons[key]) {
+                        this.addons[key].price = num;
+                        this.addons[key].priceFormatted = this.formatIranianPrice(num);
+                    }
+                },
+
                 async savePricingSettings() {
                     for (let k in this.plans) {
                         const p = this.plans[k];
@@ -1077,9 +1164,20 @@
                     if (this.plans.basic) this.plans.shop = Object.assign({}, this.plans.basic, { id: 'shop', alias: 'basic' });
                     if (this.plans.professional) this.plans.commercial = Object.assign({}, this.plans.professional, { id: 'commercial', alias: 'professional' });
 
+                    if (this.addons) {
+                        for (let k in this.addons) {
+                            const a = this.addons[k];
+                            let num = this.parseIranianNumber(a.price);
+                            if (!num && a.priceFormatted) num = this.parseIranianNumber(a.priceFormatted);
+                            a.price = num;
+                            a.priceFormatted = this.formatIranianPrice(num);
+                        }
+                    }
+
                     localStorage.setItem('neptune_site_plans', JSON.stringify(this.plans));
+                    localStorage.setItem('neptune_site_addons', JSON.stringify(this.addons));
                     await this.syncWithApi();
-                    alert('قیمت‌ها و مشخصات پلن‌ها با موفقیت در فضای ابری ذخیره شد و در تمامی صفحات وب‌سایت فعال گردید.');
+                    alert('قیمت‌ها و مشخصات پلن‌ها و ماژول‌ها با موفقیت در فضای ابری ذخیره شد و در تمامی صفحات وب‌سایت فعال گردید.');
                 },
 
                 async saveContentSettings() {
@@ -1112,6 +1210,16 @@
                             this.plans.commercial = Object.assign({}, this.plans.professional, { id: 'commercial', alias: 'professional' });
                         }
 
+                        if (this.addons) {
+                            for (let k in this.addons) {
+                                const a = this.addons[k];
+                                let num = this.parseIranianNumber(a.price);
+                                if (!num && a.priceFormatted) num = this.parseIranianNumber(a.priceFormatted);
+                                a.price = num;
+                                a.priceFormatted = this.formatIranianPrice(num);
+                            }
+                        }
+
                         // Sync download and version settings
                         this.siteContent.version = this.siteSettings.version;
                         this.siteContent.downloadUrl = this.siteSettings.downloadUrl;
@@ -1122,7 +1230,8 @@
                             body: JSON.stringify({
                                 site: this.siteContent,
                                 plans: this.plans,
-                                coupons: this.coupons
+                                coupons: this.coupons,
+                                addons: this.addons
                             })
                         });
                         const data = await res.json();

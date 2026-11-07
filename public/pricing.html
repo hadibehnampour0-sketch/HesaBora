@@ -83,6 +83,19 @@ function pricingPageApp() {
         selectedAddons: [],
         extraUsers: 0,
         userPrice: 750000,
+        addons: {
+            pos_retail: { id: "pos_retail", title: "صندوق فروشگاهی سریع (POS)", icon: "🛒", price: 1500000, category: "فروش و صندوق", desc: "رابط لمسی صندوق، اتصال مستقیم به بارکدخوان، چاپگر فیش، کشوی پول و انواع کارتخوان PC-POS بانکی." },
+            distribution: { id: "distribution", title: "پخش مویرگی و ویزیتوری", icon: "🚚", price: 4500000, category: "پخش و توزیع", desc: "مدیریت انبار خودرو (وان)، مسیربندی ویزیتورها، سفارش‌گیری تبلت (سرد و گرم)، کاتالوگ دیجیتال و تسویه فاکتور." },
+            production_bom: { id: "production_bom", title: "فرمول ساخت و تولید (BOM)", icon: "⚙️", price: 5500000, category: "تولید و صنعتی", desc: "تعریف ساختار چندمرحله‌ای محصول (BOM)، صدور دستور ساخت، محاسبه مکانیزه بهای تمام‌شده و تسهیم سربار مستقیم." },
+            hr_payroll: { id: "hr_payroll", title: "حقوق، دستمزد و کارگزینی", icon: "👥", price: 2500000, category: "منابع انسانی", desc: "احکام کارگزینی، ثبت تردد و اضافه‌کاری، فیش حقوقی اداره کار، دیسکت بیمه تامین اجتماعی و مالیات حقوق." },
+            sms_automation: { id: "sms_automation", title: "اتوماسیون پیامک هوشمند", icon: "💬", price: 1200000, category: "ارتباط با مشتری", desc: "ارسال خودکار پیامک صدور فاکتور، یادآوری سررسید چک، مانده‌حساب بدهکاران و تبریک مناسبت‌ها با خط خدماتی." },
+            customer_loyalty: { id: "customer_loyalty", title: "باشگاه مشتریان و کیف پول", icon: "🎁", price: 1400000, category: "وفاداری و مارکتینگ", desc: "محاسبه خودکار امتیاز و کش‌بک خرید، تعریف سطوح وفاداری مشتریان و کیف پول شارژی جهت خریدهای بعدی." },
+            telephony_voip: { id: "telephony_voip", title: "کالرآیدی و تلفن سانترال (VoIP)", icon: "📞", price: 1100000, category: "ارتباطات تلفنی", desc: "نمایش پاپ‌آپ پرونده مشتری، مانده‌حساب، آخرین سفارش‌ها و وضعیت چک‌ها همزمان با زنگ خوردن تلفن." },
+            official_inquiries: { id: "official_inquiries", title: "استعلام شاهکار و اصالت شبا", icon: "🔍", price: 800000, category: "اعتبارسنجی و مالیات", desc: "احراز هویت پیامکی شاهکار (تطابق کدملی و سیم‌کارت)، صحت‌سنجی شماره شبا و نام صاحب‌حساب بانکی." },
+            installment_financing: { id: "installment_financing", title: "فروش اقساطی و محاسبات سود", icon: "💳", price: 1500000, category: "مالی و اقساط", desc: "تقسیط فاکتور با فرمول بانکی یا توافقی، محاسبه جریمه دیرکرد روزشمار، چاپ دفترچه اقساط و پیامک یادآوری قسط." },
+            ai_copilot: { id: "ai_copilot", title: "دستیار مالی هوش مصنوعی و OCR", icon: "✨", price: 3200000, category: "هوش مصنوعی", desc: "تحلیل مالی هوشمند، تبدیل عکس فاکتور کاغذی به سند مکانیزه حسابداری با OCR فارسی و فرمان صوتی." },
+            migration_tools: { id: "migration_tools", title: "مهاجرت هوشمند از هلو و سپیدار", icon: "🔄", price: 800000, category: "ابزارهای داده", desc: "انتقال خودکار ۱۰۰٪ کاردکس، اشخاص، سرفصل‌ها، انبارها و مانده‌حساب‌ها از هلو، سپیدار، پارسیان و همکاران سیستم." }
+        },
         addonPrices: {
             pos_retail: 1500000,
             distribution: 4500000,
@@ -129,6 +142,17 @@ function pricingPageApp() {
                             if (this.plansData.manufacturing) this.basePrices.manufacturing = this.plansData.manufacturing.price;
                             if (this.plansData.enterprise) this.basePrices.enterprise = this.plansData.enterprise.price;
                         }
+                        if (data.config.addons) {
+                            for (const [k, a] of Object.entries(data.config.addons)) {
+                                if (!this.addons[k]) this.addons[k] = {};
+                                Object.assign(this.addons[k], a);
+                                if (a.price !== undefined) {
+                                    const num = parseInt(a.price.toString().replace(/[^0-9]/g, ''), 10) || 0;
+                                    this.addons[k].price = num;
+                                    this.addonPrices[k] = num;
+                                }
+                            }
+                        }
                     }
                 }
             } catch(e) {
@@ -139,8 +163,9 @@ function pricingPageApp() {
             if (this.basePlan === 'enterprise') return (this.basePrices.enterprise || 80000000) + (this.extraUsers * this.userPrice);
             let sum = this.basePrices[this.basePlan] || 5000000;
             for (const key of this.selectedAddons) {
-                if (!this.isAddonDisabled(key) && this.addonPrices[key]) {
-                    sum += this.addonPrices[key];
+                if (!this.isAddonDisabled(key)) {
+                    const price = (this.addons[key] && this.addons[key].price) !== undefined ? this.addons[key].price : (this.addonPrices[key] || 0);
+                    sum += price;
                 }
             }
             sum += (this.extraUsers * this.userPrice);
@@ -600,19 +625,57 @@ function pricingPageApp() {
                     </div>
 
                     <!-- Addon Modules Checkboxes -->
-                    <div class="space-y-2" x-show="basePlan !== 'enterprise'">
-                        <label class="text-xs font-bold text-base-content/80">۲. ماژول‌های افزونه مورد نیاز را تیک بزنید:</label>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <template x-for="(price, key) in addonPrices" :key="key">
-                                <label class="flex items-center justify-between p-2.5 rounded-xl border border-base-200 bg-base-200/30 hover:bg-base-200/70 transition cursor-pointer text-xs"
-                                       :class="isAddonDisabled(key) ? 'opacity-50 cursor-not-allowed bg-base-200/10' : ''">
-                                    <div class="flex items-center gap-2">
-                                        <input type="checkbox" :value="key" x-model="selectedAddons" :disabled="isAddonDisabled(key)" class="checkbox checkbox-primary checkbox-xs rounded" />
-                                        <span x-text="key.replaceAll('_', ' ').toUpperCase()"></span>
-                                        <span x-show="isAddonDisabled(key)" class="badge badge-xs text-[9px]">شامل در نگارش</span>
+                    <div class="space-y-3" x-show="basePlan !== 'enterprise'">
+                        <div class="flex items-center justify-between flex-wrap gap-2">
+                            <label class="text-xs font-bold text-base-content/80 flex items-center gap-1.5">
+                                <span>۲. ماژول‌های افزونه مورد نیاز را انتخاب کنید:</span>
+                            </label>
+                            <span class="text-[11px] text-primary font-medium flex items-center gap-1 bg-primary/10 px-2.5 py-1 rounded-lg">
+                                <span>💡</span>
+                                <span>با قرار دادن ماوس روی هر ماژول، کارکرد آن نمایش داده می‌شود</span>
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <template x-for="(addon, key) in addons" :key="key">
+                                <div class="relative group/addon">
+                                    <label class="flex items-center justify-between p-3 rounded-2xl border border-base-200 bg-base-200/30 hover:bg-base-200/80 hover:border-primary/50 transition-all cursor-pointer text-xs"
+                                           :class="isAddonDisabled(key) ? 'opacity-50 cursor-not-allowed bg-base-200/10' : (selectedAddons.includes(key) ? 'border-primary/60 bg-primary/5 shadow-xs font-medium' : '')">
+                                        <div class="flex items-center gap-2.5 min-w-0">
+                                            <input type="checkbox" :value="key" x-model="selectedAddons" :disabled="isAddonDisabled(key)" class="checkbox checkbox-primary checkbox-xs rounded-md shrink-0" />
+                                            <span class="text-base shrink-0 select-none" x-text="addon.icon"></span>
+                                            <div class="min-w-0">
+                                                <div class="flex items-center gap-1.5 flex-wrap">
+                                                    <span class="font-bold text-base-content text-xs" x-text="addon.title"></span>
+                                                    <span x-show="isAddonDisabled(key)" class="badge badge-xs text-[9px] badge-ghost">شامل در نگارش</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-2 shrink-0 mr-2">
+                                            <span class="font-mono text-[11px] font-bold text-primary" x-text="(addon.price / 1000000) + ' م.ت'"></span>
+                                            <span class="w-5 h-5 rounded-full bg-base-300/70 group-hover/addon:bg-primary group-hover/addon:text-white flex items-center justify-center text-[10px] text-base-content/70 font-bold transition select-none">
+                                                ؟
+                                            </span>
+                                        </div>
+                                    </label>
+
+                                    <!-- Hover Tooltip Floating Card -->
+                                    <div class="absolute bottom-full right-0 mb-2 hidden group-hover/addon:block w-72 sm:w-80 p-3.5 bg-slate-900 text-slate-100 rounded-2xl shadow-2xl border border-slate-700 z-50 pointer-events-none transition-all duration-200">
+                                        <div class="flex items-center justify-between mb-1.5 pb-1.5 border-b border-slate-800">
+                                            <div class="flex items-center gap-1.5 font-bold text-xs text-sky-400">
+                                                <span x-text="addon.icon"></span>
+                                                <span x-text="addon.title"></span>
+                                            </div>
+                                            <span class="badge badge-xs bg-slate-800 text-slate-300 border-slate-700 text-[10px]" x-text="addon.category"></span>
+                                        </div>
+                                        <p class="text-[11px] text-slate-300 leading-relaxed text-right" x-text="addon.desc"></p>
+                                        <div class="mt-2 pt-1.5 border-t border-slate-800/60 flex items-center justify-between text-[10px] text-slate-400">
+                                            <span>هزینه سالانه:</span>
+                                            <span class="font-mono font-bold text-emerald-400" x-text="new Intl.NumberFormat('fa-IR').format(addon.price) + ' تومان'"></span>
+                                        </div>
+                                        <!-- Tooltip Arrow -->
+                                        <div class="absolute top-full right-8 -mt-1 border-4 border-transparent border-t-slate-900"></div>
                                     </div>
-                                    <span class="font-mono text-[11px] text-base-content/70" x-text="(price / 1000000) + ' م تومان'"></span>
-                                </label>
+                                </div>
                             </template>
                         </div>
                     </div>
@@ -667,6 +730,14 @@ function pricingPageApp() {
                             <div class="flex justify-between">
                                 <span class="text-base-content/60">ماژول‌های اضافه:</span>
                                 <span class="font-mono font-bold" x-text="selectedAddons.length + ' ماژول'"></span>
+                            </div>
+                            <div x-show="selectedAddons.length > 0" class="flex flex-wrap gap-1 pt-0.5">
+                                <template x-for="addonKey in selectedAddons" :key="addonKey">
+                                    <span class="badge badge-primary badge-outline badge-xs text-[9px] gap-1 py-1 px-1.5" x-show="addons[addonKey]">
+                                        <span x-text="addons[addonKey]?.icon"></span>
+                                        <span x-text="addons[addonKey]?.title"></span>
+                                    </span>
+                                </template>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-base-content/60">کاربران مازاد:</span>

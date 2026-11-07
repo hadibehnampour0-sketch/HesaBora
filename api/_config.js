@@ -61,7 +61,20 @@ function getDefaultConfig() {
       { code: "START50", discountPercent: 50, maxDiscount: 2500000, description: "۵۰٪ تخفیف ویژه اصناف خرد (تا سقف ۲.۵ م.ت)", active: true },
       { code: "VIP15", discountPercent: 15, maxDiscount: 15000000, description: "۱۵٪ تخفیف ویژه خریداران شرکتی و سازمانی", active: true },
       { code: "OFFER10", discountPercent: 10, maxDiscount: 5000000, description: "۱۰٪ تخفیف عمومی برای تمامی پلن‌ها", active: true }
-    ]
+    ],
+    addons: {
+      pos_retail: { id: "pos_retail", title: "صندوق فروشگاهی سریع (POS)", icon: "🛒", price: 1500000, priceFormatted: "۱,۵۰۰,۰۰۰", category: "فروش و صندوق", desc: "رابط لمسی صندوق، اتصال مستقیم به بارکدخوان، چاپگر فیش، کشوی پول و انواع کارتخوان PC-POS بانکی." },
+      distribution: { id: "distribution", title: "پخش مویرگی و ویزیتوری", icon: "🚚", price: 4500000, priceFormatted: "۴,۵۰۰,۰۰۰", category: "پخش و توزیع", desc: "مدیریت انبار خودرو (وان)، مسیربندی ویزیتورها، سفارش‌گیری تبلت (سرد و گرم)، کاتالوگ دیجیتال و تسویه فاکتور." },
+      production_bom: { id: "production_bom", title: "فرمول ساخت و تولید (BOM)", icon: "⚙️", price: 5500000, priceFormatted: "۵,۵۰۰,۰۰۰", category: "تولید و صنعتی", desc: "تعریف ساختار چندمرحله‌ای محصول (BOM)، صدور دستور ساخت، محاسبه مکانیزه بهای تمام‌شده و تسهیم سربار مستقیم." },
+      hr_payroll: { id: "hr_payroll", title: "حقوق، دستمزد و کارگزینی", icon: "👥", price: 2500000, priceFormatted: "۲,۵۰۰,۰۰۰", category: "منابع انسانی", desc: "احکام کارگزینی، ثبت تردد و اضافه‌کاری، فیش حقوقی اداره کار، دیسکت بیمه تامین اجتماعی و مالیات حقوق." },
+      sms_automation: { id: "sms_automation", title: "اتوماسیون پیامک هوشمند", icon: "💬", price: 1200000, priceFormatted: "۱,۲۰۰,۰۰۰", category: "ارتباط با مشتری", desc: "ارسال خودکار پیامک صدور فاکتور، یادآوری سررسید چک، مانده‌حساب بدهکاران و تبریک مناسبت‌ها با خط خدماتی." },
+      customer_loyalty: { id: "customer_loyalty", title: "باشگاه مشتریان و کیف پول", icon: "🎁", price: 1400000, priceFormatted: "۱,۴۰۰,۰۰۰", category: "وفاداری و مارکتینگ", desc: "محاسبه خودکار امتیاز و کش‌بک خرید، تعریف سطوح وفاداری مشتریان و کیف پول شارژی جهت خریدهای بعدی." },
+      telephony_voip: { id: "telephony_voip", title: "کالرآیدی و تلفن سانترال (VoIP)", icon: "📞", price: 1100000, priceFormatted: "۱,۱۰۰,۰۰۰", category: "ارتباطات تلفنی", desc: "نمایش پاپ‌آپ پرونده مشتری، مانده‌حساب، آخرین سفارش‌ها و وضعیت چک‌ها همزمان با زنگ خوردن تلفن." },
+      official_inquiries: { id: "official_inquiries", title: "استعلام شاهکار و اصالت شبا", icon: "🔍", price: 800000, priceFormatted: "۸۰۰,۰۰۰", category: "اعتبارسنجی و مالیات", desc: "احراز هویت پیامکی شاهکار (تطابق کدملی و سیم‌کارت)، صحت‌سنجی شماره شبا، کارت بانکی و نام صاحب‌حساب." },
+      installment_financing: { id: "installment_financing", title: "فروش اقساطی و محاسبات سود", icon: "💳", price: 1500000, priceFormatted: "۱,۵۰۰,۰۰۰", category: "مالی و اقساط", desc: "تقسیط فاکتور با فرمول بانکی یا توافقی، محاسبه جریمه دیرکرد روزشمار، چاپ دفترچه اقساط و پیامک یادآوری قسط." },
+      ai_copilot: { id: "ai_copilot", title: "دستیار مالی هوش مصنوعی و OCR", icon: "✨", price: 3200000, priceFormatted: "۳,۲۰۰,۰۰۰", category: "هوش مصنوعی", desc: "تحلیل مالی هوشمند، تبدیل عکس فاکتور کاغذی به سند مکانیزه حسابداری با OCR فارسی و فرمان صوتی." },
+      migration_tools: { id: "migration_tools", title: "مهاجرت هوشمند از هلو و سپیدار", icon: "🔄", price: 800000, priceFormatted: "۸۰۰,۰۰۰", category: "ابزارهای داده", desc: "انتقال خودکار ۱۰۰٪ کاردکس، اشخاص، سرفصل‌ها، انبارها و مانده‌حساب‌ها از هلو، سپیدار، پارسیان و همکاران سیستم." }
+    }
   };
 }
 
@@ -88,6 +101,7 @@ async function getLiveConfig() {
             if (data.plans.shop && !data.plans.basic) data.plans.basic = data.plans.shop;
             if (data.plans.professional && !data.plans.commercial) data.plans.commercial = data.plans.professional;
             if (data.plans.commercial && !data.plans.professional) data.plans.professional = data.plans.commercial;
+            if (!data.addons) data.addons = getDefaultConfig().addons;
 
             cachedConfig = data;
             lastFetchTime = now;
@@ -131,6 +145,18 @@ async function saveLiveConfig(newConfig) {
     }
     if (newConfig.plans.commercial && !newConfig.plans.professional) {
       newConfig.plans.professional = Object.assign({}, newConfig.plans.commercial, { id: 'professional', alias: 'commercial' });
+    }
+  }
+
+  if (newConfig.addons) {
+    for (let k in newConfig.addons) {
+      const a = newConfig.addons[k];
+      let num = parseIranianNumber(a.price);
+      if (!num && a.priceFormatted) {
+        num = parseIranianNumber(a.priceFormatted);
+      }
+      a.price = num;
+      a.priceFormatted = new Intl.NumberFormat('fa-IR').format(num);
     }
   }
 
