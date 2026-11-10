@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تیزر تبلیغاتی ۶۰ ثانیه‌ای نپتون ERP (پایان کابوس‌های مالی بازاریان)</title>
+    
+    <!-- Tailwind CSS & DaisyUI CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Vazirmatn', 'sans-serif'] },
+                    colors: {
+                        primary: '#0284c7',
+                        accent: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Vazirmatn', sans-serif; }
+        
+        /* 16:9 Cinematic Video Viewport */
+        .cinema-viewport {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            overflow: hidden;
+            background: #000;
+            border-radius: 1.5rem;
+            box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.98), 0 0 50px rgba(245, 158, 11, 0.15);
+        }
+        
+        .viewport-inner {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        /* Cinematic Scene Transition Effects */
+        .scene-bg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 7s ease-out, opacity 0.8s ease-in-out;
+            transform: scale(1.05);
+        }
+        
+        .scene-bg.active-zoom {
+            transform: scale(1.18);
+        }
+        
+        /* Kinetic Typography Overlay */
+        .kinetic-title {
+            animation: kineticPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes kineticPop {
+            0% { transform: translateY(20px) scale(0.9); opacity: 0; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        
+        /* High Contrast Cinematic Subtitle Banner */
+        .cinema-subtitles {
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 75%, transparent 100%);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Letterbox bars effect */
+        .letterbox-bar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 5%;
+            background: #000;
+            z-index: 25;
+        }
+    </style>
+</head>
+<body class="bg-[#03060f] text-slate-100 min-h-screen selection:bg-amber-500 selection:text-black pb-20">
+
+    <!-- Audio Player for Persian Voiceover -->
+    <audio id="teaserAudio" preload="auto"></audio>
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-[#060a17]/95 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-[#020510] p-1.5 flex items-center justify-center border border-amber-500/40 shadow-sm">
+                    <img src="./images/neptune-logo.svg" onerror="this.src='/images/neptune-logo.svg'" alt="Neptune ERP" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h1 class="font-black text-sm text-white flex items-center gap-2">
+                        <span>تیزر تبلیغاتی پرچمدار نپتون ERP</span>
+                        <span class="badge badge-warning badge-xs font-mono font-bold">نسخه ۶۰ ثانیه‌ای داستانی</span>
+                    </h1>
+                    <span class="text-[11px] text-slate-400">سناریوی اول: پایان کابوس‌های مالی و مالیاتی کسب‌وکارها</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <a href="/video-tour" class="btn btn-ghost btn-sm text-xs text-sky-400 rounded-xl hover:bg-slate-800">
+                    <span>🎬 تور تصویری دکمه‌ها</span>
+                </a>
+                <a href="/landing" class="btn btn-primary btn-sm rounded-xl text-xs gap-1 font-bold">
+                    <span>🌐 مشاهده وب‌سایت</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-5xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+        <!-- Top Header & Instructions -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/70 p-4 sm:p-5 rounded-2xl border border-slate-800">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                    <span>🎥 تیزر رسمی ۶۰ ثانیه‌ای نپتون ERP (سناریوی اول)</span>
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
+                    روایت داستان واقعی چالش‌های یک مدیر بازاری (قطعی اینترنت، استرس چک، ترس از مالیات) و تحول با ورود نپتون.
+                </p>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <!-- Record Video Button -->
+                <button id="btnRecordTeaser" onclick="toggleTeaserRecording()" class="btn btn-error btn-sm rounded-xl font-bold text-xs gap-1.5 shadow-lg shadow-red-500/20">
+                    <span id="recordIcon" class="w-2.5 h-2.5 rounded-full bg-white inline-block"></span>
+                    <span id="recordText">🔴 ضبط و دانلود فایل ویدیو (MP4)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 16:9 Cinema Viewport -->
+        <div class="cinema-viewport border border-slate-800" id="teaserViewport">
+            <!-- Letterbox Bars -->
+            <div class="letterbox-bar top-0"></div>
+            <div class="letterbox-bar bottom-0"></div>
+
+            <div class="viewport-inner">
+                <!-- Background Scene Image -->
+                <img id="sceneImage" src="/images/teaser/scene_struggle.jpg" alt="صحنه تبلیغاتی" class="scene-bg active-zoom">
+                
+                <!-- Dark Cinema Vignette Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/60 pointer-events-none z-10"></div>
+
+                <!-- Scene Kinetic Badges (Top & Center) -->
+                <div class="absolute top-10 inset-x-6 z-20 flex items-center justify-between">
+                    <div id="sceneBadge" class="bg-red-950/80 border border-red-500/40 text-red-300 text-xs font-black px-3.5 py-1.5 rounded-xl backdrop-blur-md shadow-lg flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                        <span id="sceneBadgeText">صحنه ۱: بحران قطعی اینترنت و تراکم کار</span>
+                    </div>
+
+                    <div class="bg-slate-950/80 border border-slate-800 text-slate-300 text-xs font-bold px-3 py-1.5 rounded-xl backdrop-blur-md">
+                        <span id="sceneTimecode" class="font-mono text-amber-400">00:00 / 01:00</span>
+                    </div>
+                </div>
+
+                <!-- Center Kinetic Typography -->
+                <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center p-6 pointer-events-none">
+                    <div id="kineticContainer" class="space-y-3">
+                        <span id="kineticTag" class="inline-block px-3.5 py-1 rounded-full text-xs font-black bg-red-600/90 text-white shadow-lg kinetic-title uppercase">
+                            بحران در بازار!
+                        </span>
+                        <h2 id="kineticHeadline" class="text-2xl sm:text-4xl md:text-5xl font-black text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] kinetic-title leading-tight max-w-3xl">
+                            اینترنت قطع شد، مشتری‌ها عصبانی، چک فردا سررسیده!
+                        </h2>
+                    </div>
+                </div>
+
+                <!-- Subtitles Banner (Bottom) -->
+                <div class="cinema-subtitles absolute bottom-6 inset-x-0 p-4 sm:p-6 z-30 flex flex-col items-center justify-center text-center">
+                    <p id="teaserSubtitle" class="text-base sm:text-xl md:text-2xl font-black text-white max-w-4xl leading-relaxed drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] bg-black/70 px-6 py-2.5 rounded-2xl border border-white/10">
+                        اینترنت قطع شده... صف مشتری‌ها دم صندوق کشیده تا خیابون... چک همکار فردا صبح سررسیدشه و ممیز دارایی هم مهلت ارسال فاکتورها رو تموم کرده!
+                    </p>
+                </div>
+
+                <!-- Recording Overlay Indicator -->
+                <div id="recordingBadge" class="hidden absolute top-20 left-6 z-50 bg-red-600/95 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 border border-red-400 shadow-xl">
+                    <span class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span>
+                    <span>در حال ضبط تیزر تبلیغاتی... (<span id="recordTimer">00:00</span>)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Player Controls -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-xl">
+            <!-- Timeline Progress Bar -->
+            <div class="space-y-1">
+                <div class="flex items-center justify-between text-xs text-slate-400">
+                    <span id="currentTime" class="font-mono">00:00</span>
+                    <span id="sceneStepInfo" class="font-black text-amber-400">صحنه ۱ از ۷: بحران قطعی اینترنت</span>
+                    <span id="totalDuration" class="font-mono">01:00</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden cursor-pointer relative" onclick="seekTeaser(event)">
+                    <div id="teaserProgressBar" class="bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 h-full w-[14%] transition-all duration-300"></div>
+                </div>
+            </div>
+
+            <!-- Controls Row -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                <div class="flex items-center gap-2">
+                    <button id="btnPlayPause" onclick="togglePlay()" class="btn btn-warning btn-sm rounded-xl px-5 font-black text-xs gap-1.5 shadow-md shadow-amber-500/20">
+                        <span id="playIcon">⏸️</span>
+                        <span id="playText">توقف تیزر</span>
+                    </button>
+
+                    <button onclick="prevScene()" class="btn btn-ghost btn-sm rounded-xl text-xs hover:bg-slate-800">
+                        <span>⏮️ صحنه قبل</span>
+                    </button>
+
+                    <button onclick="nextScene()" class="btn btn-ghost btn-sm rounded-xl text-xs hover:bg-slate-800">
+                        <span>صحنه بعد ⏭️</span>
+                    </button>
+
+                    <button onclick="toggleSound()" class="btn btn-outline btn-accent btn-sm rounded-xl text-xs gap-1 font-bold">
+                        <span id="soundIcon">🔊</span>
+                        <span id="soundText">صدا: روشن</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleFullscreen()" class="btn btn-ghost btn-sm rounded-xl text-xs hover:bg-slate-800" title="تمام صفحه سینمایی">
+                        <span>⛶ تمام‌صفحه</span>
+                    </button>
+                    <a href="/download/windows" class="btn btn-primary btn-sm rounded-xl text-xs font-black gap-1">
+                        <span>⬇️ دانلود نپتون</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7 Scenes Storyboard Cards -->
+        <div class="space-y-3 pt-2">
+            <h3 class="text-sm font-black text-white flex items-center gap-2">
+                <span>📑 استوری‌بورد ۷ صحنه تیزر تبلیغاتی</span>
+                <span class="badge badge-xs">کلیک برای جهش مستقیم</span>
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
+                <div onclick="jumpToScene(0)" class="p-2.5 rounded-xl border border-red-500/40 bg-red-950/20 hover:bg-red-900/30 cursor-pointer flex items-center gap-2.5">
+                    <span class="font-mono text-red-400 font-bold">01</span>
+                    <div>
+                        <div class="font-bold text-white">بحران قطعی اینترنت</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۰۰ تا ۰۰:۰۸</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(1)" class="p-2.5 rounded-xl border border-red-500/40 bg-red-950/20 hover:bg-red-900/30 cursor-pointer flex items-center gap-2.5">
+                    <span class="font-mono text-red-400 font-bold">02</span>
+                    <div>
+                        <div class="font-bold text-white">کابوس باج‌گیر و سوختن هارد</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۰۸ تا ۰۰:۱۸</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(2)" class="p-2.5 rounded-xl border border-sky-500/40 bg-sky-950/20 hover:bg-sky-900/30 cursor-pointer flex items-center gap-2.5">
+                    <span class="font-mono text-sky-400 font-bold">03</span>
+                    <div>
+                        <div class="font-bold text-white">ورود نپتون ERP</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۱۸ تا ۰۰:۲۵</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(3)" class="p-2.5 rounded-xl border border-emerald-500/40 bg-emerald-950/20 hover:bg-emerald-900/30 cursor-pointer flex items-center gap-2.5">
+                    <span class="font-mono text-emerald-400 font-bold">04</span>
+                    <div>
+                        <div class="font-bold text-white">۱۰۰٪ آفلاین اول و پوز سریع</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۲۵ تا ۰۰:۳۵</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(4)" class="p-2.5 rounded-xl border border-emerald-500/40 bg-emerald-950/20 hover:bg-emerald-900/30 cursor-pointer flex items-center gap-2.5">
+                    <span class="font-mono text-emerald-400 font-bold">05</span>
+                    <div>
+                        <div class="font-bold text-white">ارسال مستقیم به مودیان</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۳۵ تا ۰۰:۴۵</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(5)" class="p-2.5 rounded-xl border border-purple-500/40 bg-purple-950/20 hover:bg-purple-900/30 cursor-pointer flex items-center gap-2.5">
+                    <span class="font-mono text-purple-400 font-bold">06</span>
+                    <div>
+                        <div class="font-bold text-white">هوش مصنوعی و بکاپ تلگرام</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۴۵ تا ۰۰:۵۲</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(6)" class="p-2.5 rounded-xl border border-amber-500/40 bg-amber-950/20 hover:bg-amber-900/30 cursor-pointer flex items-center gap-2.5">
+                    <span class="font-mono text-amber-400 font-bold">07</span>
+                    <div>
+                        <div class="font-bold text-white">آرامش و دانلود رایگان ۱۴ روزه</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۵۲ تا ۰۱:۰۰</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ==========================================
+        // 7 CINEMATIC TEASER SCENES DATA
+        // ==========================================
+        const TEASER_SCENES = [
+            {
+                image: "/images/teaser/scene_struggle.jpg",
+                audio: "/audio/teaser/teaser_01.mp3",
+                badge: "صحنه ۱: بحران قطعی اینترنت و تراکم کار",
+                badgeClass: "bg-red-950/80 border-red-500/40 text-red-300",
+                timecode: "00:00 تا 00:08",
+                tag: "بحران در بازار!",
+                tagClass: "bg-red-600/90 text-white",
+                headline: "اینترنت قطع شد، مشتری‌ها عصبانی، چک فردا سررسیده!",
+                subtitle: "اینترنت قطع شده... صف مشتری‌ها دم صندوق کشیده تا خیابون... چک همکار فردا صبح سررسیدشه و ممیز دارایی هم مهلت ارسال فاکتورها رو تموم کرده!"
+            },
+            {
+                image: "/images/teaser/scene_struggle.jpg",
+                audio: "/audio/teaser/teaser_02.mp3",
+                badge: "صحنه ۲: کابوس باج‌گیر و سوختن هارد",
+                badgeClass: "bg-red-950/80 border-red-500/40 text-red-300",
+                timecode: "00:08 تا 00:18",
+                tag: "خطر نابودی اطلاعات!",
+                tagClass: "bg-rose-600/90 text-white",
+                headline: "آیا حساب و کتاب ۱۰ سال کاسبی‌ات در امانه؟",
+                subtitle: "کابوس سوختن هارد و از بین رفتن حساب و کتاب ده سال کاسبی، یا جریمه‌های سنگین سامانه مودیان، خواب رو ازت گرفته؟!"
+            },
+            {
+                image: "/images/tour/01_dashboard.png",
+                audio: "/audio/teaser/teaser_03.mp3",
+                badge: "صحنه ۳: ظهور نسل جدید هوش مالی",
+                badgeClass: "bg-sky-950/80 border-sky-500/40 text-sky-300",
+                timecode: "00:18 تا 00:25",
+                tag: "نسل جدید اینجاست",
+                tagClass: "bg-sky-600/90 text-white",
+                headline: "نپتون ERP: مدیریت مالی را به قرن جدید ببر!",
+                subtitle: "دیگه وقتشه روش‌های بیست سال پیش رو بریزی دور! با نپتون، مدیریت مالی رو به قرن جدید ببر."
+            },
+            {
+                image: "/images/tour/05_pos_terminal.png",
+                audio: "/audio/teaser/teaser_04.mp3",
+                badge: "صحنه ۴: سرعت فروش بدون اینترنت",
+                badgeClass: "bg-emerald-950/80 border-emerald-500/40 text-emerald-300",
+                timecode: "00:25 تا 00:35",
+                tag: "۱۰۰٪ آفلاین اول",
+                tagClass: "bg-emerald-600/90 text-white",
+                headline: "فروش بی‌وقفه حتی در قطعی سراسری اینترنت!",
+                subtitle: "صد در صد آفلاین اول! حتی اگه کل اینترنت کشور قطع بشه، فروشگاه و انبارت یک ثانیه هم متوقف نمیشه."
+            },
+            {
+                image: "/images/tour/16_tax_center.png",
+                audio: "/audio/teaser/teaser_05.mp3",
+                badge: "صحنه ۵: حذف کارمزد شرکت‌های معتمد",
+                badgeClass: "bg-emerald-950/80 border-emerald-500/40 text-emerald-300",
+                timecode: "00:35 تا 00:45",
+                tag: "سامانه مودیان رایگان",
+                tagClass: "bg-emerald-600/90 text-white",
+                headline: "ارسال مستقیم فاکتور به کارپوشه دارایی؛ بدون واسطه!",
+                subtitle: "ارسال مستقیم به سامانه مودیان، بدون حتی یک ریال باج دادن به شرکت‌های معتمد!"
+            },
+            {
+                image: "/images/tour/22_backups.png",
+                audio: "/audio/teaser/teaser_06.mp3",
+                badge: "صحنه ۶: هوش مصنوعی و امنیت ۳-۲-۱",
+                badgeClass: "bg-purple-950/80 border-purple-500/40 text-purple-300",
+                timecode: "00:45 تا 00:52",
+                tag: "امنیت فولادین",
+                tagClass: "bg-purple-600/90 text-white",
+                headline: "بکاپ رمزنگاری‌شده هر شب در تلگرام شخصی شما!",
+                subtitle: "دستیار هوش مصنوعی و امنیت سه دو یک؛ هر شب کل دیتابیس مالی شرکتت، رمزنگاری‌شده توی تلگرام خودت ذخیره میشه."
+            },
+            {
+                image: "/images/teaser/scene_success.jpg",
+                audio: "/audio/teaser/teaser_07.mp3",
+                badge: "صحنه ۷: آرامش مدیر و دانلود رایگان",
+                badgeClass: "bg-amber-950/80 border-amber-500/40 text-amber-300",
+                timecode: "00:52 تا 01:00",
+                tag: "۱۴ روز تست رایگان",
+                tagClass: "bg-amber-500 text-black",
+                headline: "همین حالا رایگان دانلود کن و سرعت را بچش!",
+                subtitle: "نپتون، حسابدار خستگی‌ناپذیر کسب‌وکار شما. همین حالا با لایسنس تستی چهارده روزه رایگان، از سایت نپتون دانلودش کن!"
+            }
+        ];
+
+        let currentSceneIdx = 0;
+        let isPlaying = true;
+        let soundEnabled = true;
+        const audioPlayer = document.getElementById('teaserAudio');
+
+        // Recording state
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let recordTimerInterval = null;
+        let recordSeconds = 0;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderScene(0);
+
+            // Auto-advance scene when audio finishes
+            audioPlayer.addEventListener('ended', () => {
+                if (isPlaying) {
+                    setTimeout(() => {
+                        if (isPlaying) nextScene();
+                    }, 800);
+                }
+            });
+
+            audioPlayer.addEventListener('error', (e) => {
+                console.warn("Audio issue, fallback timer:", e);
+                if (isPlaying) {
+                    setTimeout(() => { if (isPlaying) nextScene(); }, 8000);
+                }
+            });
+        });
+
+        function renderScene(idx) {
+            currentSceneIdx = idx;
+            const scene = TEASER_SCENES[currentSceneIdx];
+
+            // 1. Image & Zoom
+            const img = document.getElementById('sceneImage');
+            img.style.opacity = '0.3';
+            setTimeout(() => {
+                img.src = scene.image;
+                img.style.opacity = '1';
+                img.classList.toggle('active-zoom');
+            }, 300);
+
+            // 2. Badges & Timecode
+            const badge = document.getElementById('sceneBadge');
+            badge.className = `${scene.badgeClass} text-xs font-black px-3.5 py-1.5 rounded-xl backdrop-blur-md shadow-lg flex items-center gap-2`;
+            document.getElementById('sceneBadgeText').textContent = scene.badge;
+            document.getElementById('sceneTimecode').textContent = scene.timecode;
+            document.getElementById('currentTime').textContent = scene.timecode.split(' ')[0];
+
+            // 3. Kinetic Typography
+            const tag = document.getElementById('kineticTag');
+            tag.className = `inline-block px-3.5 py-1 rounded-full text-xs font-black ${scene.tagClass} shadow-lg kinetic-title uppercase`;
+            tag.textContent = scene.tag;
+            
+            const headline = document.getElementById('kineticHeadline');
+            headline.textContent = scene.headline;
+
+            // Re-trigger animation
+            tag.classList.remove('kinetic-title');
+            headline.classList.remove('kinetic-title');
+            void tag.offsetWidth; // force reflow
+            tag.classList.add('kinetic-title');
+            headline.classList.add('kinetic-title');
+
+            // 4. Subtitle
+            document.getElementById('teaserSubtitle').textContent = scene.subtitle;
+            document.getElementById('sceneStepInfo').textContent = `${scene.badge}`;
+
+            // 5. Progress bar
+            const pct = Math.round(((currentSceneIdx + 1) / TEASER_SCENES.length) * 100);
+            document.getElementById('teaserProgressBar').style.width = `${pct}%`;
+
+            // 6. Audio
+            if (soundEnabled && scene.audio) {
+                audioPlayer.src = scene.audio;
+                if (isPlaying) {
+                    audioPlayer.play().catch(e => console.log("Audio autoplay prevented:", e));
+                }
+            } else {
+                audioPlayer.pause();
+            }
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            document.getElementById('playIcon').textContent = isPlaying ? '⏸️' : '▶️';
+            document.getElementById('playText').textContent = isPlaying ? 'توقف تیزر' : 'پخش تیزر';
+            
+            if (isPlaying) {
+                if (soundEnabled && audioPlayer.src) audioPlayer.play().catch(e => console.log(e));
+            } else {
+                audioPlayer.pause();
+            }
+        }
+
+        function nextScene() {
+            if (currentSceneIdx < TEASER_SCENES.length - 1) {
+                renderScene(currentSceneIdx + 1);
+            } else {
+                renderScene(0); // loop back
+            }
+        }
+
+        function prevScene() {
+            if (currentSceneIdx > 0) {
+                renderScene(currentSceneIdx - 1);
+            } else {
+                renderScene(TEASER_SCENES.length - 1);
+            }
+        }
+
+        function jumpToScene(idx) {
+            renderScene(idx);
+        }
+
+        function seekTeaser(event) {
+            const rect = event.currentTarget.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const pct = clickX / rect.width;
+            const targetIdx = Math.min(TEASER_SCENES.length - 1, Math.floor(pct * TEASER_SCENES.length));
+            renderScene(targetIdx);
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('soundIcon').textContent = soundEnabled ? '🔊' : '🔇';
+            document.getElementById('soundText').textContent = soundEnabled ? 'صدا: روشن' : 'صدا: خاموش';
+            if (soundEnabled) {
+                if (isPlaying) audioPlayer.play().catch(e => console.log(e));
+            } else {
+                audioPlayer.pause();
+            }
+        }
+
+        function toggleFullscreen() {
+            const el = document.getElementById('teaserViewport');
+            if (!document.fullscreenElement) {
+                el.requestFullscreen().catch(err => alert(`Error: ${err.message}`));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // ==========================================
+        // VIDEO RECORDING & MP4 / WEBM EXPORTER
+        // ==========================================
+        function toggleTeaserRecording() {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        }
+
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { frameRate: 30, width: 1920, height: 1080 },
+                    audio: true
+                });
+
+                recordedChunks = [];
+                const options = { mimeType: 'video/webm;codecs=vp9' };
+                mediaRecorder = new MediaRecorder(stream, options);
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) recordedChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `Neptune-ERP-Commercial-Teaser-60s.webm`;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    }, 100);
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                recordSeconds = 0;
+
+                // UI Updates
+                document.getElementById('recordingBadge').classList.remove('hidden');
+                document.getElementById('btnRecordTeaser').classList.replace('btn-error', 'btn-warning');
+                document.getElementById('recordText').textContent = '⏹️ توقف ضبط و دانلود تیزر';
+
+                recordTimerInterval = setInterval(() => {
+                    recordSeconds++;
+                    const mins = String(Math.floor(recordSeconds / 60)).padStart(2, '0');
+                    const secs = String(recordSeconds % 60).padStart(2, '0');
+                    document.getElementById('recordTimer').textContent = `${mins}:${secs}`;
+                }, 1000);
+
+                // Start from beginning
+                renderScene(0);
+                if (!isPlaying) togglePlay();
+
+            } catch (err) {
+                console.warn("Recording canceled:", err);
+                alert("برای ضبط فایل ویدیو، لطفاً دسترسی اشتراک‌گذاری پنجره را تأیید کنید.");
+            }
+        }
+
+        function stopRecording() {
+            if (!mediaRecorder) return;
+            mediaRecorder.stop();
+            isRecording = false;
+            clearInterval(recordTimerInterval);
+
+            // Reset UI
+            document.getElementById('recordingBadge').classList.add('hidden');
+            document.getElementById('btnRecordTeaser').classList.replace('btn-warning', 'btn-error');
+            document.getElementById('recordText').textContent = '🔴 ضبط و دانلود فایل ویدیو (MP4)';
+        }
+    </script>
+</body>
+</html>

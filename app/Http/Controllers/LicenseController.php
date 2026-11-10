@@ -143,6 +143,19 @@ class LicenseController extends Controller
     }
 
     /**
+     * Official 60-Second Dramatic Commercial Teaser.
+     */
+    public function teaser()
+    {
+        $file = public_path('teaser.html');
+        if (file_exists($file)) {
+            return response()->file($file, ['Content-Type' => 'text/html; charset=UTF-8']);
+        }
+
+        abort(404);
+    }
+
+    /**
      * Instant 14-day Free Trial Request.
      */
     public function requestTrial(Request $request): JsonResponse

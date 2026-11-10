@@ -21,6 +21,8 @@
     { "source": "/login/tour", "destination": "/tour.html" },
     { "source": "/video-tour", "destination": "/video-tour.html" },
     { "source": "/login/video-tour", "destination": "/video-tour.html" },
+    { "source": "/teaser", "destination": "/teaser.html" },
+    { "source": "/login/teaser", "destination": "/teaser.html" },
     { "source": "/landing", "destination": "/landing.html" },
     { "source": "/login/landing", "destination": "/landing.html" },
     { "source": "/", "destination": "/index.html" }
