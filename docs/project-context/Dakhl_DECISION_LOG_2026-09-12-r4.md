@@ -3101,3 +3101,40 @@ Requested directly by product owner **Hadi Behnampour (هادی بهنام‌پ�
 
 
 
+
+
+---
+
+## D-138 — Neptune Cinematic Commercial Video & Persian Voiceover Engineering Standard — 2026-11-10 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+To position Neptune ERP (نپتون ERP) as the cutting-edge, next-generation Iranian financial ERP, high-conversion commercial video teasers, interactive walkthroughs, and audio-narrated promotional demos must feature natural, emotionally resonant, and professional Persian voiceovers (گویندگی جذاب و واقع‌گرایانه فارسی). The voiceover must eliminate robotic monotony, preserve proper Persian phonetics and punctuation cadence (مکث‌های تنفسی، خیزش‌های پرسشی و کوبش‌های حماسی)، and support instant multi-voice preview for users.
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **Multi-Tier Voiceover Engine Hierarchy:**
+   - **Tier 1 (Local Open-Source Neural / Zero Cloud Cost / No Rate Limits):** `Piper TTS` with ONNX models.
+     - Brand Storyteller Persona: `fa_IR-amir-medium.onnx` (Amir Soudbakhsh from Rokh Podcast / پادکست رخ). Delivers conversational warmth, high empathy, and deep audience trust.
+     - Documentary & Enterprise Authority: `fa_IR-ganji-medium.onnx` (Ahmad Ganji). Delivers deep acoustic resonance, gravitas, and national broadcast fidelity.
+   - **Tier 2 (Cloud Neural / High-Fidelity Web Fallback):** Microsoft Edge Neural TTS.
+     - `fa-IR-FaridNeural`: Punchy, energetic, promotional commercial delivery (`rate="+6%"`, `pitch="+1Hz"`).
+     - `fa-IR-DilaraNeural`: Warm, calm, modern corporate delivery (`rate="+3%"`).
+   - **Tier 3 (Studio Commercial Tier / Instagram Influencer Standard):** ElevenLabs v3 Multilingual with Custom Voice Clone of professional Iranian voice actors (e.g. Manouchehr Valizadeh, Khosro Khosroshahi) for viral social campaigns.
+2. **Phonetic Spelling & Persian Diacritic Guardrails:**
+   - **Kasra on Final Consonants:** Never attach raw Arabic Kasra (`\u0650`) to the end of words (e.g., avoid `صَفِ مشتریان`). eSpeak misinterprets it as Arabic genitive case inflection. Use explicit word separation (`صفِ مشتری‌ها`, `سررسیدِ چک`).
+   - **Hamza & Tashdeed:** Avoid stacking Damma with Waw-Hamza (e.g. `مُؤَدّیان`). Use standard Persian `مؤدیان` or `سامانه‌ی مؤدیان` to eliminate stuttering.
+   - **Colloquial Elisions & Contractions:** Avoid unseparated contractions (use `مشتری‌ها` instead of `مشتریا`; use `دیگه وقتِ اینه که...` instead of `وقتشه`).
+3. **Calibrated Punctuation & Breath Pauses:**
+   - Scripts are segmented into independent emotional clauses ending with proper punctuation marks (`!`, `؟`, `،`, `...`).
+   - Adjacent clauses are stitched with digital silence frames:
+     - Comma / Breath Pause: 250ms – 350ms
+     - Suspense / Thought Pause (`...`): 350ms – 400ms
+     - Exclamation Punch Pause: 350ms
+     - Question Inflection: Natural rising pitch
+4. **Piper Emotional Expressiveness Tuning:**
+   - `noise_scale = 0.75 - 0.80` (0.78 for Amir, 0.72 for Ganji) for acoustic warmth and emotional variation.
+   - `noise_w_scale = 0.85 - 0.90` (0.88 for Amir) for lively syllable cadence.
+   - `length_scale = 0.92 - 0.95` for snappy commercial timing.
+5. **Video & Audio Synchronization:**
+   - Dynamic audio duration sync (`audio.duration`) governs scene advancement in all players.
+   - Zoom levels are constrained to <= 1.25x to preserve UI legibility.
+   - All 4 voice options (`amir`, `dilara`, `farid`, `ganji`) are pre-generated and selectable on `https://neptune-erp.vercel.app/teaser`.
