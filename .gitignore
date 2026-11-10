@@ -38,3 +38,6 @@ __pycache__/
 .env*
 !build/installer/.env.standalone
 .env*
+ 
+/models/
+test_amir.wav

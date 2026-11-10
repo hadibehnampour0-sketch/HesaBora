@@ -233,14 +233,20 @@
                         <span id="soundText">صدا: روشن</span>
                     </button>
 
-                    <!-- Voice Selector Switch -->
-                    <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded-xl p-1 shadow-sm">
+                    <!-- Voice Selector Switch (4 Voices: Microsoft Neural & GitHub Piper Models) -->
+                    <div class="flex flex-wrap items-center gap-1 bg-slate-900/90 border border-slate-700 rounded-xl p-1 shadow-sm">
                         <span class="text-[11px] text-slate-400 font-bold px-1.5">گوینده:</span>
-                        <button id="voiceFaridBtn" onclick="setVoice('farid')" class="btn btn-xs rounded-lg font-bold bg-amber-500 text-black">
-                            👨 فرید (پرانرژی)
+                        <button id="voiceAmirBtn" onclick="setVoice('amir')" class="btn btn-xs rounded-lg font-bold bg-amber-500 text-black shadow-sm" title="مدل منبع‌باز Piper - صدای امیر سودبخش از پادکست رخ">
+                            🎙️ امیر (پادکست رخ)
                         </button>
-                        <button id="voiceDilaraBtn" onclick="setVoice('dilara')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300">
-                            👩 دلارا (روان و گرم)
+                        <button id="voiceDilaraBtn" onclick="setVoice('dilara')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مایکروسافت نئورال - لحن آرام و روان">
+                            👩 دلارا (روان/گرم)
+                        </button>
+                        <button id="voiceFaridBtn" onclick="setVoice('farid')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مایکروسافت نئورال - لحن تبلیغاتی پرانرژی">
+                            👨 فرید (تیزری)
+                        </button>
+                        <button id="voiceGanjiBtn" onclick="setVoice('ganji')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مدل منبع‌باز Piper - صدای استاد احمد گنجی">
+                            📻 احمد گنجی (بم)
                         </button>
                     </div>
                 </div>
@@ -410,25 +416,27 @@
         let currentSceneIdx = 0;
         let isPlaying = true;
         let soundEnabled = true;
-        let currentVoice = 'farid'; // 'farid' or 'dilara'
+        let currentVoice = 'amir'; // 'amir' (GitHub Piper / Podcast Rokh), 'dilara', 'farid', 'ganji'
         const audioPlayer = document.getElementById('teaserAudio');
+
+        function getAudioPath(voice, sceneId) {
+            const ext = (voice === 'amir' || voice === 'ganji') ? 'wav' : 'mp3';
+            return `/audio/teaser/${voice}/${sceneId}.${ext}`;
+        }
 
         function setVoice(v) {
             currentVoice = v;
-            const faridBtn = document.getElementById('voiceFaridBtn');
-            const dilaraBtn = document.getElementById('voiceDilaraBtn');
-            if (faridBtn && dilaraBtn) {
-                if (v === 'farid') {
-                    faridBtn.className = 'btn btn-xs rounded-lg font-bold bg-amber-500 text-black';
-                    dilaraBtn.className = 'btn btn-xs rounded-lg font-bold btn-ghost text-slate-300';
-                } else {
-                    faridBtn.className = 'btn btn-xs rounded-lg font-bold btn-ghost text-slate-300';
-                    dilaraBtn.className = 'btn btn-xs rounded-lg font-bold bg-amber-500 text-black';
+            ['amir', 'dilara', 'farid', 'ganji'].forEach(k => {
+                const btn = document.getElementById(`voice${k.charAt(0).toUpperCase() + k.slice(1)}Btn`);
+                if (btn) {
+                    btn.className = (k === v)
+                        ? 'btn btn-xs rounded-lg font-bold bg-amber-500 text-black shadow-sm'
+                        : 'btn btn-xs rounded-lg font-bold btn-ghost text-slate-300';
                 }
-            }
+            });
             // Switch audio track immediately
             const scene = TEASER_SCENES[currentSceneIdx];
-            audioPlayer.src = `/audio/teaser/${currentVoice}/${scene.id}.mp3`;
+            audioPlayer.src = getAudioPath(currentVoice, scene.id);
             if (soundEnabled && isPlaying) {
                 audioPlayer.currentTime = 0;
                 audioPlayer.play().catch(e => console.log(e));
@@ -507,7 +515,7 @@
 
             // 6. Audio
             if (soundEnabled) {
-                const audioSrc = `/audio/teaser/${currentVoice}/${scene.id}.mp3`;
+                const audioSrc = getAudioPath(currentVoice, scene.id);
                 audioPlayer.src = audioSrc;
                 if (isPlaying) {
                     audioPlayer.play().catch(e => console.log("Audio autoplay prevented:", e));
