@@ -117,6 +117,19 @@ class LicenseController extends Controller
     }
 
     /**
+     * Official Visual Tour with Screenshots & Functional Explanations.
+     */
+    public function tour()
+    {
+        $file = public_path('tour.html');
+        if (file_exists($file)) {
+            return response()->file($file, ['Content-Type' => 'text/html; charset=UTF-8']);
+        }
+
+        abort(404);
+    }
+
+    /**
      * Instant 14-day Free Trial Request.
      */
     public function requestTrial(Request $request): JsonResponse

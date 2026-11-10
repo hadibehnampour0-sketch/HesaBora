@@ -17,6 +17,8 @@
     { "source": "/login/pricing", "destination": "/pricing.html" },
     { "source": "/brochure", "destination": "/brochure.html" },
     { "source": "/login/brochure", "destination": "/brochure.html" },
+    { "source": "/tour", "destination": "/tour.html" },
+    { "source": "/login/tour", "destination": "/tour.html" },
     { "source": "/landing", "destination": "/landing.html" },
     { "source": "/login/landing", "destination": "/landing.html" },
     { "source": "/", "destination": "/index.html" }
