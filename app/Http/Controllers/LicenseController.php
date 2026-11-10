@@ -130,6 +130,19 @@ class LicenseController extends Controller
     }
 
     /**
+     * Interactive Video Walkthrough with Pan/Zoom, Pointers & Audio Narration.
+     */
+    public function videoTour()
+    {
+        $file = public_path('video-tour.html');
+        if (file_exists($file)) {
+            return response()->file($file, ['Content-Type' => 'text/html; charset=UTF-8']);
+        }
+
+        abort(404);
+    }
+
+    /**
      * Instant 14-day Free Trial Request.
      */
     public function requestTrial(Request $request): JsonResponse

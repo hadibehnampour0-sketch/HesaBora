@@ -40,6 +40,7 @@ Route::get('/landing', [Controllers\LicenseController::class, 'landing'])->name(
 Route::get('/pricing', [Controllers\LicenseController::class, 'publicPricing'])->name('pricing');
 Route::get('/brochure', [Controllers\LicenseController::class, 'brochure'])->name('brochure');
 Route::get('/tour', [Controllers\LicenseController::class, 'tour'])->name('tour');
+Route::get('/video-tour', [Controllers\LicenseController::class, 'videoTour'])->name('video.tour');
 Route::get('/download/windows', [Controllers\LicenseController::class, 'downloadInstaller'])->name('download.installer');
 Route::post('/trial/request', [Controllers\LicenseController::class, 'requestTrial'])->middleware('throttle:10,1')->name('trial.request');
 Route::post('/order/submit', [Controllers\LicenseController::class, 'submitOrder'])->middleware('throttle:10,1')->name('order.submit');

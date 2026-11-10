@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تور ویدیویی تعاملی و راهنمای تصویری کل بخش‌های نپتون ERP</title>
+    
+    <!-- Tailwind CSS & DaisyUI CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Vazirmatn', 'sans-serif'] },
+                    colors: {
+                        primary: '#0284c7',
+                        secondary: '#8b5cf6',
+                        accent: '#10b981',
+                        darkBg: '#060913',
+                        panelBg: '#0c1222'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Vazirmatn', sans-serif; }
+        
+        /* Video Viewport & Screen Pan/Zoom Animation */
+        .video-stage {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            overflow: hidden;
+            background: #000;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 40px rgba(2, 132, 199, 0.2);
+        }
+        
+        .stage-inner {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .screenshot-target {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+            transform-origin: center center;
+        }
+        
+        /* Animated Radar Arrow Pointer */
+        .pointer-arrow {
+            position: absolute;
+            z-index: 40;
+            pointer-events: none;
+            transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: translate(-50%, -50%);
+        }
+        
+        .radar-pulse {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            border: 2px solid #38bdf8;
+            box-shadow: 0 0 20px #0284c7;
+            animation: radarPing 1.8s infinite;
+        }
+        
+        @keyframes radarPing {
+            0% { transform: translate(-50%, -50%) scale(0.4); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+        }
+        
+        .arrow-icon {
+            filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.8));
+            animation: arrowBob 1.2s infinite alternate ease-in-out;
+        }
+        
+        @keyframes arrowBob {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+        
+        /* Floating Callout Glass Box */
+        .callout-box {
+            position: absolute;
+            z-index: 50;
+            max-width: 380px;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(16px);
+            background: rgba(12, 18, 34, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(2, 132, 199, 0.3);
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            pointer-events: auto;
+        }
+        
+        /* Subtitle Banner */
+        .subtitle-bar {
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 70%, transparent 100%);
+            backdrop-filter: blur(8px);
+        }
+        
+        /* Recording indicator badge */
+        .recording-pulse {
+            animation: pulse-red 1.2s infinite;
+        }
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body class="bg-[#050811] text-slate-100 min-h-screen selection:bg-sky-500 selection:text-white pb-16">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-50 bg-[#090d1a]/95 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-[#030611] p-1.5 flex items-center justify-center border border-cyan-500/40 shadow-sm">
+                    <img src="./images/neptune-logo.svg" onerror="this.src='/images/neptune-logo.svg'" alt="Neptune ERP" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h1 class="font-black text-sm text-white flex items-center gap-2">
+                        <span>ویدیو تور تعاملی نپتون ERP</span>
+                        <span class="badge badge-accent badge-xs font-mono">Walkthrough Masterclass</span>
+                    </h1>
+                    <span class="text-[11px] text-slate-400">راهنمای پوینتر، زوم سینمایی و تشریح دکمه‌به‌دکمه نرم‌افزار</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <a href="/tour" class="btn btn-ghost btn-sm text-xs text-sky-400 rounded-xl hover:bg-slate-800">
+                    <span>📸 گالری ۲۵ اسکرین‌شات</span>
+                </a>
+                <a href="/brochure" class="btn btn-ghost btn-sm text-xs text-amber-400 rounded-xl hover:bg-slate-800">
+                    <span>📄 بروشور رسمی</span>
+                </a>
+                <a href="/landing" class="btn btn-primary btn-sm rounded-xl text-xs gap-1 font-bold">
+                    <span>🌐 مشاهده سایت</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+        <!-- Top Header & Instructions -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-800">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                    <span>🎬 فیلم راهنمای تصویری کل بخش‌های نرم‌افزار</span>
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">
+                    در این ویدیو تور، دوربین به صورت سینمایی روی هر بخش زوم کرده، با <strong>فلش متحرک نئونی</strong> دکمه‌ها را نشان داده و کارکرد هر قسمت را تشریح می‌کند.
+                </p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-2">
+                <!-- Record Video Button -->
+                <button id="btnRecordVideo" onclick="toggleVideoRecording()" class="btn btn-error btn-sm rounded-xl font-bold text-xs gap-1.5 shadow-lg shadow-red-500/20">
+                    <span id="recordIcon" class="w-3 h-3 rounded-full bg-white inline-block"></span>
+                    <span id="recordText">🔴 ضبط و دانلود ویدیو (MP4/WebM)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Video Player Viewport (16:9) -->
+        <div class="video-stage border border-slate-800" id="videoViewport">
+            <div class="stage-inner">
+                <!-- Screenshot Image with smooth Zoom & Pan -->
+                <img id="mainScreenshot" src="/images/tour/01_dashboard.png" alt="صفحه فعال" class="screenshot-target">
+                
+                <!-- Animated Glowing Radar Arrow Pointer -->
+                <div id="pointerArrow" class="pointer-arrow" style="top: 25%; left: 25%;">
+                    <div class="radar-pulse"></div>
+                    <svg class="arrow-icon w-12 h-12 text-sky-400 drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L4 14h6v8h4v-8h6L12 2z"/>
+                    </svg>
+                </div>
+                
+                <!-- Floating Callout Info Card -->
+                <div id="calloutBox" class="callout-box" style="top: 15%; right: 5%;">
+                    <div class="flex items-center justify-between gap-2 border-b border-sky-500/30 pb-2 mb-2">
+                        <div class="flex items-center gap-2">
+                            <span id="badgeStep" class="badge badge-info badge-sm font-mono font-bold">بخش ۰۱</span>
+                            <h3 id="calloutTitle" class="text-sm font-black text-white">کارت‌های نقدینگی و نبض فروش</h3>
+                        </div>
+                        <span id="targetBadge" class="text-[10px] text-sky-400 font-mono bg-sky-950/60 px-2 py-0.5 rounded-md border border-sky-800">F1 Shortcut</span>
+                    </div>
+                    <p id="calloutDesc" class="text-xs text-slate-300 leading-relaxed text-justify">
+                        مشاهده آنی فروش روزانه، سود ناخالص ماه و موجودی کل بانک‌ها بدون نیاز به محاسبه دستی و سردرگمی در دفاتر.
+                    </p>
+                    <div class="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+                        <span id="calloutMeta">کاربرد: مانیتورینگ تصمیم‌گیری مدیر</span>
+                        <span class="text-emerald-400 font-bold">✓ آماده استفاده</span>
+                    </div>
+                </div>
+
+                <!-- Subtitle Bar (Bottom Narration) -->
+                <div class="subtitle-bar absolute bottom-0 inset-x-0 p-4 sm:p-6 z-30 flex flex-col items-center justify-center text-center">
+                    <span id="sceneCategory" class="text-[11px] text-sky-400 font-bold uppercase tracking-wider mb-1">فصل ۱: میز کار و داشبورد مرکزی</span>
+                    <p id="subtitleText" class="text-sm sm:text-base font-bold text-white max-w-3xl leading-relaxed drop-shadow-md">
+                        در این بخش، کارت‌های خلاصه‌وضعیت مالی، فروش روز و سود ناخالص را به شکل زنده در یک نگاه نمایش می‌دهند.
+                    </p>
+                </div>
+
+                <!-- Recording Overlay Indicator -->
+                <div id="recordingBadge" class="hidden absolute top-4 left-4 z-50 bg-red-600/90 text-white text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-2 border border-red-400 shadow-lg">
+                    <span class="w-2.5 h-2.5 rounded-full bg-white recording-pulse"></span>
+                    <span>در حال ضبط ویدیو... (<span id="recordingTimer">00:00</span>)</span>
+                </div>
+
+                <!-- Watermark -->
+                <div class="absolute top-4 right-4 z-30 bg-slate-950/70 border border-slate-800 backdrop-blur-md px-3 py-1 rounded-xl flex items-center gap-2 text-xs font-bold text-slate-300">
+                    <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+                    <span>نپتون ERP • تور رسمی محصول</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Player Controls Bar -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-xl">
+            <!-- Timeline Progress Bar -->
+            <div class="space-y-1">
+                <div class="flex items-center justify-between text-xs text-slate-400">
+                    <span id="timeElapsed" class="font-mono">00:00</span>
+                    <span id="chapterIndicator" class="font-bold text-sky-400">فصل ۱ از ۱۴ (گام ۱ از ۴)</span>
+                    <span id="timeTotal" class="font-mono">07:30</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden cursor-pointer relative" onclick="seekVideo(event)">
+                    <div id="videoProgressBar" class="bg-gradient-to-r from-sky-500 to-emerald-400 h-full w-[4%] transition-all duration-300"></div>
+                </div>
+            </div>
+
+            <!-- Buttons Row -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                <div class="flex items-center gap-2">
+                    <!-- Play / Pause Button -->
+                    <button id="btnPlayPause" onclick="togglePlay()" class="btn btn-primary btn-sm rounded-xl px-4 font-bold text-xs gap-1.5 shadow-md shadow-primary/30">
+                        <span id="playIcon">⏸️</span>
+                        <span id="playText">توقف</span>
+                    </button>
+
+                    <!-- Previous Point -->
+                    <button onclick="prevStep()" class="btn btn-ghost btn-sm rounded-xl text-xs hover:bg-slate-800">
+                        <span>⏮️ قبلی</span>
+                    </button>
+
+                    <!-- Next Point -->
+                    <button onclick="nextStep()" class="btn btn-ghost btn-sm rounded-xl text-xs hover:bg-slate-800">
+                        <span>بعدی ⏭️</span>
+                    </button>
+
+                    <!-- Voiceover (TTS) Toggle -->
+                    <button id="btnVoice" onclick="toggleVoice()" class="btn btn-outline btn-info btn-sm rounded-xl text-xs gap-1 font-bold">
+                        <span id="voiceIcon">🔊</span>
+                        <span id="voiceText">گوینده صوتی: فعال</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <!-- Playback Speed -->
+                    <div class="dropdown dropdown-top dropdown-end">
+                        <label tabindex="0" class="btn btn-ghost btn-sm rounded-xl text-xs font-mono text-slate-300 hover:bg-slate-800">
+                            <span id="speedLabel">1.0x</span>
+                            <span class="text-[10px]">▼</span>
+                        </label>
+                        <ul tabindex="0" class="dropdown-content z-50 menu p-2 shadow-2xl bg-slate-900 border border-slate-700 rounded-xl w-24 text-xs font-mono">
+                            <li><a onclick="setSpeed(0.75)">0.75x</a></li>
+                            <li><a onclick="setSpeed(1.0)" class="active">1.0x</a></li>
+                            <li><a onclick="setSpeed(1.25)">1.25x</a></li>
+                            <li><a onclick="setSpeed(1.5)">1.5x</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Chapters Selector Dropdown -->
+                    <select id="chapterSelect" onchange="jumpToChapter(parseInt(this.value))" class="select select-bordered select-sm bg-slate-950 border-slate-700 text-xs rounded-xl font-bold max-w-[200px]">
+                        <!-- Populated by JavaScript -->
+                    </select>
+
+                    <!-- Fullscreen -->
+                    <button onclick="toggleFullscreen()" class="btn btn-ghost btn-sm rounded-xl text-xs hover:bg-slate-800" title="تمام صفحه">
+                        <span>⛶</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chapters Playlist Grid -->
+        <div class="space-y-4 pt-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <h3 class="text-base font-black text-white flex items-center gap-2">
+                    <span>📑 سرفصل‌های ۱۴ گانه تور ویدیویی</span>
+                    <span class="badge badge-info badge-xs">کلیک برای پرش مستقیم</span>
+                </h3>
+                <span class="text-xs text-slate-400">تایم کامل ویدیو: حدود ۷ دقیقه و ۳۰ ثانیه</span>
+            </div>
+
+            <div id="playlistGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Hidden Canvas used for Video Recording / Exporting -->
+    <canvas id="recorderCanvas" width="1920" height="1080" class="hidden"></canvas>
+
+    <script>
+        // ==========================================
+        // 14 KEY SCENES WITH COORDINATES & EXPLANATIONS
+        // ==========================================
+        const SCENES = [
+            {
+                chapterId: 1,
+                chapterTitle: "فصل ۱: میز کار و داشبورد مرکزی (Executive Cockpit)",
+                image: "/images/tour/01_dashboard.png",
+                steps: [
+                    {
+                        title: "کارت‌های نقدینگی و دخل روز",
+                        targetBadge: "آمار زنده",
+                        meta: "مانیتورینگ ۳۶۰ درجه مدیر",
+                        desc: "مشاهده در لحظه فروش امروز، سود ناخالص ماه و موجودی حساب‌های بانکی بدون نیاز به محاسبه دستی.",
+                        subtitle: "در ابتدای صفحه، کارت‌های نقدینگی فروش امروز و سود ناخالص ماه به صورت درلحظه برای مدیر نمایش داده می‌شوند.",
+                        panX: 15, panY: 20, zoom: 1.5,
+                        arrowX: 30, arrowY: 25,
+                        boxTop: 15, boxRight: 5
+                    },
+                    {
+                        title: "نمودار روند گردش وجوه نقد",
+                        targetBadge: "تحلیل ۷ روزه",
+                        meta: "تعادل ورودی و خروجی پول",
+                        desc: "نمودار هوشمند مقایسه ورود و خروج پول در هفته جاری؛ تشخیص سریع روزهای پردرآمد و کم‌درآمد.",
+                        subtitle: "این نمودار گرافیکی دقیقاً نشان می‌دهد در هر روز هفته چقدر پول وارد شرکت شده و چقدر هزینه شده است.",
+                        panX: 50, panY: 45, zoom: 1.6,
+                        arrowX: 45, arrowY: 45,
+                        boxTop: 15, boxRight: 50
+                    },
+                    {
+                        title: "رادار چک‌های سررسید امروز",
+                        targetBadge: "خزانه‌داری سریع",
+                        meta: "جلوگیری از برگشت چک",
+                        desc: "لیست چک‌های دریافتی و پرداختی امروز با قابلیت پاس کردن یا ثبت برگشتی تنها با یک کلیک.",
+                        subtitle: "با رادار چک‌های سررسید، هیچ چکی فراموش نمی‌شود و امکان وصول سریع با یک کلیک فراهم است.",
+                        panX: 75, panY: 65, zoom: 1.5,
+                        arrowX: 75, arrowY: 65,
+                        boxTop: 45, boxRight: 10
+                    },
+                    {
+                        title: "کلیدهای میانبر سریع F1 تا F8",
+                        targetBadge: "ارگونومی کاربری",
+                        meta: "حذف کامل ماوس در صدور فاکتور",
+                        desc: "دسترسی فوق‌سریع کیبوردی به صدور فاکتور فروش، دریافت نقد، ثبت سند دوبل و استعلام چک صیاد.",
+                        subtitle: "کلیدهای میانبر F1 تا F8 به حسابدار اجازه می‌دهد بدون لمس ماوس کارهای پرکاربرد را انجام دهد.",
+                        panX: 20, panY: 10, zoom: 1.7,
+                        arrowX: 18, arrowY: 12,
+                        boxTop: 15, boxRight: 35
+                    }
+                ]
+            },
+            {
+                chapterId: 2,
+                chapterTitle: "فصل ۲: دستیار مالی هوش مصنوعی (Gemini Copilot)",
+                image: "/images/tour/02_copilot.png",
+                steps: [
+                    {
+                        title: "کادر گفتگوی محاوره‌ای فارسی",
+                        targetBadge: "هوش مصنوعی متصل به دیتابیس",
+                        meta: "پرسش و پاسخ تحلیلی بدون کدنویسی",
+                        desc: "به فارسی روان بپرسید سود سه ماه پیش چقدر بود یا اسناد ناتراز را پیدا کن، هوش مصنوعی بلافاصله پاسخ می‌دهد.",
+                        subtitle: "کافی است سوالات مالیاتی، سود و زیان یا مغایرت‌ها را به فارسی تایپ کنید تا هوش مصنوعی کل دیتابیس را تحلیل کند.",
+                        panX: 50, panY: 80, zoom: 1.6,
+                        arrowX: 50, arrowY: 82,
+                        boxTop: 20, boxRight: 15
+                    },
+                    {
+                        title: "رادار کشف ناهنجاری‌ها و اسناد مشکوک",
+                        targetBadge: "حسابرسی خودکار",
+                        meta: "پیشگیری از جریمه دارایی",
+                        desc: "بررسی هوشمند تمام اسناد برای یافتن مبالغ نامتعارف، فاکتورهای مشکوک و اشتباهات سهوی پیش از ممیزی.",
+                        subtitle: "هوش مصنوعی مانند یک حسابرس رسمی تمام اسناد را چک کرده و رکوردهای مشکوک را هشدار می‌دهد.",
+                        panX: 25, panY: 45, zoom: 1.6,
+                        arrowX: 28, arrowY: 42,
+                        boxTop: 15, boxRight: 40
+                    },
+                    {
+                        title: "پیشنهادهای کاهش بهای تمام‌شده",
+                        targetBadge: "استراتژی سودآوری",
+                        meta: "مدیریت بهینه سرمایه",
+                        desc: "توصیه‌های هوش مصنوعی برای خرید مواد اولیه با قیمت مناسب‌تر و کاهش بار مالیاتی طبق قانون.",
+                        subtitle: "این پنل استراتژیک، راهکارهای عملی برای افزایش حاشیه سود و کاهش هزینه‌های سربار پیشنهاد می‌دهد.",
+                        panX: 75, panY: 45, zoom: 1.5,
+                        arrowX: 75, arrowY: 45,
+                        boxTop: 15, boxRight: 10
+                    }
+                ]
+            },
+            {
+                chapterId: 3,
+                chapterTitle: "فصل ۳: صندوق فروشگاهی سریع لمسی (POS Terminal)",
+                image: "/images/tour/05_pos_terminal.png",
+                steps: [
+                    {
+                        title: "موتور جستجو و اسکن بارکد",
+                        targetBadge: "فروش ۳ ثانیه‌ای",
+                        meta: "مناسب فروشگاه‌های شلوغ",
+                        desc: "شناسایی آنی بارکد کالاها و افزودن سریع به فاکتور مشتری بدون اتلاف وقت و بدون نیاز به کیبورد.",
+                        subtitle: "بارکدخوان بلافاصله کالا را می‌شناسد و فاکتور در کمتر از سه ثانیه برای مشتری ثبت می‌شود.",
+                        panX: 45, panY: 15, zoom: 1.6,
+                        arrowX: 45, arrowY: 18,
+                        boxTop: 15, boxRight: 45
+                    },
+                    {
+                        title: "شبکه کلیدهای تصویری لمسی",
+                        targetBadge: "چیدمان تاچ",
+                        meta: "دسته‌بندی گرافیکی اجناس",
+                        desc: "دسترسی تک‌لمسی به پرفروش‌ترین محصولات در قنادی، سوپرمارکت و رستوران با تصویر و قیمت کالا.",
+                        subtitle: "برای دستگاه‌های لمسی و آل‌این‌وان، کالاها با عکس و رنگ‌بندی تفکیک شده‌اند تا صندوقدار سریع کلیک کند.",
+                        panX: 35, panY: 50, zoom: 1.5,
+                        arrowX: 35, arrowY: 50,
+                        boxTop: 15, boxRight: 5
+                    },
+                    {
+                        title: "اتصال مستقیم کارتخوان بانکی (PC-POS)",
+                        targetBadge: "صفر شدن خطای انسانی",
+                        meta: "بهپرداخت، سامان، سداد، آپ",
+                        desc: "مبلغ فاکتور به صورت خودکار روی کارتخوان ظاهر شده و پس از کشیدن کارت مشتری، فاکتور تسویه می‌شود.",
+                        subtitle: "مبلغ فاکتور اتوماتیک روی دستگاه کارتخوان ظاهر می‌شود تا هیچ رقمی اشتباه تایپ نشود.",
+                        panX: 80, panY: 80, zoom: 1.6,
+                        arrowX: 80, arrowY: 82,
+                        boxTop: 15, boxRight: 15
+                    }
+                ]
+            },
+            {
+                chapterId: 4,
+                chapterTitle: "فصل ۴: مدیریت فاکتورهای رسمی و بازرگانی",
+                image: "/images/tour/06_invoices_sell.png",
+                steps: [
+                    {
+                        title: "کنترل سقف اعتبار و بدهی خریدار",
+                        targetBadge: "اعتبارسنجی خودکار",
+                        meta: "جلوگیری از سوخت مطالبات",
+                        desc: "سیستم به صورت خودکار مانده بدهی قبلی، سقف اعتبار چکی و نسیه مشتری را در بالای فاکتور اخطار می‌دهد.",
+                        subtitle: "هنگام صدور فاکتور، سقف اعتبار خریدار هشدار داده می‌شود تا جنس نسیه به مشتری بدحساب فروخته نشود.",
+                        panX: 75, panY: 20, zoom: 1.6,
+                        arrowX: 78, arrowY: 20,
+                        boxTop: 15, boxRight: 10
+                    },
+                    {
+                        title: "محاسبه خودکار ارزش افزوده و تخفیف",
+                        targetBadge: "۱۰٪ مالیات قانونی",
+                        meta: "مطابق دستورالعمل دارایی",
+                        desc: "کسر پلکانی تخفیفات ردیفی، محاسبه دقیق ارزش افزوده ۱۰٪ و بروزرسانی بلادرنگ سود ناخالص هر ردیف فاکتور.",
+                        subtitle: "ارزش افزوده ده درصد و تخفیفات به طور دقیق روی هر ردیف محاسبه شده و سند دوبل متناظر صادر می‌گردد.",
+                        panX: 50, panY: 55, zoom: 1.5,
+                        arrowX: 50, arrowY: 55,
+                        boxTop: 15, boxRight: 40
+                    },
+                    {
+                        title: "تب تسویه ترکیبی (چک، پوز، نسیه)",
+                        targetBadge: "تسویه چندطرفه",
+                        meta: "پوشش انواع پرداخت‌ها",
+                        desc: "امکان تسویه یک فاکتور با چندین فقره چک صیادی، کارتخوان‌های مختلف، واریز فیش بانکی و باقیمانده به حساب دفتری.",
+                        subtitle: "مشتری می‌تواند بخشی را با پوز بکشد، دو فقره چک صیادی بدهد و مانده را نسیه کند؛ همه در یک فاکتور.",
+                        panX: 20, panY: 80, zoom: 1.6,
+                        arrowX: 22, arrowY: 82,
+                        boxTop: 15, boxRight: 35
+                    }
+                ]
+            },
+            {
+                chapterId: 5,
+                chapterTitle: "فصل ۵: خزانه‌داری و مدیریت چک‌های صیاد",
+                image: "/images/tour/08_treasury_cheques.png",
+                steps: [
+                    {
+                        title: "کارتابل تفکیکی چک‌های صیادی",
+                        targetBadge: "رهگیری ۱۶ رقمی",
+                        meta: "در راه، وصول، برگشتی، ضمانت",
+                        desc: "جدول جامع تمامی چک‌های دریافتی و پرداختی با فیلتر سریع بر اساس تاریخ سررسید، بانک عامل و صادرکننده.",
+                        subtitle: "تمام چک‌های بنفش صیادی در این کارتابل طبقه‌بندی شده و تاریخچه دست‌به‌دست شدن آن‌ها ثبت می‌گردد.",
+                        panX: 50, panY: 30, zoom: 1.5,
+                        arrowX: 50, arrowY: 30,
+                        boxTop: 15, boxRight: 40
+                    },
+                    {
+                        title: "پشت‌نویسی و خرج چک به شخص ثالث",
+                        targetBadge: "خرج چک صیاد",
+                        meta: "صدور اتوماتیک سند دوبل",
+                        desc: "واگذاری چک مشتری به همکار با ثبت سند حسابداری استاندارد بدون نیاز به وارد کردن دستی اسناد پیچیده.",
+                        subtitle: "با انتخاب گزینه خرج چک، سند استاندارد انتقال چک به طرف‌حساب ثالث بدون خطای حسابداری صادر می‌شود.",
+                        panX: 80, panY: 55, zoom: 1.6,
+                        arrowX: 82, arrowY: 55,
+                        boxTop: 15, boxRight: 10
+                    },
+                    {
+                        title: "یادآور پیامکی ۳ روز قبل از سررسید",
+                        targetBadge: "آلارم هوشمند",
+                        meta: "پیشگیری از بی‌پولی حساب",
+                        desc: "سیستم ۳ روز و ۱ روز قبل از موعد سررسید، به مدیر پیامک می‌زند تا موجودی حساب را تأمین کند.",
+                        subtitle: "پیامک هشدار سررسید قبل از موعد برای مدیر ارسال می‌شود تا هیچ چکی به دلیل غفلت برگشت نخورد.",
+                        panX: 18, panY: 25, zoom: 1.6,
+                        arrowX: 18, arrowY: 28,
+                        boxTop: 15, boxRight: 35
+                    }
+                ]
+            },
+            {
+                chapterId: 6,
+                chapterTitle: "فصل ۶: مغایرت‌گیری بانکی هوشمند (Reconciliation)",
+                image: "/images/tour/09_bank_reconciliation.png",
+                steps: [
+                    {
+                        title: "کشیدن و رها کردن فایل اکسل بانک",
+                        targetBadge: "پشتیبانی کلیه بانک‌ها",
+                        meta: "ملت، ملی، پاسارگاد، صادرات",
+                        desc: "فایل اکسل صورتحساب بانک را داخل صفحه بیندازید؛ سیستم تمام سطرها را در چند ثانیه بازخوانی می‌کند.",
+                        subtitle: "فایل اکسل صورتحساب بانکی را بکشید و رها کنید تا نرم‌افزار نپتون تمام گردش‌های مالی را بخواند.",
+                        panX: 50, panY: 25, zoom: 1.6,
+                        arrowX: 50, arrowY: 28,
+                        boxTop: 15, boxRight: 40
+                    },
+                    {
+                        title: "موتور انطباق هوشمند شماره پیگیری",
+                        targetBadge: "تطبیق اتوماتیک",
+                        meta: "پایان زحمت پایان ماه",
+                        desc: "تطبیق خودکار واریزها و برداشت‌ها با اسناد دفتری؛ ردیف‌های مغایر با رنگ قرمز مشخص می‌گردند.",
+                        subtitle: "ردیف‌های منطبق تیک سبز می‌خورند و واریزی‌های نامشخص یا کارمزدهای جاافتاده سریعاً کشف می‌شوند.",
+                        panX: 50, panY: 60, zoom: 1.5,
+                        arrowX: 50, arrowY: 62,
+                        boxTop: 15, boxRight: 40
+                    },
+                    {
+                        title: "صدور سریع سند کارمزد و بستن مغایرت",
+                        targetBadge: "سند خودکار",
+                        meta: "صورت مغایرت استاندارد",
+                        desc: "با یک کلیک برای کارمزدهای بانکی ثبت‌نشده سند می‌زند و برگه رسمی مغایرت بانکی را چاپ می‌کند.",
+                        subtitle: "کار پردردسر چندهفته‌ای حسابداران در پایان ماه، ظرف کمتر از سه دقیقه با تراز کامل بسته می‌شود.",
+                        panX: 85, panY: 85, zoom: 1.6,
+                        arrowX: 85, arrowY: 85,
+                        boxTop: 15, boxRight: 10
+                    }
+                ]
+            },
+            {
+                chapterId: 7,
+                chapterTitle: "فصل ۷: کالاها و انبارداری چندگانه",
+                image: "/images/tour/10_products_inventory.png",
+                steps: [
+                    {
+                        title: "تعریف کالا با چند واحد سنجش",
+                        targetBadge: "کارتن، بسته، عدد",
+                        meta: "قیمت‌گذاری عمده و خرده",
+                        desc: "ثبت کالا با ضریب تبدیل واحدها، تخصیص بارکد، تصویر کالا و ۵ سطح قیمت برای اقشار مختلف خریداران.",
+                        subtitle: "تعریف کالا با واحدهای اصلی و فرعی مانند کارتن و کیلو با قیمت‌های تفکیکی عمده و مصرف‌کننده.",
+                        panX: 50, panY: 30, zoom: 1.5,
+                        arrowX: 50, arrowY: 32,
+                        boxTop: 15, boxRight: 40
+                    },
+                    {
+                        title: "کاردکس ریالی و تعدادی لحظه‌ای",
+                        targetBadge: "میانگین موزون و FIFO",
+                        meta: "ارزش‌گذاری قانونی دارایی",
+                        desc: "نمایش تک‌تک ورودها، خروج‌ها، مانده موجودی و بهای تمام‌شده بر اساس استانداردهای پذیرفته‌شده حسابداری.",
+                        subtitle: "کاردکس دقیق انبار با محاسبه علمی بهای تمام شده، مورد تایید کامل ممیزان مالیاتی است.",
+                        panX: 75, panY: 65, zoom: 1.6,
+                        arrowX: 78, arrowY: 65,
+                        boxTop: 15, boxRight: 10
+                    },
+                    {
+                        title: "هشدارهای کسری و نقطه سفارش",
+                        targetBadge: "هشدار ناموجودی",
+                        meta: "تأمین به‌موقع قفسه‌ها",
+                        desc: "اخطار خودکار قبل از صفر شدن موجودی کالاهای پرتقاضا تا هیچ مشتری دست خالی از فروشگاه برنگردد.",
+                        subtitle: "قبل از اتمام موجودی کالاهای پرفروش، آلارم سفارش مجدد به مسئول خرید ارسال می‌شود.",
+                        panX: 20, panY: 30, zoom: 1.6,
+                        arrowX: 20, arrowY: 32,
+                        boxTop: 15, boxRight: 35
+                    }
+                ]
+            },
+            {
+                chapterId: 8,
+                chapterTitle: "فصل ۸: تولید، فرمول ساخت و مونتاژ (BOM)",
+                image: "/images/tour/12_production_orders.png",
+                steps: [
+                    {
+                        title: "درخت فرمول ساخت مواد اولیه (BOM)",
+                        targetBadge: "فرمول استاندارد تولید",
+                        meta: "تعیین مواد خام و ضایعات",
+                        desc: "تعیین نسبت مصرف مواد اولیه، درصد ضایعات مجاز و نرخ سربار برای ساخت یک واحد از محصول نهایی.",
+                        subtitle: "درخت فرمول ساخت مشخص می‌کند برای هر واحد محصول، چه موادی و به چه میزان دقیق مصرف می‌شوند.",
+                        panX: 30, panY: 30, zoom: 1.6,
+                        arrowX: 30, arrowY: 32,
+                        boxTop: 15, boxRight: 35
+                    },
+                    {
+                        title: "صدور دستور تولید و کسر خودکار مواد",
+                        targetBadge: "انبارگردانی لحظه‌ای",
+                        meta: "کاهش مواد خام، افزایش محصول",
+                        desc: "با زدن دستور تولید، مواد خام به طور اتوماتیک از انبار کسر شده و محصول نهایی وارد انبار کالا می‌شود.",
+                        subtitle: "با صدور دستور تولید، مواد اولیه کسر و محصول ساخته شده وارد موجودی آماده فروش می‌شود.",
+                        panX: 70, panY: 50, zoom: 1.5,
+                        arrowX: 72, arrowY: 50,
+                        boxTop: 15, boxRight: 10
+                    },
+                    {
+                        title: "محاسبه بهای تمام‌شده و انحراف مصرف",
+                        targetBadge: "قیمت تمام شده واقعی",
+                        meta: "جلوگیری از فروش زیان‌ده",
+                        desc: "محاسبه دقیق دستمزد، برق و مواد مصرفی تا ریال آخر؛ مشخص شدن قیمت واقعی تمام شده هر قطعه.",
+                        subtitle: "تولیدکننده دقیقاً می‌داند هر واحد کالا چقدر هزینه برداشته تا در بازار به سوددهی قطعی برسد.",
+                        panX: 50, panY: 80, zoom: 1.6,
+                        arrowX: 50, arrowY: 82,
+                        boxTop: 20, boxRight: 40
+                    }
+                ]
+            },
+            {
+                chapterId: 9,
+                chapterTitle: "فصل ۹: اسناد حسابداری دوبل استاندارد",
+                image: "/images/tour/13_accounting_documents.png",
+                steps: [
+                    {
+                        title: "آرتیکل‌های ۴ ستونی بدهکار/بستانکار",
+                        targetBadge: "استاندارد سازمان حسابرسی",
+                        meta: "ثبت وقایع مالی دوبل",
+                        desc: "امکان ثبت نامحدود ردیف‌های سند با سرفصل‌های کل، معین و تفصیلی شناور به همراه شرح تفصیلی.",
+                        subtitle: "صدور اسناد چهار ستونی با قابلیت اختصاص به مراکز هزینه و پروژه‌های مختلف سازمان.",
+                        panX: 50, panY: 40, zoom: 1.5,
+                        arrowX: 50, arrowY: 42,
+                        boxTop: 15, boxRight: 40
+                    },
+                    {
+                        title: "نشانگر تراز و تعادل قطعی سند",
+                        targetBadge: "ضریب خطای صفر",
+                        meta: "غیرممکن بودن ثبت سند ناتراز",
+                        desc: "موتور محاسباتی مانع از ثبت سند با کوچکترین اختلاف ریالی بین بدهکار و بستانکار می‌گردد.",
+                        subtitle: "سیستم هوشمند به هیچ وجه اجازه ذخیره سند ناتراز را نمی‌دهد تا ترازنامه همیشه سالم بماند.",
+                        panX: 85, panY: 85, zoom: 1.6,
+                        arrowX: 85, arrowY: 85,
+                        boxTop: 15, boxRight: 10
+                    },
+                    {
+                        title: "شماره‌گذاری رسمی جهت پلمب دفاتر",
+                        targetBadge: "آماده ممیزی دارایی",
+                        meta: "دفتر روزنامه و کل قانونی",
+                        desc: "مرتب‌سازی و نوسازی شماره اسناد بر اساس تاریخ بدون ایجاد جای خالی جهت تحریر در دفاتر روزنامه رسمی.",
+                        subtitle: "شماره‌گذاری مجدد اسناد بر اساس تاریخ، استرس تحریر دفاتر قانونی پایان سال را برطرف می‌کند.",
+                        panX: 18, panY: 15, zoom: 1.7,
+                        arrowX: 18, arrowY: 18,
+                        boxTop: 15, boxRight: 35
+                    }
+                ]
+            },
+            {
+                chapterId: 10,
+                chapterTitle: "فصل ۱۰: پیشخوان سامانه مودیان مالیاتی",
+                image: "/images/tour/16_tax_center.png",
+                steps: [
+                    {
+                        title: "ارسال مستقیم به کارپوشه بدون واسطه",
+                        targetBadge: "حذف هزینه TSP",
+                        meta: "کلید اختصاصی مودی",
+                        desc: "ارسال آنی فاکتورها به سامانه امور مالیاتی بدون نیاز به پرداخت ماهیانه به شرکت‌های معتمد.",
+                        subtitle: "ارسال مستقیم فاکتور الکترونیکی به کارپوشه مالیاتی بدون پرداخت کارمزد به شرکت‌های معتمد.",
+                        panX: 25, panY: 25, zoom: 1.6,
+                        arrowX: 25, arrowY: 28,
+                        boxTop: 15, boxRight: 35
+                    },
+                    {
+                        title: "تولید کد مالیاتی ۲۲ رقمی منحصر‌به‌فرد",
+                        targetBadge: "امضای دیجیتال فاکتور",
+                        meta: "شناسه یکتا مطابق قانون پایانه",
+                        desc: "محاسبه الگوریتمی و درج خودکار شناسه مالیاتی یکتا و استعلام وضعیت قبولی یا رد فاکتور از سرور دارایی.",
+                        subtitle: "تولید خودکار کد مالیاتی ۲۲ رقمی و امضای دیجیتال فاکتورها جهت جلوگیری از جرایم مالیاتی.",
+                        panX: 60, panY: 55, zoom: 1.5,
+                        arrowX: 60, arrowY: 55,
+                        boxTop: 15, boxRight: 10
+                    },
+                    {
+                        title: "تولید فایل گزارشات فصلی ماده ۱۶۹",
+                        targetBadge: "گزارش فصلی TTMS",
+                        meta: "خرید، فروش و امتناع",
+                        desc: "خروجی مستقیم اکسس و تکست استانداردهای اداره دارایی برای بارگذاری بدون دغدغه در پایان هر فصل.",
+                        subtitle: "آماده‌سازی فایل گزارشات فصلی خرید و فروش موضوع ماده ۱۶۹ مکرر در چند ثانیه.",
+                        panX: 85, panY: 25, zoom: 1.6,
+                        arrowX: 85, arrowY: 28,
+                        boxTop: 15, boxRight: 10
+                    }
+                ]
+            },
+            {
+                chapterId: 11,
+                chapterTitle: "فصل ۱۱: حقوق، دستمزد و فایل بیمه تأمین اجتماعی",
+                image: "/images/tour/18_payroll_dashboard.png",
+                steps: [
+                    {
+                        title: "محاسبه خودکار حقوق طبق بخشنامه کار",
+                        targetBadge: "قانون کار و تامین اجتماعی",
+                        meta: "بن مسکن، خواروبار، حق اولاد",
+                        desc: "اعمال اتوماتیک فرمول‌های وزارت کار، معافیت‌های مالیاتی و مالیات پلکانی برای پرسنل با قراردادهای متنوع.",
+                        subtitle: "محاسبه دقیق دستمزد، اضافه‌کاری، بن خواروبار و حق اولاد مطابق آخرین مصوبات شورای عالی کار.",
+                        panX: 25, panY: 25, zoom: 1.6,
+                        arrowX: 25, arrowY: 28,
+                        boxTop: 15, boxRight: 35
+                    },
+                    {
+                        title: "تولید دیسکت استاندارد بیمه (DSK)",
+                        targetBadge: "خروجی بدون خطا",
+                        meta: "سامانه eservices تامین اجتماعی",
+                        desc: "تولید فایل‌های لیست بیمه کارگاه به صورت مستقیم جهت آپلود در سامانه تأمین اجتماعی بدون اخطار مغایرت.",
+                        subtitle: "تولید مستقیم فایل لیست بیمه کارگاه برای بارگذاری بدون دردسر در پورتال تامین اجتماعی.",
+                        panX: 50, panY: 55, zoom: 1.5,
+                        arrowX: 50, arrowY: 55,
+                        boxTop: 15, boxRight: 40
+                    },
+                    {
+                        title: "دیسکت پرداخت گروهی بانک (پایا/ساتنا)",
+                        targetBadge: "واریز یکپارچه حقوق",
+                        meta: "اتصال به پورتال بانک‌ها",
+                        desc: "پرداخت یکجای حقوق صدها پرسنل به شماره شبا‌های مختلف با بارگذاری تنها یک فایل متنی در اینترنت‌بانک.",
+                        subtitle: "تولید دیسکت پرداخت پایا برای واریز خودکار و دسته‌جمعی حقوق ماهانه پرسنل در بانک.",
+                        panX: 75, panY: 55, zoom: 1.6,
+                        arrowX: 78, arrowY: 55,
+                        boxTop: 15, boxRight: 10
+                    }
+                ]
+            },
+            {
+                chapterId: 12,
+                chapterTitle: "فصل ۱۲: پخش مویرگی، تور ویزیت و ردیابی GPS",
+                image: "/images/tour/20_distribution.png",
+                steps: [
+                    {
+                        title: "تعریف خطوط ویزیت و مناطق سرکشی",
+                        targetBadge: "لاین‌بندی مشتریان",
+                        meta: "برنامه‌ریزی تورهای هفتگی",
+                        desc: "تقسیم‌بندی جغرافیایی مشتریان و تعیین روزهای مراجعه هر ویزیتور به سوپرمارکت‌ها یا داروخانه‌ها.",
+                        subtitle: "برنامه‌ریزی دقیق مسیرهای سرکشی مأموران فروش برای بهینه‌سازی زمان و توزیع عادلانه مناطق.",
+                        panX: 30, panY: 30, zoom: 1.6,
+                        arrowX: 30, arrowY: 32,
+                        boxTop: 15, boxRight: 35
+                    },
+                    {
+                        title: "ردیابی زنده GPS و کنترل ژئوفنس",
+                        targetBadge: "نظارت ماهواره‌ای",
+                        meta: "ثبت سفارش در محل مشتری",
+                        desc: "سیستم فقط در صورتی اجازه ثبت سفارش به ویزیتور را می‌دهد که GPS موبایل در محدوده فروشگاه مشتری باشد.",
+                        subtitle: "کنترل ثبت سفارش روی نقشه ماهواره‌ای جهت اطمینان از حضور واقعی ویزیتور در محل فروشگاه.",
+                        panX: 70, panY: 45, zoom: 1.5,
+                        arrowX: 72, arrowY: 45,
+                        boxTop: 15, boxRight: 10
+                    },
+                    {
+                        title: "ثبت سفارش آفلاین در تبلت ویزیتور",
+                        targetBadge: "بدون نیاز به اینترنت",
+                        meta: "ارسال سریع به انبار",
+                        desc: "ویزیتور در نقاط کور اینترنتی سفارش را ثبت کرده و به محض اتصال به اینترنت، پیش‌فاکتور برای انبار صادر می‌شود.",
+                        subtitle: "اپلیکیشن تبلت ویزیتور حتی بدون اینترنت کار کرده و پس از اتصال، فاکتور آماده بارگیری می‌شود.",
+                        panX: 50, panY: 80, zoom: 1.6,
+                        arrowX: 50, arrowY: 82,
+                        boxTop: 20, boxRight: 40
+                    }
+                ]
+            },
+            {
+                chapterId: 13,
+                chapterTitle: "فصل ۱۳: پشتیبان‌گیری ۳-۲-۱ و ربات تلگرام",
+                image: "/images/tour/22_backups.png",
+                steps: [
+                    {
+                        title: "پروتکل امنیت سازمانی ۳-۲-۱",
+                        targetBadge: "بیمه کامل اطلاعات",
+                        meta: "۳ نسخه، ۲ رسانه، ۱ خارج شرکت",
+                        desc: "حفاظت ۱۰۰٪ از اسناد در برابر سوختن هارد، سرقت سیستم، ویروس‌های باج‌گیر و آتش‌سوزی دفتر.",
+                        subtitle: "پروتکل امنیتی سه دو یک تضمین می‌کند اطلاعات مالی شرکت هرگز و تحت هیچ شرایطی پاک نشود.",
+                        panX: 30, panY: 35, zoom: 1.6,
+                        arrowX: 30, arrowY: 38,
+                        boxTop: 15, boxRight: 35
+                    },
+                    {
+                        title: "رمزنگاری فوق‌پیشرفته AES-256",
+                        targetBadge: "ضد باج‌گیر و نفوذ",
+                        meta: "پسورد اختصاصی کارفرما",
+                        desc: "فایل‌های بکاپ با پیشرفته‌ترین الگوریتم رمزنگاری قفل شده و بدون رمز اختصاصی شما توسط هیچ فردی باز نمی‌شوند.",
+                        subtitle: "رمزنگاری نظامی فایل‌های بکاپ مانع از سرقت اطلاعات تجاری توسط افراد متفرقه می‌گردد.",
+                        panX: 70, panY: 35, zoom: 1.6,
+                        arrowX: 70, arrowY: 38,
+                        boxTop: 15, boxRight: 10
+                    },
+                    {
+                        title: "ارسال خودکار دیتابیس به بات تلگرام",
+                        targetBadge: "بکاپ روی گوشی شما",
+                        meta: "بازیابی در ۵ دقیقه",
+                        desc: "هر شب پس از بستن برنامه، نسخه رمزنگاری شده برای اکانت شخصی تلگرام کارفرما ارسال و ذخیره می‌گردد.",
+                        subtitle: "حتی اگر تمام کامپیوترهای دفتر از بین بروند، آخرین دیتابیس در تلگرام گوشی شما آماده بازگردانی است.",
+                        panX: 50, panY: 75, zoom: 1.6,
+                        arrowX: 50, arrowY: 78,
+                        boxTop: 20, boxRight: 40
+                    }
+                ]
+            },
+            {
+                chapterId: 14,
+                chapterTitle: "فصل ۱۴: پروفایل‌های ۱۶ صنف تخصصی بازار",
+                image: "/images/tour/24_industry_profiles.png",
+                steps: [
+                    {
+                        title: "تنظیمات صنف طلا و جواهر",
+                        targetBadge: "طلافروشی و مظنه",
+                        meta: "وزن، عیار، اجرت ساخت",
+                        desc: "کالیبراسیون فیلدهای فاکتور با ادبیات بازار طلا؛ محاسبه مظنه روز، اجرت، سود و طلای آب‌شده.",
+                        subtitle: "در صنف طلا، برنامه به طور کامل به اصطلاحات مظنه، عیار هجده و اجرت تعویض تغییر حالت می‌دهد.",
+                        panX: 25, panY: 30, zoom: 1.6,
+                        arrowX: 25, arrowY: 32,
+                        boxTop: 15, boxRight: 35
+                    },
+                    {
+                        title: "تنظیمات صنف آهن، فلزات و مصالح",
+                        targetBadge: "آهن‌آلات و باسکول",
+                        meta: "طول شاخه، وزن، فرمول آلیاژ",
+                        desc: "اتصال به باسکول دیجیتال و فروش به تفکیک شاخه، بندیل و کیلوگرم با محاسبه کسری ضایعات برش.",
+                        subtitle: "در صنف آهن و فولاد، فروش شاخه‌ای و تناژ باسکول با ضرایب استاندارد مهندسی محاسبه می‌شود.",
+                        panX: 50, panY: 30, zoom: 1.6,
+                        arrowX: 50, arrowY: 32,
+                        boxTop: 15, boxRight: 40
+                    },
+                    {
+                        title: "پوشاک، رستوران و قطعات خودرو",
+                        targetBadge: "ماتریس سایز و رنگ",
+                        meta: "سفارشگیر سالن و پلاک خودرو",
+                        desc: "امکان فعال‌سازی هر صنف با یک کلیک تا نرم‌افزار دقیقاً شبیه تابلوی مغازه شما چیده و آماده به کار شود.",
+                        subtitle: "نپتون نیاز به هماهنگی شما ندارد؛ خودش در چند ثانیه به زبان صنف و شغل شما سازگار می‌گردد.",
+                        panX: 75, panY: 30, zoom: 1.6,
+                        arrowX: 78, arrowY: 32,
+                        boxTop: 15, boxRight: 10
+                    }
+                ]
+            }
+        ];
+
+        // ==========================================
+        // STATE VARIABLES
+        // ==========================================
+        let currentChapterIdx = 0;
+        let currentStepIdx = 0;
+        let isPlaying = true;
+        let playbackSpeed = 1.0;
+        let voiceEnabled = true;
+        let timerInterval = null;
+        let stepDurationMs = 7000; // Base 7 seconds per callout step
+        let timeRemainingMs = stepDurationMs;
+
+        // Video Recording State
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let recordTimerInterval = null;
+        let recordSeconds = 0;
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            initChapterDropdown();
+            initPlaylistGrid();
+            renderCurrentStep();
+            startPlaybackLoop();
+        });
+
+        function initChapterDropdown() {
+            const select = document.getElementById('chapterSelect');
+            select.innerHTML = '';
+            SCENES.forEach((scene, index) => {
+                const opt = document.createElement('option');
+                opt.value = index;
+                opt.textContent = scene.chapterTitle.split(':')[0] + ': ' + scene.chapterTitle.split(':')[1]?.split('(')[0];
+                select.appendChild(opt);
+            });
+        }
+
+        function initPlaylistGrid() {
+            const grid = document.getElementById('playlistGrid');
+            grid.innerHTML = '';
+            SCENES.forEach((scene, index) => {
+                const card = document.createElement('div');
+                card.id = `playlist-card-${index}`;
+                card.className = `p-3 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-800/80 cursor-pointer transition flex items-center gap-3`;
+                card.onclick = () => jumpToChapter(index);
+                card.innerHTML = `
+                    <div class="w-12 h-10 rounded-lg overflow-hidden border border-slate-700 bg-black shrink-0">
+                        <img src="${scene.image}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="text-xs font-bold text-white truncate">${scene.chapterTitle.split('(')[0]}</div>
+                        <div class="text-[10px] text-slate-400 font-mono">${scene.steps.length} نقطه کلیدی</div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // STEP RENDERING & CAMERA ZOOM / PAN
+        // ==========================================
+        function renderCurrentStep() {
+            const scene = SCENES[currentChapterIdx];
+            const step = scene.steps[currentStepIdx];
+
+            // 1. Image & Pan/Zoom
+            const img = document.getElementById('mainScreenshot');
+            if (img.src !== window.location.origin + scene.image && !img.src.endsWith(scene.image)) {
+                img.src = scene.image;
+            }
+            
+            // Ken-Burns style pan and zoom
+            const moveX = (50 - step.panX) * (step.zoom - 1);
+            const moveY = (50 - step.panY) * (step.zoom - 1);
+            img.style.transform = `scale(${step.zoom}) translate(${moveX * 0.4}%, ${moveY * 0.4}%)`;
+
+            // 2. Animated Arrow Pointer
+            const pointer = document.getElementById('pointerArrow');
+            pointer.style.left = `${step.arrowX}%`;
+            pointer.style.top = `${step.arrowY}%`;
+
+            // 3. Floating Callout Card
+            const callout = document.getElementById('calloutBox');
+            callout.style.top = `${step.boxTop}%`;
+            callout.style.right = `${step.boxRight}%`;
+            callout.style.left = 'auto';
+
+            document.getElementById('badgeStep').textContent = `گام ۰${currentStepIdx + 1}`;
+            document.getElementById('calloutTitle').textContent = step.title;
+            document.getElementById('targetBadge').textContent = step.targetBadge;
+            document.getElementById('calloutDesc').textContent = step.desc;
+            document.getElementById('calloutMeta').textContent = step.meta;
+
+            // 4. Subtitle Text & Category
+            document.getElementById('sceneCategory').textContent = scene.chapterTitle;
+            document.getElementById('subtitleText').textContent = step.subtitle;
+
+            // 5. Indicators
+            document.getElementById('chapterIndicator').textContent = `فصل ${currentChapterIdx + 1} از ${SCENES.length} (گام ${currentStepIdx + 1} از ${scene.steps.length})`;
+            document.getElementById('chapterSelect').value = currentChapterIdx;
+
+            // Update Progress Bar
+            const totalSteps = SCENES.reduce((acc, s) => acc + s.steps.length, 0);
+            let stepsPassed = 0;
+            for (let i = 0; i < currentChapterIdx; i++) {
+                stepsPassed += SCENES[i].steps.length;
+            }
+            stepsPassed += currentStepIdx;
+            const progressPct = Math.round((stepsPassed / totalSteps) * 100);
+            document.getElementById('videoProgressBar').style.width = `${Math.max(4, progressPct)}%`;
+
+            // Update Playlist Active Highlight
+            SCENES.forEach((_, idx) => {
+                const el = document.getElementById(`playlist-card-${idx}`);
+                if (el) {
+                    if (idx === currentChapterIdx) {
+                        el.className = `p-3 rounded-xl border border-sky-500 bg-sky-950/40 cursor-pointer transition flex items-center gap-3 shadow-md shadow-sky-500/20`;
+                    } else {
+                        el.className = `p-3 rounded-xl border border-slate-800 bg-slate-900/60 hover:bg-slate-800/80 cursor-pointer transition flex items-center gap-3`;
+                    }
+                }
+            });
+
+            // 6. Voiceover (TTS) if enabled
+            if (voiceEnabled) {
+                speakPersianNarration(step.subtitle);
+            }
+        }
+
+        // ==========================================
+        // PLAYBACK TIMELINE ENGINE
+        // ==========================================
+        function startPlaybackLoop() {
+            clearInterval(timerInterval);
+            timeRemainingMs = Math.round(stepDurationMs / playbackSpeed);
+
+            timerInterval = setInterval(() => {
+                if (!isPlaying) return;
+
+                timeRemainingMs -= 100;
+                if (timeRemainingMs <= 0) {
+                    nextStep();
+                }
+            }, 100);
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            document.getElementById('playIcon').textContent = isPlaying ? '⏸️' : '▶️';
+            document.getElementById('playText').textContent = isPlaying ? 'توقف' : 'پخش';
+            if (isPlaying) {
+                startPlaybackLoop();
+            } else {
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+        }
+
+        function nextStep() {
+            const scene = SCENES[currentChapterIdx];
+            if (currentStepIdx < scene.steps.length - 1) {
+                currentStepIdx++;
+            } else {
+                currentStepIdx = 0;
+                if (currentChapterIdx < SCENES.length - 1) {
+                    currentChapterIdx++;
+                } else {
+                    currentChapterIdx = 0; // Loop back to start
+                }
+            }
+            renderCurrentStep();
+            timeRemainingMs = Math.round(stepDurationMs / playbackSpeed);
+        }
+
+        function prevStep() {
+            if (currentStepIdx > 0) {
+                currentStepIdx--;
+            } else {
+                if (currentChapterIdx > 0) {
+                    currentChapterIdx--;
+                    currentStepIdx = SCENES[currentChapterIdx].steps.length - 1;
+                } else {
+                    currentChapterIdx = SCENES.length - 1;
+                    currentStepIdx = SCENES[currentChapterIdx].steps.length - 1;
+                }
+            }
+            renderCurrentStep();
+            timeRemainingMs = Math.round(stepDurationMs / playbackSpeed);
+        }
+
+        function jumpToChapter(idx) {
+            currentChapterIdx = idx;
+            currentStepIdx = 0;
+            renderCurrentStep();
+            timeRemainingMs = Math.round(stepDurationMs / playbackSpeed);
+        }
+
+        function setSpeed(speed) {
+            playbackSpeed = speed;
+            document.getElementById('speedLabel').textContent = `${speed}x`;
+            timeRemainingMs = Math.round(stepDurationMs / playbackSpeed);
+        }
+
+        function seekVideo(event) {
+            const rect = event.currentTarget.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const pct = clickX / rect.width;
+            
+            const totalSteps = SCENES.reduce((acc, s) => acc + s.steps.length, 0);
+            const targetStepGlobal = Math.floor(pct * totalSteps);
+
+            let acc = 0;
+            for (let i = 0; i < SCENES.length; i++) {
+                if (acc + SCENES[i].steps.length > targetStepGlobal) {
+                    currentChapterIdx = i;
+                    currentStepIdx = targetStepGlobal - acc;
+                    break;
+                }
+                acc += SCENES[i].steps.length;
+            }
+            renderCurrentStep();
+            timeRemainingMs = Math.round(stepDurationMs / playbackSpeed);
+        }
+
+        // ==========================================
+        // PERSIAN SPEECH SYNTHESIS (VOICEOVER)
+        // ==========================================
+        function toggleVoice() {
+            voiceEnabled = !voiceEnabled;
+            document.getElementById('voiceIcon').textContent = voiceEnabled ? '🔊' : '🔇';
+            document.getElementById('voiceText').textContent = voiceEnabled ? 'گوینده صوتی: فعال' : 'گوینده صوتی: خاموش';
+            if (!voiceEnabled && 'speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            } else if (voiceEnabled) {
+                const step = SCENES[currentChapterIdx].steps[currentStepIdx];
+                speakPersianNarration(step.subtitle);
+            }
+        }
+
+        function speakPersianNarration(text) {
+            if (!('speechSynthesis' in window) || !voiceEnabled) return;
+            window.speechSynthesis.cancel();
+
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'fa-IR';
+            utter.rate = playbackSpeed * 0.95;
+            utter.pitch = 1.0;
+
+            // Try to find Persian voice if available
+            const voices = window.speechSynthesis.getVoices();
+            const faVoice = voices.find(v => v.lang.includes('fa') || v.lang.includes('ar'));
+            if (faVoice) utter.voice = faVoice;
+
+            window.speechSynthesis.speak(utter);
+        }
+
+        // ==========================================
+        // FULLSCREEN
+        // ==========================================
+        function toggleFullscreen() {
+            const el = document.getElementById('videoViewport');
+            if (!document.fullscreenElement) {
+                el.requestFullscreen().catch(err => alert(`Error: ${err.message}`));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // ==========================================
+        // VIDEO RECORDING & MP4 / WEBM EXPORTER
+        // ==========================================
+        function toggleVideoRecording() {
+            if (!isRecording) {
+                startVideoRecording();
+            } else {
+                stopVideoRecording();
+            }
+        }
+
+        async function startVideoRecording() {
+            const viewport = document.getElementById('videoViewport');
+            try {
+                // Request display media stream (entire screen or browser tab)
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { frameRate: 30, width: 1920, height: 1080 }
+                });
+
+                recordedChunks = [];
+                const options = { mimeType: 'video/webm;codecs=vp9' };
+                mediaRecorder = new MediaRecorder(stream, options);
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) recordedChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    a.download = `Neptune-ERP-Video-Tour-${new Date().toISOString().slice(0, 10)}.webm`;
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    }, 100);
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                recordSeconds = 0;
+
+                // UI Updates
+                document.getElementById('recordingBadge').classList.remove('hidden');
+                document.getElementById('btnRecordVideo').classList.replace('btn-error', 'btn-warning');
+                document.getElementById('recordText').textContent = '⏹️ توقف ضبط و دانلود ویدیو';
+
+                recordTimerInterval = setInterval(() => {
+                    recordSeconds++;
+                    const mins = String(Math.floor(recordSeconds / 60)).padStart(2, '0');
+                    const secs = String(recordSeconds % 60).padStart(2, '0');
+                    document.getElementById('recordingTimer').textContent = `${mins}:${secs}`;
+                }, 1000);
+
+                // Start video from beginning for clean recording
+                jumpToChapter(0);
+                if (!isPlaying) togglePlay();
+
+            } catch (err) {
+                console.warn("DisplayMedia canceled or not supported:", err);
+                alert("برای ضبط ویدیو، لطفاً دسترسی اشتراک‌گذاری تب مرورگر را تأیید کنید.");
+            }
+        }
+
+        function stopVideoRecording() {
+            if (!mediaRecorder) return;
+            mediaRecorder.stop();
+            isRecording = false;
+            clearInterval(recordTimerInterval);
+
+            // UI Reset
+            document.getElementById('recordingBadge').classList.add('hidden');
+            document.getElementById('btnRecordVideo').classList.replace('btn-warning', 'btn-error');
+            document.getElementById('recordText').textContent = '🔴 ضبط و دانلود ویدیو (MP4/WebM)';
+        }
+    </script>
+</body>
+</html>
