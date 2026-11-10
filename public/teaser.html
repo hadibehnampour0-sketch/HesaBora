@@ -236,7 +236,10 @@
                     <!-- Voice Selector Switch (4 Voices: Microsoft Neural & GitHub Piper Models) -->
                     <div class="flex flex-wrap items-center gap-1 bg-slate-900/90 border border-slate-700 rounded-xl p-1 shadow-sm">
                         <span class="text-[11px] text-slate-400 font-bold px-1.5">گوینده:</span>
-                        <button id="voiceAmirBtn" onclick="setVoice('amir')" class="btn btn-xs rounded-lg font-bold bg-amber-500 text-black shadow-sm" title="مدل منبع‌باز Piper - صدای امیر سودبخش از پادکست رخ">
+                        <button id="voiceGanjiBtn" onclick="setVoice('ganji')" class="btn btn-xs rounded-lg font-bold bg-amber-500 text-black shadow-sm" title="مدل منبع‌باز Piper - صدای استاد احمد گنجی (صدای رسمی و برگزیده نپتون)">
+                            📻 استاد احمد گنجی (صدای برگزیده) ⭐
+                        </button>
+                        <button id="voiceAmirBtn" onclick="setVoice('amir')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مدل منبع‌باز Piper - صدای امیر سودبخش از پادکست رخ">
                             🎙️ امیر (پادکست رخ)
                         </button>
                         <button id="voiceDilaraBtn" onclick="setVoice('dilara')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مایکروسافت نئورال - لحن آرام و روان">
@@ -244,9 +247,6 @@
                         </button>
                         <button id="voiceFaridBtn" onclick="setVoice('farid')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مایکروسافت نئورال - لحن تبلیغاتی پرانرژی">
                             👨 فرید (تیزری)
-                        </button>
-                        <button id="voiceGanjiBtn" onclick="setVoice('ganji')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مدل منبع‌باز Piper - صدای استاد احمد گنجی">
-                            📻 احمد گنجی (بم)
                         </button>
                     </div>
                 </div>
@@ -416,7 +416,7 @@
         let currentSceneIdx = 0;
         let isPlaying = true;
         let soundEnabled = true;
-        let currentVoice = 'amir'; // 'amir' (GitHub Piper / Podcast Rokh), 'dilara', 'farid', 'ganji'
+        let currentVoice = 'ganji'; // 'ganji' (Ahmad Ganji - Official Primary Voice), 'amir', 'dilara', 'farid'
         const audioPlayer = document.getElementById('teaserAudio');
 
         function getAudioPath(voice, sceneId) {

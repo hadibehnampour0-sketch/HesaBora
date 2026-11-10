@@ -3113,8 +3113,8 @@ To position Neptune ERP (نپتون ERP) as the cutting-edge, next-generation Ir
 ### 2. Concrete Architectural Decisions & Golden Rules
 1. **Multi-Tier Voiceover Engine Hierarchy:**
    - **Tier 1 (Local Open-Source Neural / Zero Cloud Cost / No Rate Limits):** `Piper TTS` with ONNX models.
-     - Brand Storyteller Persona: `fa_IR-amir-medium.onnx` (Amir Soudbakhsh from Rokh Podcast / پادکست رخ). Delivers conversational warmth, high empathy, and deep audience trust.
-     - Documentary & Enterprise Authority: `fa_IR-ganji-medium.onnx` (Ahmad Ganji). Delivers deep acoustic resonance, gravitas, and national broadcast fidelity.
+     - **Official Primary Brand Voice (Owner Verified Choice):** `fa_IR-ganji-medium.onnx` (Ahmad Ganji). Formally verified by the product owner as the most accurate, articulate, and impactful voice for Neptune ERP. Delivers deep acoustic resonance, gravitas, unhurried authority, and national broadcast fidelity. Configured as the default voice across the platform.
+     - Alternate Storyteller Persona: `fa_IR-amir-medium.onnx` (Amir Soudbakhsh from Rokh Podcast / پادکست رخ). Delivers conversational warmth, high empathy, and deep audience trust.
    - **Tier 2 (Cloud Neural / High-Fidelity Web Fallback):** Microsoft Edge Neural TTS.
      - `fa-IR-FaridNeural`: Punchy, energetic, promotional commercial delivery (`rate="+6%"`, `pitch="+1Hz"`).
      - `fa-IR-DilaraNeural`: Warm, calm, modern corporate delivery (`rate="+3%"`).
