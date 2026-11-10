@@ -20,6 +20,16 @@
             <kbd class="px-1.5 py-0.5 rounded bg-base-300 text-base-content/80 text-[10px] font-mono font-bold">Ctrl + K</kbd>
         </button>
 
+        <!-- Accounting Hotkeys Trigger Badge -->
+        <button type="button"
+                onclick="window.dispatchEvent(new KeyboardEvent('keydown', { key: 'F1' }))"
+                class="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-base-300 bg-base-200/40 hover:bg-base-200 text-xs text-base-content/70 hover:text-primary transition cursor-pointer shadow-xs"
+                title="{{ __('راهنمای کلیدهای میانبر حسابداری') }}">
+            <span>⌨️</span>
+            <span class="text-[11px] font-medium">{{ __('کلیدها') }}</span>
+            <kbd class="px-1.5 py-0.5 rounded bg-base-300 text-primary text-[10px] font-mono font-bold">F1</kbd>
+        </button>
+
         <!-- Fast Theme Switcher Dropdown -->
         <div class="dropdown dropdown-end" x-data="{
             current: localStorage.getItem('ui_theme') || 'flow',

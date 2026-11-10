@@ -84,6 +84,9 @@
     <!-- Global Quick Search Command Palette (Ctrl+K) -->
     <x-command-palette />
 
+    <!-- Global Accounting Hotkeys Engine (F1-F8, ESC, Ctrl+Enter) -->
+    <x-accounting-hotkeys />
+
     <!-- Global Floating AI Copilot Launcher -->
     <x-floating-copilot />
 

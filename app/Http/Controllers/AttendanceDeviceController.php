@@ -141,7 +141,7 @@ class AttendanceDeviceController extends Controller
 
         $msg = "همگام‌سازی با موفقیت انجام شد: {$result['imported']} رکورد تردد ثبت و در کارکرد پرسنل محاسبه شد.";
         if (! empty($result['unknown_pins'])) {
-            $msg .= " (تعداد " . count($result['unknown_pins']) . " شناسه در دستگاه برای هیچ کارمندی تعریف نشده بود).";
+            $msg .= ' (تعداد '.count($result['unknown_pins']).' شناسه در دستگاه برای هیچ کارمندی تعریف نشده بود).';
         }
 
         return redirect()->route('attendance.devices.index')->with('success', $msg);

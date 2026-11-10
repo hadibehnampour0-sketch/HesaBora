@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\NoActiveCompanyException;
 use App\Models\Company;
 use App\Support\JalaliDate;
 use Carbon\Carbon;
@@ -17,7 +18,7 @@ function getActiveCompany(): int
 
     // Security (D-136, Fail-Closed): No silent fallback to company ID 1.
     // If no active company is bound to the request or configuration, fail closed.
-    throw new \App\Exceptions\NoActiveCompanyException();
+    throw new NoActiveCompanyException;
 }
 
 /**

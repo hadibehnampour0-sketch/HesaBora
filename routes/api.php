@@ -25,7 +25,7 @@ Route::post('devices/pair', [DevicePairingController::class, 'pair'])
     ->middleware('throttle:10,1')
     ->name('api.devices.pair');
 
-Route::middleware(['auth.device'])->group(function () {
+Route::middleware(['auth.device', 'compress.sync'])->group(function () {
     Route::get('devices/ping', [DevicePairingController::class, 'ping'])->name('api.devices.ping');
 
     // D-071 stage 2.5: gated Customer/Product Sync Pilot only.

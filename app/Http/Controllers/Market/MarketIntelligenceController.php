@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Market;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use App\Services\Industry\IndustryProfileRegistry;
 use App\Services\Market\MarketIntelligenceService;
 use Illuminate\Http\JsonResponse;

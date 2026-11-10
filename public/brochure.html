@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بروشور معرفی رسمی سامانه جامع مالی و ERP نپتون | Neptune Financial OS</title>
+    <!-- Tailwind CSS & DaisyUI via CDN for Standalone Portability & Print Fidelity -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                            950: '#082f49',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .page-break {
+                page-break-after: always;
+                break-after: page;
+            }
+            .avoid-break {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            body {
+                background: white !important;
+                color: #0f172a !important;
+                padding: 0 !important;
+            }
+            .print-card {
+                box-shadow: none !important;
+                border: 1px solid #cbd5e1 !important;
+                background: white !important;
+                color: #0f172a !important;
+            }
+            .print-dark-card {
+                background: #090d16 !important;
+                color: #ffffff !important;
+                border: 1px solid #1e293b !important;
+            }
+            .print-muted-text {
+                color: #475569 !important;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 8mm 12mm 10mm 12mm;
+            }
+        }
+
+        .gradient-border {
+            background: linear-gradient(135deg, #0ea5e9, #06b6d4, #3b82f6);
+            padding: 1px;
+            border-radius: 1.25rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-sky-500 selection:text-white pb-16">
+
+    <!-- Top Action Bar (Print / Download / Web - Hidden in Print) -->
+    <header class="no-print sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-[#090D16] p-1.5 flex items-center justify-center border border-cyan-500/40 shadow-sm">
+                    <img src="./images/neptune-logo.svg" onerror="this.src='/images/neptune-logo.svg'" alt="Neptune ERP" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <span class="font-black text-sm text-white">بروشور معرفی رسمی نپتون ERP</span>
+                    <span class="badge badge-info badge-sm font-mono text-[10px] mr-2">نسخه ۲.۶.۰</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="window.print()" class="btn btn-primary btn-sm rounded-xl font-bold gap-1.5 shadow-md shadow-sky-500/20 text-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    <span>چاپ بروشور / ذخیره PDF (A4)</span>
+                </button>
+                <a href="/pricing" class="btn btn-ghost btn-sm text-xs text-sky-400 rounded-xl hover:bg-slate-800">
+                    <span>محاسبه‌گر آنلاین</span>
+                </a>
+                <a href="/landing" class="btn btn-ghost btn-sm text-xs text-slate-300 rounded-xl hover:bg-slate-800">
+                    <span>مشاهده وب‌سایت</span>
+                    <span>←</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Brochure Layout -->
+    <main class="max-w-4xl mx-auto p-4 sm:p-8 space-y-10">
+
+        <!-- ================= PAGE 1: COVER & EXECUTIVE OVERVIEW ================= -->
+        <section class="page-break relative bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-10 overflow-hidden shadow-2xl print-dark-card">
+            <!-- Decorative Glow Background -->
+            <div class="absolute -top-24 -left-24 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col justify-between min-h-[560px]">
+                
+                <!-- Brand Header -->
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-6">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-14 h-14 rounded-2xl bg-[#090D16] p-2 flex items-center justify-center border border-cyan-500/40 shadow-xl shadow-cyan-500/20">
+                            <img src="./images/neptune-logo.svg" onerror="this.src='/images/neptune-logo.svg'" alt="Neptune ERP" class="w-full h-full object-contain">
+                        </div>
+                        <div>
+                            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
+                                <span>نپـتـون</span>
+                                <span class="text-xs text-sky-400 font-normal font-mono border border-sky-500/30 px-2 py-0.5 rounded-full">Neptune ERP</span>
+                            </h1>
+                            <span class="text-xs text-slate-400 font-medium block mt-0.5">سیستم جامع مالی، حسابداری دوبل و مدیریت زنجیره تأمین</span>
+                        </div>
+                    </div>
+                    <div class="text-left">
+                        <span class="badge badge-accent badge-sm font-mono font-bold text-xs">v2.6.0 STABLE</span>
+                        <div class="text-[11px] text-slate-400 mt-1">تولید: پاییز ۱۴۰۵</div>
+                    </div>
+                </div>
+
+                <!-- Hero Pitch -->
+                <div class="my-8 space-y-4">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-bold">
+                        <span>⚡</span>
+                        <span>نسل نوین هوش مالی، انبارداری هوشمند و اتصال مستقیم به سامانه مودیان</span>
+                    </div>
+
+                    <h2 class="text-2xl sm:text-4xl font-black text-white leading-tight">
+                        پلتفرم یکپارچه مالی، ابری و آفلاین؛<br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-blue-500">
+                            قدرتمند برای هولدینگ‌ها، مثل آب خوردن برای اصناف
+                        </span>
+                    </h2>
+
+                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed text-justify max-w-3xl pt-2">
+                        <strong>نپتون (Neptune Financial OS)</strong> حاصل بازطراحی مدرن سیستم‌های مالی برای بازار پرتلاطم ایران است. سامانه ما شکاف بین «نرم‌افزارهای پیچیده و سنگین قدیمی با قفل‌های سخت‌افزاری دانگل» و «نیازمندی‌های چابک کسب‌وکارهای امروزی» را به کلی از میان برداشته است؛ با اتصال مستقیم و بی‌واسطه به سامانه مودیان، استعلام برخط چک‌های صیادی، همگام‌سازی نامتقارن آفلاین/آنلاین، دیسکت رسمی تأمین اجتماعی و رابط کاربری دوگانه متناسب با هر سطح از سواد حسابداری.
+                    </p>
+                </div>
+
+                <!-- 4 Pillars Key Metrics Bar -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-slate-800">
+                    <div class="p-3 bg-slate-800/40 rounded-2xl border border-slate-700/40 text-center">
+                        <div class="text-xl font-black text-sky-400">۱۰۰٪</div>
+                        <div class="text-[11px] text-slate-200 font-bold">تراز دوبل استاندارد</div>
+                        <div class="text-[9px] text-slate-400">بدون مغایرت دفاتر</div>
+                    </div>
+                    <div class="p-3 bg-slate-800/40 rounded-2xl border border-slate-700/40 text-center">
+                        <div class="text-xl font-black text-cyan-400">آفلاین + ابری</div>
+                        <div class="text-[11px] text-slate-200 font-bold">همگام‌سازی ۲ طرفه</div>
+                        <div class="text-[9px] text-slate-400">کارکرد کامل در قطعی اینترنت</div>
+                    </div>
+                    <div class="p-3 bg-slate-800/40 rounded-2xl border border-slate-700/40 text-center">
+                        <div class="text-xl font-black text-emerald-400">مودیان مستقیم</div>
+                        <div class="text-[11px] text-slate-200 font-bold">امضای RSA محلی</div>
+                        <div class="text-[9px] text-slate-400">بدون شرکت معتمد و هزینه سالانه</div>
+                    </div>
+                    <div class="p-3 bg-slate-800/40 rounded-2xl border border-slate-700/40 text-center">
+                        <div class="text-xl font-black text-amber-400">کلیدهای F1-F8</div>
+                        <div class="text-[11px] text-slate-200 font-bold">سرعت ۳ برابری</div>
+                        <div class="text-[9px] text-slate-400">سازگار با عرف هلو و سپیدار</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= PAGE 2: 8 CORE ARCHITECTURAL MODULES ================= -->
+        <section class="page-break space-y-6">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-bold text-sky-400 uppercase tracking-widest">ستون‌های عملکردی محصول</span>
+                <h3 class="text-2xl font-black text-white">۸ ستون اصلی قدرت اکوسیستم مالی نپتون</h3>
+                <p class="text-xs text-slate-400 max-w-xl mx-auto">
+                    پوشش جامع چرخه مالی، انبار، پرسنلی، زنجیره بها و تکالیف قانونی با معماری ماژولار و تفکیک وظایف
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <!-- Module 1 -->
+                <div class="avoid-break p-5 bg-slate-900 border border-slate-800 rounded-2xl space-y-2 print-card">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center text-lg font-bold">
+                            🧾
+                        </div>
+                        <div>
+                            <h4 class="font-black text-sm text-white">۱. حسابداری مالی و دفترداری دوبل</h4>
+                            <span class="text-[10px] text-slate-400 print-muted-text">دفاتر روزنامه، کل، معین و تراز آزمایشی ۸ ستونی</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed text-justify print-muted-text">
+                        کدینگ استاندارد ۵ سطحی، صدور خودکار اسناد از تمام زیرسیستم‌ها، محافظت سرسختانه از تغییرناپذیری اسناد تاییدشده (مصوبات D-084 تا D-089)، تفکیک وظایف (Segregation of Duties) و بستن قطعی سال مالی.
+                    </p>
+                </div>
+
+                <!-- Module 2 -->
+                <div class="avoid-break p-5 bg-slate-900 border border-slate-800 rounded-2xl space-y-2 print-card">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg font-bold">
+                            🏛️
+                        </div>
+                        <div>
+                            <h4 class="font-black text-sm text-white">۲. سامانه مودیان و ممیزی مالیاتی</h4>
+                            <span class="text-[10px] text-slate-400 print-muted-text">اتصال مستقیم به کارپوشه، امضای کلید خصوصی و فصلی ۱۶۹</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed text-justify print-muted-text">
+                        تولید مستقیم شناسه یکتای مالیاتی ۲۲ رقمی با الگوریتم Verhoeff، امضای محلی فاکتورها با گواهی X.509، گزارش فصلی موضوع ماده ۱۶۹ مکرر، محاسبه ارزش افزوده ۱۰٪ و پیش‌ممیزی هوشمند جرائم مالیاتی.
+                    </p>
+                </div>
+
+                <!-- Module 3 -->
+                <div class="avoid-break p-5 bg-slate-900 border border-slate-800 rounded-2xl space-y-2 print-card">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-lg font-bold">
+                            📦
+                        </div>
+                        <div>
+                            <h4 class="font-black text-sm text-white">۳. انبارداری چندگانه و کاردکس کالا</h4>
+                            <span class="text-[10px] text-slate-400 print-muted-text">روش میانگین موزون (استاندارد ۸) و ردیابی شماره سریال IMEI</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed text-justify print-muted-text">
+                        تعریف بی‌نهایت انبار، حواله بین‌انبارها، نقطه سفارش و هشدار کسری، ردیابی بچ نامبر و تاریخ انقضا برای صنایع غذایی و دارویی، و ثبت و کنترل شماره سریال منحصر‌به‌فرد (IMEI) برای صنف موبایل و قطعات الکترونیک.
+                    </p>
+                </div>
+
+                <!-- Module 4 -->
+                <div class="avoid-break p-5 bg-slate-900 border border-slate-800 rounded-2xl space-y-2 print-card">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg font-bold">
+                            ⚙️
+                        </div>
+                        <div>
+                            <h4 class="font-black text-sm text-white">۴. بهای تمام‌شده و فرمول ساخت (BOM)</h4>
+                            <span class="text-[10px] text-slate-400 print-muted-text">ویژه کارخانجات، کارگاه‌های تولیدی و بسته‌بندی</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed text-justify print-muted-text">
+                        تعریف فرمول ساخت استاندارد محصول، صدور دستور تولید مکانیزه، ثبت مصرف مواد اولیه و ورود محصول ساخته‌شده به انبار، همراه با جذب خودکار دستمزد مستقیم و سربار کارخانه در بهای تمام شده کالای فروش رفته (COGS).
+                    </p>
+                </div>
+
+                <!-- Module 5 -->
+                <div class="avoid-break p-5 bg-slate-900 border border-slate-800 rounded-2xl space-y-2 print-card">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg font-bold">
+                            🏦
+                        </div>
+                        <div>
+                            <h4 class="font-black text-sm text-white">۵. خزانه‌داری و چرخه کامل چک‌های صیاد</h4>
+                            <span class="text-[10px] text-slate-400 print-muted-text">استعلام برخط، واگذاری، وصول، ظهرنویسی و واخواست</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed text-justify print-muted-text">
+                        مدیریت مستقل چک صیادی بنفش طبق الگوی معمارانه D-070؛ ثبت بدون خدشه به فاکتور، پیگیری چک‌های خوابانده‌شده به حساب، یادآوری موعد سررسید با پیامک و اتصال به درگاه‌های آنلاین و پوزهای بانکی PC-POS.
+                    </p>
+                </div>
+
+                <!-- Module 6 -->
+                <div class="avoid-break p-5 bg-slate-900 border border-slate-800 rounded-2xl space-y-2 print-card">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-lg font-bold">
+                            👥
+                        </div>
+                        <div>
+                            <h4 class="font-black text-sm text-white">۶. حقوق و دستمزد + دیسکت رسمی بیمه</h4>
+                            <span class="text-[10px] text-slate-400 print-muted-text">تولید DSKKAR00.dbf و DSKWOR00.dbf + فایل واریز شبا</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed text-justify print-muted-text">
+                        محاسبه احکام کارگزینی، نوبت‌کاری‌های سه‌گانه، اضافه‌کاری، جدول مالیات بر درآمد حقوق (ماده ۸۴)، و تولید مستقیم فایل دیسکت استاندارد dBase III مورد تایید سازمان تامین اجتماعی (tamin.ir) با فایل واریز گروهی شبا.
+                    </p>
+                </div>
+
+                <!-- Module 7 -->
+                <div class="avoid-break p-5 bg-slate-900 border border-slate-800 rounded-2xl space-y-2 print-card">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg font-bold">
+                            🚚
+                        </div>
+                        <div>
+                            <h4 class="font-black text-sm text-white">۷. پخش مویرگی و ویزیتوری میدانی</h4>
+                            <span class="text-[10px] text-slate-400 print-muted-text">مدیریت ویزیتورها، انبار ماشین، تسویه روزانه و پورسانت</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed text-justify print-muted-text">
+                        موتور محاسبه خودکار پورسانت پلکانی ویزیتورها بر مبنای وصول قطعی وجه، ثبت مسیربندی توزیع سرد و گرم، تسویه روزانه صندوق موزعین، و کنترل سقف اعتبار و تاریخچه مطالبات سوپرمارکت‌ها و فروشگاه‌ها.
+                    </p>
+                </div>
+
+                <!-- Module 8 -->
+                <div class="avoid-break p-5 bg-slate-900 border border-slate-800 rounded-2xl space-y-2 print-card">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center text-lg font-bold">
+                            🚜
+                        </div>
+                        <div>
+                            <h4 class="font-black text-sm text-white">۸. اموال، دارایی ثابت و لاگ‌بوک TCO</h4>
+                            <span class="text-[10px] text-slate-400 print-muted-text">استهلاک خط مستقیم (ماده ۱۴۹ ق.م.م) و رهگیری هزینه‌ها</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed text-justify print-muted-text">
+                        ثبت اموال و ماشین‌آلات سنگین، پلاک‌گذاری و بارکد اموال، محاسبه مکانیزه استهلاک سالانه و ماهانه، و لاگ‌بوک نگهداری و تعمیرات جهت تحلیل دقیق هزینه مالکیت کل (TCO) به ازای هر دستگاه یا خودرو.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= PAGE 3: DUAL UI & HOTKEYS SPEED ================= -->
+        <section class="page-break space-y-6">
+            <div class="bg-gradient-to-r from-sky-950/40 to-slate-900 border border-sky-800/40 rounded-3xl p-6 sm:p-8 space-y-6 print-card">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <span class="badge badge-primary badge-sm font-bold">نوآوری انحصاری نپتون</span>
+                        <h3 class="text-xl font-black text-white mt-1">رابط کاربری هوشمند دوگانه (Dual-Mode UX)</h3>
+                    </div>
+                    <div class="text-xs text-slate-400 print-muted-text">
+                        تنظیم با یک کلیک در پنل کاربر: <code class="text-sky-400 font-mono">ui_mode: simple | standard</code>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Simple Mode -->
+                    <div class="avoid-break bg-slate-900/90 p-5 rounded-2xl border border-slate-800 space-y-3 print-card">
+                        <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                            <span>🟢</span>
+                            <span>حالت فوق‌ساده (ویژه اصناف خرد و صندوقداران)</span>
+                        </div>
+                        <p class="text-xs text-slate-300 text-justify leading-relaxed print-muted-text">
+                            اگر کاربر حسابداری نخوانده یا کم‌سواد است، اصطلاحات بدهکار/بستانکار و کدینگ معین پنهان می‌شود. صفحه به ۴ کلید درشت تبدیل می‌شود: <strong>فروش جدید، خرید جنس، دخل و سود امروز، چک‌ها و بدهی‌ها</strong>. کاربر با بارکدخوان می‌فروشد و کارت می‌کشد؛ سند دوبل قانونی در پشت صحنه خودکار صادر می‌شود!
+                        </p>
+                    </div>
+
+                    <!-- Pro Mode -->
+                    <div class="avoid-break bg-slate-900/90 p-5 rounded-2xl border border-slate-800 space-y-3 print-card">
+                        <div class="flex items-center gap-2 text-sky-400 font-bold text-sm">
+                            <span>🔵</span>
+                            <span>حالت پیشرفته سازمانی (ویژه مدیران مالی و حسابداران ارشد)</span>
+                        </div>
+                        <p class="text-xs text-slate-300 text-justify leading-relaxed print-muted-text">
+                            دسترسی کامل به سطوح پنج‌گانه حسابداری، مراکز هزینه چندبعدی، گزارشات نقدینگی و تحلیل سنی مطالبات، لاگ‌های ممیزی امنیتی ضد جعل، صدور و ابطال اسناد، ترازنامه‌های تلفیقی و ابزارهای ممیزی ماده ۱۶۹ مکرر.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Ergonomic Hotkeys Cheat-Sheet -->
+                <div class="pt-4 border-t border-slate-800/80">
+                    <h4 class="text-xs font-bold text-slate-300 mb-3 flex items-center gap-2">
+                        <span>⌨️</span>
+                        <span>موتور کلیدهای میانبر استاندارد حسابداری ایران (سازگار با عرف هلو و سپیدار):</span>
+                    </h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-300 print-muted-text">ثبت سریع فاکتور</span>
+                            <kbd class="kbd kbd-xs bg-primary text-primary-content font-bold font-mono">F2</kbd>
+                        </div>
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-300 print-muted-text">تایید نهایی سند دوبل</span>
+                            <kbd class="kbd kbd-xs bg-accent text-accent-content font-bold font-mono">Ctrl+Enter</kbd>
+                        </div>
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-300 print-muted-text">جستجوی کالا/بارکد</span>
+                            <kbd class="kbd kbd-xs bg-base-300 font-bold font-mono">F3</kbd>
+                        </div>
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-300 print-muted-text">صدور فاکتور جدید</span>
+                            <kbd class="kbd kbd-xs bg-base-300 font-bold font-mono">F4</kbd>
+                        </div>
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-300 print-muted-text">تسویه سریع فاکتور</span>
+                            <kbd class="kbd kbd-xs bg-success text-success-content font-bold font-mono">F5</kbd>
+                        </div>
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-300 print-muted-text">چاپ مستقیم پرینتر</span>
+                            <kbd class="kbd kbd-xs bg-info text-info-content font-bold font-mono">F8</kbd>
+                        </div>
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-300 print-muted-text">بستن پنجره / انصراف</span>
+                            <kbd class="kbd kbd-xs bg-base-300 font-bold font-mono">ESC</kbd>
+                        </div>
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-300 print-muted-text">راهنمای کلیدها</span>
+                            <kbd class="kbd kbd-xs bg-secondary text-secondary-content font-bold font-mono">F1</kbd>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= PAGE 4: 4 PROVEN REAL-WORLD CASE STUDIES ================= -->
+        <section class="page-break space-y-6">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-bold text-sky-400 uppercase tracking-widest">تست‌شده در میدان واقعی</span>
+                <h3 class="text-2xl font-black text-white">۴ تجربه پیاده‌سازی موفق در مقیاس‌های مختلف</h3>
+                <p class="text-xs text-slate-400 max-w-xl mx-auto">
+                    از بزرگ‌ترین هلدینگ‌های صنعتی تا فروشگاه‌های تک‌نفره؛ نپتون بهینه‌سازی شده برای هر کسب‌وکار
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- Case 1 -->
+                <div class="avoid-break bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 print-card">
+                    <div class="flex items-center justify-between">
+                        <span class="badge badge-warning badge-sm font-bold text-[10px]">تولیدی و صنعتی</span>
+                        <span class="text-[11px] text-slate-400">۱۵۰۰ پرسنل • ۵ تیم مالی</span>
+                    </div>
+                    <h4 class="font-black text-sm text-white">هلدینگ بین‌المللی تولید تایر و لاستیک</h4>
+                    <p class="text-xs text-slate-300 text-justify leading-relaxed print-muted-text">
+                        مدیریت فرمول ساخت چندمرحله‌ای (BOM)، انبار مواد اولیه کائوچو و دوده، ثبت مصرف تولید، محاسبه خودکار بهای تمام شده کالای ساخته‌شده با جذب سربار، و تجمیع دفاتر مالی ۵ تیم حسابداری در ساختمان‌های مجزا.
+                    </p>
+                    <div class="text-[11px] text-sky-400 font-semibold border-t border-slate-800 pt-2">
+                        نتیجه: رفع ۱۰۰٪ مغایرت‌های انبار تولید و ارائه ترازنامه تلفیقی تراز دوبل.
+                    </div>
+                </div>
+
+                <!-- Case 2 -->
+                <div class="avoid-break bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 print-card">
+                    <div class="flex items-center justify-between">
+                        <span class="badge badge-secondary badge-sm font-bold text-[10px]">معدنی و ماشین‌آلات</span>
+                        <span class="text-[11px] text-slate-400">۳۵ ماشین سنگین • ۲۰ پرسنل</span>
+                    </div>
+                    <h4 class="font-black text-sm text-white">شرکت دانه‌بندی و شن و ماسه البرز کوهستان</h4>
+                    <p class="text-xs text-slate-300 text-justify leading-relaxed print-muted-text">
+                        ثبت و محاسبه مکانیزه استهلاک مستقیم لودرها و کمپرسی‌ها طبق ماده ۱۴۹ ق.م.م، لاگ‌بوک هزینه تعمیرات و سوخت جهت تعیین هزینه مالکیت کل (TCO)، و صدور سریع فاکتورهای باسکول ۶۰ تنی و کرایه حمل.
+                    </p>
+                    <div class="text-[11px] text-cyan-400 font-semibold border-t border-slate-800 pt-2">
+                        نتیجه: کنترل دقیق بهای تمام‌شده هر تن ماسه و ثبت مکانیزه استهلاکات.
+                    </div>
+                </div>
+
+                <!-- Case 3 -->
+                <div class="avoid-break bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 print-card">
+                    <div class="flex items-center justify-between">
+                        <span class="badge badge-info badge-sm font-bold text-[10px]">پخش مویرگی سراسری</span>
+                        <span class="text-[11px] text-slate-400">۲۰ ویزیتور • انبار متحرک خودرو</span>
+                    </div>
+                    <h4 class="font-black text-sm text-white">شرکت پخش سراسری لبنیات و بستنی میهن</h4>
+                    <p class="text-xs text-slate-300 text-justify leading-relaxed print-muted-text">
+                        مدیریت سفارش‌گیری سرد و گرم، انبار سردخانه‌ای، صدور فاکتور و چک صیادی در محل سوپرمارکت‌ها، تسویه روزانه صندوق موزعین و محاسبه پورسانت پلکانی ویزیتورها بر مبنای وصول قطعی وجه.
+                    </p>
+                    <div class="text-[11px] text-emerald-400 font-semibold border-t border-slate-800 pt-2">
+                        نتیجه: کاهش مغایرت صندوق ویزیتورها به صفر و تسویه آنی چک‌ها.
+                    </div>
+                </div>
+
+                <!-- Case 4 -->
+                <div class="avoid-break bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-3 print-card">
+                    <div class="flex items-center justify-between">
+                        <span class="badge badge-accent badge-sm font-bold text-[10px]">صندوق فروشگاهی و اصناف</span>
+                        <span class="text-[11px] text-slate-400">فروش سریع • بارکد و IMEI</span>
+                    </div>
+                    <h4 class="font-black text-sm text-white">فروشگاه موبایل و لوازم جانبی علاءالدین</h4>
+                    <p class="text-xs text-slate-300 text-justify leading-relaxed print-muted-text">
+                        کاربرد حالت فوق‌ساده UI برای متصدی کم‌سواد بدون نیاز به آموزش حسابداری، اسکن بارکدخوان و ثبت IMEI تلفن همراه، اتصال آنی به پوز بانکی و فیش‌پرینتر، با صدور اتوماتیک سند دوبل در بک‌گراند.
+                    </p>
+                    <div class="text-[11px] text-amber-400 font-semibold border-t border-slate-800 pt-2">
+                        نتیجه: صدور فاکتور در کمتر از ۱۰ ثانیه با اتصال خودکار به مودیان.
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= PAGE 5: PACKAGES & EDITIONS ================= -->
+        <section class="page-break space-y-6">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-bold text-sky-400 uppercase tracking-widest">بسته‌ها و تعرفه‌های شفاف</span>
+                <h3 class="text-2xl font-black text-white">انتخاب هوشمندانه متناسب با اندازه کسب‌وکار شما</h3>
+                <p class="text-xs text-slate-400">تمام پلن‌ها شامل به‌روزرسانی‌های قانونی مالیات و پشتیبانی تخصصی نپتون هستند.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                
+                <!-- Plan 1 -->
+                <div class="avoid-break bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between space-y-4 print-card">
+                    <div>
+                        <span class="badge badge-ghost badge-sm font-bold">پایه اصناف</span>
+                        <h4 class="font-black text-base text-white mt-1">نسخه برنزی (فروشگاهی)</h4>
+                        <div class="my-3">
+                            <span class="text-2xl font-black text-white">۵,۰۰۰,۰۰۰</span>
+                            <span class="text-xs text-slate-400">تومان / سالانه</span>
+                        </div>
+                        <ul class="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-3 print-muted-text">
+                            <li>✓ صندوق فروشگاهی سریع و بارکدخوان</li>
+                            <li>✓ اتصال به پوز بانکی و فیش‌پرینتر</li>
+                            <li>✓ اتصال مستقیم به سامانه مودیان</li>
+                            <li>✓ سود و زیان و دخل روزانه</li>
+                            <li>✓ پشتیبانی ۱ شرکت و ۱ کاربر</li>
+                        </ul>
+                    </div>
+                    <div class="text-[11px] text-slate-500 text-center">ویژه مغازه‌ها، بوتیک و اصناف خرد</div>
+                </div>
+
+                <!-- Plan 2 (Highlighted) -->
+                <div class="avoid-break bg-gradient-to-b from-sky-950/70 to-slate-900 border-2 border-sky-500 p-5 rounded-2xl flex flex-col justify-between space-y-4 relative shadow-xl shadow-sky-500/10 print-card">
+                    <span class="absolute -top-3 right-6 badge badge-primary font-bold text-xs">پرفروش‌ترین</span>
+                    <div>
+                        <span class="badge badge-info badge-sm font-bold">شرکتی و بازرگانی</span>
+                        <h4 class="font-black text-base text-white mt-1">نسخه نقره‌ای (بازرگانی)</h4>
+                        <div class="my-3">
+                            <span class="text-2xl font-black text-sky-400">۱۵,۰۰۰,۰۰۰</span>
+                            <span class="text-xs text-slate-400">تومان / سالانه</span>
+                        </div>
+                        <ul class="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-3 print-muted-text">
+                            <li>✓ تمام امکانات نسخه برنزی +</li>
+                            <li>✓ دفاتر کل، معین و تفصیلی دوبل</li>
+                            <li>✓ خزانه‌داری چک‌های صیادی و بانک‌ها</li>
+                            <li>✓ پیش‌فاکتور، فاکتور خرید و هزینه حمل</li>
+                            <li>✓ گزارش فصلی ۱۶۹ و ارزش افزوده</li>
+                            <li>✓ پشتیبانی ۳ شرکت و ۳ کاربر همزمان</li>
+                        </ul>
+                    </div>
+                    <div class="text-[11px] text-sky-400 font-bold text-center">ویژه شرکت‌ها و عمده‌فروشان</div>
+                </div>
+
+                <!-- Plan 3 -->
+                <div class="avoid-break bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col justify-between space-y-4 print-card">
+                    <div>
+                        <span class="badge badge-warning badge-sm font-bold">تولید، توزیع و هلدینگ</span>
+                        <h4 class="font-black text-base text-white mt-1">نسخه طلایی، پلاتینیوم و الماس</h4>
+                        <div class="my-3">
+                            <span class="text-2xl font-black text-white">۳۵ الی ۸۰</span>
+                            <span class="text-xs text-slate-400">م.ت / سالانه یا دائمی</span>
+                        </div>
+                        <ul class="text-xs text-slate-300 space-y-2 border-t border-slate-800 pt-3 print-muted-text">
+                            <li>✓ تمام امکانات بازرگانی +</li>
+                            <li>✓ فرمول ساخت و بهای تمام‌شده (BOM)</li>
+                            <li>✓ پخش مویرگی، ویزیتوری و پورسانت</li>
+                            <li>✓ دیسکت رسمی بیمه تأمین اجتماعی</li>
+                            <li>✓ همگام‌سازی چندشعبه‌ای آفلاین/ابری</li>
+                            <li>✓ شرکت‌ها و کاربران نامحدود</li>
+                        </ul>
+                    </div>
+                    <div class="text-[11px] text-slate-500 text-center">ویژه کارخانجات، پخش و هلدینگ‌ها</div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= PAGE 6: SECURITY, BACKUP 3-2-1, QR CODES & CONTACT ================= -->
+        <section class="page-break bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 space-y-8 print-dark-card">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div class="space-y-4">
+                    <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">تضمین امنیت، بازیابی و آرامش خاطر</span>
+                    <h3 class="text-2xl font-black text-white leading-snug">اطلاعات مالی شما، دارایی اصلی شماست؛ ما از آن حفاظت می‌کنیم</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed text-justify">
+                        نپتون دارای موتور بکاپ‌گیری خودکار چندمسیره با استاندارد جهانی 3-2-1 و رمزنگاری Zero-Knowledge است. فایل‌های پشتیبان رمزنگاری‌شده علاوه‌بر هارد دیسک و فلش‌مموری، می‌توانند مستقیماً در کانال خصوصی تلگرام یا فضای ابری اختصاصی شما بایگانی شوند تا در صورت آتش‌سوزی، سوختن هارد یا سرقت سیستم، در عرض چند ثانیه تمام دفاتر احیا گردند.
+                    </p>
+                    
+                    <div class="flex flex-wrap gap-2 pt-2">
+                        <span class="badge badge-outline text-[11px] text-slate-300">✓ بدون قفل سخت‌افزاری دانگل USB</span>
+                        <span class="badge badge-outline text-[11px] text-slate-300">✓ ۱۴ روز ضمانت بی قید و شرط</span>
+                        <span class="badge badge-outline text-[11px] text-slate-300">✓ نصب و راه‌اندازی آسان ویندوز</span>
+                    </div>
+                </div>
+
+                <!-- Contact & Call to Action Box with QR Codes -->
+                <div class="bg-slate-950 p-6 rounded-2xl border border-slate-800 text-center space-y-5">
+                    
+                    <div>
+                        <h4 class="font-black text-base text-white">مشاوره تخصصی و دریافت دمو</h4>
+                        <p class="text-xs text-slate-400 mt-1">کارشناسان مالی نپتون آماده پاسخگویی و ارائه دموی حضوری/آنلاین هستند</p>
+                    </div>
+
+                    <!-- Dual QR Codes for Print Mode -->
+                    <div class="grid grid-cols-2 gap-3 py-1">
+                        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex flex-col items-center gap-1.5">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https%3A%2F%2Fneptune-erp.vercel.app%2Flanding" alt="QR Website" class="w-20 h-20 rounded-lg bg-white p-1">
+                            <span class="text-[10px] text-slate-300 font-bold">اسکن: ورود به سایت</span>
+                        </div>
+                        <div class="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex flex-col items-center gap-1.5">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https%3A%2F%2Ft.me%2FNeptuneERP" alt="QR Telegram" class="w-20 h-20 rounded-lg bg-white p-1">
+                            <span class="text-[10px] text-slate-300 font-bold">اسکن: تلگرام فروش</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 text-xs font-mono">
+                        <div class="p-2.5 bg-slate-900 rounded-xl text-sky-400 font-bold text-sm flex items-center justify-center gap-2">
+                            <span>📞</span>
+                            <span>تلفن تماس: ۰۲۱-۸۸۸۸۴۴۲۲</span>
+                        </div>
+                        <div class="p-2 bg-slate-900 rounded-xl text-slate-300 flex items-center justify-center gap-2">
+                            <span>✈️</span>
+                            <span>پشتیبانی تلگرام: @NeptuneERP</span>
+                        </div>
+                        <div class="p-2 bg-slate-900 rounded-xl text-slate-300 flex items-center justify-center gap-2">
+                            <span>🌐</span>
+                            <span>وب‌سایت رسمی: neptune-erp.vercel.app</span>
+                        </div>
+                    </div>
+
+                    <a href="/landing" class="btn btn-primary btn-sm w-full rounded-xl font-bold text-xs no-print">
+                        دریافت نسخه آزمایشی رایگان (۱۴ روزه)
+                    </a>
+                </div>
+            </div>
+
+            <!-- Footer Legal Note -->
+            <div class="pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
+                <div>تمامی حقوق نرم‌افزار نپتون محفوظ است © ۱۴۰۵ | Neptune Financial OS</div>
+                <div>طراحی‌شده بر اساس استانداردهای سازمان حسابرسی و سازمان امور مالیاتی کشور</div>
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>

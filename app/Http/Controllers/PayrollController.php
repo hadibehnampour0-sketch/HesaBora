@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\PayrollStatus;
 use App\Enums\PersonnelRequestStatus;
+use App\Models\Company;
 use App\Models\Employee;
 use App\Models\MonthlyAttendance;
 use App\Models\OrganizationUnit;
@@ -12,6 +13,7 @@ use App\Models\PayrollItem;
 use App\Models\PayrollStatusHistory;
 use App\Models\PersonnelRequest;
 use App\Models\SalaryDecree;
+use App\Services\Payroll\TaminInsuranceDisketteService;
 use App\Services\PayrollService;
 use App\Services\SegregationOfDutiesService;
 use Illuminate\Database\Eloquent\Builder;
@@ -742,5 +744,26 @@ class PayrollController extends Controller
     private function jalaliMonthLabel(int $month): string
     {
         return __("Jalali month {$month}");
+    }
+
+    /**
+     * Generate and download compliant Social Security insurance diskette package (DSKKAR00.dbf & DSKWOR00.dbf).
+     */
+    public function downloadInsuranceDiskette(Request $request, TaminInsuranceDisketteService $disketteService): Response
+    {
+        $companyId = (int) getActiveCompany();
+        $company = Company::findOrFail($companyId);
+
+        $year = (int) ($request->input('year') ?? 1404);
+        $month = (int) ($request->input('month') ?? 1);
+        $workSiteId = $request->input('work_site_id') ? (int) $request->input('work_site_id') : null;
+
+        $package = $disketteService->generatePackage($company, $year, $month, $workSiteId);
+
+        $fileName = sprintf('Tamin_Insurance_Diskette_%s_%04d_%02d.zip', $package['summary']['workshop_code'], $year, $month);
+
+        return response($package['zip_content'])
+            ->header('Content-Type', 'application/zip')
+            ->header('Content-Disposition', 'attachment; filename="'.$fileName.'"');
     }
 }

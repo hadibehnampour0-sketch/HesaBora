@@ -23,16 +23,16 @@ class PersianServiceProvider extends Base
     // ------------------------------------------------------------------ //
 
     protected static array $categories = [
-        'it'            => 'خدمات فناوری اطلاعات',
-        'consulting'    => 'مشاوره',
-        'financial'     => 'خدمات مالی و حسابداری',
+        'it' => 'خدمات فناوری اطلاعات',
+        'consulting' => 'مشاوره',
+        'financial' => 'خدمات مالی و حسابداری',
         'transportation' => 'حمل‌ونقل و لجستیک',
-        'maintenance'   => 'تعمیر و نگهداری',
-        'cleaning'      => 'نظافت و بهداشت',
-        'education'     => 'آموزش و پرورش',
-        'printing'      => 'چاپ و تبلیغات',
-        'security'      => 'امنیت و حراست',
-        'catering'      => 'پذیرایی و تغذیه',
+        'maintenance' => 'تعمیر و نگهداری',
+        'cleaning' => 'نظافت و بهداشت',
+        'education' => 'آموزش و پرورش',
+        'printing' => 'چاپ و تبلیغات',
+        'security' => 'امنیت و حراست',
+        'catering' => 'پذیرایی و تغذیه',
     ];
 
     protected static array $servicesByCategory = [
@@ -136,7 +136,7 @@ class PersianServiceProvider extends Base
      */
     public function persianServiceGroupName(): string
     {
-        $category  = static::randomElement(array_values(static::$categories));
+        $category = static::randomElement(array_values(static::$categories));
         $adjective = static::randomElement(static::$groupAdjectives);
 
         return "خدمات $adjective $category";

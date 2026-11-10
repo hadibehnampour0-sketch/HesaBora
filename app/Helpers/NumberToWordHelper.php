@@ -8,10 +8,10 @@ class NumberToWordHelper
     {
 
         $hyphen = '-';
-        $conjunction = ' ' . __('and') . ' ';
+        $conjunction = ' '.__('and').' ';
         $separator = ', ';
         $negative = __('negative');
-        $decimal = ' ' . __('point') . ' ';
+        $decimal = ' '.__('point').' ';
         $dictionary = [
             0 => __('zero'),
             1 => __('one'),
@@ -57,7 +57,7 @@ class NumberToWordHelper
         if (($number >= 0 && (int) $number < 0) || (int) $number < 0 - PHP_INT_MAX) {
             // overflow
             trigger_error(
-                'convert_number_to_words only accepts numbers between -' . PHP_INT_MAX . ' and ' . PHP_INT_MAX,
+                'convert_number_to_words only accepts numbers between -'.PHP_INT_MAX.' and '.PHP_INT_MAX,
                 E_USER_WARNING
             );
 
@@ -65,7 +65,7 @@ class NumberToWordHelper
         }
 
         if ($number < 0) {
-            return $negative . self::convert(abs($number));
+            return $negative.self::convert(abs($number));
         }
 
         $string = $fraction = null;
@@ -83,22 +83,22 @@ class NumberToWordHelper
                 $units = $number % 10;
                 $string = $dictionary[$tens];
                 if ($units) {
-                    $string .= $hyphen . $dictionary[$units];
+                    $string .= $hyphen.$dictionary[$units];
                 }
                 break;
             case $number < 1000:
                 $hundreds = $number / 100;
                 $remainder = $number % 100;
-                $string = $dictionary[$hundreds] . ' ' . $dictionary[100];
+                $string = $dictionary[$hundreds].' '.$dictionary[100];
                 if ($remainder) {
-                    $string .= $conjunction . self::convert($remainder);
+                    $string .= $conjunction.self::convert($remainder);
                 }
                 break;
             default:
                 $baseUnit = pow(1000, floor(log($number, 1000)));
                 $numBaseUnits = (int) ($number / $baseUnit);
                 $remainder = $number % $baseUnit;
-                $string = self::convert($numBaseUnits) . ' ' . $dictionary[$baseUnit];
+                $string = self::convert($numBaseUnits).' '.$dictionary[$baseUnit];
                 if ($remainder) {
                     $string .= $remainder < 100 ? $conjunction : $separator;
                     $string .= self::convert($remainder);

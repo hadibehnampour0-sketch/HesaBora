@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\DeviceInstallation;
 use App\Services\DevicePairingService;
 use Illuminate\Http\Request;
@@ -19,7 +20,7 @@ class DeviceController extends Controller
 
     public function storeActivationCode(Request $request)
     {
-        $company = \App\Models\Company::findOrFail(getActiveCompany());
+        $company = Company::findOrFail(getActiveCompany());
         $code = $this->pairingService->issueActivationCode($company, $request->user());
 
         return redirect()->route('devices.index')

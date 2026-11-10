@@ -15,13 +15,15 @@
     { "source": "/login/order/submit", "destination": "/api/order" },
     { "source": "/pricing", "destination": "/pricing.html" },
     { "source": "/login/pricing", "destination": "/pricing.html" },
+    { "source": "/brochure", "destination": "/brochure.html" },
+    { "source": "/login/brochure", "destination": "/brochure.html" },
     { "source": "/landing", "destination": "/landing.html" },
     { "source": "/login/landing", "destination": "/landing.html" },
     { "source": "/", "destination": "/index.html" }
   ],
   "redirects": [
-    { "source": "/download/windows", "destination": "https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.5.0/Neptune-ERP-Setup-v2.5.exe", "permanent": false },
-    { "source": "/downloads/:path*", "destination": "https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.5.0/Neptune-ERP-Setup-v2.5.exe", "permanent": false },
+    { "source": "/download/windows", "destination": "https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.6.0/Neptune-ERP-Setup-v2.6.0.exe", "permanent": false },
+    { "source": "/downloads/:path*", "destination": "https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.6.0/Neptune-ERP-Setup-v2.6.0.exe", "permanent": false },
     { "source": "/login/login", "destination": "/", "permanent": false },
     { "source": "/login", "destination": "/", "permanent": false }
   ]

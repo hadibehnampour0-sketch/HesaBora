@@ -16,6 +16,7 @@ class SendSmsJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $backoff = 10;
 
     public function __construct(
@@ -27,7 +28,7 @@ class SendSmsJob implements ShouldQueue
     public function handle(SmsService $smsService): void
     {
         $smsLog = SmsLog::withoutGlobalScopes()->find($this->smsLogId);
-        if (!$smsLog || $smsLog->status === 'sent') {
+        if (! $smsLog || $smsLog->status === 'sent') {
             return;
         }
 

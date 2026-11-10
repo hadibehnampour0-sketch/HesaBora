@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\IntegrationConnection;
+use App\Services\Integration\Adapters\DigikalaAdapter;
 use App\Services\Integration\Adapters\WooCommerceAdapter;
 use App\Services\Integration\IntegrationHubFactory;
 use Illuminate\Http\Request;
@@ -68,7 +69,7 @@ class IntegrationWebhookController extends Controller
         config(['active-company-id' => $connection->company_id]);
 
         try {
-            $adapter = new \App\Services\Integration\Adapters\DigikalaAdapter($connection);
+            $adapter = new DigikalaAdapter($connection);
             $events = $adapter->normalize($request->all(), $this->flattenHeaders($request), $request->getContent());
 
             $hub = $this->hubFactory->make();

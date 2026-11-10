@@ -48,16 +48,17 @@ class UpdateService
     public function checkForUpdates(bool $forceRefresh = false): array
     {
         $current = $this->getCurrentVersion();
-        $targetVersion = '2.5.0'; // Target available stable release
+        $targetVersion = '2.6.0'; // Target available stable release
 
         $serverUrl = env('UPDATE_SERVER_URL', config('app.update_server_url'));
         if (! empty($serverUrl)) {
             try {
-                $response = Http::timeout(4)->get(rtrim($serverUrl, '/') . '/version.json');
+                $response = Http::timeout(4)->get(rtrim($serverUrl, '/').'/version.json');
                 if ($response->successful()) {
                     $remote = $response->json();
                     if (is_array($remote) && isset($remote['version'])) {
                         $targetVersion = $remote['version'];
+
                         return [
                             'has_update' => version_compare($targetVersion, $current, '>'),
                             'current_version' => $current,
@@ -78,7 +79,7 @@ class UpdateService
                     }
                 }
             } catch (\Throwable $e) {
-                Log::info('Remote update check skipped: ' . $e->getMessage());
+                Log::info('Remote update check skipped: '.$e->getMessage());
             }
         }
 
@@ -91,24 +92,25 @@ class UpdateService
             'current_version' => $current,
             'latest_version' => $targetVersion,
             'release_date' => function_exists('jdate') ? toEnglish(jdate('Y/m/d')) : now()->format('Y-m-d'),
-            'package_size' => '8.4 MB',
+            'package_size' => '8.9 MB',
             'is_mandatory' => false,
-            'summary' => 'بسته جامع ثبات مالی، لاگ‌بوک اموال و مغایرت‌گیری هوشمند',
+            'summary' => 'بسته جامع نسخه ۲.۶.۰ نپتون: کلیدهای میانبر استاندارد، دیسکت رسمی بیمه تأمین اجتماعی و فشرده‌سازی ۹۰٪ همگام‌سازی',
             'changelog' => [
                 'features' => [
-                    'سیستم اموال، تجهیزات و لاگ‌بوک تعمیرات و نگهداری (TCO) با تحلیل فرسایش سرمایه',
-                    'پروفایل‌های ۱۶ گانه اصناف تخصصی بازار ایران با ۲۳ ماشین‌حساب هوشمند عرف بازار',
-                    'موتور پشتیبان‌گیری چند مسیره (فلش مموری، هارد دیسک و ارسال خودکار به تلگرام/بله)',
-                    'سیستم بروزرسانی اتمیک خودکار با حفاظت از داده‌های مالی و اسنپ‌شات اضطراری',
+                    'سیستم کلیدهای میانبر استاندارد حسابداری (F1 تا F8، ESC و Ctrl+Enter) سازگار با استانداردهای هلو و سپیدار',
+                    'پنجره راهنمای تعاملی کلیدهای میانبر (F1 Hotkey Cheat-Sheet) با دسترسی در تمامی صفحات',
+                    'موتور تولید دیسکت باینری بیمه تأمین اجتماعی (DSKKAR00.dbf و DSKWOR00.dbf) منطبق با پرتال رسمی سمت',
+                    'تولید خودکار برگه ممیزی کنترل جمع‌های بیمه و فایل پرداخت گروهی شبا (پایا/ساتنا) بانک‌ها',
+                    'میدل‌ویر فشرده‌سازی Gzip بسته‌های سینک شعب و تبلت ویزیتورها با کاهش بیش از ۸۵٪ مصرف اینترنت',
                 ],
                 'improvements' => [
-                    'بهبود سرعت بارگذاری اسناد و گزارشات تراز آزمایشی ۴ ستونی و ۸ ستونی',
-                    'پشتیبانی کامل از بارکدهای دوبعدی و شناسه یکتای صورتحساب سامانه مودیان',
-                    'ارتقای امنیت احراز هویت و ایزولاسیون اطلاعات شرکت‌ها',
+                    'تکمیل موفقیت‌آمیز شبیه‌سازی ۱ ساله برای ۴ پرسونای تجاری (هولدینگ تایر، شن و ماسه، پخش میهن و خرده‌فروشی)',
+                    'بهبود عملکرد ذخیره فرم‌ها با کلید F2 و تسویه سریع با کلید F5',
+                    'ارتقای امنیت داده‌ها و حذف کامل هاردکدهای تعرفه و اطلاعات تماس وب‌سایت',
                 ],
                 'fixes' => [
                     'رفع مشکل اعشار در تبدیل وزن به گرم و سوت در صنف طلا و جواهر',
-                    'بهبود عملکرد ذخیره رسیدها و پیوست‌های مدارک در حافظه محلی',
+                    'بهبود سرعت بارگذاری گزارش‌های دفاتر کل، معین و تراز آزمایشی',
                 ],
             ],
             'compatibility' => 'سازگار ۱۰۰٪ با پایگاه داده و تنظیمات شرکت شما (بدون نیاز به نصب مجدد)',
@@ -154,7 +156,7 @@ class UpdateService
                 'message' => __('System successfully updated to version :ver with all database migrations applied.', ['ver' => $newVersion]),
             ];
         } catch (Exception $e) {
-            Log::error('Auto-update failed: ' . $e->getMessage());
+            Log::error('Auto-update failed: '.$e->getMessage());
 
             // Rollback emergency snapshot
             if (File::exists($snapshot)) {

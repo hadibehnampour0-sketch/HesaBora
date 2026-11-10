@@ -7,6 +7,7 @@ use App\Enums\PersonnelRequestType;
 use App\Models\Employee;
 use App\Models\PersonnelRequest;
 use App\Services\AttendanceService;
+use App\Services\SegregationOfDutiesService;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -244,7 +245,7 @@ class PersonnelRequestController extends Controller
                 ->with('info', __('Personnel request is already approved.'));
         }
 
-        app(\App\Services\SegregationOfDutiesService::class)->guardAgainstSelfApproval($personnelRequest, $personnelRequest->created_by, 'personnel_request');
+        app(SegregationOfDutiesService::class)->guardAgainstSelfApproval($personnelRequest, $personnelRequest->created_by, 'personnel_request');
 
         $personnelRequest->update([
             'status' => PersonnelRequestStatus::APPROVED,

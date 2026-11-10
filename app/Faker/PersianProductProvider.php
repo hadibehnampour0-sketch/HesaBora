@@ -22,16 +22,16 @@ class PersianProductProvider extends Base
     // ------------------------------------------------------------------ //
 
     protected static array $categories = [
-        'electronics'   => 'الکترونیک',
-        'office'        => 'لوازم اداری',
-        'food'          => 'مواد غذایی',
-        'clothing'      => 'پوشاک',
-        'appliances'    => 'لوازم خانگی',
-        'building'      => 'مصالح ساختمانی',
-        'hygiene'       => 'بهداشتی',
-        'stationery'    => 'نوشت‌افزار',
-        'furniture'     => 'مبلمان',
-        'tools'         => 'ابزارآلات',
+        'electronics' => 'الکترونیک',
+        'office' => 'لوازم اداری',
+        'food' => 'مواد غذایی',
+        'clothing' => 'پوشاک',
+        'appliances' => 'لوازم خانگی',
+        'building' => 'مصالح ساختمانی',
+        'hygiene' => 'بهداشتی',
+        'stationery' => 'نوشت‌افزار',
+        'furniture' => 'مبلمان',
+        'tools' => 'ابزارآلات',
     ];
 
     protected static array $productsByCategory = [
@@ -130,7 +130,7 @@ class PersianProductProvider extends Base
     public function persianProductNameWithAdjective(): string
     {
         $adjective = static::randomElement(static::$adjectives);
-        $name      = $this->persianProductName();
+        $name = $this->persianProductName();
 
         return "$adjective $name";
     }

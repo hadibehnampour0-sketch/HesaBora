@@ -2,6 +2,7 @@
 
 namespace App\DTO;
 
+use App\Models\Invoice;
 use Illuminate\Support\Collection;
 
 class InvoiceStatusDecision
@@ -161,7 +162,7 @@ class InvoiceStatusDecision
 
     private function groupedConflictsByType(): Collection
     {
-        return $this->conflicts->groupBy(fn ($conflict) => $conflict instanceof \App\Models\Invoice ?
+        return $this->conflicts->groupBy(fn ($conflict) => $conflict instanceof Invoice ?
                 $conflict->invoice_type->valueName().' invoice' : strtolower(class_basename($conflict)));
     }
 

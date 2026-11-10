@@ -34,8 +34,12 @@ class IssueLicenseCommand extends Command
         ) : 'basic'));
 
         // Map alias
-        if ($edition === 'shop') $edition = 'basic';
-        if ($edition === 'commercial') $edition = 'professional';
+        if ($edition === 'shop') {
+            $edition = 'basic';
+        }
+        if ($edition === 'commercial') {
+            $edition = 'professional';
+        }
 
         $plans = $licenseService->getAllPlans();
         $plan = $plans[$edition] ?? $plans['basic'];
@@ -83,7 +87,7 @@ class IssueLicenseCommand extends Command
                 ['خریدار', $customer],
                 ['نگارش لایسنس', $plan['name']],
                 ['شناسه ماشین (Lock)', $fingerprintStr],
-                ['اعتبار', $days > 0 ? "{$days} روز (تا " . ($payload['expires_at'] ?? '') . ")" : 'مادام‌العمر و دائمی'],
+                ['اعتبار', $days > 0 ? "{$days} روز (تا ".($payload['expires_at'] ?? '').')' : 'مادام‌العمر و دائمی'],
                 ['سقف شرکت‌ها', $maxCompanies === -1 ? 'نامحدود' : "{$maxCompanies} شرکت"],
                 ['سقف کاربران محلی', $maxUsers === -1 ? 'نامحدود' : "{$maxUsers} کاربر LAN"],
                 ['اصناف مجاز', $plan['max_industries'] === 16 ? 'تمام ۱۶ صنف باز' : "{$plan['max_industries']} صنف فعال"],

@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PortalLead;
+use App\Models\PortalOrder;
+use App\Services\Industry\IndustryProfileRegistry;
 use App\Services\LicenseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class LicenseController extends Controller
@@ -89,7 +93,7 @@ class LicenseController extends Controller
         $modules = $this->licenseService->getAllModules();
         $plans = $this->licenseService->getAllPlans();
         $hardwareFingerprint = $this->licenseService->generateMachineFingerprint();
-        $profiles = app(\App\Services\Industry\IndustryProfileRegistry::class)->all();
+        $profiles = app(IndustryProfileRegistry::class)->all();
 
         return view('portal.landing', [
             'modules' => $modules,
@@ -97,6 +101,19 @@ class LicenseController extends Controller
             'hardwareFingerprint' => $hardwareFingerprint,
             'profiles' => $profiles,
         ]);
+    }
+
+    /**
+     * Official Printable Product Brochure (A4 / Standalone).
+     */
+    public function brochure()
+    {
+        $file = public_path('brochure.html');
+        if (file_exists($file)) {
+            return response()->file($file, ['Content-Type' => 'text/html; charset=UTF-8']);
+        }
+
+        abort(404);
     }
 
     /**
@@ -115,7 +132,7 @@ class LicenseController extends Controller
 
         $trialData = [
             'edition' => 'trial',
-            'customer_name' => $validated['customer_name'] . ' (' . $validated['phone'] . ')',
+            'customer_name' => $validated['customer_name'].' ('.$validated['phone'].')',
             'hardware_fingerprint' => '*',
             'modules' => ['*'],
             'max_companies' => 2,
@@ -130,7 +147,7 @@ class LicenseController extends Controller
 
         // Persist lead to database for sales CRM and tracking
         try {
-            \App\Models\PortalLead::create([
+            PortalLead::create([
                 'customer_name' => $validated['customer_name'],
                 'phone' => $validated['phone'],
                 'business_type' => $validated['business_type'] ?? null,
@@ -139,7 +156,7 @@ class LicenseController extends Controller
                 'trial_license_key' => $licenseKey,
             ]);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('Failed to persist portal lead: ' . $e->getMessage());
+            Log::warning('Failed to persist portal lead: '.$e->getMessage());
         }
 
         return response()->json([
@@ -200,7 +217,7 @@ class LicenseController extends Controller
 
         // Persist order to database for portal admin management
         try {
-            \App\Models\PortalOrder::create([
+            PortalOrder::create([
                 'order_reference' => $orderReference,
                 'plan' => $validated['plan'],
                 'customer_name' => $validated['customer_name'],
@@ -213,7 +230,7 @@ class LicenseController extends Controller
                 'status' => 'pending',
             ]);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('Failed to persist portal order: ' . $e->getMessage());
+            Log::warning('Failed to persist portal order: '.$e->getMessage());
         }
 
         return response()->json([
@@ -231,11 +248,11 @@ class LicenseController extends Controller
      */
     public function downloadInstaller()
     {
-        $githubReleaseUrl = 'https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.5.0/Neptune-ERP-Setup-v2.5.exe';
+        $githubReleaseUrl = 'https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.6.0/Neptune-ERP-Setup-v2.6.0.exe';
 
-        $filePath = public_path('downloads/Neptune-ERP-Setup-v2.5.exe');
+        $filePath = public_path('downloads/Neptune-ERP-Setup-v2.6.0.exe');
         if (! file_exists($filePath)) {
-            $backupPath = base_path('build/output/Neptune-ERP-Setup-v2.5.exe');
+            $backupPath = base_path('build/output/Neptune-ERP-Setup-v2.6.0.exe');
             if (file_exists($backupPath)) {
                 $filePath = $backupPath;
             } else {
@@ -249,7 +266,7 @@ class LicenseController extends Controller
 
         return response()->download(
             $filePath,
-            'Neptune-ERP-Setup-v2.5.exe',
+            'Neptune-ERP-Setup-v2.6.0.exe',
             ['Content-Type' => 'application/vnd.microsoft.portable-executable']
         );
     }

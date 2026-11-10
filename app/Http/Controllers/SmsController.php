@@ -57,7 +57,7 @@ class SmsController extends Controller
             ->firstOrNew(['company_id' => $companyId]);
 
         $config->provider = $data['provider'];
-        if (!empty($data['api_key'])) {
+        if (! empty($data['api_key'])) {
             $config->api_key = $data['api_key'];
         }
         $config->sender_number = $data['sender_number'] ?? null;
@@ -103,7 +103,7 @@ class SmsController extends Controller
         ]);
 
         $cleanPhone = SmsService::normalizePhone($data['recipient']);
-        if (!$cleanPhone) {
+        if (! $cleanPhone) {
             return response()->json([
                 'success' => false,
                 'message' => __('Invalid mobile phone number format.'),

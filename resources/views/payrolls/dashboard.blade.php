@@ -56,6 +56,11 @@
                     <button type="button" class="btn btn-sm btn-info" disabled>{{ __('Calculate monthly payroll') }}</button>
                 @endcan
 
+                <a href="{{ route('salary.payrolls.insurance-diskette', ['year' => $year, 'month' => $month]) }}" class="btn btn-sm btn-success text-white font-bold gap-1 shadow-sm">
+                    <span>💾</span>
+                    <span>{{ __('دانلود دیسکت بیمه تأمین اجتماعی (DBF)') }}</span>
+                </a>
+
             </form>
         </section>
 

@@ -96,7 +96,7 @@ class BackupController extends Controller
                 $file = $request->file('upload_file');
                 $filePath = $file->getRealPath();
             } elseif (! empty($validated['backup_file'])) {
-                $filePath = storage_path('app/backups/' . basename($validated['backup_file']));
+                $filePath = storage_path('app/backups/'.basename($validated['backup_file']));
             }
 
             if (! $filePath || ! File::exists($filePath)) {
@@ -165,6 +165,7 @@ class BackupController extends Controller
                 : __('Could not connect to Telegram. Please check your Bot Token and Chat ID.'),
         ]);
     }
+
     public function create()
     {
         $previousYears = auth()->user()->companies()->orderByDesc('fiscal_year')->get();

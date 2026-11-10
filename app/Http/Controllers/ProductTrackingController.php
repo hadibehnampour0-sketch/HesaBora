@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Models\Product;
-use App\Models\ProductLot;
 use App\Models\ProductSerialNumber;
 use App\Models\Warehouse;
 use App\Services\ProductTrackingService;

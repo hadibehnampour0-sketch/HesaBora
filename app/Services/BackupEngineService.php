@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use ZipArchive;
 
 /**
@@ -93,9 +94,9 @@ class BackupEngineService
         $jalaliStamp = function_exists('jdate') ? toEnglish(jdate('Y-m-d')) : now()->format('Y-m-d');
 
         $filename = "Neptune-Backup-{$companySlug}-{$jalaliStamp}_{$timestamp}.neptune";
-        $zipPath = $this->backupDir . DIRECTORY_SEPARATOR . $filename;
+        $zipPath = $this->backupDir.DIRECTORY_SEPARATOR.$filename;
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
             throw new Exception(__('Failed to create backup archive on disk.'));
         }
@@ -110,7 +111,7 @@ class BackupEngineService
 
         $manifest = [
             'system' => 'Neptune Accounting & ERP',
-            'version' => config('app.version', '2.5.0'),
+            'version' => config('app.version', '2.6.0'),
             'created_at_gregorian' => now()->toIso8601String(),
             'created_at_jalali' => $jalaliStamp,
             'company_name' => $activeCompany?->name ?? 'General',
@@ -131,10 +132,10 @@ class BackupEngineService
         // Copy to secondary local / USB flash drive target if configured
         if (! empty($customTarget) && File::isDirectory($customTarget)) {
             try {
-                $targetFile = rtrim($customTarget, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $filename;
+                $targetFile = rtrim($customTarget, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$filename;
                 File::copy($zipPath, $targetFile);
             } catch (Exception $e) {
-                Log::warning("Could not copy backup to secondary target {$customTarget}: " . $e->getMessage());
+                Log::warning("Could not copy backup to secondary target {$customTarget}: ".$e->getMessage());
             }
         }
 
@@ -167,6 +168,7 @@ class BackupEngineService
             if ($dbPath && File::exists($dbPath)) {
                 $content = File::get($dbPath);
                 $zip->addFromString('database.sqlite', $content);
+
                 return [
                     'entry' => 'database.sqlite',
                     'hash' => hash('sha256', $content),
@@ -175,8 +177,8 @@ class BackupEngineService
         }
 
         // Generic SQL table dump for MySQL or SQLite fallback
-        $tables = \Illuminate\Support\Facades\Schema::getTableListing();
-        $sqlDump = "-- Neptune Full SQL Backup generated on " . now()->toIso8601String() . PHP_EOL;
+        $tables = Schema::getTableListing();
+        $sqlDump = '-- Neptune Full SQL Backup generated on '.now()->toIso8601String().PHP_EOL;
 
         foreach ($tables as $table) {
             $cleanTable = preg_replace('/^main\./', '', $table);
@@ -185,17 +187,20 @@ class BackupEngineService
                 continue;
             }
 
-            $sqlDump .= PHP_EOL . "-- Table: {$cleanTable}" . PHP_EOL;
+            $sqlDump .= PHP_EOL."-- Table: {$cleanTable}".PHP_EOL;
             $insertOp = $driver === 'sqlite' ? 'INSERT OR REPLACE INTO' : 'REPLACE INTO';
             foreach ($rows as $row) {
                 $rowArr = (array) $row;
-                $cols = array_map(fn($c) => "`{$c}`", array_keys($rowArr));
+                $cols = array_map(fn ($c) => "`{$c}`", array_keys($rowArr));
                 $vals = array_map(function ($val) {
-                    if ($val === null) return 'NULL';
-                    return "'" . addslashes((string) $val) . "'";
+                    if ($val === null) {
+                        return 'NULL';
+                    }
+
+                    return "'".addslashes((string) $val)."'";
                 }, array_values($rowArr));
 
-                $sqlDump .= "{$insertOp} `{$cleanTable}` (" . implode(',', $cols) . ") VALUES (" . implode(',', $vals) . ");" . PHP_EOL;
+                $sqlDump .= "{$insertOp} `{$cleanTable}` (".implode(',', $cols).') VALUES ('.implode(',', $vals).');'.PHP_EOL;
             }
         }
 
@@ -220,7 +225,7 @@ class BackupEngineService
         $count = 0;
         $files = File::allFiles($publicStorage);
         foreach ($files as $file) {
-            $relative = 'documents/' . $file->getRelativePathname();
+            $relative = 'documents/'.$file->getRelativePathname();
             $zip->addFile($file->getRealPath(), $relative);
             $count++;
         }
@@ -264,7 +269,7 @@ class BackupEngineService
             ];
         }
 
-        usort($backups, fn($a, $b) => strcmp($b['created_at'], $a['created_at']));
+        usort($backups, fn ($a, $b) => strcmp($b['created_at'], $a['created_at']));
 
         return $backups;
     }
@@ -280,7 +285,7 @@ class BackupEngineService
             throw new Exception(__('Backup file not found at :path', ['path' => $filePath]));
         }
 
-        $zip = new ZipArchive();
+        $zip = new ZipArchive;
         if ($zip->open($filePath) !== true) {
             throw new Exception(__('Invalid or corrupted backup archive file.'));
         }
@@ -330,7 +335,7 @@ class BackupEngineService
                 if (str_starts_with($name, 'documents/')) {
                     $rel = substr($name, strlen('documents/'));
                     if (! empty($rel) && ! str_ends_with($rel, '/')) {
-                        $dest = $storagePublic . DIRECTORY_SEPARATOR . $rel;
+                        $dest = $storagePublic.DIRECTORY_SEPARATOR.$rel;
                         File::ensureDirectoryExists(dirname($dest));
                         File::put($dest, $zip->getFromIndex($i));
                     }
@@ -362,17 +367,19 @@ class BackupEngineService
     {
         $timestamp = now()->format('Y-m-d_H-i-s');
         $driver = DB::connection()->getDriverName();
-        $target = $this->backupDir . DIRECTORY_SEPARATOR . "emergency_snapshot_{$timestamp}.bak";
+        $target = $this->backupDir.DIRECTORY_SEPARATOR."emergency_snapshot_{$timestamp}.bak";
 
         if ($driver === 'sqlite') {
             $src = config('database.connections.sqlite.database');
             if ($src && $src !== ':memory:' && File::exists($src)) {
                 File::copy($src, $target);
+
                 return $target;
             }
         }
 
-        File::put($target, "-- Snapshot taken at " . now()->toIso8601String());
+        File::put($target, '-- Snapshot taken at '.now()->toIso8601String());
+
         return $target;
     }
 
@@ -408,10 +415,10 @@ class BackupEngineService
 
         try {
             $caption = "📦 نسخه پشتیبان نپتون (Neptune ERP)\n"
-                . "📅 تاریخ: " . ($manifest['created_at_jalali'] ?? now()->format('Y-m-d')) . "\n"
-                . "🏢 شرکت: " . ($manifest['company_name'] ?? 'سیستم') . "\n"
-                . "⚖️ حجم: " . round(filesize($filePath) / (1024 * 1024), 2) . " MB\n"
-                . "🔒 وضعیت: رمزنگاری امن و تست‌شده ✅";
+                .'📅 تاریخ: '.($manifest['created_at_jalali'] ?? now()->format('Y-m-d'))."\n"
+                .'🏢 شرکت: '.($manifest['company_name'] ?? 'سیستم')."\n"
+                .'⚖️ حجم: '.round(filesize($filePath) / (1024 * 1024), 2)." MB\n"
+                .'🔒 وضعیت: رمزنگاری امن و تست‌شده ✅';
 
             $response = Http::timeout(60)
                 ->attach('document', File::get($filePath), basename($filePath))
@@ -422,7 +429,8 @@ class BackupEngineService
 
             return $response->successful();
         } catch (Exception $e) {
-            Log::warning('Telegram backup delivery failed: ' . $e->getMessage());
+            Log::warning('Telegram backup delivery failed: '.$e->getMessage());
+
             return false;
         }
     }

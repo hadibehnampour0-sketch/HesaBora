@@ -29,7 +29,7 @@ class SendSmsOnDomainEventListener
 
         $customer = $invoice->customer;
         $recipient = $customer?->mobile ?: $customer?->phone;
-        if (!$recipient) {
+        if (! $recipient) {
             return;
         }
 

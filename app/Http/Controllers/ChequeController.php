@@ -7,6 +7,7 @@ use App\Models\BankAccount;
 use App\Models\Cheque;
 use App\Models\Chequebook;
 use App\Models\Customer;
+use App\Models\SettlementObligation;
 use App\Services\ChequeService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -57,7 +58,7 @@ class ChequeController extends Controller
             'cheque' => $cheque,
             'bankAccounts' => BankAccount::with('bank')->get(),
             'accountSides' => Customer::with('group')->get(['id', 'name', 'group_id']),
-            'settlementObligation' => \App\Models\SettlementObligation::where('source_type', \App\Models\Cheque::class)
+            'settlementObligation' => SettlementObligation::where('source_type', Cheque::class)
                 ->where('source_id', $cheque->id)
                 ->first(),
         ]);

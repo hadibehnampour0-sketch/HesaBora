@@ -118,7 +118,7 @@ class PortalAdminController extends Controller
 
         $licenseData = [
             'edition' => $order->plan,
-            'customer_name' => $order->customer_name . ($order->company_name ? " ({$order->company_name})" : ''),
+            'customer_name' => $order->customer_name.($order->company_name ? " ({$order->company_name})" : ''),
             'hardware_fingerprint' => $order->hardware_fingerprint ?: '*',
             'modules' => $planConfig['modules'] ?? ['*'],
             'max_companies' => ($planConfig['max_companies'] ?? 1) + $order->extra_companies,

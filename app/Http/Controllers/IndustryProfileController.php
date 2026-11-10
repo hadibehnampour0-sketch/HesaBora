@@ -9,6 +9,7 @@ use App\Services\Industry\IndustrySettingsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 /**
@@ -96,7 +97,7 @@ class IndustryProfileController extends Controller
             $this->settings->setActive($profile, ! $this->settings->isActive($profile), $request->user()?->id);
 
             return redirect()->back()->with('success', __('Industry profile status updated.'));
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             $msg = $e->validator->errors()->first('license') ?? $e->validator->errors()->first() ?? $e->getMessage();
 
             return redirect()->back()->with('error', $msg);

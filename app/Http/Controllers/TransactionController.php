@@ -181,5 +181,4 @@ class TransactionController extends Controller
 
         return view('transactions.show', compact('transaction'));
     }
-
 }

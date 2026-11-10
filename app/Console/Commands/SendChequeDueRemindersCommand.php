@@ -11,6 +11,7 @@ use Illuminate\Console\Command;
 class SendChequeDueRemindersCommand extends Command
 {
     protected $signature = 'dakhl:send-cheque-reminders {--days=3 : Days threshold ahead of due date}';
+
     protected $description = 'Send automatic SMS reminders for upcoming cheque due dates';
 
     public function handle(SmsService $smsService): int
@@ -34,7 +35,7 @@ class SendChequeDueRemindersCommand extends Command
 
             foreach ($cheques as $cheque) {
                 $recipientPhone = $cheque->customer?->mobile ?: $cheque->customer?->phone;
-                if (!$recipientPhone) {
+                if (! $recipientPhone) {
                     continue;
                 }
 
@@ -54,6 +55,7 @@ class SendChequeDueRemindersCommand extends Command
         }
 
         $this->info("Successfully enqueued {$totalSent} cheque reminder SMS messages.");
+
         return Command::SUCCESS;
     }
 }

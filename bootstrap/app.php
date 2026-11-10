@@ -73,6 +73,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.device' => AuthenticateDevice::class,
             'idempotency' => EnsureIdempotencyKey::class,
             'licensed' => \App\Http\Middleware\EnsureModuleLicensed::class,
+            'compress.sync' => \App\Http\Middleware\CompressSyncPayload::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

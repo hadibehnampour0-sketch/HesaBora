@@ -81,14 +81,14 @@ const LivewireDispatcher = {
                   brandName: 'نپتون',
                   bannerActive: true,
                   bannerBadge: 'جشنواره ویژه',
-                  bannerText: 'جشنواره عرضه رسمی نسخه ۲.۵ سامانه مالی نپتون با پشتیبانی رایگان سامانه مودیان',
-                  heroBadge: 'نسخه ۲.۵ منتشر شد (پاییز ۱۴۰۵)',
+                  bannerText: 'رونمایی از نسخه ۲.۶.۰ نپتون: کلیدهای میانبر استاندارد، دیسکت رسمی بیمه تأمین اجتماعی و فشرده‌سازی سینک شعب',
+                  heroBadge: 'نسخه ۲.۶.۰ منتشر شد (پاییز ۱۴۰۵)',
                   heroTitle: 'سامانه یکپارچه مالی، ابری و آفلاین نپتون',
                   heroSubtitle: 'راهکار جامع مدیریت مالی، حسابداری دوبل، انبارداری هوشمند، چک‌های صیادی و اتصال مستقیم به سامانه مودیان برای اصناف، شرکت‌ها و هلدینگ‌ها',
                   ctaTrialText: 'دریافت لایسنس آزمایشی ۱۴ روزه',
-                  ctaDownloadText: 'دانلود مستقیم فایل نصبی ویندوز (نسخه ۲.۵)',
-                  downloadUrl: 'https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.5.0/Neptune-ERP-Setup-v2.5.exe',
-                  version: 'v2.5.0',
+                  ctaDownloadText: 'دانلود مستقیم فایل نصبی ویندوز (نسخه ۲.۶.۰)',
+                  downloadUrl: 'https://github.com/hadibehnampour0-sketch/HesaBora/releases/download/v2.6.0/Neptune-ERP-Setup-v2.6.0.exe',
+                  version: 'v2.6.0',
                   phone: '021-88884422',
                   phoneDisplay: '۰۲۱-۸۸۸۸۴۴۲۲',
                   mobile: '09120000000',
@@ -267,7 +267,7 @@ const LivewireDispatcher = {
                 <div>
                     <div class="flex items-center gap-2">
                         <span class="text-xl font-black tracking-tight text-base-content">نپتون</span>
-                        <span class="badge badge-accent badge-xs py-0.5 px-2 font-mono text-[10px] font-bold">ERP v2.5</span>
+                        <span class="badge badge-accent badge-xs py-0.5 px-2 font-mono text-[10px] font-bold">ERP v2.6</span>
                     </div>
                     <span class="text-[11px] text-base-content/60 block font-medium">نسل نوین نرم‌افزار مالی و حسابداری ایران</span>
                 </div>
@@ -281,6 +281,9 @@ const LivewireDispatcher = {
                 <a href="#pricing" class="hover:text-primary transition">پکیج‌ها و تعرفه‌ها</a>
                 <a href="/pricing" class="hover:text-primary transition text-primary flex items-center gap-1">
                     <span>⚡</span> <span>محاسبه‌گر آنلاین</span>
+                </a>
+                <a href="/brochure.html" target="_blank" class="hover:text-cyan-500 transition text-cyan-600 flex items-center gap-1">
+                    <span>📄</span> <span>بروشور رسمی</span>
                 </a>
                 <a href="#faq" class="hover:text-primary transition">پرسش‌های متداول</a>
             </nav>
@@ -1078,6 +1081,9 @@ const LivewireDispatcher = {
                 <a href="#features" class="hover:text-primary transition">امکانات</a>
                 <a href="#industries" class="hover:text-primary transition">اصناف</a>
                 <a href="/pricing" class="hover:text-primary transition">تعرفه‌ها</a>
+                <a href="/brochure.html" target="_blank" class="hover:text-primary transition text-cyan-600 flex items-center gap-1">
+                    <span>📄</span> <span>بروشور رسمی محصول</span>
+                </a>
                 <a :href="'tel:' + (siteConfig.site.phone || '02188884422')" class="text-sky-600 hover:underline flex items-center gap-1">
                     <span>📞</span>
                     <span x-text="siteConfig.site.phoneDisplay || siteConfig.site.phone || '۰۲۱-۸۸۸۸۴۴۲۲'"></span>
