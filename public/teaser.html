@@ -214,7 +214,7 @@
 
             <!-- Controls Row -->
             <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2">
                     <button id="btnPlayPause" onclick="togglePlay()" class="btn btn-warning btn-sm rounded-xl px-5 font-black text-xs gap-1.5 shadow-md shadow-amber-500/20">
                         <span id="playIcon">⏸️</span>
                         <span id="playText">توقف تیزر</span>
@@ -232,6 +232,17 @@
                         <span id="soundIcon">🔊</span>
                         <span id="soundText">صدا: روشن</span>
                     </button>
+
+                    <!-- Voice Selector Switch -->
+                    <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded-xl p-1 shadow-sm">
+                        <span class="text-[11px] text-slate-400 font-bold px-1.5">گوینده:</span>
+                        <button id="voiceFaridBtn" onclick="setVoice('farid')" class="btn btn-xs rounded-lg font-bold bg-amber-500 text-black">
+                            👨 فرید (پرانرژی)
+                        </button>
+                        <button id="voiceDilaraBtn" onclick="setVoice('dilara')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300">
+                            👩 دلارا (روان و گرم)
+                        </button>
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-2">
@@ -314,92 +325,115 @@
 
     <script>
         // ==========================================
-        // 7 CINEMATIC TEASER SCENES DATA
+        // 7 CINEMATIC TEASER SCENES DATA (NATURAL & FLUENT PERSIAN)
         // ==========================================
         const TEASER_SCENES = [
             {
+                id: "teaser_01",
                 image: "/images/teaser/scene_struggle.jpg",
-                audio: "/audio/teaser/teaser_01.mp3",
                 badge: "صحنه ۱: بحران قطعی اینترنت و تراکم کار",
                 badgeClass: "bg-red-950/80 border-red-500/40 text-red-300",
                 timecode: "00:00 تا 00:08",
                 tag: "بحران در بازار!",
                 tagClass: "bg-red-600/90 text-white",
-                headline: "اینترنت قطع شد، مشتری‌ها عصبانی، چک فردا سررسیده!",
-                subtitle: "اینترنت قطع شده... صف مشتری‌ها دم صندوق کشیده تا خیابون... چک همکار فردا صبح سررسیدشه و ممیز دارایی هم مهلت ارسال فاکتورها رو تموم کرده!"
+                headline: "اینترنت قطع شده، مشتریا کلافه، چکِ فردا هم سررسیده!",
+                subtitle: "اینترنت قطع شده... صفِ مشتریا تا دمِ در کشیده... فردا سررسیدِ چکِ همکاره و مهلتِ دارایی هم داره تموم میشه!"
             },
             {
+                id: "teaser_02",
                 image: "/images/teaser/scene_struggle.jpg",
-                audio: "/audio/teaser/teaser_02.mp3",
                 badge: "صحنه ۲: کابوس باج‌گیر و سوختن هارد",
                 badgeClass: "bg-red-950/80 border-red-500/40 text-red-300",
                 timecode: "00:08 تا 00:18",
                 tag: "خطر نابودی اطلاعات!",
                 tagClass: "bg-rose-600/90 text-white",
                 headline: "آیا حساب و کتاب ۱۰ سال کاسبی‌ات در امانه؟",
-                subtitle: "کابوس سوختن هارد و از بین رفتن حساب و کتاب ده سال کاسبی، یا جریمه‌های سنگین سامانه مودیان، خواب رو ازت گرفته؟!"
+                subtitle: "کابوسِ سوختنِ هارد و پریدنِ حساب‌کتابِ ده سال کاسبی... یا جریمه‌های سنگینِ مالیاتی... خواب رو از چشمت گرفته؟!"
             },
             {
+                id: "teaser_03",
                 image: "/images/tour/01_dashboard.png",
-                audio: "/audio/teaser/teaser_03.mp3",
                 badge: "صحنه ۳: ظهور نسل جدید هوش مالی",
                 badgeClass: "bg-sky-950/80 border-sky-500/40 text-sky-300",
                 timecode: "00:18 تا 00:25",
                 tag: "نسل جدید اینجاست",
                 tagClass: "bg-sky-600/90 text-white",
                 headline: "نپتون ERP: مدیریت مالی را به قرن جدید ببر!",
-                subtitle: "دیگه وقتشه روش‌های بیست سال پیش رو بریزی دور! با نپتون، مدیریت مالی رو به قرن جدید ببر."
+                subtitle: "دیگه وقتشه روش‌های بیست سال پیش رو بریزی دور! با نپتون، مدیریتِ مالی رو بیار به قرنِ جدید."
             },
             {
+                id: "teaser_04",
                 image: "/images/tour/05_pos_terminal.png",
-                audio: "/audio/teaser/teaser_04.mp3",
                 badge: "صحنه ۴: سرعت فروش بدون اینترنت",
                 badgeClass: "bg-emerald-950/80 border-emerald-500/40 text-emerald-300",
                 timecode: "00:25 تا 00:35",
                 tag: "۱۰۰٪ آفلاین اول",
                 tagClass: "bg-emerald-600/90 text-white",
                 headline: "فروش بی‌وقفه حتی در قطعی سراسری اینترنت!",
-                subtitle: "صد در صد آفلاین اول! حتی اگه کل اینترنت کشور قطع بشه، فروشگاه و انبارت یک ثانیه هم متوقف نمیشه."
+                subtitle: "صد در صد آفلاین اول! حتی اگه کل اینترنتِ کشور قطع بشه، دخل و فروشگاهت یه ثانیه هم متوقف نمیشه."
             },
             {
+                id: "teaser_05",
                 image: "/images/tour/16_tax_center.png",
-                audio: "/audio/teaser/teaser_05.mp3",
                 badge: "صحنه ۵: حذف کارمزد شرکت‌های معتمد",
                 badgeClass: "bg-emerald-950/80 border-emerald-500/40 text-emerald-300",
                 timecode: "00:35 تا 00:45",
                 tag: "سامانه مودیان رایگان",
                 tagClass: "bg-emerald-600/90 text-white",
                 headline: "ارسال مستقیم فاکتور به کارپوشه دارایی؛ بدون واسطه!",
-                subtitle: "ارسال مستقیم به سامانه مودیان، بدون حتی یک ریال باج دادن به شرکت‌های معتمد!"
+                subtitle: "ارسال مستقیم به سامانه مودیان؛ بدونِ حتی یه قرون باج دادن به شرکت‌های معتمد!"
             },
             {
+                id: "teaser_06",
                 image: "/images/tour/22_backups.png",
-                audio: "/audio/teaser/teaser_06.mp3",
                 badge: "صحنه ۶: هوش مصنوعی و امنیت ۳-۲-۱",
                 badgeClass: "bg-purple-950/80 border-purple-500/40 text-purple-300",
                 timecode: "00:45 تا 00:52",
                 tag: "امنیت فولادین",
                 tagClass: "bg-purple-600/90 text-white",
                 headline: "بکاپ رمزنگاری‌شده هر شب در تلگرام شخصی شما!",
-                subtitle: "دستیار هوش مصنوعی و امنیت سه دو یک؛ هر شب کل دیتابیس مالی شرکتت، رمزنگاری‌شده توی تلگرام خودت ذخیره میشه."
+                subtitle: "دستیارِ هوش مصنوعی و امنیتِ سه، دو، یک... هر شب کل دیتابیسِ شرکتت، رمزنگاری‌شده و امن توی تلگرامِ خودت ذخیره میشه."
             },
             {
+                id: "teaser_07",
                 image: "/images/teaser/scene_success.jpg",
-                audio: "/audio/teaser/teaser_07.mp3",
                 badge: "صحنه ۷: آرامش مدیر و دانلود رایگان",
                 badgeClass: "bg-amber-950/80 border-amber-500/40 text-amber-300",
                 timecode: "00:52 تا 01:00",
                 tag: "۱۴ روز تست رایگان",
                 tagClass: "bg-amber-500 text-black",
                 headline: "همین حالا رایگان دانلود کن و سرعت را بچش!",
-                subtitle: "نپتون، حسابدار خستگی‌ناپذیر کسب‌وکار شما. همین حالا با لایسنس تستی چهارده روزه رایگان، از سایت نپتون دانلودش کن!"
+                subtitle: "نپتون، حسابدارِ همیشه‌بیدارِ کسب‌وکارِ تو. همین الان با تستِ رایگانِ چهارده روزه، از نپتون دات‌آی‌آر دانلودش کن!"
             }
         ];
 
         let currentSceneIdx = 0;
         let isPlaying = true;
         let soundEnabled = true;
+        let currentVoice = 'farid'; // 'farid' or 'dilara'
         const audioPlayer = document.getElementById('teaserAudio');
+
+        function setVoice(v) {
+            currentVoice = v;
+            const faridBtn = document.getElementById('voiceFaridBtn');
+            const dilaraBtn = document.getElementById('voiceDilaraBtn');
+            if (faridBtn && dilaraBtn) {
+                if (v === 'farid') {
+                    faridBtn.className = 'btn btn-xs rounded-lg font-bold bg-amber-500 text-black';
+                    dilaraBtn.className = 'btn btn-xs rounded-lg font-bold btn-ghost text-slate-300';
+                } else {
+                    faridBtn.className = 'btn btn-xs rounded-lg font-bold btn-ghost text-slate-300';
+                    dilaraBtn.className = 'btn btn-xs rounded-lg font-bold bg-amber-500 text-black';
+                }
+            }
+            // Switch audio track immediately
+            const scene = TEASER_SCENES[currentSceneIdx];
+            audioPlayer.src = `/audio/teaser/${currentVoice}/${scene.id}.mp3`;
+            if (soundEnabled && isPlaying) {
+                audioPlayer.currentTime = 0;
+                audioPlayer.play().catch(e => console.log(e));
+            }
+        }
 
         // Recording state
         let isRecording = false;
@@ -472,8 +506,9 @@
             document.getElementById('teaserProgressBar').style.width = `${pct}%`;
 
             // 6. Audio
-            if (soundEnabled && scene.audio) {
-                audioPlayer.src = scene.audio;
+            if (soundEnabled) {
+                const audioSrc = `/audio/teaser/${currentVoice}/${scene.id}.mp3`;
+                audioPlayer.src = audioSrc;
                 if (isPlaying) {
                     audioPlayer.play().catch(e => console.log("Audio autoplay prevented:", e));
                 }
