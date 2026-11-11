@@ -37,3 +37,4 @@ auth.json
 storage
 
 public/downloads/*.exe
+models/
