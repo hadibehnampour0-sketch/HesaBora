@@ -3138,3 +3138,33 @@ To position Neptune ERP (نپتون ERP) as the cutting-edge, next-generation Ir
    - Dynamic audio duration sync (`audio.duration`) governs scene advancement in all players.
    - Zoom levels are constrained to <= 1.25x to preserve UI legibility.
    - All 4 voice options (`amir`, `dilara`, `farid`, `ganji`) are pre-generated and selectable on `https://neptune-erp.vercel.app/teaser`.
+
+
+---
+
+## D-139 — Neptune B2B SaaS Video Storytelling, Screenplay & Narrative Engineering Standard — 2026-11-11 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+Beyond voiceover acoustics, commercial video teasers, product feature walkthroughs, and educational masterclasses succeed or fail based on the psychological architecture of their storytelling. Ineffective B2B demos present dry, unscripted feature tours with generic corporate greetings, causing 8-second viewer drop-off. Neptune ERP requires an elite, repeatable narrative engineering standard synthesizing Hollywood story frameworks (Pixar's 22 Rules, Dan Harmon's Story Circle, Donald Miller's StoryBrand) and open-source GitHub B2B SaaS screenwriting prompt engines, calibrated specifically for Iranian merchants, accountants, and business owners.
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **The Hero vs. Guide Posture (StoryBrand):**
+   - The user/customer (the merchant, business owner, or accountant) is strictly the **HERO** confronting systemic operational chaos.
+   - Neptune ERP is the **GUIDE / MENTOR** providing the magical breakthrough tool.
+   - The script maintains a minimum 4:1 ratio of "You/Your" (`شما / کسب‌وکار شما`) to "We/Our" (`ما / نرم‌افزار ما`). Opening with company introductions or greetings is permanently prohibited.
+2. **Causal Progression (Pixar Rule #4 & South Park Principle):**
+   - Scene transitions must NEVER connect via "And then..." (`و بعد`).
+   - Every scene beat must be connected strictly by **"Therefore"** (`بنابراین` - consequence/achievement) or **"But"** (`اما` - friction/complication).
+3. **The 6-Phase PAR-SaaS Narrative Architecture:**
+   - **Phase 1: Pattern-Interrupt Hook (0:00–0:08):** Instant immersion in an expensive, high-stakes operational friction point ("The 4 PM Market Crisis" / "The Monday CSV Hell"). Zero preamble.
+   - **Phase 2: Agitate Status Quo (0:08–0:20):** Deepen the emotional and financial cost of inaction (tax penalties, server/hard drive failure, dishonored cheques, loss of merchant trust).
+   - **Phase 3: Guide Introduction & Aha Moment (0:20–0:35):** Present Neptune as the intuitive shortcut out of chaos, unveiling the breakthrough within 2–3 clicks.
+   - **Phase 4: Value Proof / Maximum 3 Hero Features (0:35–0:70):** Demonstrate strictly 3 hero actions via the tripartite cycle: *Trigger (ورودی/اسکن) -> Magic Automation (پردازش آنی/سند دوبل) -> Visual Green Result (تراز کامل/آرامش)*. Exclude all administrative setup menus.
+   - **Phase 5: Before vs. After Contrast (0:70–0:80):** Juxtapose 20-year-old manual stress against the new, frictionless reality of the "ever-vigilant accountant" (`حسابدار همیشه‌بیدار`).
+   - **Phase 6: Frictionless Call to Action (0:80–0:90):** Low-risk, high-intent invitation (`۱۴ روز تست رایگان بدون نیاز به کارت بانکی در نپتون دات‌آی‌آر`).
+4. **Pacing, Speech Economy & Ostad Ganji Acoustics:**
+   - Script word count is calibrated to **120–135 words per minute** to harmonize with Ostad Ahmad Ganji's deep resonance and measured cadence.
+   - Sentences are capped at 12–15 words before a 250–350ms breath silence or a 400ms dramatic suspense pause.
+   - On-screen radar spotlight pointers and kinetic text captions must trigger in exact millisecond synchronization with voiceover audio keywords.
+5. **Iranian Market Cultural Triggers:**
+   - Every scenario must anchor to real Iranian commercial flashpoints: 100% offline-first reliability during national internet blackouts, 3-2-1 encrypted Telegram backups against disk failure and ransomware, direct Moadian tax portal transmission without trusted intermediary fees, and Sayad purple cheque tracking to preserve bazaar reputation.
