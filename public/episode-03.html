@@ -517,6 +517,12 @@
 
                 <!-- Right: Aspect Ratio 16:9 vs 9:16 Switcher & Speeds -->
                 <div class="flex items-center gap-2">
+                    <!-- Factory Warehouse Cam Toggle (User Directive) -->
+                    <button onclick="toggleFactoryCamMode()" id="factoryCamBtn" class="btn btn-sm btn-outline border-amber-600/70 text-amber-300 rounded-xl text-xs gap-1.5 hover:bg-amber-950/40" title="سوییچ بین دوربین انبار کارخانه و داشبورد نرم‌افزار نپتون">
+                        <span>🏭</span>
+                        <span id="factoryCamLabel">دوربین کارخانه</span>
+                    </button>
+
                     <!-- Format Reel Switcher -->
                     <button onclick="toggleReelFormat()" id="formatToggleBtn" class="btn btn-sm btn-outline border-slate-700 text-slate-300 rounded-xl text-xs gap-1.5 hover:border-emerald-500 hover:text-emerald-400" title="تغییر بین ویدیوی افقی ۱۶:۹ و عمودی ۹:۱۶ اینستاگرام/تیک‌تاک">
                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -655,22 +661,27 @@
         const EPISODE_SCENES = [
             {
                 id: "scene_01",
-                image: "/images/tour/10_products_inventory.png",
-                badge: "صحنه ۱: قیچی شدن سرمایه در تاریکی انبار",
+                image: "/images/arash_factory_warehouse_walk.jpg",
+                softwareImage: "/images/tour/10_products_inventory.png",
+                warehouseImage: "/images/arash_factory_warehouse_walk.jpg",
+                badge: "صحنه ۱: قدم زدن در انبار کارخانه و نشتی سرمایه",
                 badgeClass: "bg-red-950/80 border-red-500/40 text-red-300",
                 timecode: "۰۰:۰۰ تا ۰۰:۲۶",
                 headline: "روزی چقدر از سرمایه کسب‌وکارت در تاریکیِ انبار دود می‌شود و کجای کار می‌لنگد؟! ",
                 subtitle: "تا حالا به این فکر کرده‌اید که چرا با وجودِ فروشِ بالا، حسابِ بانکی‌تان آخرِ ماه خالی است؟! نشتی‌های پنهان، ضایعاتِ ثبت‌نشده و کسری‌های نامعلوم، بی‌صدا سودِ خالصِ شما را می‌بلعند!",
-                pointerText: "نشتی سرمایه و ارزش موجودی",
-                spotlight: { top: 15, left: 12, width: 76, height: 32 },
-                arrow: { x: 50, y: 35 },
-                zoom: 1.15,
+                pointerText: "قدم زدن در انبار و نشتی سرمایه",
+                spotlight: { top: 22, left: 20, width: 60, height: 55 },
+                arrow: { x: 50, y: 40 },
+                zoom: 1.05,
+                hideTeacher: true,
                 teacherPosition: { bottom: 12, left: 10, scale: 1.0, laser: false }
             },
             {
                 id: "scene_02",
-                image: "/images/tour/12_production_orders.png",
-                badge: "صحنه ۲: کابوس انبارگردانی سنتی و توقف فروش",
+                image: "/images/factory_warehouse_backdrop.jpg",
+                softwareImage: "/images/tour/12_production_orders.png",
+                warehouseImage: "/images/factory_warehouse_backdrop.jpg",
+                badge: "صحنه ۲: کابوس انبارگردانی سنتی در سالن کارخانه",
                 badgeClass: "bg-amber-950/80 border-amber-500/40 text-amber-300",
                 timecode: "۰۰:۲۶ تا ۰۰:۴۸",
                 headline: "سه روز تعطیلیِ کاملِ فروشگاه و کارخانه، برای کاغذبازی و مغایرت‌های وحشتناک!",
@@ -678,12 +689,15 @@
                 pointerText: "مغایرت انبار و اتلاف کاغذبازی",
                 spotlight: { top: 22, left: 15, width: 70, height: 48 },
                 arrow: { x: 50, y: 45 },
-                zoom: 1.20,
-                teacherPosition: { bottom: 12, left: 45, scale: 1.05, laser: true }
+                zoom: 1.15,
+                hideTeacher: false,
+                teacherPosition: { bottom: 10, left: 45, scale: 1.10, laser: true }
             },
             {
                 id: "scene_03",
                 image: "/images/tour/10_products_inventory.png",
+                softwareImage: "/images/tour/10_products_inventory.png",
+                warehouseImage: "/images/factory_warehouse_backdrop.jpg",
                 badge: "صحنه ۳: راهکار نپتون: بهای تمام‌شده میانگین موزون",
                 badgeClass: "bg-emerald-950/80 border-emerald-500/40 text-emerald-300",
                 timecode: "۰۰:۴۸ تا ۰۱:۱۵",
@@ -693,11 +707,14 @@
                 spotlight: { top: 12, left: 8, width: 84, height: 75 },
                 arrow: { x: 72, y: 52 },
                 zoom: 1.18,
+                hideTeacher: false,
                 teacherPosition: { bottom: 14, left: 74, scale: 1.0, laser: true }
             },
             {
                 id: "scene_04",
                 image: "/images/tour/11_warehouses_transfer.png",
+                softwareImage: "/images/tour/11_warehouses_transfer.png",
+                warehouseImage: "/images/factory_warehouse_backdrop.jpg",
                 badge: "صحنه ۴: حواله بین‌انبارها و هشدار نقطه سفارش",
                 badgeClass: "bg-teal-950/80 border-teal-500/40 text-teal-300",
                 timecode: "۰۱:۱۵ تا ۰۱:۴۲",
@@ -707,11 +724,14 @@
                 spotlight: { top: 35, left: 12, width: 76, height: 45 },
                 arrow: { x: 35, y: 55 },
                 zoom: 1.22,
+                hideTeacher: false,
                 teacherPosition: { bottom: 12, left: 16, scale: 1.0, laser: true }
             },
             {
                 id: "scene_05",
                 image: "/images/tour/01_dashboard.png",
+                softwareImage: "/images/tour/01_dashboard.png",
+                warehouseImage: "/images/factory_warehouse_backdrop.jpg",
                 badge: "صحنه ۵: تقابل قبل و بعد از استقرار نپتون",
                 badgeClass: "bg-purple-950/80 border-purple-500/40 text-purple-300",
                 timecode: "۰۱:۴۲ تا ۰۲:۰۸",
@@ -721,11 +741,14 @@
                 spotlight: { top: 18, left: 10, width: 80, height: 42 },
                 arrow: { x: 50, y: 38 },
                 zoom: 1.18,
+                hideTeacher: false,
                 teacherPosition: { bottom: 12, left: 62, scale: 1.05, laser: true }
             },
             {
                 id: "scene_06",
-                image: "/images/tour/10_products_inventory.png",
+                image: "/images/arash_factory_warehouse_walk.jpg",
+                softwareImage: "/images/tour/10_products_inventory.png",
+                warehouseImage: "/images/arash_factory_warehouse_walk.jpg",
                 badge: "صحنه ۶: دعوت به اقدام و تست رایگان ۱۴ روزه",
                 badgeClass: "bg-rose-950/80 border-rose-500/40 text-rose-300",
                 timecode: "۰۲:۰۸ تا ۰۲:۳۵",
@@ -734,7 +757,8 @@
                 pointerText: "فعال‌سازی آنی با کلمه «انبار»",
                 spotlight: { top: 5, left: 5, width: 90, height: 90 },
                 arrow: { x: 50, y: 50 },
-                zoom: 1.0,
+                zoom: 1.05,
+                hideTeacher: true,
                 teacherPosition: { bottom: 15, left: 36, scale: 1.15, laser: false }
             }
         ];
@@ -1280,11 +1304,84 @@
         let isPlaying = false;
         let currentVoice = 'ganji'; // 'ganji' | 'amir' | 'dilara' | 'farid'
         let isReelMode = false;
+        let isFactoryCamActive = false; // toggle between warehouse and software view
         const audioElement = document.getElementById('episodeAudio');
+
+        // Factory Warehouse vs Software Cam Switcher (User Directive)
+        function toggleFactoryCamMode() {
+            const scene = EPISODE_SCENES[currentSceneIndex];
+            const stageImg = document.getElementById('stageImage');
+            const btn = document.getElementById('factoryCamBtn');
+            const label = document.getElementById('factoryCamLabel');
+            const podium = document.getElementById('presenterPodium');
+
+            isFactoryCamActive = !isFactoryCamActive;
+
+            const targetImage = isFactoryCamActive 
+                ? (scene.warehouseImage || "/images/factory_warehouse_backdrop.jpg") 
+                : (scene.softwareImage || scene.image);
+
+            if (stageImg) {
+                stageImg.classList.add('crisis-glitch');
+                setTimeout(() => {
+                    stageImg.src = targetImage;
+                    stageImg.classList.remove('crisis-glitch');
+                }, 150);
+            }
+
+            if (btn && label) {
+                if (isFactoryCamActive) {
+                    btn.className = "btn btn-sm bg-amber-600 border-amber-500 text-white rounded-xl text-xs gap-1.5 shadow-lg shadow-amber-900/40";
+                    label.innerText = "دوربین انبار (فعال)";
+                } else {
+                    btn.className = "btn btn-sm btn-outline border-slate-700 text-slate-300 rounded-xl text-xs gap-1.5 hover:border-amber-500 hover:text-amber-400";
+                    label.innerText = "دوربین کارخانه";
+                }
+            }
+
+            const isWalkingPhoto = targetImage.includes('arash_factory_warehouse_walk');
+            if (podium) {
+                if (isWalkingPhoto || (scene.hideTeacher && isFactoryCamActive)) {
+                    podium.classList.add('opacity-0', 'pointer-events-none');
+                    talkingCharacter.setLaser(false);
+                } else if (presenterDisplayMode !== 'hidden') {
+                    podium.classList.remove('opacity-0', 'pointer-events-none');
+                    talkingCharacter.moveTo(scene.teacherPosition, () => {
+                        talkingCharacter.setLaser(scene.teacherPosition.laser, scene.arrow);
+                    });
+                }
+            }
+
+            cinematicSound.playSwoosh();
+        }
 
         function loadScene(index, autoPlay = true) {
             currentSceneIndex = Math.max(0, Math.min(index, EPISODE_SCENES.length - 1));
             const scene = EPISODE_SCENES[currentSceneIndex];
+
+            // Default camera view per scene:
+            // Scenes 0, 1, 5 are factory-warehouse scenes by default
+            if (currentSceneIndex === 0 || currentSceneIndex === 1 || currentSceneIndex === 5) {
+                isFactoryCamActive = true;
+            } else {
+                isFactoryCamActive = false;
+            }
+
+            const camBtn = document.getElementById('factoryCamBtn');
+            const camLabel = document.getElementById('factoryCamLabel');
+            if (camBtn && camLabel) {
+                if (isFactoryCamActive) {
+                    camBtn.className = "btn btn-sm bg-amber-600 border-amber-500 text-white rounded-xl text-xs gap-1.5 shadow-lg shadow-amber-900/40";
+                    camLabel.innerText = "دوربین انبار (فعال)";
+                } else {
+                    camBtn.className = "btn btn-sm btn-outline border-slate-700 text-slate-300 rounded-xl text-xs gap-1.5 hover:border-amber-500 hover:text-amber-400";
+                    camLabel.innerText = "دوربین کارخانه";
+                }
+            }
+
+            const activeImage = isFactoryCamActive 
+                ? (scene.warehouseImage || scene.image) 
+                : (scene.softwareImage || scene.image);
 
             // 1. Intelligent Shot Evaluation & Camera Zoom (Decision D-147)
             let shotEval = null;
@@ -1298,7 +1395,7 @@
 
             const stageImg = document.getElementById('stageImage');
             if (stageImg) {
-                stageImg.src = scene.image;
+                stageImg.src = activeImage;
                 const activeZoom = shotEval ? shotEval.targetZoom : (scene.zoom || 1.15);
                 stageImg.style.transform = `scale(${activeZoom})`;
                 if (shotEval && shotEval.emotionalTone === 'CRISIS') {
@@ -1367,10 +1464,22 @@
                 if (pointerText) pointerText.innerText = scene.pointerText;
             }
 
-            // 6. Arash Stage Movement & Laser Aiming
-            talkingCharacter.moveTo(scene.teacherPosition, () => {
-                talkingCharacter.setLaser(scene.teacherPosition.laser, scene.arrow);
-            });
+            // 6. Arash Stage Movement & Laser Aiming (Prevent duplicate avatar when walking in photo)
+            const podium = document.getElementById('presenterPodium');
+            const isWalkingPhoto = activeImage.includes('arash_factory_warehouse_walk');
+            if (scene.hideTeacher || isWalkingPhoto) {
+                if (podium) {
+                    podium.classList.add('opacity-0', 'pointer-events-none');
+                }
+                talkingCharacter.setLaser(false);
+            } else {
+                if (podium && presenterDisplayMode !== 'hidden') {
+                    podium.classList.remove('opacity-0', 'pointer-events-none');
+                }
+                talkingCharacter.moveTo(scene.teacherPosition, () => {
+                    talkingCharacter.setLaser(scene.teacherPosition.laser, scene.arrow);
+                });
+            }
 
             // 7. Update Scene Timeline Cards UI
             for (let i = 0; i < EPISODE_SCENES.length; i++) {
