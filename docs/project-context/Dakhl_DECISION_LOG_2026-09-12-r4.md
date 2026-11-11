@@ -3352,3 +3352,49 @@ Executing Idea #1 selected by the user from the 6-Specialist Think Tank Protocol
 5. **Full System Routing & Cross-Episode Navigation:**
    - Wired in `routes/web.php` (`/episode-03`), `app/Http/Controllers/LicenseController.php::episode03()`, and `vercel.json`.
    - Updated header navigation across `episode-01.html`, `episode-02.html`, `episode-03.html`, `teaser.html`, and `video-tour.html`.
+
+---
+
+## D-147 — Cinematic Scene-to-Script Selection, Visual Rhythm & Continuity Editing Standard — 2026-11-11 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+To prevent SaaS promotional and masterclass videos from becoming static, monotonous slideshows, Decision D-147 establishes the formal cinematic directing and editing standard (*«استاندارد انتخاب سکانس متناسب با سناریو و گرامر تدوین سینمایی»*). Every script line is semantically and psychologically mapped to an atomic visual shot with structured shot scale progression, camera motion choreography, visual rhythm (staccato vs. legato), and strict 180-degree axis continuity.
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **One Idea Per Shot Rule:** Whenever the voiceover introduces a new operational concept or friction, the visual viewport must cut or adjust framing (no lingering static frames).
+2. **SaaS 6-Tier Shot Scale Hierarchy:**
+   - `EWS` (Extreme Wide Shot): Macro business context, warehouse floor, market-wide chaos, network shutdown.
+   - `FS` / `WS` (Full ERP Ecosystem Shot): Complete desktop view proving executive mastery and holistic overview.
+   - `MS` (Medium Shot): Direct presenter-to-viewer eye contact for psychological empathy and trust.
+   - `MCU` (Medium Close-Up): Dedicated functional form (POS checkout, warehouse transfer window, journal entry).
+   - `CU` / `ECU` (Macro Insert): Deep zoom (1.4x to 1.8x) onto core proof points (real-time profit numbers, green barcode scan checkmarks, weighted-average valuation).
+   - `OTS` / `POV` (Operator First-Person View): Experiencing frictionless keyboard/mouse workflow directly.
+3. **Editing & Transition Grammar:**
+   - 180° Action Axis enforcement to preserve spatial geography.
+   - Cut on Action (synchronizing cuts with presenter laser movement or mouse clicks).
+   - Contrast Cut: Abrupt transition from high-tension chaos (red/glitch) to pristine ERP clarity (emerald/teal).
+   - Dynamic Blueprint Inspector: Runtime engine (`public/js/scene-shot-selector.js`) automatically parses scenes and calculates optimal shot code, zoom factor, camera motion, and matching audio foley.
+
+---
+
+## D-148 — Photorealistic 3D Human Character Simulation, Skeletal Rigging, FACS 52 Blendshapes & Subsurface Scattering Standard — 2026-11-11 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+To elevate digital avatars from 2.5D displacement planes to true biological lifelike fidelity, Decision D-148 introduces full 3D human character simulation (*«استاندارد شبیه‌سازی کاراکترهای سه‌بعدی واقع‌گرایانه»*). This incorporates anatomical humanoid skeletal rigging, the FACS 52 ARKit facial blendshape system, physically based skin materials with Subsurface Scattering (SSS) approximations, and procedural micro-kinetics.
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **True 3D Skeletal Rigging (`THREE.SkinnedMesh`):**
+   - Hierarchical humanoid bone skeleton (`THREE.Skeleton`, `THREE.Bone`): Root, Pelvis, Spine, Chest, Neck, Head, and articulated arm/hand chains holding the interactive laser clicker diode.
+   - Smooth 4-bone vertex weight deformation (`skinIndex`, `skinWeight`).
+2. **FACS 52 Blendshape Facial Animation System:**
+   - Standardized facial morph targets for phoneme lip-sync (`jawOpen`, `mouthSmile`, `mouthFrown`, `mouthClose`, `mouthFunnel`, `mouthStretch`, `browInnerUp`, `eyeBlinkLeft`, `eyeBlinkRight`).
+   - Web Audio frequency analyzer drives viseme mouth shapes in real-time synchronized to Ostad Ahmad Ganji's voiceover.
+3. **PBR Skin Material with Subsurface Scattering (SSS):**
+   - Implemented via `THREE.MeshPhysicalMaterial` with biological transmission (0.08–0.12), micro-pore normal mapping, clearcoat sebum shine (0.12), and custom wrap-lighting diffuse algorithms to emulate natural light penetration through skin tissue.
+4. **Procedural Secondary Kinetics (Overcoming the Uncanny Valley):**
+   - Saccadic Eye Movements: Natural micro-darts every 250–400ms preventing frozen stare.
+   - Phase-delayed respiratory oscillation: Diaphragm and shoulder breathing cycle.
+   - Elastic spring inertia: Head tracking with realistic mass and deceleration.
+5. **100% Offline-First Procedural Human Engine:**
+   - Bundled in `public/js/photoreal-character-simulator.js`, capable of procedurally generating rigged anatomical humanoid geometry and blendshapes in-browser without requiring multi-megabyte external cloud downloads.
+   - 1-click runtime switcher between PBR Depth Mesh and True 3D Skeletal FACS Simulator.

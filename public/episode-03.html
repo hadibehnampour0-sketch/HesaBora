@@ -15,6 +15,10 @@
     <!-- Three.js 3D WebGL Engine & Neptune 3D Presenter (Decision D-144) -->
     <script src="/js/three.min.js"></script>
     <script src="/js/presenter-3d-engine.js"></script>
+    <!-- Cinematic Scene Selection & Shot Grammar (Decision D-147) -->
+    <script src="/js/scene-shot-selector.js"></script>
+    <!-- Photorealistic 3D Skeletal Character Simulator (Decision D-148) -->
+    <script src="/js/photoreal-character-simulator.js"></script>
     
     <script>
         tailwind.config = {
@@ -344,6 +348,11 @@
                             <span class="text-amber-300 font-bold">COGS: WEIGHTED_AVERAGE</span>
                         </div>
 
+                        <!-- Active Cinematic Shot Scale & Camera Grammar (Decision D-147) -->
+                        <div id="hudShotBadge" class="hidden sm:flex items-center gap-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-amber-500/40 text-amber-300 font-mono text-[10px]">
+                            🎬 <span id="hudShotText">EWS // نمای باز // زوم ۱.۱۵x</span>
+                        </div>
+
                         <!-- Rotating Sci-Fi Radar Compass Dial -->
                         <div class="flex items-center gap-3">
                             <div class="flex items-center gap-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/80 text-slate-300">
@@ -390,14 +399,16 @@
                         </div>
 
                         <!-- Teacher Floating 3D Badge & Interactive Controls -->
-                        <div class="mt-1 flex items-center gap-2 px-3 py-1 rounded-full bg-slate-950/90 backdrop-blur-md border border-emerald-500/50 text-[11px] text-white shadow-2xl transition-all group-hover:border-emerald-300">
+                        <div class="mt-1 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/90 backdrop-blur-md border border-emerald-500/50 text-[11px] text-white shadow-2xl transition-all group-hover:border-emerald-300">
                             <span class="relative flex h-2 w-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                             </span>
                             <span class="font-black text-white">استاد آرش</span>
-                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950 border border-emerald-700 text-emerald-300 font-mono">3D WebGL</span>
-                            <span class="text-[9px] text-slate-400 hidden sm:inline">| چرخش ۳D با ماوس</span>
+                            <button onclick="event.stopPropagation(); toggleAvatarSimulatorEngine()" id="avatarEngineToggleBtn" class="text-[9px] px-1.5 py-0.5 rounded bg-amber-950/90 border border-amber-600 text-amber-300 font-mono hover:bg-amber-900 transition-all" title="تغییر بین موتور WebGL عمیق و شبیه‌ساز اسکلتی فوتورئال (FACS 52 Blendshapes)">
+                                🧬 اسکلتی FACS
+                            </button>
+                            <span class="text-[9px] text-slate-400 hidden sm:inline">| ۳D Drag</span>
                             <button onclick="event.stopPropagation(); togglePresenterMode()" class="btn btn-ghost btn-circle btn-xs text-slate-400 hover:text-white" title="تغییر به کادر کوچک (PiP) یا مخفی‌سازی">
                                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
@@ -583,6 +594,51 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+
+        <!-- Cinematic Blueprint & 3D Character Physics Inspection Panels (Decisions D-147 & D-148) -->
+        <div class="w-full mt-4 space-y-3">
+            <div class="collapse collapse-arrow bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-xl">
+                <input type="checkbox" id="blueprintToggleCheckbox" /> 
+                <div class="collapse-title text-sm font-black text-amber-400 flex items-center gap-2">
+                    <span>🎬 نقشه کارگردانی پلان‌ها و تناظر سناریو به تصویر (Cinematic Shot Blueprint - D-147)</span>
+                    <span class="badge badge-warning badge-xs font-mono">هوش کارگردانی</span>
+                </div>
+                <div class="collapse-content">
+                    <div id="blueprintInspectorMount" class="pt-2"></div>
+                </div>
+            </div>
+
+            <div class="collapse collapse-arrow bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-xl">
+                <input type="checkbox" id="photorealRigToggleCheckbox" /> 
+                <div class="collapse-title text-sm font-black text-cyan-400 flex items-center gap-2">
+                    <span>🧬 شبیه‌ساز اسکلتی سه‌بعدی و حالات چهره ۵۲ گانه FACS / ARKit (Photoreal Character Rig - D-148)</span>
+                    <span class="badge badge-info badge-xs font-mono">PBR Skin & SSS</span>
+                </div>
+                <div class="collapse-content text-xs text-slate-300 space-y-3 pt-2">
+                    <p class="leading-relaxed">
+                        کاراکتر استاد آرش مجهز به ساختار استخوان‌بندی انسان‌نمای کامل (<code class="text-cyan-300">THREE.SkinnedMesh</code>)، ماتریال فیزیکی پوست با پراکندگی زیرسطحی نور (<code class="text-cyan-300">Subsurface Scattering</code>)، ریزمنافذ پوستی Normal Map، پرش‌های میکروسکوپی چشم (Saccadic Eye Jumps) و بلندشیپ‌های ۵۲ گانه استاندارد FACS برای لب‌زدن دقیق با واج‌های فارسی است.
+                    </p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-[11px]">
+                        <div class="p-2 rounded-xl bg-slate-950 border border-cyan-800/40">
+                            <span class="text-slate-400 block text-[10px]">استخوان‌های فعال:</span>
+                            <span class="text-cyan-300 font-bold">۹ استخوان سلسله‌مراتبی</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-950 border border-cyan-800/40">
+                            <span class="text-slate-400 block text-[10px]">سیستم چهره:</span>
+                            <span class="text-cyan-300 font-bold">FACS 52 Blendshapes</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-950 border border-cyan-800/40">
+                            <span class="text-slate-400 block text-[10px]">پوست فوتورئال:</span>
+                            <span class="text-cyan-300 font-bold">PBR + SSS Translucent</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-950 border border-cyan-800/40">
+                            <span class="text-slate-400 block text-[10px]">پرش چشم و تنفس:</span>
+                            <span class="text-emerald-400 font-bold">ساکادیک ۰.۳s فعال</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1034,9 +1090,49 @@
         const cinematicVfx = new CinematicVFXEngine();
 
         // =========================================================================
-        // TEACHER AVATAR ENGINE: ARASH 3D WEBGL CHOREOGRAPHY (DECISIONS D-141, D-142, D-143 & D-144)
+        // TEACHER AVATAR ENGINE: ARASH 3D WEBGL CHOREOGRAPHY (DECISIONS D-141, D-142, D-143, D-144 & D-148)
         // =========================================================================
         let presenterDisplayMode = 'full'; // 'full' | 'pip' | 'hidden'
+        let activeAvatarEngineType = 'depth3D'; // 'depth3D' | 'photorealRig'
+
+        function toggleAvatarSimulatorEngine() {
+            const mount = document.getElementById('threeAvatarMount');
+            if (!mount) return;
+            mount.innerHTML = ''; // clear mount
+
+            const btn = document.getElementById('avatarEngineToggleBtn');
+
+            if (activeAvatarEngineType === 'depth3D') {
+                activeAvatarEngineType = 'photorealRig';
+                if (btn) btn.innerText = '🎭 مش PBR';
+                if (typeof NeptunePhotorealCharacterSimulator !== 'undefined') {
+                    talkingCharacter.presenter3D = new NeptunePhotorealCharacterSimulator({
+                        containerId: 'threeAvatarMount',
+                        fov: 40
+                    });
+                }
+            } else {
+                activeAvatarEngineType = 'depth3D';
+                if (btn) btn.innerText = '🧬 اسکلتی FACS';
+                if (typeof Neptune3DPresenterEngine !== 'undefined') {
+                    talkingCharacter.presenter3D = new Neptune3DPresenterEngine({
+                        containerId: 'threeAvatarMount',
+                        colorMap: '/images/arash_keynote_presenter.jpg',
+                        depthMap: '/images/arash_depth_map.png',
+                        normalMap: '/images/arash_normal_map.png',
+                        displacementScale: 0.18,
+                        fov: 42
+                    });
+                }
+            }
+
+            setTimeout(() => {
+                if (talkingCharacter.presenter3D && talkingCharacter.presenter3D.onResize) {
+                    talkingCharacter.presenter3D.onResize();
+                }
+            }, 100);
+        }
+
         function togglePresenterMode() {
             const fullEl = document.getElementById('humanTeacherFull');
             const pipEl = document.getElementById('humanTeacherPip');
@@ -1190,11 +1286,25 @@
             currentSceneIndex = Math.max(0, Math.min(index, EPISODE_SCENES.length - 1));
             const scene = EPISODE_SCENES[currentSceneIndex];
 
-            // 1. Update Screenshot & Camera Zoom
+            // 1. Intelligent Shot Evaluation & Camera Zoom (Decision D-147)
+            let shotEval = null;
+            if (window.neptuneSceneSelector) {
+                shotEval = window.neptuneSceneSelector.evaluateScene(scene);
+                const hudShotText = document.getElementById('hudShotText');
+                if (hudShotText && shotEval) {
+                    hudShotText.innerText = `${shotEval.shotScale.code} // ${shotEval.cameraMotion.name} // زوم ${shotEval.targetZoom}x`;
+                }
+            }
+
             const stageImg = document.getElementById('stageImage');
             if (stageImg) {
                 stageImg.src = scene.image;
-                stageImg.style.transform = `scale(${scene.zoom || 1.15})`;
+                const activeZoom = shotEval ? shotEval.targetZoom : (scene.zoom || 1.15);
+                stageImg.style.transform = `scale(${activeZoom})`;
+                if (shotEval && shotEval.emotionalTone === 'CRISIS') {
+                    stageImg.classList.add('crisis-glitch');
+                    setTimeout(() => stageImg.classList.remove('crisis-glitch'), 600);
+                }
             }
 
             // 2. Play Foley Effects
@@ -1465,6 +1575,9 @@
 
         // Auto Initialize First Scene on Load
         window.addEventListener('DOMContentLoaded', () => {
+            if (window.neptuneSceneSelector) {
+                window.neptuneSceneSelector.renderBlueprintInspector('blueprintInspectorMount', EPISODE_SCENES);
+            }
             loadScene(0, false);
             masterRenderLoop();
         });
