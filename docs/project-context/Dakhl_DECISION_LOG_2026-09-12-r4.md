@@ -3168,3 +3168,31 @@ Beyond voiceover acoustics, commercial video teasers, product feature walkthroug
    - On-screen radar spotlight pointers and kinetic text captions must trigger in exact millisecond synchronization with voiceover audio keywords.
 5. **Iranian Market Cultural Triggers:**
    - Every scenario must anchor to real Iranian commercial flashpoints: 100% offline-first reliability during national internet blackouts, 3-2-1 encrypted Telegram backups against disk failure and ransomware, direct Moadian tax portal transmission without trusted intermediary fees, and Sayad purple cheque tracking to preserve bazaar reputation.
+
+
+---
+
+## D-140 — Neptune Cinematic Visual FX, Dynamic Audio Ducking & Sound Design Standard — 2026-11-11 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+To position Neptune ERP as an elite, premium Iranian enterprise software, videos and interactive web players must transcend static presentation slides. By implementing Hollywood-grade cinematic visual effects, tactile sound design (foley), cinematic sub-bass impacts, and real-time audio ducking, the product demo commands total viewer attention, elevates perceived value, and delivers an immersive, theatrical experience across desktop, mobile, and social media platforms.
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **Dynamic Camera Choreography & Selective Depth of Field:**
+   - Visual viewports apply organic Ken Burns gliding using Apple easing curves (`cubic-bezier(0.16, 1, 0.3, 1)`), avoiding dead static frames. Zoom factor is strictly constrained to 1.15x–1.25x.
+   - Non-target UI sections receive subtle selective depth-of-field blur (`filter: blur(2px)`) when radar spotlights engage.
+   - Radar spotlight frames and glowing arrow pointers animate with multi-layer parallax offset.
+2. **Atmospheric Lighting, 35mm Film Grain & Visual Accents:**
+   - A microscopic 35mm film grain overlay (`opacity: 0.035`) and corner vignette eliminate sterile digital flat look.
+   - Horizontal anamorphic blue (`#38bdf8`) and gold (`#f59e0b`) streak flares accent key metric revelations.
+   - Crisis and friction beats (e.g. internet blackouts, disk failures) utilize controlled RGB-split glitch micro-displacements (`text-shadow: -2px 0 #ef4444, 2px 0 #06b6d4`), immediately resolving into calm emerald stability when Neptune features appear.
+3. **Web Audio Sound Design & Dynamic Ducking Engine:**
+   - Interactive players integrate Web Audio API `AudioContext` with decoupled `GainNode` sub-mixes for background soundtrack, voiceover, and sound effects.
+   - **Dynamic Ducking:** Music volume automatically ducks to 15% during narrator speech (`linearRampToValueAtTime(0.15, now + 0.1s)`) and smoothly swells to 40% during natural breath pauses (350ms), creating breathing cinematic cadence.
+   - **Sub-Bass Braam Impact:** Breakthrough transitions feature a 50–80Hz low-frequency cinematic impact hit to physically emphasize solution reveals.
+   - **Tactile UI Foley:** Stereo whooshes on scene switches, crisp mechanical clicks on shortcut key highlights, and digital chirps during AI query execution.
+4. **Editorial Continuity (J-Cuts & L-Cuts):**
+   - J-Cut: Audio and foley SFX lead visual cuts by 200ms to build cognitive anticipation.
+   - L-Cut: Visual focus lingers for 300ms following speech completion before transitioning camera positions.
+5. **Kinetic Typography:**
+   - Vital value-proposition keywords pulse with golden glow drop-shadows synchronously with spoken syllables.

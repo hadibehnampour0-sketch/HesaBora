@@ -100,6 +100,63 @@
             background: linear-gradient(180deg, rgba(3, 7, 18, 0.05) 0%, rgba(3, 7, 18, 0.94) 30%, rgba(3, 7, 18, 0.98) 100%);
             backdrop-filter: blur(12px);
         }
+
+        /* 35mm Cinematic Film Grain Texture */
+        .film-grain {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 28;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            mix-blend-mode: screen;
+        }
+
+        /* Cinematic Vignette Corners */
+        .cinematic-vignette {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 27;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.85), inset 0 0 40px rgba(2, 6, 23, 0.6);
+        }
+
+        /* Anamorphic Blue Lens Flare Line */
+        .anamorphic-flare {
+            position: absolute;
+            top: 25%;
+            left: -100%;
+            width: 300%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.9) 50%, transparent 100%);
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.9), 0 0 50px rgba(245, 158, 11, 0.7);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 29;
+            transition: opacity 0.8s ease-in-out;
+        }
+        .anamorphic-flare.active {
+            opacity: 0.85;
+            animation: flarePass 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes flarePass {
+            0% { transform: translateY(-20px) scaleX(0.7); opacity: 0; }
+            50% { opacity: 0.95; }
+            100% { transform: translateY(40px) scaleX(1.1); opacity: 0; }
+        }
+
+        /* Crisis Glitch Effect for Scene 1 */
+        .crisis-glitch {
+            animation: crisisShake 0.4s ease-in-out;
+            text-shadow: -2px 0 #ef4444, 2px 0 #06b6d4;
+        }
+        @keyframes crisisShake {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(-3px, 2px); }
+            40% { transform: translate(3px, -1px); }
+            60% { transform: translate(-2px, -2px); }
+            80% { transform: translate(2px, 1px); }
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between p-2 sm:p-4 md:p-6 lg:p-8">
@@ -143,6 +200,15 @@
             <div class="stage-inner">
                 <!-- Target Screenshot -->
                 <img id="stageImage" src="/images/tour/01_dashboard.png" alt="نمای میز کار نپتون ERP" class="screenshot-target">
+
+                <!-- 35mm Cinematic Film Grain Overlay -->
+                <div class="film-grain"></div>
+
+                <!-- Cinematic Vignette Shading -->
+                <div class="cinematic-vignette"></div>
+
+                <!-- Anamorphic Lens Flare Streak -->
+                <div id="lensFlare" class="anamorphic-flare"></div>
 
                 <!-- Dynamic Neon Spotlight Frame -->
                 <div id="spotlightFrame" class="spotlight-frame opacity-0"></div>
@@ -208,6 +274,11 @@
                 <button onclick="toggleMute()" class="btn btn-outline btn-accent btn-sm rounded-xl text-xs gap-1 font-bold">
                     <span id="muteIcon">🔊</span>
                     <span id="muteText">صدا: روشن</span>
+                </button>
+
+                <button id="sfxBtn" onclick="toggleSfx()" class="btn btn-outline btn-warning btn-sm rounded-xl text-xs gap-1 font-bold" title="موسیقی متن سینمایی و افکت‌های صوتی فولی">
+                    <span id="sfxIcon">🎧</span>
+                    <span id="sfxText">موسیقی: روشن</span>
                 </button>
             </div>
 
@@ -395,6 +466,181 @@
             }
         ];
 
+        // =========================================================================
+        // CINEMATIC WEB AUDIO SFX & AUTO-DUCKING ENGINE (DECISION D-140)
+        // =========================================================================
+        class CinematicSoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.musicGain = null;
+                this.sfxGain = null;
+                this.ambientOscs = [];
+                this.enabled = true;
+                this.isMusicRunning = false;
+            }
+
+            init() {
+                if (this.ctx) return;
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioCtx();
+
+                // Master SFX Gain
+                this.sfxGain = this.ctx.createGain();
+                this.sfxGain.gain.value = 0.55;
+                this.sfxGain.connect(this.ctx.destination);
+
+                // Background Ambient Music Gain (Fintech Cinematic Space Drone)
+                this.musicGain = this.ctx.createGain();
+                this.musicGain.gain.value = 0.28;
+                this.musicGain.connect(this.ctx.destination);
+            }
+
+            startAmbientMusic() {
+                if (!this.enabled) return;
+                this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                if (this.isMusicRunning) return;
+
+                // Rich harmonic triad pad (C2 = 65.4Hz, G2 = 98Hz, Eb3 = 155.5Hz)
+                const freqs = [65.41, 98.0, 155.56];
+                this.ambientOscs = freqs.map(f => {
+                    const osc = this.ctx.createOscillator();
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 320;
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.value = f;
+
+                    // Subtle undulating LFO for life
+                    const lfo = this.ctx.createOscillator();
+                    lfo.frequency.value = 0.15;
+                    const lfoGain = this.ctx.createGain();
+                    lfoGain.gain.value = 12;
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    lfo.start();
+
+                    osc.connect(filter);
+                    filter.connect(this.musicGain);
+                    osc.start();
+                    return osc;
+                });
+                this.isMusicRunning = true;
+            }
+
+            duck(isDucked) {
+                if (!this.ctx || !this.musicGain || !this.enabled) return;
+                const now = this.ctx.currentTime;
+                this.musicGain.gain.cancelScheduledValues(now);
+                if (isDucked) {
+                    // Fast duck to 10% during voiceover
+                    this.musicGain.gain.linearRampToValueAtTime(0.09, now + 0.15);
+                } else {
+                    // Smooth swell to 32% during natural breath pauses
+                    this.musicGain.gain.linearRampToValueAtTime(0.32, now + 0.45);
+                }
+            }
+
+            playWhoosh() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const bufferSize = Math.floor(this.ctx.sampleRate * 0.4);
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(180, now);
+                filter.frequency.exponentialRampToValueAtTime(1200, now + 0.18);
+                filter.frequency.exponentialRampToValueAtTime(260, now + 0.38);
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.35, now + 0.15);
+                gain.gain.linearRampToValueAtTime(0.001, now + 0.38);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.sfxGain);
+                noise.start(now);
+            }
+
+            playBraam() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                // Massive Inception Sub-Bass Impact (55Hz sawtooth + resonance decay)
+                const osc = this.ctx.createOscillator();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(65, now);
+                osc.frequency.exponentialRampToValueAtTime(42, now + 1.3);
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(280, now);
+                filter.frequency.exponentialRampToValueAtTime(75, now + 1.3);
+                filter.Q.value = 7;
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.65, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.sfxGain);
+                osc.start(now);
+                osc.stop(now + 1.45);
+            }
+
+            playTactileClick() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1800, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.04);
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.45, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+                osc.connect(gain);
+                gain.connect(this.sfxGain);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            }
+
+            playAiChirp() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                [880, 1320, 1760].forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+
+                    const gain = this.ctx.createGain();
+                    gain.gain.setValueAtTime(0, now + idx * 0.07);
+                    gain.gain.linearRampToValueAtTime(0.22, now + idx * 0.07 + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.15);
+
+                    osc.connect(gain);
+                    gain.connect(this.sfxGain);
+                    osc.start(now + idx * 0.07);
+                    osc.stop(now + idx * 0.07 + 0.16);
+                });
+            }
+        }
+
+        const cinematicSound = new CinematicSoundEngine();
+
         let currentSceneIdx = 0;
         let isPlaying = true;
         let soundEnabled = true;
@@ -500,10 +746,47 @@
                     audioPlayer.play().catch(e => console.log("Autoplay caught:", e));
                 }
             }
+
+            // 8. Cinematic FX & Sound Design Triggers (Decision D-140)
+            if (cinematicSound.enabled) {
+                cinematicSound.startAmbientMusic();
+                cinematicSound.playWhoosh();
+
+                // Scene 1: Crisis Glitch
+                const headlineEl = document.getElementById('sceneHeadline');
+                if (idx === 0) {
+                    headlineEl.classList.add('crisis-glitch');
+                    setTimeout(() => headlineEl.classList.remove('crisis-glitch'), 500);
+                }
+
+                // Scene 2 & 5: Anamorphic Lens Flare & Sub-Bass Braam Impact
+                if (idx === 1 || idx === 4) {
+                    cinematicSound.playBraam();
+                    const flare = document.getElementById('lensFlare');
+                    if (flare) {
+                        flare.classList.remove('active');
+                        void flare.offsetWidth; // trigger reflow
+                        flare.classList.add('active');
+                    }
+                }
+
+                // Scene 4: Tactile Key Click
+                if (idx === 3) {
+                    setTimeout(() => cinematicSound.playTactileClick(), 250);
+                }
+
+                // Scene 5: AI Data Chirp
+                if (idx === 4) {
+                    setTimeout(() => cinematicSound.playAiChirp(), 350);
+                }
+            }
         }
 
-        // Automatic audio-driven progression (D-138)
+        // Automatic audio-driven progression & dynamic audio ducking (D-138 & D-140)
+        audioPlayer.addEventListener('play', () => cinematicSound.duck(true));
+        audioPlayer.addEventListener('pause', () => cinematicSound.duck(false));
         audioPlayer.addEventListener('ended', () => {
+            cinematicSound.duck(false);
             if (isPlaying) {
                 if (currentSceneIdx < EPISODE_SCENES.length - 1) {
                     renderScene(currentSceneIdx + 1);
@@ -556,6 +839,23 @@
                 audioPlayer.pause();
             } else {
                 if (isPlaying) audioPlayer.play().catch(e => console.log(e));
+            }
+        }
+
+        function toggleSfx() {
+            cinematicSound.enabled = !cinematicSound.enabled;
+            const btnText = document.getElementById('sfxText');
+            const btnIcon = document.getElementById('sfxIcon');
+            if (cinematicSound.enabled) {
+                btnText.textContent = 'موسیقی: روشن';
+                btnIcon.textContent = '🎧';
+                cinematicSound.startAmbientMusic();
+            } else {
+                btnText.textContent = 'موسیقی: خاموش';
+                btnIcon.textContent = '🔇';
+                if (cinematicSound.ctx && cinematicSound.musicGain) {
+                    cinematicSound.musicGain.gain.value = 0;
+                }
             }
         }
 
@@ -639,6 +939,13 @@
                 prevScene();
             }
         });
+
+        // Start ambient soundtrack on first user click anywhere (browser autoplay policy)
+        window.addEventListener('click', () => {
+            if (cinematicSound.enabled && !cinematicSound.isMusicRunning) {
+                cinematicSound.startAmbientMusic();
+            }
+        }, { once: true });
 
         // Initialize scene 0 on DOM load
         window.addEventListener('DOMContentLoaded', () => {
