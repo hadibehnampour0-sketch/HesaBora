@@ -3196,3 +3196,32 @@ To position Neptune ERP as an elite, premium Iranian enterprise software, videos
    - L-Cut: Visual focus lingers for 300ms following speech completion before transitioning camera positions.
 5. **Kinetic Typography:**
    - Vital value-proposition keywords pulse with golden glow drop-shadows synchronously with spoken syllables.
+
+
+---
+
+## D-141 — Neptune Interactive AI Talking Character, Real-Time Lip-Sync & Holographic VFX Standard — 2026-11-11 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+High-end B2B enterprise software demonstrations and video masterclasses require human connection, executive presence, and dynamic visual engagement to maximize audience retention, trust, and conversion. Static slides and faceless voiceovers leave a gap in viewer empathy. By embedding an interactive AI executive presenter («آرش - دستیار ارشد هوش مالی و مجری رسمی نپتون ERP») driven by real-time Web Audio API lip-sync and surrounded by high-tech Sci-Fi visual effects (3D perspective cyber grid, constellation data particles, holographic telemetry HUDs, and audio-reactive frequency equalizers), Neptune ERP matches the presentation caliber of global Silicon Valley keynotes without requiring costly third-party cloud subscription APIs (e.g. HeyGen or D-ID).
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **Official Presenter Identity & Demeanor:**
+   - The official on-screen presenter is «آرش» (Arash), an intelligent, visionary Iranian tech executive in his late 30s wearing a tailored navy suit with a glowing neon-cyan Neptune diamond lapel pin.
+   - Persona posture: The authoritative yet approachable "Guide" who walks the CEO/CFO through complex financial workflows with calm confidence.
+2. **Real-Time Web Audio Lip-Sync (Audio-to-Viseme Engine):**
+   - Mouth animation is directly driven in real-time by a Web Audio API `AnalyserNode` connected to Ostad Ahmad Ganji's voice stream (FFT size 512, smoothing factor 0.6).
+   - Frequency bands are split into Low (100–400Hz: vertical jaw drop / vowel aperture), Mid (400–1800Hz: vowel formants F1/F2 for A, O, E), and High (1800–5500Hz: dental/sibilant spread for S, Z, F).
+   - Visemes interpolate fluidly via LERP ($k = 0.25$) between REST, OPEN_A, ROUND_O, WIDE_E, PLOSIVE_M, and FRICATIVE_F, completely eliminating robotic mouth flapping.
+3. **Organic Micro-Behaviors & Kinesics:**
+   - **Blinking:** Natural random blinks occur every 3.5 to 5.5 seconds with dual-phase closure (120ms close, 180ms open).
+   - **Head Tilts & Nods:** Micro head-pitch (1.5°–2.5°) dynamically triggers upon vocal emphasis peaks (>70% RMS energy), with a continuous subtle breathing sway (0.3Hz).
+   - **Audio Halo:** A neon-cyan/amber pulsing frequency ring surrounds the presenter badge to visually mirror vocal power.
+4. **Cinematic Sci-Fi VFX & Holographic HUD:**
+   - **3D Perspective Cyber Matrix Grid:** Hardware-accelerated background wireframe grid panning dynamically with camera zoom and mouse moves.
+   - **Data Constellation Network:** 40–60 floating energetic nodes with proximity-based glowing vector interconnects (connecting within 90px) symbolizing decentralized real-time ledger sync.
+   - **Holographic HUD & Telemetry:** Sci-Fi corner framing brackets (`[ NEPTUNE_OS // v4.2 ]`, `[ ENCRYPTION: AES-256 ]`), rotating high-tech radar dials, and 16 real-time audio visualizer frequency bars.
+   - **Radial Energy Shockwave:** Canvas-based expanding energy ripple fired on pivotal problem-to-solution transitions.
+5. **Zero Cloud Dependency & In-Browser MP4 Export:**
+   - The entire avatar and VFX subsystem runs purely client-side on HTML5 Canvas / SVG / Web Audio API. Zero external API calls, zero rate limits, zero latency.
+   - Video recorder (`toggleScreenRecord`) captures the full composited stream (Presenter + VFX + Software Stage + Voiceover + Synthesized Ducked SFX) into high-definition WebM/MP4 for instant YouTube and Instagram sharing.

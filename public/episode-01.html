@@ -83,7 +83,7 @@
         /* Animated Radar Arrow Pointer */
         .radar-pointer {
             position: absolute;
-            z-index: 40;
+            z-index: 38;
             pointer-events: none;
             transition: all 0.7s cubic-bezier(0.2, 0.8, 0.3, 1);
             filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.9));
@@ -97,7 +97,7 @@
         
         /* Kinetic Subtitles Bar */
         .subtitles-glass {
-            background: linear-gradient(180deg, rgba(3, 7, 18, 0.05) 0%, rgba(3, 7, 18, 0.94) 30%, rgba(3, 7, 18, 0.98) 100%);
+            background: linear-gradient(180deg, rgba(3, 7, 18, 0.02) 0%, rgba(3, 7, 18, 0.92) 25%, rgba(3, 7, 18, 0.98) 100%);
             backdrop-filter: blur(12px);
         }
 
@@ -107,7 +107,7 @@
             inset: 0;
             pointer-events: none;
             z-index: 28;
-            opacity: 0.04;
+            opacity: 0.035;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
             mix-blend-mode: screen;
         }
@@ -157,6 +157,44 @@
             60% { transform: translate(-2px, -2px); }
             80% { transform: translate(2px, 1px); }
         }
+
+        /* =========================================================================
+           TALKING CHARACTER & SCI-FI HUD STYLES (DECISION D-141)
+           ========================================================================= */
+        .presenter-podium {
+            position: absolute;
+            bottom: 1.25rem;
+            left: 1.25rem;
+            z-index: 45;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .avatar-glow-ring {
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.6), inset 0 0 15px rgba(245, 158, 11, 0.4);
+            animation: avatarPulse 3.0s infinite alternate ease-in-out;
+        }
+
+        @keyframes avatarPulse {
+            0% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.5), inset 0 0 10px rgba(2, 132, 199, 0.3); }
+            100% { box-shadow: 0 0 35px rgba(56, 189, 248, 0.9), inset 0 0 20px rgba(245, 158, 11, 0.6); }
+        }
+
+        /* Rotating Sci-Fi Radar Compass */
+        .hud-compass {
+            animation: compassSpin 18s linear infinite;
+        }
+        @keyframes compassSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Visualizer EQ Bars */
+        .eq-bar {
+            width: 3px;
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+            border-radius: 9999px;
+            transition: height 0.08s ease;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between p-2 sm:p-4 md:p-6 lg:p-8">
@@ -201,6 +239,9 @@
                 <!-- Target Screenshot -->
                 <img id="stageImage" src="/images/tour/01_dashboard.png" alt="نمای میز کار نپتون ERP" class="screenshot-target">
 
+                <!-- Sci-Fi Hardware Accelerated VFX Canvas (Cyber Grid & Particles) -->
+                <canvas id="vfxCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-15"></canvas>
+
                 <!-- 35mm Cinematic Film Grain Overlay -->
                 <div class="film-grain"></div>
 
@@ -223,6 +264,95 @@
                     </svg>
                 </div>
 
+                <!-- ========================================================= -->
+                <!-- SCI-FI HUD OVERLAYS & TELEMETRY (DECISION D-141)          -->
+                <!-- ========================================================= -->
+                <div id="hudOverlay" class="absolute inset-0 pointer-events-none z-35 p-4 sm:p-6 flex flex-col justify-between">
+                    <!-- Top HUD Row -->
+                    <div class="flex items-center justify-between text-[10px] font-mono tracking-wider text-sky-400/80">
+                        <div class="flex items-center gap-2 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-lg border border-sky-500/30">
+                            <span class="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                            <span>[ NEPTUNE_OS // v4.2 ]</span>
+                            <span class="text-slate-500">|</span>
+                            <span class="text-emerald-400">100% OFFLINE_FIRST</span>
+                        </div>
+
+                        <!-- Rotating Sci-Fi Radar Compass Dial -->
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/80 text-slate-300">
+                                <svg class="w-3.5 h-3.5 text-amber-400 hud-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polygon points="12,2 15,10 12,8 9,10" fill="currentColor"/>
+                                </svg>
+                                <span class="font-bold text-[11px]" id="voiceIndicatorLabel">گوینده: استاد احمد گنجی</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Right: Real-Time 16-Bar Audio Equalizer Spectrum -->
+                    <div class="self-end flex items-end gap-1 bg-slate-950/80 backdrop-blur-md px-3 py-2 rounded-xl border border-sky-500/30 shadow-lg">
+                        <span class="text-[9px] font-mono text-sky-400 mr-1.5">SPECTRO:</span>
+                        <div id="spectrumBars" class="flex items-end gap-1 h-6">
+                            <!-- 16 Audio Bars -->
+                            <div class="eq-bar h-1"></div><div class="eq-bar h-2"></div>
+                            <div class="eq-bar h-1"></div><div class="eq-bar h-3"></div>
+                            <div class="eq-bar h-2"></div><div class="eq-bar h-4"></div>
+                            <div class="eq-bar h-3"></div><div class="eq-bar h-5"></div>
+                            <div class="eq-bar h-4"></div><div class="eq-bar h-3"></div>
+                            <div class="eq-bar h-2"></div><div class="eq-bar h-4"></div>
+                            <div class="eq-bar h-1"></div><div class="eq-bar h-2"></div>
+                            <div class="eq-bar h-1"></div><div class="eq-bar h-1"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- INTERACTIVE AI TALKING PRESENTER: ARASH (DECISION D-141)  -->
+                <!-- ========================================================= -->
+                <div id="presenterPodium" class="presenter-podium flex items-end gap-3 pointer-events-auto">
+                    <!-- Avatar Capsule Card -->
+                    <div class="relative group bg-slate-950/90 backdrop-blur-xl border border-sky-500/40 rounded-2xl p-2 shadow-2xl flex items-center gap-3 avatar-glow-ring transition-all hover:border-amber-400">
+                        
+                        <!-- Real-time Animated Avatar Face Container -->
+                        <div id="avatarFace" class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 border-sky-400 bg-slate-900 shadow-md">
+                            <!-- Base Photorealistic Portrait of Arash -->
+                            <img src="/images/arash_presenter.jpg" alt="آرش - مجری هوش مالی نپتون" class="w-full h-full object-cover">
+
+                            <!-- Dynamic SVG Mouth Viseme Morph Overlay -->
+                            <svg id="avatarMouth" class="absolute bottom-2 inset-x-0 mx-auto w-6 h-3 pointer-events-none transition-transform duration-75" viewBox="0 0 40 20" style="transform-origin: center bottom;">
+                                <ellipse id="mouthShape" cx="20" cy="10" rx="14" ry="2" fill="#881337" stroke="#fb7185" stroke-width="1.5" />
+                                <rect id="teethShape" x="14" y="6" width="12" height="3" rx="1" fill="#ffffff" opacity="0.8" />
+                            </svg>
+
+                            <!-- Dynamic SVG Eyelid Blink Overlay -->
+                            <div id="avatarEyelids" class="absolute top-4 inset-x-0 h-3 bg-slate-900/0 transition-all duration-75 pointer-events-none"></div>
+
+                            <!-- Live Audio Pulsing Halo Overlay -->
+                            <div id="avatarAudioHalo" class="absolute inset-0 rounded-xl border border-cyan-400 opacity-0 pointer-events-none transition-opacity duration-100"></div>
+                        </div>
+
+                        <!-- Presenter Info & Live Status -->
+                        <div class="pr-1 pl-2">
+                            <div class="flex items-center gap-1.5 mb-0.5">
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                </span>
+                                <span class="font-bold text-white text-xs">آرش</span>
+                                <span class="text-[9px] px-1.5 py-0.2 rounded bg-sky-950 border border-sky-700 text-sky-300 font-mono">AI_HOST</span>
+                            </div>
+                            <p class="text-[10px] text-slate-300">دستیار ارشد هوش مالی</p>
+                        </div>
+
+                        <!-- Minimize / Close Presenter Button -->
+                        <button onclick="togglePresenterMode()" class="btn btn-ghost btn-circle btn-xs text-slate-400 hover:text-white" title="تغییر حالت مجری">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Live Subtitles & Headline Overlay -->
                 <div class="absolute bottom-0 inset-x-0 p-4 sm:p-6 md:p-8 subtitles-glass z-30 flex flex-col justify-end text-center">
                     <div class="flex items-center justify-center gap-2 mb-2">
@@ -230,21 +360,13 @@
                         <span id="sceneTimecode" class="text-xs text-slate-400 font-mono">۰۰:۰۰ تا ۰۰:۲۷</span>
                     </div>
                     <h2 id="sceneHeadline" class="text-lg sm:text-2xl md:text-3xl font-black text-white leading-tight mb-2 drop-shadow-md">
-                        وقتی وارد دفتر کار میشی، اولین سوالی که ذهنت رو درگیر میکنه چیه؟
+                        وقتی صبح وارد دفتر کار میشی، اولین سوالی که ذهنت رو درگیر میکنه چیه؟
                     </h2>
                     <p id="sceneSubtitle" class="text-xs sm:text-sm md:text-base text-sky-200/90 font-medium max-w-4xl mx-auto leading-relaxed">
-                        امروز چقدر پول توی حسابه؟ دخل چقدر فروخته؟ و آیا سود واقعی بردی یا فقط چرخش الکی پول بوده؟!
+                        امروز چقدر پول توی حسابه؟ دخل چقدر فروخته؟ و آیا سود واقعی بردی یا فقط چرخش الکی پول بوده؟! در بازار پرسرعت امروز، یک ساعت بی‌خبری یعنی باختن!
                     </p>
                 </div>
 
-                <!-- Top Right Audio / Voice Indicator -->
-                <div class="absolute top-4 right-4 z-40 flex items-center gap-2 bg-slate-950/80 backdrop-blur-md border border-slate-700/80 px-3 py-1.5 rounded-full text-xs shadow-xl">
-                    <span class="relative flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                    </span>
-                    <span id="voiceIndicatorLabel" class="font-bold text-slate-200">گوینده: استاد احمد گنجی</span>
-                </div>
             </div>
         </div>
 
@@ -258,76 +380,70 @@
             
             <!-- Left Controls: Play / Next / Prev / Audio -->
             <div class="flex flex-wrap items-center gap-2">
-                <button id="playBtn" onclick="togglePlay()" class="btn btn-primary btn-sm rounded-xl text-xs gap-1.5 font-bold shadow-md shadow-sky-600/20">
+                <button onclick="togglePlay()" id="playBtn" class="btn btn-sm btn-primary rounded-xl px-4 gap-2 font-bold shadow-md shadow-sky-600/30">
                     <span id="playIcon">⏸️</span>
-                    <span id="playText">توقف پخش</span>
+                    <span id="playText">توقف</span>
                 </button>
-
-                <button onclick="prevScene()" class="btn btn-ghost btn-sm rounded-xl text-xs hover:bg-slate-800" title="صحنه قبل">
-                    <span>⏮️ صحنه قبل</span>
+                <button onclick="prevScene()" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-slate-300 hover:text-white" title="صحنه قبل (کلید چپ)">
+                    ⏮️ قبلی
                 </button>
-
-                <button onclick="nextScene()" class="btn btn-ghost btn-sm rounded-xl text-xs hover:bg-slate-800" title="صحنه بعد">
-                    <span>صحنه بعد ⏭️</span>
+                <button onclick="nextScene()" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-slate-300 hover:text-white" title="صحنه بعد (کلید راست)">
+                    بعدی ⏭️
                 </button>
-
-                <button onclick="toggleMute()" class="btn btn-outline btn-accent btn-sm rounded-xl text-xs gap-1 font-bold">
-                    <span id="muteIcon">🔊</span>
-                    <span id="muteText">صدا: روشن</span>
-                </button>
-
-                <button id="sfxBtn" onclick="toggleSfx()" class="btn btn-outline btn-warning btn-sm rounded-xl text-xs gap-1 font-bold" title="موسیقی متن سینمایی و افکت‌های صوتی فولی">
+                <div class="divider divider-horizontal my-1"></div>
+                <button onclick="toggleSfx()" id="sfxBtn" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-slate-300" title="موسیقی متن و افکت‌های سینمایی">
                     <span id="sfxIcon">🎧</span>
                     <span id="sfxText">موسیقی: روشن</span>
                 </button>
-            </div>
-
-            <!-- Middle Controls: Voice Selector Switch (D-138) -->
-            <div class="flex flex-wrap items-center gap-1 bg-slate-900/90 border border-slate-700/80 rounded-xl p-1 shadow-inner">
-                <span class="text-[11px] text-slate-400 font-bold px-1.5">گوینده:</span>
-                <button id="voiceGanjiBtn" onclick="setVoice('ganji')" class="btn btn-xs rounded-lg font-bold bg-amber-500 text-black shadow-sm" title="صدای برگزیده و پیش‌فرض نپتون ERP">
-                    📻 استاد احمد گنجی (برگزیده) ⭐
+                <button onclick="toggleVfx()" id="vfxBtn" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-cyan-300" title="جلوه‌های ویژه سایبر و ذرات">
+                    <span id="vfxIcon">✨</span>
+                    <span id="vfxText">VFX: روشن</span>
                 </button>
-                <button id="voiceAmirBtn" onclick="setVoice('amir')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مدل پایپر - صدای امیر سودبخش پادکست رخ">
-                    🎙️ امیر (پادکست رخ)
-                </button>
-                <button id="voiceDilaraBtn" onclick="setVoice('dilara')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مایکروسافت نئورال - لحن آرام و اداری">
-                    👩 دلارا (روان)
-                </button>
-                <button id="voiceFaridBtn" onclick="setVoice('farid')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مایکروسافت نئورال - لحن تبلیغاتی پرانرژی">
-                    👨 فرید (تیزری)
+                <button onclick="togglePresenterVisibility()" id="presenterBtn" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-amber-300" title="نمایش کاراکتر مجری هوش مالی">
+                    <span id="presenterIcon">🎭</span>
+                    <span id="presenterText">مجری: روشن</span>
                 </button>
             </div>
 
-            <!-- Right Controls: Speed, Fullscreen & Record -->
+            <!-- Middle: Voice Actors Selector -->
+            <div class="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800 text-xs">
+                <span class="text-slate-400 px-2 text-[11px] font-bold">صدا:</span>
+                <button onclick="setVoice('ganji')" id="voiceGanjiBtn" class="btn btn-xs rounded-lg font-bold bg-amber-500 text-black shadow-sm">
+                    استاد احمد گنجی ★
+                </button>
+                <button onclick="setVoice('amir')" id="voiceAmirBtn" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300">
+                    امیر سودبخش (رخ)
+                </button>
+                <button onclick="setVoice('dilara')" id="voiceDilaraBtn" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300">
+                    دلارا
+                </button>
+                <button onclick="setVoice('farid')" id="voiceFaridBtn" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300">
+                    فرید
+                </button>
+            </div>
+
+            <!-- Right Controls: Screen Record & Fullscreen -->
             <div class="flex items-center gap-2">
-                <button id="recordBtn" onclick="toggleScreenRecord()" class="btn btn-error btn-outline btn-sm rounded-xl text-xs font-bold gap-1.5">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                    </span>
+                <button onclick="toggleScreenRecord()" id="recordBtn" class="btn btn-sm btn-error btn-outline rounded-xl text-xs gap-1 font-bold">
                     <span id="recordLabel">🔴 ضبط ویدیو (MP4)</span>
                 </button>
-
-                <button onclick="toggleFullscreen()" class="btn btn-ghost btn-sm rounded-xl text-xs hover:bg-slate-800" title="تمام‌صفحه سینمایی">
-                    <span>⛶ تمام‌صفحه</span>
+                <button onclick="toggleFullscreen()" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-slate-300" title="تمام‌صفحه">
+                    ⛶
                 </button>
             </div>
         </div>
 
-        <!-- 6 Storyboard Cards (Clickable Direct Scene Jumper) -->
-        <div class="space-y-2 mt-5">
-            <h3 class="text-xs font-bold text-slate-400 flex items-center justify-between">
-                <span>📑 ساختار ۶ فازی قسمت اول (استاندارد داستان‌نویسی D-139)</span>
-                <span class="text-[11px] text-sky-400">کلیک روی هر کارت برای جهش به صحنه</span>
+        <!-- 6 Scenes Timeline Cards Grid -->
+        <div class="mt-4">
+            <h3 class="text-xs font-bold text-slate-400 mb-2 flex items-center gap-2">
+                <span>فهرست پرده‌های داستانی قسمت ۱ (ساختار روایی هالیوودی PAR-SaaS):</span>
             </h3>
-
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
                 
                 <div onclick="jumpToScene(0)" id="card_0" class="p-3 rounded-xl border border-red-500/40 bg-red-950/20 hover:bg-red-900/30 cursor-pointer transition-all flex items-start gap-2.5">
                     <span class="font-mono text-red-400 font-black text-sm">01</span>
                     <div>
-                        <div class="font-bold text-white">بحران تاریکی مالی (قلاب ۸ ثانیه)</div>
+                        <div class="font-bold text-white">بحران تاریکی اطلاعاتی (قلاب ۸ ثانیه)</div>
                         <div class="text-[10px] text-slate-400">۰۰:۰۰ تا ۰۰:۲۷ • درد گزارش‌های سنتی</div>
                     </div>
                 </div>
@@ -383,7 +499,7 @@
     <!-- JavaScript Master Video Controller -->
     <script>
         // =========================================================================
-        // 6 SCENES SCRIPT DATA (ACCORDING TO DECISIONS D-138 & D-139)
+        // 6 SCENES SCRIPT DATA (ACCORDING TO DECISIONS D-138, D-139, D-140, D-141)
         // =========================================================================
         const EPISODE_SCENES = [
             {
@@ -474,6 +590,8 @@
                 this.ctx = null;
                 this.musicGain = null;
                 this.sfxGain = null;
+                this.analyser = null;
+                this.sourceNode = null;
                 this.ambientOscs = [];
                 this.enabled = true;
                 this.isMusicRunning = false;
@@ -493,6 +611,23 @@
                 this.musicGain = this.ctx.createGain();
                 this.musicGain.gain.value = 0.28;
                 this.musicGain.connect(this.ctx.destination);
+
+                // Voice Frequency Analyser for Lip-Sync & Spectrum (Decision D-141)
+                this.analyser = this.ctx.createAnalyser();
+                this.analyser.fftSize = 512;
+                this.analyser.smoothingTimeConstant = 0.65;
+            }
+
+            attachAudioPlayer(audioElement) {
+                this.init();
+                if (this.sourceNode) return;
+                try {
+                    this.sourceNode = this.ctx.createMediaElementSource(audioElement);
+                    this.sourceNode.connect(this.analyser);
+                    this.analyser.connect(this.ctx.destination);
+                } catch (e) {
+                    console.log("Audio routing attached:", e);
+                }
             }
 
             startAmbientMusic() {
@@ -641,6 +776,281 @@
 
         const cinematicSound = new CinematicSoundEngine();
 
+        // =========================================================================
+        // SCI-FI VFX ENGINE: CYBER GRID, PARTICLES & SHOCKWAVE (DECISION D-141)
+        // =========================================================================
+        class CinematicVFXEngine {
+            constructor() {
+                this.canvas = document.getElementById('vfxCanvas');
+                this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+                this.enabled = true;
+                this.particles = [];
+                this.shockwave = null;
+                this.gridOffset = 0;
+                this.initParticles();
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                if (!this.canvas) return;
+                this.canvas.width = this.canvas.offsetWidth;
+                this.canvas.height = this.canvas.offsetHeight;
+            }
+
+            initParticles() {
+                this.particles = [];
+                const count = 45;
+                for (let i = 0; i < count; i++) {
+                    this.particles.push({
+                        x: Math.random() * 1000,
+                        y: Math.random() * 600,
+                        vx: (Math.random() - 0.5) * 0.6,
+                        vy: (Math.random() - 0.5) * 0.6,
+                        radius: Math.random() * 2 + 1,
+                        color: Math.random() > 0.3 ? 'rgba(56, 189, 248, ' : 'rgba(245, 158, 11, '
+                    });
+                }
+            }
+
+            triggerShockwave() {
+                if (!this.canvas) return;
+                this.shockwave = {
+                    x: this.canvas.width / 2,
+                    y: this.canvas.height / 2,
+                    radius: 10,
+                    maxRadius: Math.max(this.canvas.width, this.canvas.height) * 0.8,
+                    opacity: 0.9
+                };
+            }
+
+            render() {
+                if (!this.ctx || !this.enabled) return;
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+                this.ctx.clearRect(0, 0, width, height);
+
+                // 1. Perspective Cyber Grid at Lower Third
+                this.gridOffset = (this.gridOffset + 0.4) % 40;
+                this.ctx.save();
+                this.ctx.strokeStyle = 'rgba(2, 132, 199, 0.12)';
+                this.ctx.lineWidth = 1;
+
+                // Horizontal perspective lines
+                const horizonY = height * 0.65;
+                for (let y = horizonY; y < height; y += 18 + (y - horizonY) * 0.15) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(width, y);
+                    this.ctx.stroke();
+                }
+
+                // Vanishing point radial grid lines
+                const vpX = width / 2;
+                for (let x = -width; x <= width * 2; x += 60) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(vpX, horizonY);
+                    this.ctx.lineTo(x + this.gridOffset, height);
+                    this.ctx.stroke();
+                }
+                this.ctx.restore();
+
+                // 2. Constellation Data Particles
+                for (let i = 0; i < this.particles.length; i++) {
+                    const p = this.particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0) p.x = width;
+                    if (p.x > width) p.x = 0;
+                    if (p.y < 0) p.y = height;
+                    if (p.y > height) p.y = 0;
+
+                    // Draw Particle Core
+                    this.ctx.fillStyle = p.color + '0.7)';
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    // Connect Near Neighbors (< 85px)
+                    for (let j = i + 1; j < this.particles.length; j++) {
+                        const p2 = this.particles[j];
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 85) {
+                            const alpha = (1 - dist / 85) * 0.22;
+                            this.ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(p.x, p.y);
+                            this.ctx.lineTo(p2.x, p2.y);
+                            this.ctx.stroke();
+                        }
+                    }
+                }
+
+                // 3. Radial Energy Shockwave Animation
+                if (this.shockwave) {
+                    this.shockwave.radius += 18;
+                    this.shockwave.opacity *= 0.94;
+                    this.ctx.save();
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.shockwave.x, this.shockwave.y, this.shockwave.radius, 0, Math.PI * 2);
+                    this.ctx.strokeStyle = `rgba(56, 189, 248, ${this.shockwave.opacity})`;
+                    this.ctx.lineWidth = 4;
+                    this.ctx.shadowColor = '#38bdf8';
+                    this.ctx.shadowBlur = 20;
+                    this.ctx.stroke();
+                    this.ctx.restore();
+
+                    if (this.shockwave.opacity < 0.02 || this.shockwave.radius > this.shockwave.maxRadius) {
+                        this.shockwave = null;
+                    }
+                }
+            }
+        }
+
+        const cinematicVfx = new CinematicVFXEngine();
+
+        // =========================================================================
+        // INTERACTIVE AI TALKING CHARACTER ENGINE: ARASH (DECISION D-141)
+        // =========================================================================
+        class TalkingCharacterEngine {
+            constructor() {
+                this.enabled = true;
+                this.isMinimized = false;
+                this.lastBlinkTime = 0;
+                this.blinkDuration = 180;
+                this.nextBlinkInterval = 4000;
+                this.mouthShape = document.getElementById('mouthShape');
+                this.teethShape = document.getElementById('teethShape');
+                this.avatarEyelids = document.getElementById('avatarEyelids');
+                this.avatarFace = document.getElementById('avatarFace');
+                this.audioHalo = document.getElementById('avatarAudioHalo');
+                this.podium = document.getElementById('presenterPodium');
+                this.freqData = new Uint8Array(256);
+
+                // Smoothed Viseme Parameters
+                this.currentJawOpen = 0.1;
+                this.currentLipWidth = 14;
+                this.currentLipRound = 2;
+                this.currentHeadTilt = 0;
+            }
+
+            update(time) {
+                if (!this.enabled || !cinematicSound.analyser) return;
+
+                // 1. Frequency Analysis from Web Audio API
+                cinematicSound.analyser.getByteFrequencyData(this.freqData);
+
+                // Acoustic Bands
+                let lowEnergy = 0;   // Bins 2-8: 90Hz to 360Hz (fundamental pitch & jaw drop)
+                let midEnergy = 0;   // Bins 9-28: 400Hz to 1250Hz (formants A/O/E)
+                let highEnergy = 0;  // Bins 29-70: 1300Hz to 3100Hz (fricatives S/Z/F)
+
+                for (let i = 2; i <= 8; i++) lowEnergy += this.freqData[i];
+                for (let i = 9; i <= 28; i++) midEnergy += this.freqData[i];
+                for (let i = 29; i <= 70; i++) highEnergy += this.freqData[i];
+
+                lowEnergy /= 7;
+                midEnergy /= 20;
+                highEnergy /= 42;
+
+                const overallVolume = (lowEnergy * 0.5 + midEnergy * 0.35 + highEnergy * 0.15) / 255;
+
+                // 2. Target Viseme Morphing
+                let targetJaw = 1.5;
+                let targetWidth = 14;
+                let targetRound = 2;
+
+                if (overallVolume > 0.08) {
+                    // Speaking State
+                    targetJaw = 2 + (lowEnergy / 255) * 8.5;
+                    targetWidth = 12 + (highEnergy / 255) * 6;
+                    targetRound = 3 + (midEnergy / 255) * 4;
+
+                    // Audio Pulsing Halo
+                    if (this.audioHalo) {
+                        this.audioHalo.style.opacity = Math.min(overallVolume * 1.5, 0.95);
+                    }
+
+                    // Keynote Speaker Head Nod on peak emphasis
+                    if (overallVolume > 0.35) {
+                        this.currentHeadTilt = (Math.sin(time * 0.008) * 2.2);
+                    } else {
+                        this.currentHeadTilt = (Math.sin(time * 0.002) * 1.0);
+                    }
+                } else {
+                    // Resting Silence State (Natural calm smile)
+                    targetJaw = 1.5;
+                    targetWidth = 14;
+                    targetRound = 2;
+                    this.currentHeadTilt = Math.sin(time * 0.001) * 0.5;
+                    if (this.audioHalo) this.audioHalo.style.opacity = '0';
+                }
+
+                // Smooth Linear Interpolation (LERP k = 0.25)
+                this.currentJawOpen += (targetJaw - this.currentJawOpen) * 0.25;
+                this.currentLipWidth += (targetWidth - this.currentLipWidth) * 0.25;
+                this.currentLipRound += (targetRound - this.currentLipRound) * 0.25;
+
+                // Apply SVG Mouth Visemes
+                if (this.mouthShape) {
+                    this.mouthShape.setAttribute('ry', this.currentJawOpen.toFixed(1));
+                    this.mouthShape.setAttribute('rx', this.currentLipWidth.toFixed(1));
+                }
+                if (this.teethShape) {
+                    this.teethShape.style.opacity = this.currentJawOpen > 4 ? '0.85' : '0.1';
+                }
+
+                // Apply Micro Head Tilt
+                if (this.avatarFace) {
+                    this.avatarFace.style.transform = `rotate(${this.currentHeadTilt.toFixed(1)}deg)`;
+                }
+
+                // 3. Natural Organic Blinking (Every 3.8s to 5.2s)
+                if (time - this.lastBlinkTime > this.nextBlinkInterval) {
+                    this.lastBlinkTime = time;
+                    this.nextBlinkInterval = 3600 + Math.random() * 2200;
+                    if (this.avatarEyelids) {
+                        this.avatarEyelids.style.backgroundColor = 'rgba(11, 17, 32, 0.95)';
+                        setTimeout(() => {
+                            if (this.avatarEyelids) this.avatarEyelids.style.backgroundColor = 'rgba(11, 17, 32, 0)';
+                        }, this.blinkDuration);
+                    }
+                }
+
+                // 4. Update 16-Bar HUD Audio Spectrum
+                const bars = document.querySelectorAll('#spectrumBars .eq-bar');
+                if (bars && bars.length > 0) {
+                    const step = Math.floor(64 / bars.length);
+                    bars.forEach((bar, idx) => {
+                        const val = this.freqData[idx * step] || 0;
+                        const barHeight = Math.max(3, Math.round((val / 255) * 22));
+                        bar.style.height = `${barHeight}px`;
+                        if (val > 180) {
+                            bar.style.background = 'linear-gradient(180deg, #f59e0b 0%, #38bdf8 100%)';
+                        } else {
+                            bar.style.background = 'linear-gradient(180deg, #38bdf8 0%, #0284c7 100%)';
+                        }
+                    });
+                }
+            }
+        }
+
+        const talkingCharacter = new TalkingCharacterEngine();
+
+        // Unified 60 FPS Render Loop for VFX & Talking Avatar
+        function cinematicEngineLoop(time) {
+            cinematicVfx.render();
+            talkingCharacter.update(time);
+            requestAnimationFrame(cinematicEngineLoop);
+        }
+        requestAnimationFrame(cinematicEngineLoop);
+
+        // =========================================================================
+        // SCENE & PLAYBACK CONTROLLER
+        // =========================================================================
         let currentSceneIdx = 0;
         let isPlaying = true;
         let soundEnabled = true;
@@ -722,7 +1132,7 @@
                 pointer.classList.add('opacity-0');
             }
 
-            // 5. Update Storyboard Card Highlights
+            // 5. Update Timeline Cards Active State
             for (let i = 0; i < EPISODE_SCENES.length; i++) {
                 const card = document.getElementById(`card_${i}`);
                 if (card) {
@@ -734,64 +1144,70 @@
                 }
             }
 
-            // 6. Update Progress Bar
-            const progressPct = ((idx + 1) / EPISODE_SCENES.length) * 100;
-            document.getElementById('timelineProgress').style.width = `${progressPct}%`;
+            // 6. Trigger Hollywood VFX & Audio Foley (Decisions D-140 & D-141)
+            cinematicSound.playWhoosh();
 
-            // 7. Load and Play Synchronized Persian Audio
-            if (soundEnabled) {
-                const audioSrc = getAudioPath(currentVoice, scene.id);
-                audioPlayer.src = audioSrc;
-                if (isPlaying) {
-                    audioPlayer.play().catch(e => console.log("Autoplay caught:", e));
-                }
+            // Flare & Shockwave on Scene 2 & 5 reveals
+            const flare = document.getElementById('lensFlare');
+            if (idx === 1 || idx === 4) {
+                flare.classList.remove('active');
+                void flare.offsetWidth; // Force CSS reflow
+                flare.classList.add('active');
+                cinematicSound.playBraam();
+                cinematicVfx.triggerShockwave();
             }
 
-            // 8. Cinematic FX & Sound Design Triggers (Decision D-140)
-            if (cinematicSound.enabled) {
-                cinematicSound.startAmbientMusic();
-                cinematicSound.playWhoosh();
+            // Tactile Click on Scene 4 (Shortcuts)
+            if (idx === 3) {
+                cinematicSound.playTactileClick();
+            }
 
-                // Scene 1: Crisis Glitch
-                const headlineEl = document.getElementById('sceneHeadline');
-                if (idx === 0) {
-                    headlineEl.classList.add('crisis-glitch');
-                    setTimeout(() => headlineEl.classList.remove('crisis-glitch'), 500);
-                }
+            // AI Chime on Scene 5 (Copilot)
+            if (idx === 4) {
+                cinematicSound.playAiChirp();
+            }
 
-                // Scene 2 & 5: Anamorphic Lens Flare & Sub-Bass Braam Impact
-                if (idx === 1 || idx === 4) {
-                    cinematicSound.playBraam();
-                    const flare = document.getElementById('lensFlare');
-                    if (flare) {
-                        flare.classList.remove('active');
-                        void flare.offsetWidth; // trigger reflow
-                        flare.classList.add('active');
-                    }
-                }
+            // Crisis Glitch on Scene 1
+            const headline = document.getElementById('sceneHeadline');
+            if (idx === 0) {
+                headline.classList.add('crisis-glitch');
+            } else {
+                headline.classList.remove('crisis-glitch');
+            }
 
-                // Scene 4: Tactile Key Click
-                if (idx === 3) {
-                    setTimeout(() => cinematicSound.playTactileClick(), 250);
-                }
-
-                // Scene 5: AI Data Chirp
-                if (idx === 4) {
-                    setTimeout(() => cinematicSound.playAiChirp(), 350);
-                }
+            // 7. Load and Play Official Narration
+            audioPlayer.src = getAudioPath(currentVoice, scene.id);
+            if (soundEnabled && isPlaying) {
+                audioPlayer.currentTime = 0;
+                audioPlayer.play().catch(e => console.log("Autoplay prevented:", e));
             }
         }
 
-        // Automatic audio-driven progression & dynamic audio ducking (D-138 & D-140)
-        audioPlayer.addEventListener('play', () => cinematicSound.duck(true));
-        audioPlayer.addEventListener('pause', () => cinematicSound.duck(false));
+        // Hook Web Audio Engine into Audio Element Events
+        audioPlayer.addEventListener('play', () => {
+            cinematicSound.attachAudioPlayer(audioPlayer);
+            cinematicSound.duck(true);
+            if (!cinematicSound.isMusicRunning) cinematicSound.startAmbientMusic();
+        });
+
+        audioPlayer.addEventListener('pause', () => {
+            cinematicSound.duck(false);
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            if (audioPlayer.duration > 0) {
+                const totalProgress = ((currentSceneIdx + (audioPlayer.currentTime / audioPlayer.duration)) / EPISODE_SCENES.length) * 100;
+                document.getElementById('timelineProgress').style.width = `${totalProgress}%`;
+            }
+        });
+
         audioPlayer.addEventListener('ended', () => {
             cinematicSound.duck(false);
+            // Auto transition to next scene if playing
             if (isPlaying) {
                 if (currentSceneIdx < EPISODE_SCENES.length - 1) {
-                    renderScene(currentSceneIdx + 1);
+                    setTimeout(() => nextScene(), 400); // 400ms cinematic breath silence (Decision D-138)
                 } else {
-                    // Loop or pause at the end
                     isPlaying = false;
                     updatePlayButton();
                 }
@@ -802,15 +1218,24 @@
             isPlaying = !isPlaying;
             updatePlayButton();
             if (isPlaying) {
-                if (audioPlayer.paused) audioPlayer.play().catch(e => console.log(e));
+                audioPlayer.play().catch(e => console.log(e));
+                cinematicSound.startAmbientMusic();
             } else {
                 audioPlayer.pause();
+                cinematicSound.duck(false);
             }
         }
 
         function updatePlayButton() {
-            document.getElementById('playIcon').textContent = isPlaying ? '⏸️' : '▶️';
-            document.getElementById('playText').textContent = isPlaying ? 'توقف پخش' : 'ادامه پخش';
+            const btnIcon = document.getElementById('playIcon');
+            const btnText = document.getElementById('playText');
+            if (isPlaying) {
+                btnIcon.textContent = '⏸️';
+                btnText.textContent = 'توقف';
+            } else {
+                btnIcon.textContent = '▶️';
+                btnText.textContent = 'پخش';
+            }
         }
 
         function nextScene() {
@@ -824,21 +1249,16 @@
         function prevScene() {
             if (currentSceneIdx > 0) {
                 renderScene(currentSceneIdx - 1);
+            } else {
+                renderScene(EPISODE_SCENES.length - 1);
             }
         }
 
         function jumpToScene(idx) {
             renderScene(idx);
-        }
-
-        function toggleMute() {
-            soundEnabled = !soundEnabled;
-            document.getElementById('muteIcon').textContent = soundEnabled ? '🔊' : '🔇';
-            document.getElementById('muteText').textContent = soundEnabled ? 'صدا: روشن' : 'صدا: خاموش';
-            if (!soundEnabled) {
-                audioPlayer.pause();
-            } else {
-                if (isPlaying) audioPlayer.play().catch(e => console.log(e));
+            if (!isPlaying) {
+                isPlaying = true;
+                updatePlayButton();
             }
         }
 
@@ -856,6 +1276,51 @@
                 if (cinematicSound.ctx && cinematicSound.musicGain) {
                     cinematicSound.musicGain.gain.value = 0;
                 }
+            }
+        }
+
+        function toggleVfx() {
+            cinematicVfx.enabled = !cinematicVfx.enabled;
+            const btnText = document.getElementById('vfxText');
+            const btn = document.getElementById('vfxBtn');
+            const hud = document.getElementById('hudOverlay');
+            if (cinematicVfx.enabled) {
+                btnText.textContent = 'VFX: روشن';
+                btn.className = 'btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-cyan-300';
+                if (hud) hud.style.display = 'flex';
+            } else {
+                btnText.textContent = 'VFX: خاموش';
+                btn.className = 'btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-slate-500';
+                if (hud) hud.style.display = 'none';
+                if (cinematicVfx.ctx) {
+                    cinematicVfx.ctx.clearRect(0, 0, cinematicVfx.canvas.width, cinematicVfx.canvas.height);
+                }
+            }
+        }
+
+        function togglePresenterVisibility() {
+            talkingCharacter.enabled = !talkingCharacter.enabled;
+            const btnText = document.getElementById('presenterText');
+            const btn = document.getElementById('presenterBtn');
+            const podium = document.getElementById('presenterPodium');
+            if (talkingCharacter.enabled) {
+                btnText.textContent = 'مجری: روشن';
+                btn.className = 'btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-amber-300';
+                if (podium) podium.style.display = 'flex';
+            } else {
+                btnText.textContent = 'مجری: خاموش';
+                btn.className = 'btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-slate-500';
+                if (podium) podium.style.display = 'none';
+            }
+        }
+
+        function togglePresenterMode() {
+            const podium = document.getElementById('presenterPodium');
+            if (!podium) return;
+            if (podium.classList.contains('scale-75')) {
+                podium.classList.remove('scale-75', 'opacity-60');
+            } else {
+                podium.classList.add('scale-75', 'opacity-60');
             }
         }
 
