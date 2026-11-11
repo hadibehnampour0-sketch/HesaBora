@@ -32,17 +32,27 @@
     <style>
         body { font-family: 'Vazirmatn', sans-serif; background-color: #030712; color: #f8fafc; }
         
-        /* 16:9 Cinematic Video Viewport */
+        /* 16:9 / 9:16 Adaptive Cinematic Video Viewport */
         .video-stage {
             position: relative;
             width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            padding-top: 56.25%; /* Default: 16:9 Aspect Ratio */
             overflow: hidden;
             background: #02040a;
             border-radius: 1.5rem;
             box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 0 50px rgba(2, 132, 199, 0.25);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
         
+        /* 9:16 Vertical Mobile Reel Format (Instagram, TikTok, YouTube Shorts) */
+        .video-stage.reel-mode {
+            padding-top: 177.77%; /* 9:16 Aspect Ratio */
+            max-width: 440px;
+            margin: 0 auto;
+            border-radius: 2.2rem;
+            box-shadow: 0 35px 80px -10px rgba(0, 0, 0, 0.98), 0 0 60px rgba(139, 92, 246, 0.35);
+        }
+
         .stage-inner {
             position: absolute;
             inset: 0;
@@ -58,7 +68,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 1.0s cubic-bezier(0.2, 0.8, 0.3, 1);
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
             transform-origin: center center;
         }
         
@@ -71,7 +81,7 @@
             border-radius: 1rem;
             background: rgba(56, 189, 248, 0.12);
             box-shadow: 0 0 35px rgba(56, 189, 248, 0.8), inset 0 0 20px rgba(2, 132, 199, 0.4);
-            transition: all 0.7s cubic-bezier(0.2, 0.8, 0.3, 1);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
             animation: frameGlow 2.0s infinite alternate ease-in-out;
         }
         
@@ -85,7 +95,7 @@
             position: absolute;
             z-index: 38;
             pointer-events: none;
-            transition: all 0.7s cubic-bezier(0.2, 0.8, 0.3, 1);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
             filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.9));
             animation: pointerBob 1.6s infinite ease-in-out;
         }
@@ -159,14 +169,23 @@
         }
 
         /* =========================================================================
-           TALKING CHARACTER & SCI-FI HUD STYLES (DECISION D-141)
+           TEACHER AVATAR STAGE CHOREOGRAPHY (DECISIONS D-141 & D-142)
            ========================================================================= */
         .presenter-podium {
             position: absolute;
-            bottom: 1.25rem;
-            left: 1.25rem;
             z-index: 45;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: center bottom;
+        }
+
+        /* Teacher Stage Walk Gait & Bobbing */
+        .presenter-podium.is-walking {
+            animation: teacherWalkBob 0.38s infinite alternate ease-in-out;
+        }
+
+        @keyframes teacherWalkBob {
+            0% { transform: translateY(0) scale(1) rotate(1.5deg); }
+            100% { transform: translateY(-8px) scale(1.02) rotate(-1.5deg); }
         }
 
         .avatar-glow-ring {
@@ -194,6 +213,16 @@
             background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
             border-radius: 9999px;
             transition: height 0.08s ease;
+        }
+
+        /* Teacher Laser Pointer SVG Beam */
+        .teacher-laser-line {
+            filter: drop-shadow(0 0 8px #38bdf8) drop-shadow(0 0 16px #f59e0b);
+            stroke-dasharray: 8 4;
+            animation: laserDash 0.8s linear infinite;
+        }
+        @keyframes laserDash {
+            to { stroke-dashoffset: -24; }
         }
     </style>
 </head>
@@ -231,10 +260,10 @@
     </header>
 
     <!-- Main Video Experience Area -->
-    <main class="max-w-6xl mx-auto w-full my-4 flex-1 flex flex-col justify-center">
+    <main class="max-w-6xl mx-auto w-full my-4 flex-1 flex flex-col justify-center items-center">
 
-        <!-- 16:9 Video Canvas -->
-        <div class="video-stage">
+        <!-- 16:9 or 9:16 Adaptive Video Canvas -->
+        <div id="videoStage" class="video-stage">
             <div class="stage-inner">
                 <!-- Target Screenshot -->
                 <img id="stageImage" src="/images/tour/01_dashboard.png" alt="نمای میز کار نپتون ERP" class="screenshot-target">
@@ -262,6 +291,17 @@
                     <svg class="w-8 h-8 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2L4 14H10V22L12 22L20 10H14V2Z"/>
                     </svg>
+                </div>
+
+                <!-- Holographic Teacher Laser Pointer Beam SVG (Decision D-142) -->
+                <svg id="teacherLaserSvg" class="absolute inset-0 w-full h-full pointer-events-none z-36 opacity-0 transition-opacity duration-500">
+                    <line id="laserBeamLine" x1="0" y1="0" x2="0" y2="0" stroke="#38bdf8" stroke-width="2.5" class="teacher-laser-line" />
+                    <circle id="laserDot" cx="0" cy="0" r="4" fill="#f59e0b" filter="drop-shadow(0 0 8px #f59e0b)" />
+                </svg>
+
+                <!-- 9:16 Reel Hook Top Banner (Visible in Reel Mode) -->
+                <div id="reelHookBanner" class="hidden absolute top-4 inset-x-4 z-40 bg-gradient-to-r from-red-600/90 to-amber-600/90 backdrop-blur-md text-white font-black text-center py-2 px-3 rounded-xl shadow-2xl text-xs sm:text-sm animate-pulse border border-amber-300/40">
+                    🚨 هشدار: یک ساعت بی‌خبری از دخل یعنی باختن در بازار!
                 </div>
 
                 <!-- ========================================================= -->
@@ -307,16 +347,16 @@
                 </div>
 
                 <!-- ========================================================= -->
-                <!-- INTERACTIVE AI TALKING PRESENTER: ARASH (DECISION D-141)  -->
+                <!-- TEACHER AVATAR: ARASH ON STAGE (DECISIONS D-141 & D-142)  -->
                 <!-- ========================================================= -->
-                <div id="presenterPodium" class="presenter-podium flex items-end gap-3 pointer-events-auto">
+                <div id="presenterPodium" class="presenter-podium flex items-end gap-3 pointer-events-auto" style="bottom: 12%; left: 10%;">
                     <!-- Avatar Capsule Card -->
                     <div class="relative group bg-slate-950/90 backdrop-blur-xl border border-sky-500/40 rounded-2xl p-2 shadow-2xl flex items-center gap-3 avatar-glow-ring transition-all hover:border-amber-400">
                         
                         <!-- Real-time Animated Avatar Face Container -->
                         <div id="avatarFace" class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 border-sky-400 bg-slate-900 shadow-md">
                             <!-- Base Photorealistic Portrait of Arash -->
-                            <img src="/images/arash_presenter.jpg" alt="آرش - مجری هوش مالی نپتون" class="w-full h-full object-cover">
+                            <img src="/images/arash_presenter.jpg" alt="آرش - مجری و معلم هوش مالی نپتون" class="w-full h-full object-cover">
 
                             <!-- Dynamic SVG Mouth Viseme Morph Overlay -->
                             <svg id="avatarMouth" class="absolute bottom-2 inset-x-0 mx-auto w-6 h-3 pointer-events-none transition-transform duration-75" viewBox="0 0 40 20" style="transform-origin: center bottom;">
@@ -339,9 +379,9 @@
                                     <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                                 </span>
                                 <span class="font-bold text-white text-xs">آرش</span>
-                                <span class="text-[9px] px-1.5 py-0.2 rounded bg-sky-950 border border-sky-700 text-sky-300 font-mono">AI_HOST</span>
+                                <span class="text-[9px] px-1.5 py-0.2 rounded bg-sky-950 border border-sky-700 text-sky-300 font-mono">TEACHER</span>
                             </div>
-                            <p class="text-[10px] text-slate-300">دستیار ارشد هوش مالی</p>
+                            <p class="text-[10px] text-slate-300">مربی هوش مالی</p>
                         </div>
 
                         <!-- Minimize / Close Presenter Button -->
@@ -353,7 +393,7 @@
                     </div>
                 </div>
 
-                <!-- Live Subtitles & Headline Overlay -->
+                <!-- Live Subtitles & Headline Overlay with Kinetic Highlighting -->
                 <div class="absolute bottom-0 inset-x-0 p-4 sm:p-6 md:p-8 subtitles-glass z-30 flex flex-col justify-end text-center">
                     <div class="flex items-center justify-center gap-2 mb-2">
                         <span id="sceneBadge" class="badge badge-primary font-bold text-xs">صحنه ۱: بحران تاریکی مالی</span>
@@ -365,6 +405,13 @@
                     <p id="sceneSubtitle" class="text-xs sm:text-sm md:text-base text-sky-200/90 font-medium max-w-4xl mx-auto leading-relaxed">
                         امروز چقدر پول توی حسابه؟ دخل چقدر فروخته؟ و آیا سود واقعی بردی یا فقط چرخش الکی پول بوده؟! در بازار پرسرعت امروز، یک ساعت بی‌خبری یعنی باختن!
                     </p>
+
+                    <!-- Interactive Viral Lead Magnet Banner (Comment-to-DM Loop - Decision D-142) -->
+                    <div class="mt-2.5 flex items-center justify-center">
+                        <div class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500/20 via-sky-500/20 to-purple-500/20 border border-amber-500/50 rounded-full px-3.5 py-1 text-[11px] text-amber-200 shadow-lg backdrop-blur-md">
+                            <span>💬 برای دریافت لینک دانلود نسخه کامل، کلمه <strong class="text-amber-400 font-black">«نپتون»</strong> را کامنت کنید!</span>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -376,7 +423,7 @@
         </div>
 
         <!-- Video Player Controls Panel -->
-        <div class="bg-panelBg/90 backdrop-blur-md border border-slate-800 rounded-2xl p-3 sm:p-4 mt-3 shadow-2xl flex flex-wrap items-center justify-between gap-3">
+        <div class="w-full bg-panelBg/90 backdrop-blur-md border border-slate-800 rounded-2xl p-3 sm:p-4 mt-3 shadow-2xl flex flex-wrap items-center justify-between gap-3">
             
             <!-- Left Controls: Play / Next / Prev / Audio -->
             <div class="flex flex-wrap items-center gap-2">
@@ -401,7 +448,12 @@
                 </button>
                 <button onclick="togglePresenterVisibility()" id="presenterBtn" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-amber-300" title="نمایش کاراکتر مجری هوش مالی">
                     <span id="presenterIcon">🎭</span>
-                    <span id="presenterText">مجری: روشن</span>
+                    <span id="presenterText">معلم: روشن</span>
+                </button>
+                <!-- Multi-format Switcher (16:9 Landscape vs 9:16 Vertical Reel) -->
+                <button onclick="toggleReelFormat()" id="reelFormatBtn" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-purple-300" title="تغییر قالب به ریلز عمودی اینستاگرام / تیک‌تاک">
+                    <span id="reelIcon">📱</span>
+                    <span id="reelText">قالب: ۱۶:۹</span>
                 </button>
             </div>
 
@@ -434,7 +486,7 @@
         </div>
 
         <!-- 6 Scenes Timeline Cards Grid -->
-        <div class="mt-4">
+        <div class="w-full mt-4">
             <h3 class="text-xs font-bold text-slate-400 mb-2 flex items-center gap-2">
                 <span>فهرست پرده‌های داستانی قسمت ۱ (ساختار روایی هالیوودی PAR-SaaS):</span>
             </h3>
@@ -499,7 +551,7 @@
     <!-- JavaScript Master Video Controller -->
     <script>
         // =========================================================================
-        // 6 SCENES SCRIPT DATA (ACCORDING TO DECISIONS D-138, D-139, D-140, D-141)
+        // 6 SCENES SCRIPT DATA (ACCORDING TO DECISIONS D-138, D-139, D-140, D-141, D-142)
         // =========================================================================
         const EPISODE_SCENES = [
             {
@@ -513,7 +565,9 @@
                 pointerText: "تاریکی اطلاعاتی مدیر",
                 spotlight: { top: 11, left: 10, width: 80, height: 20 },
                 arrow: { x: 50, y: 33 },
-                zoom: 1.15
+                zoom: 1.15,
+                // Teacher Stage Walk Coordinates (Decision D-142)
+                teacherPosition: { bottom: 12, left: 10, scale: 1.0, laser: false }
             },
             {
                 id: "scene_02",
@@ -526,7 +580,9 @@
                 pointerText: "نبض نقدینگی زنده",
                 spotlight: { top: 11, left: 12, width: 76, height: 20 },
                 arrow: { x: 50, y: 33 },
-                zoom: 1.20
+                zoom: 1.20,
+                // Walks to right to open sightlines to bank and net profit widgets
+                teacherPosition: { bottom: 12, left: 74, scale: 1.05, laser: true }
             },
             {
                 id: "scene_03",
@@ -539,7 +595,9 @@
                 pointerText: "رادار چک‌های صیادی",
                 spotlight: { top: 33, left: 8, width: 84, height: 55 },
                 arrow: { x: 74, y: 76 },
-                zoom: 1.18
+                zoom: 1.18,
+                // Walks to lower center stage, gesturing toward cheque table
+                teacherPosition: { bottom: 14, left: 42, scale: 1.0, laser: true }
             },
             {
                 id: "scene_04",
@@ -552,7 +610,9 @@
                 pointerText: "کلیدهای میانبر سریع F1-F8",
                 spotlight: { top: 5, left: 6, width: 45, height: 8 },
                 arrow: { x: 28, y: 15 },
-                zoom: 1.25
+                zoom: 1.25,
+                // Walks to left, laser-pointing upwards to function keys
+                teacherPosition: { bottom: 12, left: 12, scale: 1.0, laser: true }
             },
             {
                 id: "scene_05",
@@ -565,7 +625,9 @@
                 pointerText: "هوش مصنوعی متصل به دیتابیس",
                 spotlight: { top: 68, left: 15, width: 70, height: 26 },
                 arrow: { x: 50, y: 65 },
-                zoom: 1.18
+                zoom: 1.18,
+                // Walks alongside Copilot chat interface
+                teacherPosition: { bottom: 12, left: 70, scale: 1.05, laser: true }
             },
             {
                 id: "scene_06",
@@ -578,7 +640,9 @@
                 pointerText: "دانلود رایگان ۱۴ روزه",
                 spotlight: { top: 5, left: 5, width: 90, height: 90 },
                 arrow: { x: 50, y: 50 },
-                zoom: 1.0
+                zoom: 1.0,
+                // Advances to center stage for the closing keynote keynote posture
+                teacherPosition: { bottom: 15, left: 38, scale: 1.15, laser: false }
             }
         ];
 
@@ -913,7 +977,7 @@
         const cinematicVfx = new CinematicVFXEngine();
 
         // =========================================================================
-        // INTERACTIVE AI TALKING CHARACTER ENGINE: ARASH (DECISION D-141)
+        // TEACHER AVATAR ENGINE: ARASH STAGE CHOREOGRAPHY (DECISIONS D-141 & D-142)
         // =========================================================================
         class TalkingCharacterEngine {
             constructor() {
@@ -935,6 +999,62 @@
                 this.currentLipWidth = 14;
                 this.currentLipRound = 2;
                 this.currentHeadTilt = 0;
+            }
+
+            walkTo(targetBottom, targetLeft, targetScale) {
+                if (!this.podium) return;
+                // Add walking gait bobbing animation during transition
+                this.podium.classList.add('is-walking');
+                this.podium.style.bottom = `${targetBottom}%`;
+                this.podium.style.left = `${targetLeft}%`;
+                this.podium.style.transform = `scale(${targetScale})`;
+
+                // Remove walking gait after arrival (1.2s transition duration)
+                setTimeout(() => {
+                    if (this.podium) this.podium.classList.remove('is-walking');
+                    this.updateLaserPointer();
+                }, 1200);
+            }
+
+            updateLaserPointer() {
+                const laserSvg = document.getElementById('teacherLaserSvg');
+                const laserLine = document.getElementById('laserBeamLine');
+                const laserDot = document.getElementById('laserDot');
+                const scene = EPISODE_SCENES[currentSceneIdx];
+
+                if (!laserSvg || !laserLine || !laserDot) return;
+
+                if (scene && scene.teacherPosition && scene.teacherPosition.laser && this.enabled) {
+                    const stage = document.getElementById('videoStage');
+                    const face = document.getElementById('avatarFace');
+                    const targetFrame = document.getElementById('spotlightFrame');
+
+                    if (stage && face && targetFrame) {
+                        const stageRect = stage.getBoundingClientRect();
+                        const faceRect = face.getBoundingClientRect();
+                        const frameRect = targetFrame.getBoundingClientRect();
+
+                        // Start point: Center of Arash's face
+                        const startX = faceRect.left + faceRect.width / 2 - stageRect.left;
+                        const startY = faceRect.top + faceRect.height / 2 - stageRect.top;
+
+                        // End point: Center of highlighted spotlight
+                        const endX = frameRect.left + frameRect.width / 2 - stageRect.left;
+                        const endY = frameRect.top + frameRect.height / 2 - stageRect.top;
+
+                        laserLine.setAttribute('x1', startX);
+                        laserLine.setAttribute('y1', startY);
+                        laserLine.setAttribute('x2', endX);
+                        laserLine.setAttribute('y2', endY);
+
+                        laserDot.setAttribute('cx', endX);
+                        laserDot.setAttribute('cy', endY);
+
+                        laserSvg.classList.remove('opacity-0');
+                        return;
+                    }
+                }
+                laserSvg.classList.add('opacity-0');
             }
 
             update(time) {
@@ -1054,6 +1174,7 @@
         let currentSceneIdx = 0;
         let isPlaying = true;
         let soundEnabled = true;
+        let isReelMode = false;
         let currentVoice = 'ganji'; // Default: Ostad Ahmad Ganji (Verified Decision D-138)
         const audioPlayer = document.getElementById('episodeAudio');
 
@@ -1089,6 +1210,28 @@
                 audioPlayer.currentTime = 0;
                 audioPlayer.play().catch(e => console.log(e));
             }
+        }
+
+        function toggleReelFormat() {
+            isReelMode = !isReelMode;
+            const stage = document.getElementById('videoStage');
+            const hookBanner = document.getElementById('reelHookBanner');
+            const btnText = document.getElementById('reelText');
+            const btn = document.getElementById('reelFormatBtn');
+
+            if (isReelMode) {
+                stage.classList.add('reel-mode');
+                if (hookBanner) hookBanner.classList.remove('hidden');
+                btnText.textContent = 'قالب: ۹:۱۶ عمودی';
+                btn.className = 'btn btn-sm btn-ghost border border-purple-500 bg-purple-950/40 rounded-xl text-xs gap-1.5 text-purple-200';
+            } else {
+                stage.classList.remove('reel-mode');
+                if (hookBanner) hookBanner.classList.add('hidden');
+                btnText.textContent = 'قالب: ۱۶:۹ افقی';
+                btn.className = 'btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-purple-300';
+            }
+            cinematicVfx.resize();
+            setTimeout(() => talkingCharacter.updateLaserPointer(), 600);
         }
 
         function renderScene(idx) {
@@ -1132,7 +1275,16 @@
                 pointer.classList.add('opacity-0');
             }
 
-            // 5. Update Timeline Cards Active State
+            // 5. Dynamic Teacher Stage Walk (Decision D-142)
+            if (scene.teacherPosition) {
+                talkingCharacter.walkTo(
+                    scene.teacherPosition.bottom,
+                    scene.teacherPosition.left,
+                    scene.teacherPosition.scale
+                );
+            }
+
+            // 6. Update Timeline Cards Active State
             for (let i = 0; i < EPISODE_SCENES.length; i++) {
                 const card = document.getElementById(`card_${i}`);
                 if (card) {
@@ -1144,7 +1296,7 @@
                 }
             }
 
-            // 6. Trigger Hollywood VFX & Audio Foley (Decisions D-140 & D-141)
+            // 7. Trigger Hollywood VFX & Audio Foley (Decisions D-140 & D-141)
             cinematicSound.playWhoosh();
 
             // Flare & Shockwave on Scene 2 & 5 reveals
@@ -1175,7 +1327,7 @@
                 headline.classList.remove('crisis-glitch');
             }
 
-            // 7. Load and Play Official Narration
+            // 8. Load and Play Official Narration
             audioPlayer.src = getAudioPath(currentVoice, scene.id);
             if (soundEnabled && isPlaying) {
                 audioPlayer.currentTime = 0;
@@ -1188,6 +1340,7 @@
             cinematicSound.attachAudioPlayer(audioPlayer);
             cinematicSound.duck(true);
             if (!cinematicSound.isMusicRunning) cinematicSound.startAmbientMusic();
+            talkingCharacter.updateLaserPointer();
         });
 
         audioPlayer.addEventListener('pause', () => {
@@ -1303,14 +1456,17 @@
             const btnText = document.getElementById('presenterText');
             const btn = document.getElementById('presenterBtn');
             const podium = document.getElementById('presenterPodium');
+            const laserSvg = document.getElementById('teacherLaserSvg');
             if (talkingCharacter.enabled) {
-                btnText.textContent = 'مجری: روشن';
+                btnText.textContent = 'معلم: روشن';
                 btn.className = 'btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-amber-300';
                 if (podium) podium.style.display = 'flex';
+                talkingCharacter.updateLaserPointer();
             } else {
-                btnText.textContent = 'مجری: خاموش';
+                btnText.textContent = 'معلم: خاموش';
                 btn.className = 'btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-slate-500';
                 if (podium) podium.style.display = 'none';
+                if (laserSvg) laserSvg.classList.add('opacity-0');
             }
         }
 

@@ -3225,3 +3225,27 @@ High-end B2B enterprise software demonstrations and video masterclasses require 
 5. **Zero Cloud Dependency & In-Browser MP4 Export:**
    - The entire avatar and VFX subsystem runs purely client-side on HTML5 Canvas / SVG / Web Audio API. Zero external API calls, zero rate limits, zero latency.
    - Video recorder (`toggleScreenRecord`) captures the full composited stream (Presenter + VFX + Software Stage + Voiceover + Synthesized Ducked SFX) into high-definition WebM/MP4 for instant YouTube and Instagram sharing.
+
+
+---
+
+## D-142 — Neptune Teacher Avatar Choreography, Spatial Stage Walk & Viral Social Conversion Standard — 2026-11-11 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+To maximize engagement, audience retention, and conversion rates across both long-form B2B masterclasses (YouTube/Website) and viral short-form social channels (Instagram Reels, YouTube Shorts, TikTok), the AI presenter («آرش») must transcend a static picture-in-picture box. Like a masterclass teacher on stage, Arash must physically walk across the scene, point toward specific software widgets using a holographic laser beam, and execute high-converting social media retention principles (0–3s hook, every-3-seconds visual resets, word-highlighted kinetic captions, 9:16 vertical mobile framing, and automated comment-to-DM lead generation).
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **Dynamic Stage Walk & Spatial Coordinates:**
+   - Arash is dynamically choreographed to move to scene-specific stage coordinates: Scene 1 (Bottom-Center/Left hook stance), Scene 2 (Bottom-Right, opening sightline to bank/profit cards), Scene 3 (Center-Lower, gesturing to Sayad cheques), Scene 4 (Bottom-Left, pointing up to F1-F8 shortcuts), Scene 5 (Adjacent to Gemini Copilot chat drawer), Scene 6 (Center Stage hero closing position).
+   - Movement between coordinates incorporates Apple-style smooth deceleration curves (`cubic-bezier(0.16, 1, 0.3, 1)`) with subtle walking vertical gait oscillation (frequency 2.4Hz, amplitude 4px) and directional micro-lean.
+2. **Holographic Teacher Laser Pointer:**
+   - A glowing holographic laser line (cyan `#38bdf8` / amber `#f59e0b`) dynamically links Arash to the active spotlight frame (`spotlightFrame`), visually guiding the viewer's focus to the exact number or button being taught.
+3. **Viral Short-Form Retention Architecture:**
+   - **0–3s Pattern Interrupt:** Immediate visual motion, high-contrast headline, and punchy financial question to prevent scrolling.
+   - **Every-3-Seconds Reset Rule:** Automatic micro-zooms, camera glide shifts, laser retargeting, and sound foley resets every 3–4 seconds to guarantee >80% video completion rates.
+   - **Kinetic Word Highlighting:** Dynamic caption typography where spoken words pop in amber/gold for the 75%+ of users watching on mute.
+4. **Multi-Format Responsive Layout (16:9 vs. 9:16):**
+   - The player includes a 1-click format switcher supporting both standard 16:9 desktop/YouTube landscape and 9:16 mobile vertical format (optimized for Instagram Reels, YouTube Shorts, and TikTok with top hook banner, centered software action, and bottom teacher overlay).
+5. **B2B Viral Conversion & Lead Funnel:**
+   - Integrates an in-video interactive viral prompt: *«برای دریافت لینک دانلود رایگان نسخه دسکتاپ، کلمه "نپتون" را کامنت کنید!»*, powering zero-friction comment-to-DM lead generation.
+   - Every closing pitch enforces the Triple Zero-Risk Guarantee: 100% offline-first reliability, zero credit card requirement, and perpetual local data ownership.
