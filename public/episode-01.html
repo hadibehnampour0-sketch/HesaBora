@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسترکلاس ویدیویی نپتون ERP • قسمت ۱: میز کار مدیریتی و هوش مالی</title>
+    
+    <!-- Tailwind CSS & DaisyUI CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Vazirmatn', 'sans-serif'] },
+                    colors: {
+                        primary: '#0284c7',
+                        secondary: '#8b5cf6',
+                        accent: '#10b981',
+                        darkBg: '#030712',
+                        panelBg: '#0b1120'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Vazirmatn', sans-serif; background-color: #030712; color: #f8fafc; }
+        
+        /* 16:9 Cinematic Video Viewport */
+        .video-stage {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            overflow: hidden;
+            background: #02040a;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 0 50px rgba(2, 132, 199, 0.25);
+        }
+        
+        .stage-inner {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .screenshot-target {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.0s cubic-bezier(0.2, 0.8, 0.3, 1);
+            transform-origin: center center;
+        }
+        
+        /* Neon Spotlight Frame */
+        .spotlight-frame {
+            position: absolute;
+            z-index: 35;
+            pointer-events: none;
+            border: 3px solid #38bdf8;
+            border-radius: 1rem;
+            background: rgba(56, 189, 248, 0.12);
+            box-shadow: 0 0 35px rgba(56, 189, 248, 0.8), inset 0 0 20px rgba(2, 132, 199, 0.4);
+            transition: all 0.7s cubic-bezier(0.2, 0.8, 0.3, 1);
+            animation: frameGlow 2.0s infinite alternate ease-in-out;
+        }
+        
+        @keyframes frameGlow {
+            0% { border-color: #38bdf8; box-shadow: 0 0 25px rgba(56, 189, 248, 0.7), inset 0 0 15px rgba(2, 132, 199, 0.3); }
+            100% { border-color: #f59e0b; box-shadow: 0 0 35px rgba(245, 158, 11, 0.9), inset 0 0 25px rgba(245, 158, 11, 0.4); }
+        }
+        
+        /* Animated Radar Arrow Pointer */
+        .radar-pointer {
+            position: absolute;
+            z-index: 40;
+            pointer-events: none;
+            transition: all 0.7s cubic-bezier(0.2, 0.8, 0.3, 1);
+            filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.9));
+            animation: pointerBob 1.6s infinite ease-in-out;
+        }
+        
+        @keyframes pointerBob {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.08); }
+        }
+        
+        /* Kinetic Subtitles Bar */
+        .subtitles-glass {
+            background: linear-gradient(180deg, rgba(3, 7, 18, 0.05) 0%, rgba(3, 7, 18, 0.94) 30%, rgba(3, 7, 18, 0.98) 100%);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-2 sm:p-4 md:p-6 lg:p-8">
+
+    <!-- Top Navigation Bar -->
+    <header class="max-w-7xl mx-auto w-full flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+            <a href="/" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-indigo-600 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-sky-500/20 group-hover:scale-105 transition-transform">
+                    N
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
+                        <span>نپتون ERP</span>
+                        <span class="badge badge-accent badge-sm font-bold text-[10px]">مسترکلاس ویدیویی</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-400">قسمت اول: میز کار مدیریتی و هوش مالی</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Quick Switcher to Other Walkthroughs -->
+        <div class="flex items-center gap-2">
+            <a href="/teaser" class="btn btn-sm btn-ghost border border-slate-700/60 text-slate-300 rounded-xl text-xs gap-1 hover:border-amber-500">
+                <span>🔥 تیزر ۶۰ ثانیه‌ای</span>
+            </a>
+            <a href="/video-tour" class="btn btn-sm btn-ghost border border-slate-700/60 text-slate-300 rounded-xl text-xs gap-1 hover:border-sky-500">
+                <span>🗺️ تور کامل ۱۴ فصلی</span>
+            </a>
+            <a href="/download/windows" class="btn btn-sm btn-primary rounded-xl text-xs font-black gap-1 shadow-lg shadow-sky-600/20">
+                <span>⬇️ دانلود رایگان ۱۴ روزه</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Video Experience Area -->
+    <main class="max-w-6xl mx-auto w-full my-4 flex-1 flex flex-col justify-center">
+
+        <!-- 16:9 Video Canvas -->
+        <div class="video-stage">
+            <div class="stage-inner">
+                <!-- Target Screenshot -->
+                <img id="stageImage" src="/images/tour/01_dashboard.png" alt="نمای میز کار نپتون ERP" class="screenshot-target">
+
+                <!-- Dynamic Neon Spotlight Frame -->
+                <div id="spotlightFrame" class="spotlight-frame opacity-0"></div>
+
+                <!-- Animated Target Radar Pointer -->
+                <div id="radarPointer" class="radar-pointer opacity-0 flex flex-col items-center">
+                    <span class="px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-black text-[11px] shadow-lg mb-1 whitespace-nowrap">
+                        🎯 <span id="pointerText">کانون توجه</span>
+                    </span>
+                    <svg class="w-8 h-8 text-amber-400" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L4 14H10V22L12 22L20 10H14V2Z"/>
+                    </svg>
+                </div>
+
+                <!-- Live Subtitles & Headline Overlay -->
+                <div class="absolute bottom-0 inset-x-0 p-4 sm:p-6 md:p-8 subtitles-glass z-30 flex flex-col justify-end text-center">
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <span id="sceneBadge" class="badge badge-primary font-bold text-xs">صحنه ۱: بحران تاریکی مالی</span>
+                        <span id="sceneTimecode" class="text-xs text-slate-400 font-mono">۰۰:۰۰ تا ۰۰:۲۷</span>
+                    </div>
+                    <h2 id="sceneHeadline" class="text-lg sm:text-2xl md:text-3xl font-black text-white leading-tight mb-2 drop-shadow-md">
+                        وقتی وارد دفتر کار میشی، اولین سوالی که ذهنت رو درگیر میکنه چیه؟
+                    </h2>
+                    <p id="sceneSubtitle" class="text-xs sm:text-sm md:text-base text-sky-200/90 font-medium max-w-4xl mx-auto leading-relaxed">
+                        امروز چقدر پول توی حسابه؟ دخل چقدر فروخته؟ و آیا سود واقعی بردی یا فقط چرخش الکی پول بوده؟!
+                    </p>
+                </div>
+
+                <!-- Top Right Audio / Voice Indicator -->
+                <div class="absolute top-4 right-4 z-40 flex items-center gap-2 bg-slate-950/80 backdrop-blur-md border border-slate-700/80 px-3 py-1.5 rounded-full text-xs shadow-xl">
+                    <span class="relative flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <span id="voiceIndicatorLabel" class="font-bold text-slate-200">گوینده: استاد احمد گنجی</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Timeline Bar -->
+        <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden mt-3 border border-slate-800">
+            <div id="timelineProgress" class="bg-gradient-to-r from-sky-500 to-amber-500 h-full w-0 transition-all duration-300"></div>
+        </div>
+
+        <!-- Video Player Controls Panel -->
+        <div class="bg-panelBg/90 backdrop-blur-md border border-slate-800 rounded-2xl p-3 sm:p-4 mt-3 shadow-2xl flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Left Controls: Play / Next / Prev / Audio -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button id="playBtn" onclick="togglePlay()" class="btn btn-primary btn-sm rounded-xl text-xs gap-1.5 font-bold shadow-md shadow-sky-600/20">
+                    <span id="playIcon">⏸️</span>
+                    <span id="playText">توقف پخش</span>
+                </button>
+
+                <button onclick="prevScene()" class="btn btn-ghost btn-sm rounded-xl text-xs hover:bg-slate-800" title="صحنه قبل">
+                    <span>⏮️ صحنه قبل</span>
+                </button>
+
+                <button onclick="nextScene()" class="btn btn-ghost btn-sm rounded-xl text-xs hover:bg-slate-800" title="صحنه بعد">
+                    <span>صحنه بعد ⏭️</span>
+                </button>
+
+                <button onclick="toggleMute()" class="btn btn-outline btn-accent btn-sm rounded-xl text-xs gap-1 font-bold">
+                    <span id="muteIcon">🔊</span>
+                    <span id="muteText">صدا: روشن</span>
+                </button>
+            </div>
+
+            <!-- Middle Controls: Voice Selector Switch (D-138) -->
+            <div class="flex flex-wrap items-center gap-1 bg-slate-900/90 border border-slate-700/80 rounded-xl p-1 shadow-inner">
+                <span class="text-[11px] text-slate-400 font-bold px-1.5">گوینده:</span>
+                <button id="voiceGanjiBtn" onclick="setVoice('ganji')" class="btn btn-xs rounded-lg font-bold bg-amber-500 text-black shadow-sm" title="صدای برگزیده و پیش‌فرض نپتون ERP">
+                    📻 استاد احمد گنجی (برگزیده) ⭐
+                </button>
+                <button id="voiceAmirBtn" onclick="setVoice('amir')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مدل پایپر - صدای امیر سودبخش پادکست رخ">
+                    🎙️ امیر (پادکست رخ)
+                </button>
+                <button id="voiceDilaraBtn" onclick="setVoice('dilara')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مایکروسافت نئورال - لحن آرام و اداری">
+                    👩 دلارا (روان)
+                </button>
+                <button id="voiceFaridBtn" onclick="setVoice('farid')" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300" title="مایکروسافت نئورال - لحن تبلیغاتی پرانرژی">
+                    👨 فرید (تیزری)
+                </button>
+            </div>
+
+            <!-- Right Controls: Speed, Fullscreen & Record -->
+            <div class="flex items-center gap-2">
+                <button id="recordBtn" onclick="toggleScreenRecord()" class="btn btn-error btn-outline btn-sm rounded-xl text-xs font-bold gap-1.5">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                    </span>
+                    <span id="recordLabel">🔴 ضبط ویدیو (MP4)</span>
+                </button>
+
+                <button onclick="toggleFullscreen()" class="btn btn-ghost btn-sm rounded-xl text-xs hover:bg-slate-800" title="تمام‌صفحه سینمایی">
+                    <span>⛶ تمام‌صفحه</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 6 Storyboard Cards (Clickable Direct Scene Jumper) -->
+        <div class="space-y-2 mt-5">
+            <h3 class="text-xs font-bold text-slate-400 flex items-center justify-between">
+                <span>📑 ساختار ۶ فازی قسمت اول (استاندارد داستان‌نویسی D-139)</span>
+                <span class="text-[11px] text-sky-400">کلیک روی هر کارت برای جهش به صحنه</span>
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+                
+                <div onclick="jumpToScene(0)" id="card_0" class="p-3 rounded-xl border border-red-500/40 bg-red-950/20 hover:bg-red-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-red-400 font-black text-sm">01</span>
+                    <div>
+                        <div class="font-bold text-white">بحران تاریکی مالی (قلاب ۸ ثانیه)</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۰۰ تا ۰۰:۲۷ • درد گزارش‌های سنتی</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(1)" id="card_1" class="p-3 rounded-xl border border-sky-500/40 bg-sky-950/20 hover:bg-sky-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-sky-400 font-black text-sm">02</span>
+                    <div>
+                        <div class="font-bold text-white">کابین خلبان نپتون (ورود راهنما)</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۲۷ تا ۰۰:۴۶ • نقدینگی، دخل و سود زنده</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(2)" id="card_2" class="p-3 rounded-xl border border-emerald-500/40 bg-emerald-950/20 hover:bg-emerald-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-emerald-400 font-black text-sm">03</span>
+                    <div>
+                        <div class="font-bold text-white">تراز جریان وجوه نقد و رادار چک‌ها</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۴۶ تا ۰۱:۱۵ • پیشگیری از بحران نقدینگی</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(3)" id="card_3" class="p-3 rounded-xl border border-amber-500/40 bg-amber-950/20 hover:bg-amber-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-amber-400 font-black text-sm">04</span>
+                    <div>
+                        <div class="font-bold text-white">سرعت ارگونومیک کیبورد F1 تا F8</div>
+                        <div class="text-[10px] text-slate-400">۰۱:۱۵ تا ۰۱:۳۹ • حذف ماوس در بازار شلوغ</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(4)" id="card_4" class="p-3 rounded-xl border border-purple-500/40 bg-purple-950/20 hover:bg-purple-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-purple-400 font-black text-sm">05</span>
+                    <div>
+                        <div class="font-bold text-white">دستیار هوش مالی جمنای (Copilot)</div>
+                        <div class="text-[10px] text-slate-400">۰۱:۳۹ تا ۰۲:۱۱ • کشف اسناد مشکوک به دارایی</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(5)" id="card_5" class="p-3 rounded-xl border border-rose-500/40 bg-rose-950/20 hover:bg-rose-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-rose-400 font-black text-sm">06</span>
+                    <div>
+                        <div class="font-bold text-white">تولد واقعیت نوین و تست رایگان</div>
+                        <div class="text-[10px] text-slate-400">۰۲:۱۱ تا ۰۲:۳۶ • اقدام بی‌ریسک ۱۴ روزه</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Global Native Audio Player -->
+    <audio id="episodeAudio" preload="auto"></audio>
+
+    <!-- JavaScript Master Video Controller -->
+    <script>
+        // =========================================================================
+        // 6 SCENES SCRIPT DATA (ACCORDING TO DECISIONS D-138 & D-139)
+        // =========================================================================
+        const EPISODE_SCENES = [
+            {
+                id: "scene_01",
+                image: "/images/tour/01_dashboard.png",
+                badge: "صحنه ۱: بحران تاریکی مالی (قلاب ۸ ثانیه)",
+                badgeClass: "bg-red-950/80 border-red-500/40 text-red-300",
+                timecode: "۰۰:۰۰ تا ۰۰:۲۷",
+                headline: "وقتی صبح وارد دفتر کار میشی، اولین سوالی که ذهنت رو درگیر میکنه چیه؟",
+                subtitle: "امروز چقدر پول توی حسابه؟ دخل چقدر فروخته؟ و آیا سود واقعی بردی یا فقط چرخش الکی پول بوده؟! در بازار پرسرعت امروز، یک ساعت بی‌خبری یعنی باختن!",
+                pointerText: "تاریکی اطلاعاتی مدیر",
+                spotlight: { top: 11, left: 10, width: 80, height: 20 },
+                arrow: { x: 50, y: 33 },
+                zoom: 1.15
+            },
+            {
+                id: "scene_02",
+                image: "/images/tour/01_dashboard.png",
+                badge: "صحنه ۲: ورود راهنما و کابین خلبان",
+                badgeClass: "bg-sky-950/80 border-sky-500/40 text-sky-300",
+                timecode: "۰۰:۲۷ تا ۰۰:۴۶",
+                headline: "نپتون میز کار شما را به کابین خلبان کسب‌وکار تبدیل می‌کند!",
+                subtitle: "در یک نگاه و بدون نیاز به پرینت حسابدار، موجودی کل بانک‌ها، دخل زنده، و سود خالص کسب‌وکارت، ثانیه به ثانیه جلوی چشمته!",
+                pointerText: "نبض نقدینگی زنده",
+                spotlight: { top: 11, left: 12, width: 76, height: 20 },
+                arrow: { x: 50, y: 33 },
+                zoom: 1.20
+            },
+            {
+                id: "scene_03",
+                image: "/images/tour/01_dashboard.png",
+                badge: "صحنه ۳: تراز نقدینگی و رادار چک‌های صیادی",
+                badgeClass: "bg-emerald-950/80 border-emerald-500/40 text-emerald-300",
+                timecode: "۰۰:۴۶ تا ۰۱:۱۵",
+                headline: "پایش ۷ روزه گردش پول و رادار چک‌های سررسید صیاد",
+                subtitle: "هیچ چکی فراموش نمیشه! سررسیدها هشدار داده میشن و با یک کلیک وصول میشن تا اعتبار بازاری شما همیشه مثل کوه استوار بمونه.",
+                pointerText: "رادار چک‌های صیادی",
+                spotlight: { top: 33, left: 8, width: 84, height: 55 },
+                arrow: { x: 74, y: 76 },
+                zoom: 1.18
+            },
+            {
+                id: "scene_04",
+                image: "/images/tour/01_dashboard.png",
+                badge: "صحنه ۴: سرعت ارگونومیک کیبورد F1 تا F8",
+                badgeClass: "bg-amber-950/80 border-amber-500/40 text-amber-300",
+                timecode: "۰۱:۱۵ تا ۰۱:۳۹",
+                headline: "حسابداران حرفه‌ای وقتشان را برای ماوس و منوهای پیچیده تلف نمی‌کنند!",
+                subtitle: "با کلیدهای میانبر F1 تا F8 بدون لمس ماوس در کسری از ثانیه فاکتور بزنید، چک ثبت کنید یا سند صادر کنید؛ سریع، ارگونومیک و بدون خطا!",
+                pointerText: "کلیدهای میانبر سریع F1-F8",
+                spotlight: { top: 5, left: 6, width: 45, height: 8 },
+                arrow: { x: 28, y: 15 },
+                zoom: 1.25
+            },
+            {
+                id: "scene_05",
+                image: "/images/tour/02_copilot.png",
+                badge: "صحنه ۵: دستیار هوش مالی جمنای (Copilot)",
+                badgeClass: "bg-purple-950/80 border-purple-500/40 text-purple-300",
+                timecode: "۰۱:۳۹ تا ۰۲:۱۱",
+                headline: "چت مستقیم فارسی با دیتابیس مالی: کشف هوشمند ناهنجاری‌ها و اسناد مشکوک",
+                subtitle: "هوش مصنوعی مانند یک حسابرس ارشد کل دیتابیس را تحلیل کرده، ناهنجاری‌ها را قبل از ممیزی دارایی شکار می‌کند و حاشیه سود شما را تا ۲۰٪ افزایش می‌دهد!",
+                pointerText: "هوش مصنوعی متصل به دیتابیس",
+                spotlight: { top: 68, left: 15, width: 70, height: 26 },
+                arrow: { x: 50, y: 65 },
+                zoom: 1.18
+            },
+            {
+                id: "scene_06",
+                image: "/images/tour/01_dashboard.png",
+                badge: "صحنه ۶: تولد واقعیت نوین و اقدام نهایی",
+                badgeClass: "bg-rose-950/80 border-rose-500/40 text-rose-300",
+                timecode: "۰۲:۱۱ تا ۰۲:۳۶",
+                headline: "دیگر دوران استرس و بی‌خبری تمام شد؛ حسابدار همیشه‌بیدار در کنار شماست!",
+                subtitle: "همین حالا با ۱۴ روز تست کاملاً رایگان و بدون نیاز به کارت بانکی، نپتون را دانلود کنید: نپتون دات‌آی‌آر!",
+                pointerText: "دانلود رایگان ۱۴ روزه",
+                spotlight: { top: 5, left: 5, width: 90, height: 90 },
+                arrow: { x: 50, y: 50 },
+                zoom: 1.0
+            }
+        ];
+
+        let currentSceneIdx = 0;
+        let isPlaying = true;
+        let soundEnabled = true;
+        let currentVoice = 'ganji'; // Default: Ostad Ahmad Ganji (Verified Decision D-138)
+        const audioPlayer = document.getElementById('episodeAudio');
+
+        function getAudioPath(voice, sceneId) {
+            const ext = (voice === 'ganji' || voice === 'amir') ? 'wav' : 'mp3';
+            return `/audio/episodes/ep01/${voice}/${sceneId}.${ext}`;
+        }
+
+        function setVoice(v) {
+            currentVoice = v;
+            ['ganji', 'amir', 'dilara', 'farid'].forEach(k => {
+                const btn = document.getElementById(`voice${k.charAt(0).toUpperCase() + k.slice(1)}Btn`);
+                if (btn) {
+                    btn.className = (k === v)
+                        ? 'btn btn-xs rounded-lg font-bold bg-amber-500 text-black shadow-sm'
+                        : 'btn btn-xs rounded-lg font-bold btn-ghost text-slate-300';
+                }
+            });
+
+            // Update voice label
+            const labelMap = {
+                'ganji': 'استاد احمد گنجی (برگزیده)',
+                'amir': 'امیر سودبخش (پادکست رخ)',
+                'dilara': 'دلارا (مایکروسافت نئورال)',
+                'farid': 'فرید (مایکروسافت نئورال)'
+            };
+            document.getElementById('voiceIndicatorLabel').textContent = `گوینده: ${labelMap[v] || v}`;
+
+            // Switch audio track immediately
+            const scene = EPISODE_SCENES[currentSceneIdx];
+            audioPlayer.src = getAudioPath(currentVoice, scene.id);
+            if (soundEnabled && isPlaying) {
+                audioPlayer.currentTime = 0;
+                audioPlayer.play().catch(e => console.log(e));
+            }
+        }
+
+        function renderScene(idx) {
+            if (idx < 0 || idx >= EPISODE_SCENES.length) return;
+            currentSceneIdx = idx;
+            const scene = EPISODE_SCENES[idx];
+
+            // 1. Text & Headings
+            document.getElementById('sceneBadge').textContent = scene.badge;
+            document.getElementById('sceneTimecode').textContent = scene.timecode;
+            document.getElementById('sceneHeadline').textContent = scene.headline;
+            document.getElementById('sceneSubtitle').textContent = scene.subtitle;
+            document.getElementById('pointerText').textContent = scene.pointerText;
+
+            // 2. Image and Cinematic Zoom
+            const img = document.getElementById('stageImage');
+            if (img.src !== window.location.origin + scene.image) {
+                img.src = scene.image;
+            }
+            img.style.transform = `scale(${scene.zoom})`;
+
+            // 3. Spotlight Frame
+            const frame = document.getElementById('spotlightFrame');
+            if (scene.spotlight) {
+                frame.style.top = `${scene.spotlight.top}%`;
+                frame.style.left = `${scene.spotlight.left}%`;
+                frame.style.width = `${scene.spotlight.width}%`;
+                frame.style.height = `${scene.spotlight.height}%`;
+                frame.classList.remove('opacity-0');
+            } else {
+                frame.classList.add('opacity-0');
+            }
+
+            // 4. Radar Pointer Arrow
+            const pointer = document.getElementById('radarPointer');
+            if (scene.arrow) {
+                pointer.style.top = `${scene.arrow.y}%`;
+                pointer.style.left = `${scene.arrow.x}%`;
+                pointer.classList.remove('opacity-0');
+            } else {
+                pointer.classList.add('opacity-0');
+            }
+
+            // 5. Update Storyboard Card Highlights
+            for (let i = 0; i < EPISODE_SCENES.length; i++) {
+                const card = document.getElementById(`card_${i}`);
+                if (card) {
+                    if (i === idx) {
+                        card.classList.add('ring-2', 'ring-amber-400', 'bg-slate-800/80');
+                    } else {
+                        card.classList.remove('ring-2', 'ring-amber-400', 'bg-slate-800/80');
+                    }
+                }
+            }
+
+            // 6. Update Progress Bar
+            const progressPct = ((idx + 1) / EPISODE_SCENES.length) * 100;
+            document.getElementById('timelineProgress').style.width = `${progressPct}%`;
+
+            // 7. Load and Play Synchronized Persian Audio
+            if (soundEnabled) {
+                const audioSrc = getAudioPath(currentVoice, scene.id);
+                audioPlayer.src = audioSrc;
+                if (isPlaying) {
+                    audioPlayer.play().catch(e => console.log("Autoplay caught:", e));
+                }
+            }
+        }
+
+        // Automatic audio-driven progression (D-138)
+        audioPlayer.addEventListener('ended', () => {
+            if (isPlaying) {
+                if (currentSceneIdx < EPISODE_SCENES.length - 1) {
+                    renderScene(currentSceneIdx + 1);
+                } else {
+                    // Loop or pause at the end
+                    isPlaying = false;
+                    updatePlayButton();
+                }
+            }
+        });
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            updatePlayButton();
+            if (isPlaying) {
+                if (audioPlayer.paused) audioPlayer.play().catch(e => console.log(e));
+            } else {
+                audioPlayer.pause();
+            }
+        }
+
+        function updatePlayButton() {
+            document.getElementById('playIcon').textContent = isPlaying ? '⏸️' : '▶️';
+            document.getElementById('playText').textContent = isPlaying ? 'توقف پخش' : 'ادامه پخش';
+        }
+
+        function nextScene() {
+            if (currentSceneIdx < EPISODE_SCENES.length - 1) {
+                renderScene(currentSceneIdx + 1);
+            } else {
+                renderScene(0);
+            }
+        }
+
+        function prevScene() {
+            if (currentSceneIdx > 0) {
+                renderScene(currentSceneIdx - 1);
+            }
+        }
+
+        function jumpToScene(idx) {
+            renderScene(idx);
+        }
+
+        function toggleMute() {
+            soundEnabled = !soundEnabled;
+            document.getElementById('muteIcon').textContent = soundEnabled ? '🔊' : '🔇';
+            document.getElementById('muteText').textContent = soundEnabled ? 'صدا: روشن' : 'صدا: خاموش';
+            if (!soundEnabled) {
+                audioPlayer.pause();
+            } else {
+                if (isPlaying) audioPlayer.play().catch(e => console.log(e));
+            }
+        }
+
+        function toggleFullscreen() {
+            const stage = document.querySelector('.video-stage');
+            if (!document.fullscreenElement) {
+                stage.requestFullscreen().catch(err => alert(`خطای فول‌اسکرین: ${err.message}`));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // In-Browser Screen & Audio Video Recorder
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let recordInterval = null;
+        let recordSeconds = 0;
+
+        async function toggleScreenRecord() {
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getDisplayMedia({
+                        video: { frameRate: 30, width: 1920, height: 1080 },
+                        audio: true
+                    });
+                    recordedChunks = [];
+                    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9,opus' });
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) recordedChunks.push(e.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Neptune_ERP_Episode_01_Cockpit_${Date.now()}.webm`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        isRecording = false;
+                        clearInterval(recordInterval);
+                        document.getElementById('recordLabel').textContent = '🔴 ضبط ویدیو (MP4)';
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    recordSeconds = 0;
+                    recordInterval = setInterval(() => {
+                        recordSeconds++;
+                        const mins = String(Math.floor(recordSeconds / 60)).padStart(2, '0');
+                        const secs = String(recordSeconds % 60).padStart(2, '0');
+                        document.getElementById('recordLabel').textContent = `⏹️ توقف (${mins}:${secs})`;
+                    }, 1000);
+
+                    // Auto restart from scene 0 when recording starts
+                    renderScene(0);
+                    isPlaying = true;
+                    updatePlayButton();
+                    audioPlayer.play().catch(e => console.log(e));
+                } catch (err) {
+                    console.error("Recording error:", err);
+                    alert("اجازه ضبط صفحه یا تب صادر نشد.");
+                }
+            } else {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
+            }
+        }
+
+        // Keyboard navigation (Space for play/pause, Arrow keys for scenes)
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlay();
+            } else if (e.code === 'ArrowRight' || e.code === 'ArrowDown') {
+                e.preventDefault();
+                nextScene();
+            } else if (e.code === 'ArrowLeft' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                prevScene();
+            }
+        });
+
+        // Initialize scene 0 on DOM load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderScene(0);
+        });
+    </script>
+</body>
+</html>
