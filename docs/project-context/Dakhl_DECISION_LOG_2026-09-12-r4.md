@@ -3249,3 +3249,33 @@ To maximize engagement, audience retention, and conversion rates across both lon
 5. **B2B Viral Conversion & Lead Funnel:**
    - Integrates an in-video interactive viral prompt: *«برای دریافت لینک دانلود رایگان نسخه دسکتاپ، کلمه "نپتون" را کامنت کنید!»*, powering zero-friction comment-to-DM lead generation.
    - Every closing pitch enforces the Triple Zero-Risk Guarantee: 100% offline-first reliability, zero credit card requirement, and perpetual local data ownership.
+
+---
+
+## D-143 — Neptune Lifelike Human Presenter, Full-Body 2.5D Skeletal Rigging, Hand-Held Laser Pointer & Organic Teacher Stage Movement Standard — 2026-11-11 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+Following user feedback on Episode 1 and Episode 2 that the presenter character must possess complete human fidelity and not appear as a static thumbnail photo in a box (*«کاراکتر آرش الان فقط یک عکسه در صورتی که من توقع داشتم ظاهرش کاملاً انسانی باشه و مثل یه معلم توی صحنه حرکت کنه و موضوع رو توضیح بده»*), Decision D-143 establishes the standard for a photorealistic, full-standing keynote teacher. By utilizing high-resolution transparent cutouts, procedural 2.5D skeletal physics (organic breathing, weight-shift stance sways, and walking gait bobbing), hand-held laser remote diode emitters, and natural audio-reactive jaw/mouth articulation, Arash delivers the stage presence of a world-class technology keynote speaker.
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **Full-Standing Human Presenter Cutout & Stage Scale:**
+   - Instead of a 56px thumbnail badge, Arash is rendered as a photorealistic, standing keynote presenter (595×1150 source resolution at 256px–384px stage height).
+   - Dressed in a bespoke dark navy tailored blazer, crisp white shirt, polished trousers, and glowing neon-cyan Neptune diamond lapel pin.
+   - Casts a soft elliptical radial drop-shadow (`.human-ground-shadow`) directly onto the stage floor that scales and fades dynamically with motion.
+2. **Procedural 2.5D Skeletal Respiration & Stance Sway:**
+   - **Breathing:** Natural vertical chest expansion and contraction (`@keyframes humanIdleBreathe`: 0.22Hz gentle scaleY/scaleX oscillation).
+   - **Stance Sway:** Gentle organic weight-shift between feet, preventing frozen statue artifacts.
+   - **Emphasis Head Nod:** Vocal peaks (>70% volume) trigger realistic head nods and tilts ($1.5^\circ - 2.5^\circ$) in sync with rhetorical emphasis.
+3. **Hand-Held Laser Presenter Remote & Vector Math:**
+   - Arash physically holds a modern keynote laser remote in his hand.
+   - The glowing holographic laser beam (`#laserBeamLine`) calculates its starting vector directly from the glowing diode on his remote clicker (`#clickerDiode`), creating the unmistakable visual fidelity of a teacher pointing an actual laser at a screen.
+4. **Teacher Stage Stride & Walking Gait:**
+   - Transitioning between stage coordinates activates `.is-walking` (`@keyframes teacherWalkGait`: 2.4Hz gait frequency, 12px vertical bobbing, and alternating $2^\circ$ body roll).
+   - Arash smoothly turns toward his destination during transit and plants his feet upon arrival before aiming the laser pointer.
+5. **Dual-Mode Adaptive Presentation Architecture:**
+   - **Mode A (Full Stage Teacher):** Full-height standing presenter moving across the stage floor.
+   - **Mode B (Compact PiP):** Lower-third executive avatar pod for data-dense review.
+   - **Mode C (Full Stage Maximized):** Seamless toggle via top bar and avatar click.
+6. **Live Synced Jaw & Lip Articulation:**
+   - Web Audio frequency decomposition drives natural jaw drop, inner mouth cavity opening, and teeth visibility synchronized with Ostad Ahmad Ganji's voiceover.
+   - Natural organic blinking every 3.2 to 5.6 seconds with dual-phase lid descent.

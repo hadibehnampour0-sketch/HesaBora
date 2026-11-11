@@ -169,7 +169,7 @@
         }
 
         /* =========================================================================
-           TEACHER AVATAR STAGE CHOREOGRAPHY (DECISIONS D-141 & D-142)
+           LIFELIKE TEACHER AVATAR: 2.5D SKELETAL RIG & STAGE CHOREOGRAPHY (D-141, D-142, D-143)
            ========================================================================= */
         .presenter-podium {
             position: absolute;
@@ -178,14 +178,52 @@
             transform-origin: center bottom;
         }
 
-        /* Teacher Stage Walk Gait & Bobbing */
-        .presenter-podium.is-walking {
-            animation: teacherWalkBob 0.38s infinite alternate ease-in-out;
+        /* Procedural Natural Human Breathing & Micro-Sway */
+        .human-body-stance {
+            animation: humanIdleBreathe 4.6s infinite ease-in-out;
+            transform-origin: center bottom;
         }
 
-        @keyframes teacherWalkBob {
-            0% { transform: translateY(0) scale(1) rotate(1.5deg); }
-            100% { transform: translateY(-8px) scale(1.02) rotate(-1.5deg); }
+        @keyframes humanIdleBreathe {
+            0% {
+                transform: translateY(0) scaleY(1) scaleX(1) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-4px) scaleY(1.02) scaleX(0.99) rotate(0.5deg);
+            }
+            100% {
+                transform: translateY(0) scaleY(1) scaleX(1) rotate(0deg);
+            }
+        }
+
+        /* Walking Gait & Dynamic Stride */
+        .presenter-podium.is-walking {
+            animation: teacherWalkGait 0.38s infinite alternate ease-in-out !important;
+        }
+
+        @keyframes teacherWalkGait {
+            0% { transform: translateY(0) scale(1) rotate(2deg); }
+            100% { transform: translateY(-12px) scale(1.02) rotate(-2deg); }
+        }
+
+        /* Natural Elliptical Floor Drop-Shadow */
+        .human-ground-shadow {
+            position: absolute;
+            bottom: -6px;
+            left: 20%;
+            right: 20%;
+            height: 14px;
+            border-radius: 9999px;
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(5px);
+            z-index: -1;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .presenter-podium.is-walking .human-ground-shadow {
+            transform: scale(0.8);
+            opacity: 0.5;
         }
 
         .avatar-glow-ring {
@@ -247,11 +285,14 @@
 
         <!-- Quick Switcher to Other Walkthroughs -->
         <div class="flex items-center gap-2">
+            <a href="/episode-02" class="btn btn-sm btn-ghost border border-emerald-700/60 text-emerald-300 rounded-xl text-xs gap-1 hover:border-emerald-500 bg-emerald-950/30">
+                <span>🛒 قسمت ۲: صندوق لمسی POS</span>
+            </a>
             <a href="/teaser" class="btn btn-sm btn-ghost border border-slate-700/60 text-slate-300 rounded-xl text-xs gap-1 hover:border-amber-500">
                 <span>🔥 تیزر ۶۰ ثانیه‌ای</span>
             </a>
             <a href="/video-tour" class="btn btn-sm btn-ghost border border-slate-700/60 text-slate-300 rounded-xl text-xs gap-1 hover:border-sky-500">
-                <span>🗺️ تور کامل ۱۴ فصلی</span>
+                <span>🗺️ تور کامل ۲۵ تصویری</span>
             </a>
             <a href="/download/windows" class="btn btn-sm btn-primary rounded-xl text-xs font-black gap-1 shadow-lg shadow-sky-600/20">
                 <span>⬇️ دانلود رایگان ۱۴ روزه</span>
@@ -347,49 +388,68 @@
                 </div>
 
                 <!-- ========================================================= -->
-                <!-- TEACHER AVATAR: ARASH ON STAGE (DECISIONS D-141 & D-142)  -->
+                <!-- LIFELIKE HUMAN TEACHER AVATAR: ARASH ON STAGE (DECISION D-143) -->
                 <!-- ========================================================= -->
-                <div id="presenterPodium" class="presenter-podium flex items-end gap-3 pointer-events-auto" style="bottom: 12%; left: 10%;">
-                    <!-- Avatar Capsule Card -->
-                    <div class="relative group bg-slate-950/90 backdrop-blur-xl border border-sky-500/40 rounded-2xl p-2 shadow-2xl flex items-center gap-3 avatar-glow-ring transition-all hover:border-amber-400">
+                <div id="presenterPodium" class="presenter-podium flex flex-col items-center pointer-events-auto" style="bottom: 8%; left: 8%;">
+                    <!-- Full Standing Keynote Teacher Rig -->
+                    <div id="humanTeacherFull" class="relative flex flex-col items-center select-none group cursor-pointer" onclick="togglePresenterMode()">
                         
-                        <!-- Real-time Animated Avatar Face Container -->
-                        <div id="avatarFace" class="relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden border-2 border-sky-400 bg-slate-900 shadow-md">
-                            <!-- Base Photorealistic Portrait of Arash -->
-                            <img src="/images/arash_presenter.jpg" alt="آرش - مجری و معلم هوش مالی نپتون" class="w-full h-full object-cover">
+                        <!-- 2.5D Skeletal Body Rig with Breathing, Stance & Ground Shadow -->
+                        <div id="humanBodyRig" class="relative human-body-stance transition-all duration-300">
+                            <!-- Natural Elliptical Floor Shadow -->
+                            <div class="human-ground-shadow"></div>
 
-                            <!-- Dynamic SVG Mouth Viseme Morph Overlay -->
-                            <svg id="avatarMouth" class="absolute bottom-2 inset-x-0 mx-auto w-6 h-3 pointer-events-none transition-transform duration-75" viewBox="0 0 40 20" style="transform-origin: center bottom;">
-                                <ellipse id="mouthShape" cx="20" cy="10" rx="14" ry="2" fill="#881337" stroke="#fb7185" stroke-width="1.5" />
-                                <rect id="teethShape" x="14" y="6" width="12" height="3" rx="1" fill="#ffffff" opacity="0.8" />
-                            </svg>
+                            <!-- Photorealistic Standing Keynote Presenter Cutout -->
+                            <img id="presenterCutoutImg" src="/images/arash_presenter_cutout.png" 
+                                 alt="استاد آرش - معلم هوش مالی نپتون ERP" 
+                                 class="h-64 sm:h-76 md:h-84 lg:h-92 w-auto object-contain filter drop-shadow-2xl transition-all duration-300 pointer-events-none select-none">
 
-                            <!-- Dynamic SVG Eyelid Blink Overlay -->
-                            <div id="avatarEyelids" class="absolute top-4 inset-x-0 h-3 bg-slate-900/0 transition-all duration-75 pointer-events-none"></div>
+                            <!-- Facial Micro-Rig (Natural Blinking Eyes & Synced Lip Articulation) -->
+                            <div id="humanFaceMicroRig" class="absolute pointer-events-none" style="top: 8%; left: 40%; width: 20%; height: 16%;">
+                                <!-- Organic Eyelid Blink Overlay -->
+                                <div id="avatarEyelids" class="absolute top-2 inset-x-2 h-2 rounded-full bg-slate-900/0 transition-all duration-75"></div>
 
-                            <!-- Live Audio Pulsing Halo Overlay -->
-                            <div id="avatarAudioHalo" class="absolute inset-0 rounded-xl border border-cyan-400 opacity-0 pointer-events-none transition-opacity duration-100"></div>
+                                <!-- Dynamic SVG Mouth & Jaw Articulation Overlay -->
+                                <svg id="avatarMouth" class="absolute bottom-1 inset-x-0 mx-auto w-7 h-4 pointer-events-none transition-transform duration-75" viewBox="0 0 40 20" style="transform-origin: center bottom;">
+                                    <ellipse id="mouthShape" cx="20" cy="11" rx="14" ry="2" fill="#4c0519" stroke="#f43f5e" stroke-width="1.2" />
+                                    <rect id="teethShape" x="14" y="8" width="12" height="3" rx="1" fill="#ffffff" opacity="0.8" />
+                                </svg>
+                            </div>
+
+                            <!-- Futuristic Presenter Remote Clicker with Laser Diode -->
+                            <div id="clickerDiode" class="absolute w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white shadow-lg shadow-cyan-400/90" style="top: 36.5%; right: 26%;">
+                                <span class="absolute inset-0 rounded-full bg-cyan-300 animate-ping opacity-75"></span>
+                            </div>
                         </div>
 
-                        <!-- Presenter Info & Live Status -->
+                        <!-- Teacher Floating Nameplate & Action Switcher -->
+                        <div class="mt-1 flex items-center gap-2 px-3 py-1 rounded-full bg-slate-950/90 backdrop-blur-md border border-sky-500/50 text-[11px] text-white shadow-2xl transition-all group-hover:border-amber-400">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            <span class="font-black text-white">استاد آرش</span>
+                            <span class="text-[9px] text-sky-400 font-mono">| معلم صحنه</span>
+                            <button onclick="event.stopPropagation(); togglePresenterMode()" class="btn btn-ghost btn-circle btn-xs text-slate-400 hover:text-white" title="تغییر به کادر کوچک (PiP) یا مخفی‌سازی">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Alternate Compact Picture-in-Picture (PiP) Mode -->
+                    <div id="humanTeacherPip" class="hidden relative group bg-slate-950/90 backdrop-blur-xl border border-sky-500/40 rounded-2xl p-2 shadow-2xl flex items-center gap-3 avatar-glow-ring transition-all hover:border-amber-400 cursor-pointer" onclick="togglePresenterMode()">
+                        <div class="relative w-14 h-14 rounded-xl overflow-hidden border-2 border-sky-400 bg-slate-900 shadow-md">
+                            <img src="/images/arash_keynote_presenter.jpg" alt="استاد آرش" class="w-full h-full object-cover">
+                        </div>
                         <div class="pr-1 pl-2">
                             <div class="flex items-center gap-1.5 mb-0.5">
-                                <span class="relative flex h-2 w-2">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                </span>
-                                <span class="font-bold text-white text-xs">آرش</span>
-                                <span class="text-[9px] px-1.5 py-0.2 rounded bg-sky-950 border border-sky-700 text-sky-300 font-mono">TEACHER</span>
+                                <span class="font-bold text-white text-xs">استاد آرش</span>
+                                <span class="text-[9px] px-1.5 py-0.2 rounded bg-sky-950 border border-sky-700 text-sky-300 font-mono">PiP</span>
                             </div>
-                            <p class="text-[10px] text-slate-300">مربی هوش مالی</p>
+                            <p class="text-[10px] text-slate-300">کلیک برای نمایش تمام‌قد روی صحنه</p>
                         </div>
-
-                        <!-- Minimize / Close Presenter Button -->
-                        <button onclick="togglePresenterMode()" class="btn btn-ghost btn-circle btn-xs text-slate-400 hover:text-white" title="تغییر حالت مجری">
-                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
-                            </svg>
-                        </button>
                     </div>
                 </div>
 
@@ -977,20 +1037,42 @@
         const cinematicVfx = new CinematicVFXEngine();
 
         // =========================================================================
-        // TEACHER AVATAR ENGINE: ARASH STAGE CHOREOGRAPHY (DECISIONS D-141 & D-142)
+        // TEACHER AVATAR ENGINE: ARASH STAGE CHOREOGRAPHY (DECISIONS D-141, D-142 & D-143)
         // =========================================================================
+        let presenterDisplayMode = 'full'; // 'full' | 'pip' | 'hidden'
+        function togglePresenterMode() {
+            const fullEl = document.getElementById('humanTeacherFull');
+            const pipEl = document.getElementById('humanTeacherPip');
+            const podium = document.getElementById('presenterPodium');
+
+            if (presenterDisplayMode === 'full') {
+                presenterDisplayMode = 'pip';
+                if (fullEl) fullEl.classList.add('hidden');
+                if (pipEl) pipEl.classList.remove('hidden');
+            } else if (presenterDisplayMode === 'pip') {
+                presenterDisplayMode = 'hidden';
+                if (podium) podium.classList.add('hidden');
+            } else {
+                presenterDisplayMode = 'full';
+                if (podium) podium.classList.remove('hidden');
+                if (fullEl) fullEl.classList.remove('hidden');
+                if (pipEl) pipEl.classList.add('hidden');
+            }
+            if (talkingCharacter) talkingCharacter.updateLaserPointer();
+        }
+
         class TalkingCharacterEngine {
             constructor() {
                 this.enabled = true;
                 this.isMinimized = false;
                 this.lastBlinkTime = 0;
                 this.blinkDuration = 180;
-                this.nextBlinkInterval = 4000;
+                this.nextBlinkInterval = 3800;
                 this.mouthShape = document.getElementById('mouthShape');
                 this.teethShape = document.getElementById('teethShape');
                 this.avatarEyelids = document.getElementById('avatarEyelids');
-                this.avatarFace = document.getElementById('avatarFace');
-                this.audioHalo = document.getElementById('avatarAudioHalo');
+                this.bodyRig = document.getElementById('humanBodyRig');
+                this.clickerDiode = document.getElementById('clickerDiode');
                 this.podium = document.getElementById('presenterPodium');
                 this.freqData = new Uint8Array(256);
 
@@ -1024,19 +1106,19 @@
 
                 if (!laserSvg || !laserLine || !laserDot) return;
 
-                if (scene && scene.teacherPosition && scene.teacherPosition.laser && this.enabled) {
+                if (scene && scene.teacherPosition && scene.teacherPosition.laser && this.enabled && presenterDisplayMode !== 'hidden') {
                     const stage = document.getElementById('videoStage');
-                    const face = document.getElementById('avatarFace');
+                    const emitter = document.getElementById('clickerDiode') || this.podium;
                     const targetFrame = document.getElementById('spotlightFrame');
 
-                    if (stage && face && targetFrame) {
+                    if (stage && emitter && targetFrame) {
                         const stageRect = stage.getBoundingClientRect();
-                        const faceRect = face.getBoundingClientRect();
+                        const emitterRect = emitter.getBoundingClientRect();
                         const frameRect = targetFrame.getBoundingClientRect();
 
-                        // Start point: Center of Arash's face
-                        const startX = faceRect.left + faceRect.width / 2 - stageRect.left;
-                        const startY = faceRect.top + faceRect.height / 2 - stageRect.top;
+                        // Start point: Clicker remote diode on Arash's hand
+                        const startX = emitterRect.left + emitterRect.width / 2 - stageRect.left;
+                        const startY = emitterRect.top + emitterRect.height / 2 - stageRect.top;
 
                         // End point: Center of highlighted spotlight
                         const endX = frameRect.left + frameRect.width / 2 - stageRect.left;
@@ -1079,34 +1161,28 @@
                 const overallVolume = (lowEnergy * 0.5 + midEnergy * 0.35 + highEnergy * 0.15) / 255;
 
                 // 2. Target Viseme Morphing
-                let targetJaw = 1.5;
+                let targetJaw = 1.2;
                 let targetWidth = 14;
                 let targetRound = 2;
 
                 if (overallVolume > 0.08) {
                     // Speaking State
-                    targetJaw = 2 + (lowEnergy / 255) * 8.5;
+                    targetJaw = 2 + (lowEnergy / 255) * 8.0;
                     targetWidth = 12 + (highEnergy / 255) * 6;
                     targetRound = 3 + (midEnergy / 255) * 4;
 
-                    // Audio Pulsing Halo
-                    if (this.audioHalo) {
-                        this.audioHalo.style.opacity = Math.min(overallVolume * 1.5, 0.95);
-                    }
-
                     // Keynote Speaker Head Nod on peak emphasis
                     if (overallVolume > 0.35) {
-                        this.currentHeadTilt = (Math.sin(time * 0.008) * 2.2);
+                        this.currentHeadTilt = (Math.sin(time * 0.008) * 1.8);
                     } else {
-                        this.currentHeadTilt = (Math.sin(time * 0.002) * 1.0);
+                        this.currentHeadTilt = (Math.sin(time * 0.002) * 0.8);
                     }
                 } else {
                     // Resting Silence State (Natural calm smile)
-                    targetJaw = 1.5;
+                    targetJaw = 1.2;
                     targetWidth = 14;
                     targetRound = 2;
-                    this.currentHeadTilt = Math.sin(time * 0.001) * 0.5;
-                    if (this.audioHalo) this.audioHalo.style.opacity = '0';
+                    this.currentHeadTilt = Math.sin(time * 0.001) * 0.3;
                 }
 
                 // Smooth Linear Interpolation (LERP k = 0.25)
@@ -1120,22 +1196,22 @@
                     this.mouthShape.setAttribute('rx', this.currentLipWidth.toFixed(1));
                 }
                 if (this.teethShape) {
-                    this.teethShape.style.opacity = this.currentJawOpen > 4 ? '0.85' : '0.1';
+                    this.teethShape.style.opacity = this.currentJawOpen > 3.5 ? '0.85' : '0.1';
                 }
 
-                // Apply Micro Head Tilt
-                if (this.avatarFace) {
-                    this.avatarFace.style.transform = `rotate(${this.currentHeadTilt.toFixed(1)}deg)`;
+                // Apply Micro Body & Head Sway
+                if (this.bodyRig) {
+                    this.bodyRig.style.transform = `rotate(${this.currentHeadTilt.toFixed(1)}deg)`;
                 }
 
-                // 3. Natural Organic Blinking (Every 3.8s to 5.2s)
+                // 3. Natural Organic Blinking (Every 3.2s to 5.6s)
                 if (time - this.lastBlinkTime > this.nextBlinkInterval) {
                     this.lastBlinkTime = time;
-                    this.nextBlinkInterval = 3600 + Math.random() * 2200;
+                    this.nextBlinkInterval = 3200 + Math.random() * 2400;
                     if (this.avatarEyelids) {
-                        this.avatarEyelids.style.backgroundColor = 'rgba(11, 17, 32, 0.95)';
+                        this.avatarEyelids.style.backgroundColor = 'rgba(23, 20, 18, 0.95)';
                         setTimeout(() => {
-                            if (this.avatarEyelids) this.avatarEyelids.style.backgroundColor = 'rgba(11, 17, 32, 0)';
+                            if (this.avatarEyelids) this.avatarEyelids.style.backgroundColor = 'rgba(23, 20, 18, 0)';
                         }, this.blinkDuration);
                     }
                 }
@@ -1470,15 +1546,6 @@
             }
         }
 
-        function togglePresenterMode() {
-            const podium = document.getElementById('presenterPodium');
-            if (!podium) return;
-            if (podium.classList.contains('scale-75')) {
-                podium.classList.remove('scale-75', 'opacity-60');
-            } else {
-                podium.classList.add('scale-75', 'opacity-60');
-            }
-        }
 
         function toggleFullscreen() {
             const stage = document.querySelector('.video-stage');

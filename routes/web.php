@@ -42,6 +42,7 @@ Route::get('/brochure', [Controllers\LicenseController::class, 'brochure'])->nam
 Route::get('/tour', [Controllers\LicenseController::class, 'tour'])->name('tour');
 Route::get('/video-tour', [Controllers\LicenseController::class, 'videoTour'])->name('video.tour');
 Route::get('/episode-01', [Controllers\LicenseController::class, 'episode01'])->name('episode.01');
+Route::get('/episode-02', [Controllers\LicenseController::class, 'episode02'])->name('episode.02');
 Route::get('/teaser', [Controllers\LicenseController::class, 'teaser'])->name('teaser');
 Route::get('/download/windows', [Controllers\LicenseController::class, 'downloadInstaller'])->name('download.installer');
 Route::post('/trial/request', [Controllers\LicenseController::class, 'requestTrial'])->middleware('throttle:10,1')->name('trial.request');

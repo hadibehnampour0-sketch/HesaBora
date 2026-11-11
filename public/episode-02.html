@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسترکلاس ویدیویی نپتون ERP • قسمت ۲: صندوق لمسی POS و فروش ۱۰۰٪ آفلاین اول</title>
+    
+    <!-- Tailwind CSS & DaisyUI CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Vazirmatn', 'sans-serif'] },
+                    colors: {
+                        primary: '#0284c7',
+                        secondary: '#8b5cf6',
+                        accent: '#10b981',
+                        darkBg: '#030712',
+                        panelBg: '#0b1120'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Vazirmatn', sans-serif; background-color: #030712; color: #f8fafc; }
+        
+        /* 16:9 / 9:16 Adaptive Cinematic Video Viewport */
+        .video-stage {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* Default: 16:9 Aspect Ratio */
+            overflow: hidden;
+            background: #02040a;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 0 50px rgba(16, 185, 129, 0.25);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        /* 9:16 Vertical Mobile Reel Format (Instagram, TikTok, YouTube Shorts) */
+        .video-stage.reel-mode {
+            padding-top: 177.77%; /* 9:16 Aspect Ratio */
+            max-width: 440px;
+            margin: 0 auto;
+            border-radius: 2.2rem;
+            box-shadow: 0 35px 80px -10px rgba(0, 0, 0, 0.98), 0 0 60px rgba(16, 185, 129, 0.35);
+        }
+
+        .stage-inner {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .screenshot-target {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: center center;
+        }
+        
+        /* Neon Spotlight Frame */
+        .spotlight-frame {
+            position: absolute;
+            z-index: 35;
+            pointer-events: none;
+            border: 3px solid #10b981;
+            border-radius: 1rem;
+            background: rgba(16, 185, 129, 0.12);
+            box-shadow: 0 0 35px rgba(16, 185, 129, 0.8), inset 0 0 20px rgba(16, 185, 129, 0.4);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: frameGlowGreen 2.0s infinite alternate ease-in-out;
+        }
+        
+        @keyframes frameGlowGreen {
+            0% { border-color: #10b981; box-shadow: 0 0 25px rgba(16, 185, 129, 0.7), inset 0 0 15px rgba(16, 185, 129, 0.3); }
+            100% { border-color: #38bdf8; box-shadow: 0 0 35px rgba(56, 189, 248, 0.9), inset 0 0 25px rgba(56, 189, 248, 0.4); }
+        }
+        
+        /* Animated Radar Arrow Pointer */
+        .radar-pointer {
+            position: absolute;
+            z-index: 38;
+            pointer-events: none;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.9));
+            animation: pointerBob 1.6s infinite ease-in-out;
+        }
+        
+        @keyframes pointerBob {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.08); }
+        }
+        
+        /* Kinetic Subtitles Bar */
+        .subtitles-glass {
+            background: linear-gradient(180deg, rgba(3, 7, 18, 0.02) 0%, rgba(3, 7, 18, 0.92) 25%, rgba(3, 7, 18, 0.98) 100%);
+            backdrop-filter: blur(12px);
+        }
+
+        /* 35mm Cinematic Film Grain Texture */
+        .film-grain {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 28;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            mix-blend-mode: screen;
+        }
+
+        /* Cinematic Vignette Corners */
+        .cinematic-vignette {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 27;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.85), inset 0 0 40px rgba(2, 6, 23, 0.6);
+        }
+
+        /* Anamorphic Emerald Lens Flare Line */
+        .anamorphic-flare {
+            position: absolute;
+            top: 25%;
+            left: -100%;
+            width: 300%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, rgba(16, 185, 129, 0.9) 50%, transparent 100%);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.9), 0 0 50px rgba(56, 189, 248, 0.7);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 29;
+            transition: opacity 0.8s ease-in-out;
+        }
+        .anamorphic-flare.active {
+            opacity: 0.85;
+            animation: flarePass 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes flarePass {
+            0% { transform: translateY(-20px) scaleX(0.7); opacity: 0; }
+            50% { opacity: 0.95; }
+            100% { transform: translateY(40px) scaleX(1.1); opacity: 0; }
+        }
+
+        /* Crisis Glitch Effect for Scene 1 */
+        .crisis-glitch {
+            animation: crisisShake 0.4s ease-in-out;
+            text-shadow: -2px 0 #ef4444, 2px 0 #06b6d4;
+        }
+        @keyframes crisisShake {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(-3px, 2px); }
+            40% { transform: translate(3px, -1px); }
+            60% { transform: translate(-2px, -2px); }
+            80% { transform: translate(2px, 1px); }
+        }
+
+        /* =========================================================================
+           LIFELIKE TEACHER AVATAR: 2.5D SKELETAL RIG & STAGE CHOREOGRAPHY (D-141, D-142, D-143)
+           ========================================================================= */
+        .presenter-podium {
+            position: absolute;
+            z-index: 45;
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: center bottom;
+        }
+
+        /* Procedural Natural Human Breathing & Micro-Sway */
+        .human-body-stance {
+            animation: humanIdleBreathe 4.6s infinite ease-in-out;
+            transform-origin: center bottom;
+        }
+
+        @keyframes humanIdleBreathe {
+            0% {
+                transform: translateY(0) scaleY(1) scaleX(1) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-4px) scaleY(1.02) scaleX(0.99) rotate(0.5deg);
+            }
+            100% {
+                transform: translateY(0) scaleY(1) scaleX(1) rotate(0deg);
+            }
+        }
+
+        /* Walking Gait & Dynamic Stride */
+        .presenter-podium.is-walking {
+            animation: teacherWalkGait 0.38s infinite alternate ease-in-out !important;
+        }
+
+        @keyframes teacherWalkGait {
+            0% { transform: translateY(0) scale(1) rotate(2deg); }
+            100% { transform: translateY(-12px) scale(1.02) rotate(-2deg); }
+        }
+
+        /* Natural Elliptical Floor Drop-Shadow */
+        .human-ground-shadow {
+            position: absolute;
+            bottom: -6px;
+            left: 20%;
+            right: 20%;
+            height: 14px;
+            border-radius: 9999px;
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(5px);
+            z-index: -1;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .presenter-podium.is-walking .human-ground-shadow {
+            transform: scale(0.8);
+            opacity: 0.5;
+        }
+
+        .avatar-glow-ring {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.6), inset 0 0 15px rgba(56, 189, 248, 0.4);
+            animation: avatarPulseGreen 3.0s infinite alternate ease-in-out;
+        }
+
+        @keyframes avatarPulseGreen {
+            0% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.5), inset 0 0 10px rgba(16, 185, 129, 0.3); }
+            100% { box-shadow: 0 0 35px rgba(16, 185, 129, 0.9), inset 0 0 20px rgba(56, 189, 248, 0.6); }
+        }
+
+        /* Rotating Sci-Fi Radar Compass */
+        .hud-compass {
+            animation: compassSpin 18s linear infinite;
+        }
+        @keyframes compassSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Visualizer EQ Bars */
+        .eq-bar {
+            width: 3px;
+            background: linear-gradient(180deg, #10b981 0%, #0284c7 100%);
+            border-radius: 9999px;
+            transition: height 0.08s ease;
+        }
+
+        /* Teacher Laser Pointer SVG Beam */
+        .teacher-laser-line {
+            filter: drop-shadow(0 0 8px #10b981) drop-shadow(0 0 16px #38bdf8);
+            stroke-dasharray: 8 4;
+            animation: laserDash 0.8s linear infinite;
+        }
+        @keyframes laserDash {
+            to { stroke-dashoffset: -24; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-2 sm:p-4 md:p-6 lg:p-8">
+
+    <!-- Top Navigation Bar -->
+    <header class="max-w-7xl mx-auto w-full flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+            <a href="/" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-sky-600 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+                    N
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-2">
+                        <span>نپتون ERP</span>
+                        <span class="badge badge-accent badge-sm font-bold text-[10px]">مسترکلاس ویدیویی</span>
+                    </h1>
+                    <p class="text-[11px] text-slate-400">قسمت دوم: صندوق لمسی POS و فروش ۱۰۰٪ آفلاین اول</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Quick Switcher to Other Walkthroughs -->
+        <div class="flex items-center gap-2">
+            <a href="/episode-01" class="btn btn-sm btn-ghost border border-slate-700/60 text-slate-300 rounded-xl text-xs gap-1 hover:border-sky-500">
+                <span>📊 قسمت ۱: میز کار مدیریتی</span>
+            </a>
+            <a href="/teaser" class="btn btn-sm btn-ghost border border-slate-700/60 text-slate-300 rounded-xl text-xs gap-1 hover:border-amber-500">
+                <span>🔥 تیزر ۶۰ ثانیه‌ای</span>
+            </a>
+            <a href="/download/windows" class="btn btn-sm btn-primary rounded-xl text-xs font-black gap-1 shadow-lg shadow-emerald-600/20">
+                <span>⬇️ دانلود رایگان ۱۴ روزه</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Video Experience Area -->
+    <main class="max-w-6xl mx-auto w-full my-4 flex-1 flex flex-col justify-center items-center">
+
+        <!-- 16:9 or 9:16 Adaptive Video Canvas -->
+        <div id="videoStage" class="video-stage">
+            <div class="stage-inner">
+                <!-- Target Screenshot -->
+                <img id="stageImage" src="/images/tour/05_pos_terminal.png" alt="پایانه فروش لمسی POS نپتون ERP" class="screenshot-target">
+
+                <!-- Sci-Fi Hardware Accelerated VFX Canvas (Cyber Grid & Particles) -->
+                <canvas id="vfxCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-15"></canvas>
+
+                <!-- 35mm Cinematic Film Grain Overlay -->
+                <div class="film-grain"></div>
+
+                <!-- Cinematic Vignette Shading -->
+                <div class="cinematic-vignette"></div>
+
+                <!-- Anamorphic Emerald Lens Flare Streak -->
+                <div id="lensFlare" class="anamorphic-flare"></div>
+
+                <!-- Dynamic Neon Spotlight Frame -->
+                <div id="spotlightFrame" class="spotlight-frame opacity-0"></div>
+
+                <!-- Animated Target Radar Pointer -->
+                <div id="radarPointer" class="radar-pointer opacity-0 flex flex-col items-center">
+                    <span class="px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 font-black text-[11px] shadow-lg mb-1 whitespace-nowrap">
+                        🎯 <span id="pointerText">کانون توجه</span>
+                    </span>
+                    <svg class="w-8 h-8 text-emerald-400" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L4 14H10V22L12 22L20 10H14V2Z"/>
+                    </svg>
+                </div>
+
+                <!-- Holographic Teacher Laser Pointer Beam SVG (Decision D-142) -->
+                <svg id="teacherLaserSvg" class="absolute inset-0 w-full h-full pointer-events-none z-36 opacity-0 transition-opacity duration-500">
+                    <line id="laserBeamLine" x1="0" y1="0" x2="0" y2="0" stroke="#10b981" stroke-width="2.5" class="teacher-laser-line" />
+                    <circle id="laserDot" cx="0" cy="0" r="4" fill="#38bdf8" filter="drop-shadow(0 0 8px #38bdf8)" />
+                </svg>
+
+                <!-- 9:16 Reel Hook Top Banner (Visible in Reel Mode) -->
+                <div id="reelHookBanner" class="hidden absolute top-4 inset-x-4 z-40 bg-gradient-to-r from-red-600/90 via-emerald-600/90 to-sky-600/90 backdrop-blur-md text-white font-black text-center py-2 px-3 rounded-xl shadow-2xl text-xs sm:text-sm animate-pulse border border-emerald-300/40">
+                    🚨 هشدار: قطعی ناگهانی اینترنت و فاجعه قفل شدن صندوق فروشگاه!
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- SCI-FI HUD OVERLAYS & TELEMETRY                           -->
+                <!-- ========================================================= -->
+                <div id="hudOverlay" class="absolute inset-0 pointer-events-none z-35 p-4 sm:p-6 flex flex-col justify-between">
+                    <!-- Top HUD Row -->
+                    <div class="flex items-center justify-between text-[10px] font-mono tracking-wider text-emerald-400/80">
+                        <div class="flex items-center gap-2 bg-slate-950/80 backdrop-blur-md px-3 py-1 rounded-lg border border-emerald-500/30">
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                            <span>[ NEPTUNE_POS // v4.2 ]</span>
+                            <span class="text-slate-500">|</span>
+                            <span class="text-emerald-300 font-bold">100% OFFLINE_FIRST_ACTIVE</span>
+                        </div>
+
+                        <!-- Rotating Sci-Fi Radar Compass Dial -->
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-slate-700/80 text-slate-300">
+                                <svg class="w-3.5 h-3.5 text-emerald-400 hud-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polygon points="12,2 15,10 12,8 9,10" fill="currentColor"/>
+                                </svg>
+                                <span class="font-bold text-[11px]" id="voiceIndicatorLabel">گوینده: استاد احمد گنجی</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Right: Real-Time 16-Bar Audio Equalizer Spectrum -->
+                    <div class="self-end flex items-end gap-1 bg-slate-950/80 backdrop-blur-md px-3 py-2 rounded-xl border border-emerald-500/30 shadow-lg">
+                        <span class="text-[9px] font-mono text-emerald-400 mr-1.5">SPECTRO:</span>
+                        <div id="spectrumBars" class="flex items-end gap-1 h-6">
+                            <!-- 16 Audio Bars -->
+                            <div class="eq-bar h-1"></div><div class="eq-bar h-2"></div>
+                            <div class="eq-bar h-1"></div><div class="eq-bar h-3"></div>
+                            <div class="eq-bar h-2"></div><div class="eq-bar h-4"></div>
+                            <div class="eq-bar h-3"></div><div class="eq-bar h-5"></div>
+                            <div class="eq-bar h-4"></div><div class="eq-bar h-3"></div>
+                            <div class="eq-bar h-2"></div><div class="eq-bar h-4"></div>
+                            <div class="eq-bar h-1"></div><div class="eq-bar h-2"></div>
+                            <div class="eq-bar h-1"></div><div class="eq-bar h-1"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================================================= -->
+                <!-- LIFELIKE HUMAN TEACHER AVATAR: ARASH ON STAGE (DECISION D-143) -->
+                <!-- ========================================================= -->
+                <div id="presenterPodium" class="presenter-podium flex flex-col items-center pointer-events-auto" style="bottom: 8%; left: 8%;">
+                    <!-- Full Standing Keynote Teacher Rig -->
+                    <div id="humanTeacherFull" class="relative flex flex-col items-center select-none group cursor-pointer" onclick="togglePresenterMode()">
+                        
+                        <!-- 2.5D Skeletal Body Rig with Breathing, Stance & Ground Shadow -->
+                        <div id="humanBodyRig" class="relative human-body-stance transition-all duration-300">
+                            <!-- Natural Elliptical Floor Shadow -->
+                            <div class="human-ground-shadow"></div>
+
+                            <!-- Photorealistic Standing Keynote Presenter Cutout -->
+                            <img id="presenterCutoutImg" src="/images/arash_presenter_cutout.png" 
+                                 alt="استاد آرش - معلم هوش مالی نپتون ERP" 
+                                 class="h-64 sm:h-76 md:h-84 lg:h-92 w-auto object-contain filter drop-shadow-2xl transition-all duration-300 pointer-events-none select-none">
+
+                            <!-- Facial Micro-Rig (Natural Blinking Eyes & Synced Lip Articulation) -->
+                            <div id="humanFaceMicroRig" class="absolute pointer-events-none" style="top: 8%; left: 40%; width: 20%; height: 16%;">
+                                <!-- Organic Eyelid Blink Overlay -->
+                                <div id="avatarEyelids" class="absolute top-2 inset-x-2 h-2 rounded-full bg-slate-900/0 transition-all duration-75"></div>
+
+                                <!-- Dynamic SVG Mouth & Jaw Articulation Overlay -->
+                                <svg id="avatarMouth" class="absolute bottom-1 inset-x-0 mx-auto w-7 h-4 pointer-events-none transition-transform duration-75" viewBox="0 0 40 20" style="transform-origin: center bottom;">
+                                    <ellipse id="mouthShape" cx="20" cy="11" rx="14" ry="2" fill="#4c0519" stroke="#f43f5e" stroke-width="1.2" />
+                                    <rect id="teethShape" x="14" y="8" width="12" height="3" rx="1" fill="#ffffff" opacity="0.8" />
+                                </svg>
+                            </div>
+
+                            <!-- Futuristic Presenter Remote Clicker with Laser Diode -->
+                            <div id="clickerDiode" class="absolute w-2.5 h-2.5 rounded-full bg-emerald-400 border border-white shadow-lg shadow-emerald-400/90" style="top: 36.5%; right: 26%;">
+                                <span class="absolute inset-0 rounded-full bg-emerald-300 animate-ping opacity-75"></span>
+                            </div>
+                        </div>
+
+                        <!-- Teacher Floating Nameplate & Action Switcher -->
+                        <div class="mt-1 flex items-center gap-2 px-3 py-1 rounded-full bg-slate-950/90 backdrop-blur-md border border-emerald-500/50 text-[11px] text-white shadow-2xl transition-all group-hover:border-emerald-300">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            <span class="font-black text-white">استاد آرش</span>
+                            <span class="text-[9px] text-emerald-400 font-mono">| معلم صحنه</span>
+                            <button onclick="event.stopPropagation(); togglePresenterMode()" class="btn btn-ghost btn-circle btn-xs text-slate-400 hover:text-white" title="تغییر به کادر کوچک (PiP) یا مخفی‌سازی">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Alternate Compact Picture-in-Picture (PiP) Mode -->
+                    <div id="humanTeacherPip" class="hidden relative group bg-slate-950/90 backdrop-blur-xl border border-emerald-500/40 rounded-2xl p-2 shadow-2xl flex items-center gap-3 avatar-glow-ring transition-all hover:border-emerald-300 cursor-pointer" onclick="togglePresenterMode()">
+                        <div class="relative w-14 h-14 rounded-xl overflow-hidden border-2 border-emerald-400 bg-slate-900 shadow-md">
+                            <img src="/images/arash_keynote_presenter.jpg" alt="استاد آرش" class="w-full h-full object-cover">
+                        </div>
+                        <div class="pr-1 pl-2">
+                            <div class="flex items-center gap-1.5 mb-0.5">
+                                <span class="font-bold text-white text-xs">استاد آرش</span>
+                                <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-950 border border-emerald-700 text-emerald-300 font-mono">PiP</span>
+                            </div>
+                            <p class="text-[10px] text-slate-300">کلیک برای نمایش تمام‌قد روی صحنه</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Subtitles & Headline Overlay with Kinetic Highlighting -->
+                <div class="absolute bottom-0 inset-x-0 p-4 sm:p-6 md:p-8 subtitles-glass z-30 flex flex-col justify-end text-center">
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <span id="sceneBadge" class="badge badge-accent font-bold text-xs">صحنه ۱: بحران قفل شدن صندوق</span>
+                        <span id="sceneTimecode" class="text-xs text-slate-400 font-mono">۰۰:۰۰ تا ۰۰:۲۶</span>
+                    </div>
+                    <h2 id="sceneHeadline" class="text-lg sm:text-2xl md:text-3xl font-black text-white leading-tight mb-2 drop-shadow-md">
+                        ساعتِ هشتِ شب... اوجِ شلوغیِ فروشگاه... ده‌ها مشتری در صف... و ناگهان: اینترنت قطع می‌شود!
+                    </h2>
+                    <p id="sceneSubtitle" class="text-xs sm:text-sm md:text-base text-emerald-200/90 font-medium max-w-4xl mx-auto leading-relaxed">
+                        مشتری‌ها کلافه، کارت‌خوان‌ها معطل، و صندوقِ سنتی که ارور می‌دهد: عدمِ اتصال به سرور! آیا تا به حال این کابوس را در کسب‌وکارتان زندگی کرده‌اید؟!
+                    </p>
+
+                    <!-- Interactive Viral Lead Magnet Banner (Comment-to-DM Loop - Decision D-142) -->
+                    <div class="mt-2.5 flex items-center justify-center">
+                        <div class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500/20 via-sky-500/20 to-amber-500/20 border border-emerald-500/50 rounded-full px-3.5 py-1 text-[11px] text-emerald-200 shadow-lg backdrop-blur-md">
+                            <span>💬 برای دریافت لینک دانلود نسخه صندوق فروشگاهی، کلمه <strong class="text-emerald-400 font-black">«صندوق»</strong> را کامنت کنید!</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Progress Timeline Bar -->
+        <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden mt-3 border border-slate-800">
+            <div id="timelineProgress" class="bg-gradient-to-r from-emerald-500 to-sky-500 h-full w-0 transition-all duration-300"></div>
+        </div>
+
+        <!-- Video Player Controls Panel -->
+        <div class="w-full bg-panelBg/90 backdrop-blur-md border border-slate-800 rounded-2xl p-3 sm:p-4 mt-3 shadow-2xl flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Left Controls: Play / Next / Prev / Audio -->
+            <div class="flex flex-wrap items-center gap-2">
+                <button onclick="togglePlay()" id="playBtn" class="btn btn-sm btn-primary rounded-xl px-4 gap-2 font-bold shadow-md shadow-emerald-600/30">
+                    <span id="playIcon">⏸️</span>
+                    <span id="playText">توقف</span>
+                </button>
+                <button onclick="prevScene()" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-slate-300 hover:text-white" title="صحنه قبل (کلید چپ)">
+                    ⏮️ قبلی
+                </button>
+                <button onclick="nextScene()" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-slate-300 hover:text-white" title="صحنه بعد (کلید راست)">
+                    بعدی ⏭️
+                </button>
+                <div class="divider divider-horizontal my-1"></div>
+                <button onclick="toggleSfx()" id="sfxBtn" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-slate-300" title="موسیقی متن و افکت‌های فولی بارکد و پرینتر">
+                    <span id="sfxIcon">🎧</span>
+                    <span id="sfxText">موسیقی: روشن</span>
+                </button>
+                <button onclick="toggleVfx()" id="vfxBtn" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-emerald-300" title="جلوه‌های ویژه سایبر و ذرات">
+                    <span id="vfxIcon">✨</span>
+                    <span id="vfxText">VFX: روشن</span>
+                </button>
+                <button onclick="togglePresenterVisibility()" id="presenterBtn" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-amber-300" title="نمایش کاراکتر معلم صندوق">
+                    <span id="presenterIcon">🎭</span>
+                    <span id="presenterText">معلم: روشن</span>
+                </button>
+                <!-- Multi-format Switcher (16:9 Landscape vs 9:16 Vertical Reel) -->
+                <button onclick="toggleReelFormat()" id="reelFormatBtn" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-emerald-300" title="تغییر قالب به ریلز عمودی اینستاگرام / تیک‌تاک">
+                    <span id="reelIcon">📱</span>
+                    <span id="reelText">قالب: ۱۶:۹</span>
+                </button>
+            </div>
+
+            <!-- Middle: Voice Actors Selector -->
+            <div class="flex items-center gap-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800 text-xs">
+                <span class="text-slate-400 px-2 text-[11px] font-bold">صدا:</span>
+                <button onclick="setVoice('ganji')" id="voiceGanjiBtn" class="btn btn-xs rounded-lg font-bold bg-emerald-500 text-black shadow-sm">
+                    استاد احمد گنجی ★
+                </button>
+                <button onclick="setVoice('amir')" id="voiceAmirBtn" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300">
+                    امیر سودبخش (رخ)
+                </button>
+                <button onclick="setVoice('dilara')" id="voiceDilaraBtn" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300">
+                    دلارا
+                </button>
+                <button onclick="setVoice('farid')" id="voiceFaridBtn" class="btn btn-xs rounded-lg font-bold btn-ghost text-slate-300">
+                    فرید
+                </button>
+            </div>
+
+            <!-- Right Controls: Screen Record & Fullscreen -->
+            <div class="flex items-center gap-2">
+                <button onclick="toggleScreenRecord()" id="recordBtn" class="btn btn-sm btn-error btn-outline rounded-xl text-xs gap-1 font-bold">
+                    <span id="recordLabel">🔴 ضبط ویدیو (MP4)</span>
+                </button>
+                <button onclick="toggleFullscreen()" class="btn btn-sm btn-ghost border border-slate-800 rounded-xl text-slate-300" title="تمام‌صفحه">
+                    ⛶
+                </button>
+            </div>
+        </div>
+
+        <!-- 6 Scenes Timeline Cards Grid -->
+        <div class="w-full mt-4">
+            <h3 class="text-xs font-bold text-slate-400 mb-2 flex items-center gap-2">
+                <span>فهرست پرده‌های داستانی قسمت ۲ (ساختار روایی هالیوودی PAR-SaaS):</span>
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+                
+                <div onclick="jumpToScene(0)" id="card_0" class="p-3 rounded-xl border border-red-500/40 bg-red-950/20 hover:bg-red-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-red-400 font-black text-sm">01</span>
+                    <div>
+                        <div class="font-bold text-white">بحران قفل شدن صندوق (قلاب ۸ ثانیه)</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۰۰ تا ۰۰:۲۶ • قطعی ناگهانی اینترنت و صف‌ها</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(1)" id="card_1" class="p-3 rounded-xl border border-amber-500/40 bg-amber-950/20 hover:bg-amber-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-amber-400 font-black text-sm">02</span>
+                    <div>
+                        <div class="font-bold text-white">هزینه سنگین بلاتکلیفی و سبد رهاشده</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۲۶ تا ۰۰:۵۳ • فرار مشتری از فروشگاه</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(2)" id="card_2" class="p-3 rounded-xl border border-emerald-500/40 bg-emerald-950/20 hover:bg-emerald-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-emerald-400 font-black text-sm">03</span>
+                    <div>
+                        <div class="font-bold text-white">پایانه فروشگاهی ۱۰۰٪ آفلاین اول</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۵۳ تا ۰۱:۲۹ • صدور فاکتور در زیر ۱ ثانیه</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(3)" id="card_3" class="p-3 rounded-xl border border-sky-500/40 bg-sky-950/20 hover:bg-sky-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-sky-400 font-black text-sm">04</span>
+                    <div>
+                        <div class="font-bold text-white">بارکدخوان، پوز بانکی و همزمانی صندوق‌ها</div>
+                        <div class="text-[10px] text-slate-400">۰۱:۲۹ تا ۰۲:۰۱ • صفر ریال مغایرت کارت‌خوان</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(4)" id="card_4" class="p-3 rounded-xl border border-purple-500/40 bg-purple-950/20 hover:bg-purple-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-purple-400 font-black text-sm">05</span>
+                    <div>
+                        <div class="font-bold text-white">تضاد قبل و بعد: آرامش شب عید</div>
+                        <div class="text-[10px] text-slate-400">۰۲:۰۱ تا ۰۲:۲۱ • سرعت موشکی در اوج بازار</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(5)" id="card_5" class="p-3 rounded-xl border border-rose-500/40 bg-rose-950/20 hover:bg-rose-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-rose-400 font-black text-sm">06</span>
+                    <div>
+                        <div class="font-bold text-white">دعوت به اقدام و تست رایگان ۱۴ روزه</div>
+                        <div class="text-[10px] text-slate-400">۰۲:۲۱ تا ۰۲:۴۰ • بدون نیاز به کارت بانکی</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Global Native Audio Player -->
+    <audio id="episodeAudio" preload="auto"></audio>
+
+    <!-- JavaScript Master Video Controller -->
+    <script>
+        // =========================================================================
+        // 6 SCENES SCRIPT DATA FOR EPISODE 2 (RETAIL POS & OFFLINE RESILIENCE)
+        // =========================================================================
+        const EPISODE_SCENES = [
+            {
+                id: "scene_01",
+                image: "/images/tour/05_pos_terminal.png",
+                badge: "صحنه ۱: بحران قفل شدن صندوق (قلاب ۸ ثانیه)",
+                badgeClass: "bg-red-950/80 border-red-500/40 text-red-300",
+                timecode: "۰۰:۰۰ تا ۰۰:۲۶",
+                headline: "ساعتِ هشتِ شب... اوجِ شلوغیِ فروشگاه... ده‌ها مشتری در صف... و ناگهان: اینترنت قطع می‌شود!",
+                subtitle: "مشتری‌ها کلافه، کارت‌خوان‌ها معطل، و صندوقِ سنتی که ارور می‌دهد: عدمِ اتصال به سرور! آیا تا به حال این کابوس را در کسب‌وکارتان زندگی کرده‌اید؟! در بازارِ پرسرعتِ امروز، یک ساعت توقف یعنی باختن!",
+                pointerText: "توقف کامل فروشگاه",
+                spotlight: { top: 12, left: 10, width: 80, height: 22 },
+                arrow: { x: 50, y: 34 },
+                zoom: 1.15,
+                teacherPosition: { bottom: 12, left: 10, scale: 1.0, laser: false }
+            },
+            {
+                id: "scene_02",
+                image: "/images/tour/06_invoices_sell.png",
+                badge: "صحنه ۲: هزینه سنگین بلاتکلیفی و سبد رهاشده",
+                badgeClass: "bg-amber-950/80 border-amber-500/40 text-amber-300",
+                timecode: "۰۰:۲۶ تا ۰۰:۵۳",
+                headline: "خیلی از نرم‌افزارهای ابری ادعای مدرن بودن دارند؛ اما با یک قطعیِ ساده‌ی شبکه، فروشگاه به گِل می‌نشیند!",
+                subtitle: "مشتری سبدِ خرید را روی میز می‌گذارد و می‌رود! در بازارِ پرسرعتِ امروز، یک ساعت توقفِ صندوق، یعنی دود شدنِ میلیون‌ها تومان سودِ خالص!",
+                pointerText: "سبد خرید رهاشده",
+                spotlight: { top: 22, left: 15, width: 70, height: 45 },
+                arrow: { x: 50, y: 45 },
+                zoom: 1.20,
+                teacherPosition: { bottom: 12, left: 74, scale: 1.05, laser: true }
+            },
+            {
+                id: "scene_03",
+                image: "/images/tour/05_pos_terminal.png",
+                badge: "صحنه ۳: پایانه فروشگاهی ۱۰۰٪ آفلاین اول",
+                badgeClass: "bg-emerald-950/80 border-emerald-500/40 text-emerald-300",
+                timecode: "۰۰:۵۳ تا ۰۱:۲۹",
+                headline: "راهکارِ نپتون: پایانه فروشگاهیِ صد در صد آفلاین اول! نپتون به هیچ اینترنتی نیاز ندارد!",
+                subtitle: "دیتابیسِ امن، روی سیستمِ خودتان مستقر است؛ سرعتِ صدورِ فاکتور: کمتر از یک ثانیه! و هر زمان که اینترنت وصل شد، تمامِ داده‌ها خودکار و بدونِ تداخل با شعبه‌ی مرکزی همگام می‌شوند!",
+                pointerText: "صدور فاکتور زیر ۱ ثانیه",
+                spotlight: { top: 8, left: 8, width: 84, height: 78 },
+                arrow: { x: 74, y: 55 },
+                zoom: 1.18,
+                teacherPosition: { bottom: 14, left: 42, scale: 1.0, laser: true }
+            },
+            {
+                id: "scene_04",
+                image: "/images/tour/05_pos_terminal.png",
+                badge: "صحنه ۴: بارکدخوان، پوز بانکی و همزمانی صندوق‌ها",
+                badgeClass: "bg-sky-950/80 border-sky-500/40 text-sky-300",
+                timecode: "۰۱:۲۹ تا ۰۲:۰۱",
+                headline: "اسکن بارکد در یک‌صدم ثانیه، چاپ فیش حرارتی و ارسال خودکار مبلغ به کارت‌خوان بانکی!",
+                subtitle: "بدونِ نیاز به تایپِ دستیِ ارقام و بدونِ حتی یک ریال مغایرت! چند صندوقِ همزمان در فروشگاه، با رزرو بازه‌ای شماره‌ها، بدونِ فاکتورِ تکراری!",
+                pointerText: "اتصال مستقیم کارت‌خوان و فیش‌پرینتر",
+                spotlight: { top: 45, left: 12, width: 76, height: 35 },
+                arrow: { x: 35, y: 62 },
+                zoom: 1.25,
+                teacherPosition: { bottom: 12, left: 12, scale: 1.0, laser: true }
+            },
+            {
+                id: "scene_05",
+                image: "/images/tour/04_invoices_dashboard.png",
+                badge: "صحنه ۵: تضاد قبل و بعد: آرامش شب عید",
+                badgeClass: "bg-purple-950/80 border-purple-500/40 text-purple-300",
+                timecode: "۰۲:۰۱ تا ۰۲:۲۱",
+                headline: "قبل از نپتون: استرسِ قطعی اینترنت و صف‌های کلافه‌کننده. بعد از نپتون: سرعتِ موشکی در اوج بازار!",
+                subtitle: "انبارداریِ بی‌خطا، کسر آنی موجودی کالا و آرامشِ کامل صندوق‌دار و صاحب کسب‌وکار در شلوغ‌ترین روزهای سال!",
+                pointerText: "گزارش فروش لحظه‌ای دخل",
+                spotlight: { top: 18, left: 10, width: 80, height: 42 },
+                arrow: { x: 50, y: 38 },
+                zoom: 1.18,
+                teacherPosition: { bottom: 12, left: 70, scale: 1.05, laser: true }
+            },
+            {
+                id: "scene_06",
+                image: "/images/tour/01_dashboard.png",
+                badge: "صحنه ۶: دعوت به اقدام و تست رایگان ۱۴ روزه",
+                badgeClass: "bg-rose-950/80 border-rose-500/40 text-rose-300",
+                timecode: "۰۲:۲۱ تا ۰۲:۴۰",
+                headline: "دیگر نگران قطعی اینترنت نباشید؛ صندوق نپتون همیشه آماده فروش است!",
+                subtitle: "همین حالا، بدونِ نیاز به کارتِ بانکی، صندوقِ فروشگاهیِ نپتون را با چهارده روز تستِ رایگان دانلود کنید یا زیرِ همین پست، کلمه صندوق را کامنت بگذارید: نپتون دات‌آی‌آر!",
+                pointerText: "تست رایگان ۱۴ روزه بدون کارت بانکی",
+                spotlight: { top: 5, left: 5, width: 90, height: 90 },
+                arrow: { x: 50, y: 50 },
+                zoom: 1.0,
+                teacherPosition: { bottom: 15, left: 38, scale: 1.15, laser: false }
+            }
+        ];
+
+        // =========================================================================
+        // CINEMATIC WEB AUDIO SFX ENGINE (DECISION D-140) WITH RETAIL POS FOLEY
+        // =========================================================================
+        class CinematicSoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.musicGain = null;
+                this.sfxGain = null;
+                this.analyser = null;
+                this.sourceNode = null;
+                this.ambientOscs = [];
+                this.enabled = true;
+                this.isMusicRunning = false;
+            }
+
+            init() {
+                if (this.ctx) return;
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioCtx();
+
+                // Master SFX Gain
+                this.sfxGain = this.ctx.createGain();
+                this.sfxGain.gain.value = 0.55;
+                this.sfxGain.connect(this.ctx.destination);
+
+                // Background Ambient Music Gain (Retail Tech Pulse Drone)
+                this.musicGain = this.ctx.createGain();
+                this.musicGain.gain.value = 0.28;
+                this.musicGain.connect(this.ctx.destination);
+
+                // Voice Frequency Analyser for Lip-Sync & Spectrum
+                this.analyser = this.ctx.createAnalyser();
+                this.analyser.fftSize = 512;
+                this.analyser.smoothingTimeConstant = 0.65;
+            }
+
+            attachAudioPlayer(audioElement) {
+                this.init();
+                if (this.sourceNode) return;
+                try {
+                    this.sourceNode = this.ctx.createMediaElementSource(audioElement);
+                    this.sourceNode.connect(this.analyser);
+                    this.analyser.connect(this.ctx.destination);
+                } catch (e) {
+                    console.log("Audio routing attached:", e);
+                }
+            }
+
+            startAmbientMusic() {
+                if (!this.enabled) return;
+                this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                if (this.isMusicRunning) return;
+
+                // Retail Tech Harmonic Triad (D2 = 73.4Hz, A2 = 110Hz, F#3 = 185Hz)
+                const freqs = [73.42, 110.0, 185.0];
+                this.ambientOscs = freqs.map(f => {
+                    const osc = this.ctx.createOscillator();
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 340;
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.value = f;
+
+                    const lfo = this.ctx.createOscillator();
+                    lfo.frequency.value = 0.18;
+                    const lfoGain = this.ctx.createGain();
+                    lfoGain.gain.value = 14;
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(osc.frequency);
+                    lfo.start();
+
+                    osc.connect(filter);
+                    filter.connect(this.musicGain);
+                    osc.start();
+                    return osc;
+                });
+                this.isMusicRunning = true;
+            }
+
+            duck(isDucked) {
+                if (!this.ctx || !this.musicGain || !this.enabled) return;
+                const now = this.ctx.currentTime;
+                this.musicGain.gain.cancelScheduledValues(now);
+                if (isDucked) {
+                    this.musicGain.gain.linearRampToValueAtTime(0.09, now + 0.15);
+                } else {
+                    this.musicGain.gain.linearRampToValueAtTime(0.32, now + 0.45);
+                }
+            }
+
+            playWhoosh() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const bufferSize = Math.floor(this.ctx.sampleRate * 0.4);
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(180, now);
+                filter.frequency.exponentialRampToValueAtTime(1400, now + 0.18);
+                filter.frequency.exponentialRampToValueAtTime(260, now + 0.38);
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.35, now + 0.15);
+                gain.gain.linearRampToValueAtTime(0.001, now + 0.38);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.sfxGain);
+                noise.start(now);
+            }
+
+            playBraam() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(65, now);
+                osc.frequency.exponentialRampToValueAtTime(42, now + 1.3);
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(280, now);
+                filter.frequency.exponentialRampToValueAtTime(75, now + 1.3);
+                filter.Q.value = 7;
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.65, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.sfxGain);
+                osc.start(now);
+                osc.stop(now + 1.45);
+            }
+
+            // Real Retail Foley SFX: Barcode Scanner Beep
+            playBarcodeBeep() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(2800, now);
+                osc.frequency.setValueAtTime(2800, now + 0.08);
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+                osc.connect(gain);
+                gain.connect(this.sfxGain);
+                osc.start(now);
+                osc.stop(now + 0.09);
+            }
+
+            // Real Retail Foley SFX: Thermal Paper Cutter Tear
+            playPaperCut() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const bufferSize = Math.floor(this.ctx.sampleRate * 0.15);
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.value = 2400;
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.sfxGain);
+                noise.start(now);
+            }
+        }
+
+        const cinematicSound = new CinematicSoundEngine();
+
+        // =========================================================================
+        // SCI-FI VFX ENGINE: CYBER GRID, PARTICLES & SHOCKWAVE (DECISION D-141)
+        // =========================================================================
+        class CinematicVFXEngine {
+            constructor() {
+                this.canvas = document.getElementById('vfxCanvas');
+                this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+                this.enabled = true;
+                this.particles = [];
+                this.shockwave = null;
+                this.gridOffset = 0;
+                this.initParticles();
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                if (!this.canvas) return;
+                this.canvas.width = this.canvas.offsetWidth;
+                this.canvas.height = this.canvas.offsetHeight;
+            }
+
+            initParticles() {
+                this.particles = [];
+                const count = 45;
+                for (let i = 0; i < count; i++) {
+                    this.particles.push({
+                        x: Math.random() * 1000,
+                        y: Math.random() * 600,
+                        vx: (Math.random() - 0.5) * 0.6,
+                        vy: (Math.random() - 0.5) * 0.6,
+                        radius: Math.random() * 2 + 1,
+                        color: Math.random() > 0.3 ? 'rgba(16, 185, 129, ' : 'rgba(56, 189, 248, '
+                    });
+                }
+            }
+
+            triggerShockwave() {
+                if (!this.canvas) return;
+                this.shockwave = {
+                    x: this.canvas.width / 2,
+                    y: this.canvas.height / 2,
+                    radius: 10,
+                    maxRadius: Math.max(this.canvas.width, this.canvas.height) * 0.8,
+                    opacity: 0.9
+                };
+            }
+
+            render() {
+                if (!this.ctx || !this.enabled) return;
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+                this.ctx.clearRect(0, 0, width, height);
+
+                // 1. Perspective Cyber Grid at Lower Third
+                this.gridOffset = (this.gridOffset + 0.4) % 40;
+                this.ctx.save();
+                this.ctx.strokeStyle = 'rgba(16, 185, 129, 0.12)';
+                this.ctx.lineWidth = 1;
+
+                const horizonY = height * 0.65;
+                for (let y = horizonY; y < height; y += 18 + (y - horizonY) * 0.15) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(width, y);
+                    this.ctx.stroke();
+                }
+
+                const vpX = width / 2;
+                for (let x = -width; x <= width * 2; x += 60) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(vpX, horizonY);
+                    this.ctx.lineTo(x + this.gridOffset, height);
+                    this.ctx.stroke();
+                }
+                this.ctx.restore();
+
+                // 2. Constellation Data Particles
+                for (let i = 0; i < this.particles.length; i++) {
+                    const p = this.particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0) p.x = width;
+                    if (p.x > width) p.x = 0;
+                    if (p.y < 0) p.y = height;
+                    if (p.y > height) p.y = 0;
+
+                    this.ctx.fillStyle = p.color + '0.7)';
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    for (let j = i + 1; j < this.particles.length; j++) {
+                        const p2 = this.particles[j];
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 85) {
+                            const alpha = (1 - dist / 85) * 0.22;
+                            this.ctx.strokeStyle = `rgba(16, 185, 129, ${alpha})`;
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(p.x, p.y);
+                            this.ctx.lineTo(p2.x, p2.y);
+                            this.ctx.stroke();
+                        }
+                    }
+                }
+
+                // 3. Radial Energy Shockwave Animation
+                if (this.shockwave) {
+                    this.shockwave.radius += 18;
+                    this.shockwave.opacity *= 0.94;
+                    this.ctx.save();
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.shockwave.x, this.shockwave.y, this.shockwave.radius, 0, Math.PI * 2);
+                    this.ctx.strokeStyle = `rgba(16, 185, 129, ${this.shockwave.opacity})`;
+                    this.ctx.lineWidth = 4;
+                    this.ctx.shadowColor = '#10b981';
+                    this.ctx.shadowBlur = 20;
+                    this.ctx.stroke();
+                    this.ctx.restore();
+
+                    if (this.shockwave.opacity < 0.02 || this.shockwave.radius > this.shockwave.maxRadius) {
+                        this.shockwave = null;
+                    }
+                }
+            }
+        }
+
+        const cinematicVfx = new CinematicVFXEngine();
+
+        // =========================================================================
+        // TEACHER AVATAR ENGINE: ARASH STAGE CHOREOGRAPHY (DECISIONS D-141, D-142 & D-143)
+        // =========================================================================
+        let presenterDisplayMode = 'full'; // 'full' | 'pip' | 'hidden'
+        function togglePresenterMode() {
+            const fullEl = document.getElementById('humanTeacherFull');
+            const pipEl = document.getElementById('humanTeacherPip');
+            const podium = document.getElementById('presenterPodium');
+
+            if (presenterDisplayMode === 'full') {
+                presenterDisplayMode = 'pip';
+                if (fullEl) fullEl.classList.add('hidden');
+                if (pipEl) pipEl.classList.remove('hidden');
+            } else if (presenterDisplayMode === 'pip') {
+                presenterDisplayMode = 'hidden';
+                if (podium) podium.classList.add('hidden');
+            } else {
+                presenterDisplayMode = 'full';
+                if (podium) podium.classList.remove('hidden');
+                if (fullEl) fullEl.classList.remove('hidden');
+                if (pipEl) pipEl.classList.add('hidden');
+            }
+            if (talkingCharacter) talkingCharacter.updateLaserPointer();
+        }
+
+        class TalkingCharacterEngine {
+            constructor() {
+                this.enabled = true;
+                this.lastBlinkTime = 0;
+                this.blinkDuration = 180;
+                this.nextBlinkInterval = 3800;
+                this.mouthShape = document.getElementById('mouthShape');
+                this.teethShape = document.getElementById('teethShape');
+                this.avatarEyelids = document.getElementById('avatarEyelids');
+                this.bodyRig = document.getElementById('humanBodyRig');
+                this.clickerDiode = document.getElementById('clickerDiode');
+                this.podium = document.getElementById('presenterPodium');
+                this.freqData = new Uint8Array(256);
+
+                this.currentJawOpen = 0.1;
+                this.currentLipWidth = 14;
+                this.currentLipRound = 2;
+                this.currentHeadTilt = 0;
+            }
+
+            walkTo(targetBottom, targetLeft, targetScale) {
+                if (!this.podium) return;
+                this.podium.classList.add('is-walking');
+                this.podium.style.bottom = `${targetBottom}%`;
+                this.podium.style.left = `${targetLeft}%`;
+                this.podium.style.transform = `scale(${targetScale})`;
+
+                setTimeout(() => {
+                    if (this.podium) this.podium.classList.remove('is-walking');
+                    this.updateLaserPointer();
+                }, 1200);
+            }
+
+            updateLaserPointer() {
+                const laserSvg = document.getElementById('teacherLaserSvg');
+                const laserLine = document.getElementById('laserBeamLine');
+                const laserDot = document.getElementById('laserDot');
+                const scene = EPISODE_SCENES[currentSceneIdx];
+
+                if (!laserSvg || !laserLine || !laserDot) return;
+
+                if (scene && scene.teacherPosition && scene.teacherPosition.laser && this.enabled && presenterDisplayMode !== 'hidden') {
+                    const stage = document.getElementById('videoStage');
+                    const emitter = document.getElementById('clickerDiode') || this.podium;
+                    const targetFrame = document.getElementById('spotlightFrame');
+
+                    if (stage && emitter && targetFrame) {
+                        const stageRect = stage.getBoundingClientRect();
+                        const emitterRect = emitter.getBoundingClientRect();
+                        const frameRect = targetFrame.getBoundingClientRect();
+
+                        const startX = emitterRect.left + emitterRect.width / 2 - stageRect.left;
+                        const startY = emitterRect.top + emitterRect.height / 2 - stageRect.top;
+
+                        const endX = frameRect.left + frameRect.width / 2 - stageRect.left;
+                        const endY = frameRect.top + frameRect.height / 2 - stageRect.top;
+
+                        laserLine.setAttribute('x1', startX);
+                        laserLine.setAttribute('y1', startY);
+                        laserLine.setAttribute('x2', endX);
+                        laserLine.setAttribute('y2', endY);
+
+                        laserDot.setAttribute('cx', endX);
+                        laserDot.setAttribute('cy', endY);
+
+                        laserSvg.classList.remove('opacity-0');
+                        return;
+                    }
+                }
+                laserSvg.classList.add('opacity-0');
+            }
+
+            update(time) {
+                if (!this.enabled || !cinematicSound.analyser) return;
+
+                cinematicSound.analyser.getByteFrequencyData(this.freqData);
+
+                let lowEnergy = 0;
+                let midEnergy = 0;
+                let highEnergy = 0;
+
+                for (let i = 2; i <= 8; i++) lowEnergy += this.freqData[i];
+                for (let i = 9; i <= 28; i++) midEnergy += this.freqData[i];
+                for (let i = 29; i <= 70; i++) highEnergy += this.freqData[i];
+
+                lowEnergy /= 7;
+                midEnergy /= 20;
+                highEnergy /= 42;
+
+                const overallVolume = (lowEnergy * 0.5 + midEnergy * 0.35 + highEnergy * 0.15) / 255;
+
+                let targetJaw = 1.2;
+                let targetWidth = 14;
+                let targetRound = 2;
+
+                if (overallVolume > 0.08) {
+                    targetJaw = 2 + (lowEnergy / 255) * 8.0;
+                    targetWidth = 12 + (highEnergy / 255) * 6;
+                    targetRound = 3 + (midEnergy / 255) * 4;
+
+                    if (overallVolume > 0.35) {
+                        this.currentHeadTilt = (Math.sin(time * 0.008) * 1.8);
+                    } else {
+                        this.currentHeadTilt = (Math.sin(time * 0.002) * 0.8);
+                    }
+                } else {
+                    targetJaw = 1.2;
+                    targetWidth = 14;
+                    targetRound = 2;
+                    this.currentHeadTilt = Math.sin(time * 0.001) * 0.3;
+                }
+
+                this.currentJawOpen += (targetJaw - this.currentJawOpen) * 0.25;
+                this.currentLipWidth += (targetWidth - this.currentLipWidth) * 0.25;
+                this.currentLipRound += (targetRound - this.currentLipRound) * 0.25;
+
+                if (this.mouthShape) {
+                    this.mouthShape.setAttribute('ry', this.currentJawOpen.toFixed(1));
+                    this.mouthShape.setAttribute('rx', this.currentLipWidth.toFixed(1));
+                }
+                if (this.teethShape) {
+                    this.teethShape.style.opacity = this.currentJawOpen > 3.5 ? '0.85' : '0.1';
+                }
+
+                if (this.bodyRig) {
+                    this.bodyRig.style.transform = `rotate(${this.currentHeadTilt.toFixed(1)}deg)`;
+                }
+
+                if (time - this.lastBlinkTime > this.nextBlinkInterval) {
+                    this.lastBlinkTime = time;
+                    this.nextBlinkInterval = 3200 + Math.random() * 2400;
+                    if (this.avatarEyelids) {
+                        this.avatarEyelids.style.backgroundColor = 'rgba(23, 20, 18, 0.95)';
+                        setTimeout(() => {
+                            if (this.avatarEyelids) this.avatarEyelids.style.backgroundColor = 'rgba(23, 20, 18, 0)';
+                        }, this.blinkDuration);
+                    }
+                }
+
+                const bars = document.querySelectorAll('#spectrumBars .eq-bar');
+                if (bars && bars.length > 0) {
+                    const step = Math.floor(64 / bars.length);
+                    bars.forEach((bar, idx) => {
+                        const val = this.freqData[idx * step] || 0;
+                        const barHeight = Math.max(3, Math.round((val / 255) * 22));
+                        bar.style.height = `${barHeight}px`;
+                        if (val > 180) {
+                            bar.style.background = 'linear-gradient(180deg, #10b981 0%, #38bdf8 100%)';
+                        } else {
+                            bar.style.background = 'linear-gradient(180deg, #38bdf8 0%, #0284c7 100%)';
+                        }
+                    });
+                }
+            }
+        }
+
+        const talkingCharacter = new TalkingCharacterEngine();
+
+        // 60 FPS Render Loop
+        function cinematicEngineLoop(time) {
+            cinematicVfx.render();
+            talkingCharacter.update(time);
+            requestAnimationFrame(cinematicEngineLoop);
+        }
+        requestAnimationFrame(cinematicEngineLoop);
+
+        // =========================================================================
+        // SCENE & PLAYBACK CONTROLLER
+        // =========================================================================
+        let currentSceneIdx = 0;
+        let isPlaying = true;
+        let soundEnabled = true;
+        let isReelMode = false;
+        let currentVoice = 'ganji';
+        const audioPlayer = document.getElementById('episodeAudio');
+
+        function getAudioPath(voice, sceneId) {
+            const ext = (voice === 'ganji' || voice === 'amir') ? 'wav' : 'mp3';
+            return `/audio/episodes/ep02/${voice}/${sceneId}.${ext}`;
+        }
+
+        function setVoice(v) {
+            currentVoice = v;
+            ['ganji', 'amir', 'dilara', 'farid'].forEach(k => {
+                const btn = document.getElementById(`voice${k.charAt(0).toUpperCase() + k.slice(1)}Btn`);
+                if (btn) {
+                    btn.className = (k === v)
+                        ? 'btn btn-xs rounded-lg font-bold bg-emerald-500 text-black shadow-sm'
+                        : 'btn btn-xs rounded-lg font-bold btn-ghost text-slate-300';
+                }
+            });
+
+            const labelMap = {
+                'ganji': 'استاد احمد گنجی (برگزیده)',
+                'amir': 'امیر سودبخش (پادکست رخ)',
+                'dilara': 'دلارا (مایکروسافت نئورال)',
+                'farid': 'فرید (مایکروسافت نئورال)'
+            };
+            document.getElementById('voiceIndicatorLabel').textContent = `گوینده: ${labelMap[v] || v}`;
+
+            const scene = EPISODE_SCENES[currentSceneIdx];
+            audioPlayer.src = getAudioPath(currentVoice, scene.id);
+            if (soundEnabled && isPlaying) {
+                audioPlayer.currentTime = 0;
+                audioPlayer.play().catch(e => console.log(e));
+            }
+        }
+
+        function toggleReelFormat() {
+            isReelMode = !isReelMode;
+            const stage = document.getElementById('videoStage');
+            const hookBanner = document.getElementById('reelHookBanner');
+            const btnText = document.getElementById('reelText');
+            const btn = document.getElementById('reelFormatBtn');
+
+            if (isReelMode) {
+                stage.classList.add('reel-mode');
+                if (hookBanner) hookBanner.classList.remove('hidden');
+                btnText.textContent = 'قالب: ۹:۱۶ عمودی';
+                btn.className = 'btn btn-sm btn-ghost border border-emerald-500 bg-emerald-950/40 rounded-xl text-xs gap-1.5 text-emerald-200';
+            } else {
+                stage.classList.remove('reel-mode');
+                if (hookBanner) hookBanner.classList.add('hidden');
+                btnText.textContent = 'قالب: ۱۶:۹ افقی';
+                btn.className = 'btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-emerald-300';
+            }
+            cinematicVfx.resize();
+            setTimeout(() => talkingCharacter.updateLaserPointer(), 600);
+        }
+
+        function renderScene(idx) {
+            if (idx < 0 || idx >= EPISODE_SCENES.length) return;
+            currentSceneIdx = idx;
+            const scene = EPISODE_SCENES[idx];
+
+            document.getElementById('sceneBadge').textContent = scene.badge;
+            document.getElementById('sceneTimecode').textContent = scene.timecode;
+            document.getElementById('sceneHeadline').textContent = scene.headline;
+            document.getElementById('sceneSubtitle').textContent = scene.subtitle;
+            document.getElementById('pointerText').textContent = scene.pointerText;
+
+            const img = document.getElementById('stageImage');
+            if (img.src !== window.location.origin + scene.image) {
+                img.src = scene.image;
+            }
+            img.style.transform = `scale(${scene.zoom})`;
+
+            const frame = document.getElementById('spotlightFrame');
+            if (scene.spotlight) {
+                frame.style.top = `${scene.spotlight.top}%`;
+                frame.style.left = `${scene.spotlight.left}%`;
+                frame.style.width = `${scene.spotlight.width}%`;
+                frame.style.height = `${scene.spotlight.height}%`;
+                frame.classList.remove('opacity-0');
+            } else {
+                frame.classList.add('opacity-0');
+            }
+
+            const pointer = document.getElementById('radarPointer');
+            if (scene.arrow) {
+                pointer.style.top = `${scene.arrow.y}%`;
+                pointer.style.left = `${scene.arrow.x}%`;
+                pointer.classList.remove('opacity-0');
+            } else {
+                pointer.classList.add('opacity-0');
+            }
+
+            if (scene.teacherPosition) {
+                talkingCharacter.walkTo(
+                    scene.teacherPosition.bottom,
+                    scene.teacherPosition.left,
+                    scene.teacherPosition.scale
+                );
+            }
+
+            for (let i = 0; i < EPISODE_SCENES.length; i++) {
+                const card = document.getElementById(`card_${i}`);
+                if (card) {
+                    if (i === idx) {
+                        card.classList.add('ring-2', 'ring-emerald-400', 'bg-slate-800/80');
+                    } else {
+                        card.classList.remove('ring-2', 'ring-emerald-400', 'bg-slate-800/80');
+                    }
+                }
+            }
+
+            cinematicSound.playWhoosh();
+
+            // Flare & Shockwave on Scene 3 reveal (Offline First Reveal)
+            const flare = document.getElementById('lensFlare');
+            if (idx === 2) {
+                flare.classList.remove('active');
+                void flare.offsetWidth;
+                flare.classList.add('active');
+                cinematicSound.playBraam();
+                cinematicVfx.triggerShockwave();
+            }
+
+            // Real Retail Foley: Barcode scan beep & thermal paper cut on Scene 4
+            if (idx === 3) {
+                setTimeout(() => cinematicSound.playBarcodeBeep(), 400);
+                setTimeout(() => cinematicSound.playBarcodeBeep(), 900);
+                setTimeout(() => cinematicSound.playPaperCut(), 1600);
+            }
+
+            const headline = document.getElementById('sceneHeadline');
+            if (idx === 0) {
+                headline.classList.add('crisis-glitch');
+            } else {
+                headline.classList.remove('crisis-glitch');
+            }
+
+            audioPlayer.src = getAudioPath(currentVoice, scene.id);
+            if (soundEnabled && isPlaying) {
+                audioPlayer.currentTime = 0;
+                audioPlayer.play().catch(e => console.log("Autoplay prevented:", e));
+            }
+        }
+
+        audioPlayer.addEventListener('play', () => {
+            cinematicSound.attachAudioPlayer(audioPlayer);
+            cinematicSound.duck(true);
+            if (!cinematicSound.isMusicRunning) cinematicSound.startAmbientMusic();
+            talkingCharacter.updateLaserPointer();
+        });
+
+        audioPlayer.addEventListener('pause', () => {
+            cinematicSound.duck(false);
+        });
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            if (audioPlayer.duration > 0) {
+                const totalProgress = ((currentSceneIdx + (audioPlayer.currentTime / audioPlayer.duration)) / EPISODE_SCENES.length) * 100;
+                document.getElementById('timelineProgress').style.width = `${totalProgress}%`;
+            }
+        });
+
+        audioPlayer.addEventListener('ended', () => {
+            cinematicSound.duck(false);
+            if (isPlaying) {
+                if (currentSceneIdx < EPISODE_SCENES.length - 1) {
+                    setTimeout(() => nextScene(), 400);
+                } else {
+                    isPlaying = false;
+                    updatePlayButton();
+                }
+            }
+        });
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            updatePlayButton();
+            if (isPlaying) {
+                audioPlayer.play().catch(e => console.log(e));
+                cinematicSound.startAmbientMusic();
+            } else {
+                audioPlayer.pause();
+                cinematicSound.duck(false);
+            }
+        }
+
+        function updatePlayButton() {
+            const btnIcon = document.getElementById('playIcon');
+            const btnText = document.getElementById('playText');
+            if (isPlaying) {
+                btnIcon.textContent = '⏸️';
+                btnText.textContent = 'توقف';
+            } else {
+                btnIcon.textContent = '▶️';
+                btnText.textContent = 'پخش';
+            }
+        }
+
+        function nextScene() {
+            if (currentSceneIdx < EPISODE_SCENES.length - 1) {
+                renderScene(currentSceneIdx + 1);
+            } else {
+                renderScene(0);
+            }
+        }
+
+        function prevScene() {
+            if (currentSceneIdx > 0) {
+                renderScene(currentSceneIdx - 1);
+            } else {
+                renderScene(EPISODE_SCENES.length - 1);
+            }
+        }
+
+        function jumpToScene(idx) {
+            renderScene(idx);
+            if (!isPlaying) {
+                isPlaying = true;
+                updatePlayButton();
+            }
+        }
+
+        function toggleSfx() {
+            cinematicSound.enabled = !cinematicSound.enabled;
+            const btnText = document.getElementById('sfxText');
+            const btnIcon = document.getElementById('sfxIcon');
+            if (cinematicSound.enabled) {
+                btnText.textContent = 'موسیقی: روشن';
+                btnIcon.textContent = '🎧';
+                cinematicSound.startAmbientMusic();
+            } else {
+                btnText.textContent = 'موسیقی: خاموش';
+                btnIcon.textContent = '🔇';
+                if (cinematicSound.ctx && cinematicSound.musicGain) {
+                    cinematicSound.musicGain.gain.value = 0;
+                }
+            }
+        }
+
+        function toggleVfx() {
+            cinematicVfx.enabled = !cinematicVfx.enabled;
+            const btnText = document.getElementById('vfxText');
+            const btn = document.getElementById('vfxBtn');
+            const hud = document.getElementById('hudOverlay');
+            if (cinematicVfx.enabled) {
+                btnText.textContent = 'VFX: روشن';
+                btn.className = 'btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-emerald-300';
+                if (hud) hud.style.display = 'flex';
+            } else {
+                btnText.textContent = 'VFX: خاموش';
+                btn.className = 'btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-slate-500';
+                if (hud) hud.style.display = 'none';
+                if (cinematicVfx.ctx) {
+                    cinematicVfx.ctx.clearRect(0, 0, cinematicVfx.canvas.width, cinematicVfx.canvas.height);
+                }
+            }
+        }
+
+        function togglePresenterVisibility() {
+            talkingCharacter.enabled = !talkingCharacter.enabled;
+            const btnText = document.getElementById('presenterText');
+            const btn = document.getElementById('presenterBtn');
+            const podium = document.getElementById('presenterPodium');
+            const laserSvg = document.getElementById('teacherLaserSvg');
+            if (talkingCharacter.enabled) {
+                btnText.textContent = 'معلم: روشن';
+                btn.className = 'btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-amber-300';
+                if (podium) podium.style.display = 'flex';
+                talkingCharacter.updateLaserPointer();
+            } else {
+                btnText.textContent = 'معلم: خاموش';
+                btn.className = 'btn btn-sm btn-ghost border border-slate-800 rounded-xl text-xs gap-1.5 text-slate-500';
+                if (podium) podium.style.display = 'none';
+                if (laserSvg) laserSvg.classList.add('opacity-0');
+            }
+        }
+
+        function togglePresenterMode() {
+            const podium = document.getElementById('presenterPodium');
+            if (!podium) return;
+            if (podium.classList.contains('scale-75')) {
+                podium.classList.remove('scale-75', 'opacity-60');
+            } else {
+                podium.classList.add('scale-75', 'opacity-60');
+            }
+        }
+
+        function toggleFullscreen() {
+            const stage = document.querySelector('.video-stage');
+            if (!document.fullscreenElement) {
+                stage.requestFullscreen().catch(err => alert(`خطای فول‌اسکرین: ${err.message}`));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // In-Browser Screen & Audio Video Recorder
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let recordInterval = null;
+        let recordSeconds = 0;
+
+        async function toggleScreenRecord() {
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getDisplayMedia({
+                        video: { frameRate: 30, width: 1920, height: 1080 },
+                        audio: true
+                    });
+                    recordedChunks = [];
+                    mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9,opus' });
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) recordedChunks.push(e.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `Neptune_ERP_Episode_02_POS_${Date.now()}.webm`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        isRecording = false;
+                        clearInterval(recordInterval);
+                        document.getElementById('recordLabel').textContent = '🔴 ضبط ویدیو (MP4)';
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    recordSeconds = 0;
+                    recordInterval = setInterval(() => {
+                        recordSeconds++;
+                        const mins = String(Math.floor(recordSeconds / 60)).padStart(2, '0');
+                        const secs = String(recordSeconds % 60).padStart(2, '0');
+                        document.getElementById('recordLabel').textContent = `⏹️ توقف (${mins}:${secs})`;
+                    }, 1000);
+
+                    renderScene(0);
+                    isPlaying = true;
+                    updatePlayButton();
+                    audioPlayer.play().catch(e => console.log(e));
+                } catch (err) {
+                    console.error("Recording error:", err);
+                    alert("اجازه ضبط صفحه یا تب صادر نشد.");
+                }
+            } else {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                }
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlay();
+            } else if (e.code === 'ArrowRight' || e.code === 'ArrowDown') {
+                e.preventDefault();
+                nextScene();
+            } else if (e.code === 'ArrowLeft' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                prevScene();
+            }
+        });
+
+        window.addEventListener('click', () => {
+            if (cinematicSound.enabled && !cinematicSound.isMusicRunning) {
+                cinematicSound.startAmbientMusic();
+            }
+        }, { once: true });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderScene(0);
+        });
+    </script>
+</body>
+</html>
