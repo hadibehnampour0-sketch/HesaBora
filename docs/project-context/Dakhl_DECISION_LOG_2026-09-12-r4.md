@@ -3398,3 +3398,34 @@ To elevate digital avatars from 2.5D displacement planes to true biological life
 5. **100% Offline-First Procedural Human Engine:**
    - Bundled in `public/js/photoreal-character-simulator.js`, capable of procedurally generating rigged anatomical humanoid geometry and blendshapes in-browser without requiring multi-megabyte external cloud downloads.
    - 1-click runtime switcher between PBR Depth Mesh and True 3D Skeletal FACS Simulator.
+
+---
+
+## D-149 — Benchmark Reverse-Engineering, Physical-to-Digital Graphic Match Cuts & 6-Expert Think Tank Creative Synthesis Standard — 2026-11-11 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+To break beyond the confines of static software recording and enter the world of cinematic product presentation, Decision D-149 establishes the permanent standard for benchmarking top global tech commercials (Sandwich Video, Apple Keynotes, Monday.com, Stripe/Square) and systematically reverse-engineering their visual grammar (*«استاندارد مهندسی معکوس بنچ‌مارک‌های جهانی، دکوپاژ سینمایی و سرقت خلاقانه ایده»*). It formalizes the method of Austin Kleon's "Creative Theft" adapted to the Iranian manufacturing and wholesale market, executed in mandatory collaboration with the 6-expert Think Tank.
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **The "Beyond the Screen" Mandate:**
+   - Software must never be presented as an isolated digital bubble. At least 50% of the dramatic weight must reside in the physical world (industrial factory floors, high-bay warehouse aisles, bended metal, forklifts, busy retail counters, messy invoices).
+   - Neptune ERP is positioned not merely as an app, but as the master regulator of real-world physical and financial chaos.
+2. **The 4 Global Benchmarks & Deconstructed Techniques:**
+   - **Sandwich Video (Adam Lisagor):** Deadpan realism, physical walkthroughs, and precise physical-to-digital graphic match cuts (e.g. crumpling a paper invoice matching to dragging a digital record to trash).
+   - **Apple Keynote Walkthroughs:** Continuous one-take tracking shots through operational facilities with floating AR HUD graphics, threshold portal transitions, and seamless macro zoom into microchips/databases.
+   - **Monday.com Visual Contrast:** High-frequency, desaturated physical chaos (falling boxes, loud noises, frantic workers) instantly resolving into ASMR-like digital clockwork and calm upon software engagement.
+   - **Stripe & Square Industrial Materialism:** Shallow-depth macro shots focusing on tactile real-world sounds (wooden crates, barcode scanners, cash drawers) bridged with millisecond data synchronization into double-entry accounting ledgers.
+3. **Physical-to-Digital Graphic Match Cut Requirements:**
+   - **Coordinate Symmetry:** Exact pixel coordinate alignment between the physical focal point and the following digital UI element.
+   - **Momentum Continuity (Match on Action):** Preserving velocity vector direction across the cut point so the viewer perceives zero visual hitch.
+   - **Sonic Bridge:** 40ms acoustic overlap blending physical impact sound with the digital UI feedback chime.
+4. **Mandatory 6-Member Think Tank Protocol:**
+   - Every promotional scene or campaign sequence must be filtered, critiqued, and refined by the 6 designated specialists:
+     - Screenwriter (dramatic beats, camera vectors, shot transitions).
+     - Head of B2B Sales (conversion anchors, decision-maker objection handling, loss aversion).
+     - Master Storyteller (narrative friction, sensory metaphors, hero's transformation).
+     - Viral Growth Specialist (3-second hook retention, pattern interrupts, social share triggers).
+     - Audience Psychologist (cognitive relief, dopamine from order, anxiety reduction).
+     - Target Audience Persona (traditional Iranian factory owner / bazaar merchant sanity-check).
+   - Standard output is always a prioritized synthesis of the Top 5 battle-tested concepts.
+
