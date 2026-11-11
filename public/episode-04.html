@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسترکلاس ویدیویی نپتون ERP • قسمت ۴: سپر ضد جریمه مودیان و دارایی</title>
+    
+    <!-- Tailwind CSS & DaisyUI CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@4.12.23/dist/full.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Three.js 3D WebGL Engine & Neptune 3D Presenter (Decision D-144) -->
+    <script src="/js/three.min.js"></script>
+    <script src="/js/presenter-3d-engine.js"></script>
+    <!-- Cinematic Scene Selection & Shot Grammar (Decision D-147) -->
+    <script src="/js/scene-shot-selector.js"></script>
+    <!-- 3D Animation Production & Motion Choreography Engine (Decision D-150) -->
+    <script src="/js/three-animation-engine.js"></script>
+    <!-- Photorealistic 3D Skeletal Character Simulator (Decision D-148) -->
+    <script src="/js/photoreal-character-simulator.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Vazirmatn', 'sans-serif'] },
+                    colors: {
+                        primary: '#4f46e5', // Indigo Tax Shield Primary
+                        secondary: '#10b981', // Emerald Success
+                        accent: '#06b6d4', // Cyan Compliance
+                        darkBg: '#030712',
+                        panelBg: '#0b1120'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Vazirmatn', sans-serif; background-color: #030712; color: #f8fafc; }
+        
+        /* 16:9 / 9:16 Adaptive Cinematic Video Viewport */
+        .video-stage {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* Default: 16:9 Aspect Ratio */
+            overflow: hidden;
+            background: #02040a;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 0 50px rgba(79, 70, 229, 0.28);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        /* 9:16 Vertical Mobile Reel Format (Instagram, TikTok, YouTube Shorts) */
+        .video-stage.reel-mode {
+            padding-top: 177.77%; /* 9:16 Aspect Ratio */
+            max-width: 440px;
+            margin: 0 auto;
+            border-radius: 2.2rem;
+            box-shadow: 0 35px 80px -10px rgba(0, 0, 0, 0.98), 0 0 60px rgba(79, 70, 229, 0.38);
+        }
+
+        .stage-inner {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .screenshot-target {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: center center;
+        }
+        
+        /* Neon Spotlight Frame */
+        .spotlight-frame {
+            position: absolute;
+            z-index: 35;
+            pointer-events: none;
+            border: 3px solid #4f46e5;
+            border-radius: 1rem;
+            background: rgba(79, 70, 229, 0.12);
+            box-shadow: 0 0 35px rgba(79, 70, 229, 0.8), inset 0 0 20px rgba(16, 185, 129, 0.3);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: frameGlowIndigo 2.0s infinite alternate ease-in-out;
+        }
+        
+        @keyframes frameGlowIndigo {
+            0% { border-color: #4f46e5; box-shadow: 0 0 25px rgba(79, 70, 229, 0.7), inset 0 0 15px rgba(79, 70, 229, 0.3); }
+            100% { border-color: #10b981; box-shadow: 0 0 35px rgba(16, 185, 129, 0.9), inset 0 0 25px rgba(6, 182, 212, 0.4); }
+        }
+        
+        /* Animated Radar Arrow Pointer */
+        .radar-pointer {
+            position: absolute;
+            z-index: 38;
+            pointer-events: none;
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            filter: drop-shadow(0 0 15px rgba(79, 70, 229, 0.9));
+            animation: pointerBob 1.6s infinite ease-in-out;
+        }
+        
+        @keyframes pointerBob {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.08); }
+        }
+        
+        /* Kinetic Subtitles Bar */
+        .subtitles-glass {
+            background: linear-gradient(180deg, rgba(3, 7, 18, 0.02) 0%, rgba(3, 7, 18, 0.92) 25%, rgba(3, 7, 18, 0.98) 100%);
+            backdrop-filter: blur(12px);
+        }
+
+        /* 35mm Cinematic Film Grain Texture */
+        .film-grain {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 28;
+            opacity: 0.035;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            mix-blend-mode: screen;
+        }
+
+        /* Cinematic Vignette Corners */
+        .cinematic-vignette {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 27;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.85), inset 0 0 40px rgba(2, 6, 23, 0.6);
+        }
+
+        /* Anamorphic Indigo Lens Flare Line */
+        .anamorphic-flare {
+            position: absolute;
+            top: 25%;
+            left: -100%;
+            width: 300%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, rgba(79, 70, 229, 0.4) 20%, #4f46e5 50%, #10b981 60%, rgba(6, 182, 212, 0.4) 80%, transparent 100%);
+            box-shadow: 0 0 25px rgba(79, 70, 229, 0.9), 0 0 50px rgba(16, 185, 129, 0.7);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 29;
+            transition: opacity 0.8s ease-in-out;
+        }
+        .anamorphic-flare.active {
+            opacity: 0.85;
+            animation: flarePass 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes flarePass {
+            0% { transform: translateY(-20px) scaleX(0.7); opacity: 0; }
+            50% { opacity: 0.95; }
+            100% { transform: translateY(40px) scaleX(1.1); opacity: 0; }
+        }
+
+        /* Crisis Glitch Effect for Scene 1 & 2 */
+        .crisis-glitch {
+            animation: crisisShake 0.4s ease-in-out;
+            text-shadow: -2px 0 #ef4444, 2px 0 #4f46e5;
+        }
+        @keyframes crisisShake {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(-3px, 2px); }
+            40% { transform: translate(3px, -1px); }
+            60% { transform: translate(-2px, -2px); }
+            80% { transform: translate(2px, 1px); }
+        }
+
+        /* Presenter Podium Staging */
+        .presenter-podium {
+            position: absolute;
+            z-index: 45;
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: center bottom;
+        }
+
+        .presenter-podium.is-walking {
+            animation: teacherWalkGait 0.38s infinite alternate ease-in-out !important;
+        }
+
+        @keyframes teacherWalkGait {
+            0% { transform: translateY(0) scale(1) rotate(2deg); }
+            100% { transform: translateY(-12px) scale(1.02) rotate(-2deg); }
+        }
+
+        .human-ground-shadow {
+            position: absolute;
+            bottom: -6px;
+            left: 20%;
+            right: 20%;
+            height: 14px;
+            border-radius: 9999px;
+            background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(5px);
+            z-index: -1;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .presenter-podium.is-walking .human-ground-shadow {
+            transform: scale(0.8);
+            opacity: 0.5;
+        }
+
+        .avatar-glow-ring {
+            box-shadow: 0 0 25px rgba(79, 70, 229, 0.6), inset 0 0 15px rgba(16, 185, 129, 0.4);
+            animation: avatarPulseIndigo 3.0s infinite alternate ease-in-out;
+        }
+
+        @keyframes avatarPulseIndigo {
+            0% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.5), inset 0 0 10px rgba(79, 70, 229, 0.3); }
+            100% { box-shadow: 0 0 35px rgba(79, 70, 229, 0.9), inset 0 0 20px rgba(16, 185, 129, 0.6); }
+        }
+
+        .hud-compass {
+            animation: compassSpin 18s linear infinite;
+        }
+        @keyframes compassSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .eq-bar {
+            width: 3px;
+            background: linear-gradient(180deg, #4f46e5 0%, #10b981 100%);
+            border-radius: 9999px;
+            transition: height 0.08s ease;
+        }
+
+        .teacher-laser-line {
+            filter: drop-shadow(0 0 8px #4f46e5) drop-shadow(0 0 16px #10b981);
+            stroke-dasharray: 8 4;
+            animation: laserDash 0.8s linear infinite;
+        }
+        @keyframes laserDash {
+            to { stroke-dashoffset: -24; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-2 sm:p-4 md:p-6 lg:p-8">
+
+    <!-- Top Navigation Bar -->
+    <header class="max-w-7xl mx-auto w-full flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+            <a href="/" class="flex items-center gap-2.5 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-emerald-400 p-0.5 shadow-lg shadow-indigo-900/40 group-hover:scale-105 transition-transform">
+                    <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                        <svg class="w-5 h-5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-black text-lg tracking-tight text-white">نپتون ERP</span>
+                        <span class="badge badge-primary badge-xs font-mono font-bold">قسمت ۴</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400">سپر ضد جریمه مودیان و دارایی (سامانه مودیان)</p>
+                </div>
+            </a>
+        </div>
+
+        <nav class="flex items-center gap-2 text-xs">
+            <a href="/episode-01" class="px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors">قسمت ۱: داشبورد مالی</a>
+            <a href="/episode-02" class="px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors">قسمت ۲: صندوق POS</a>
+            <a href="/episode-03" class="px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors">قسمت ۳: انبار و بهای تمام‌شده</a>
+            <span class="px-3 py-1.5 rounded-lg bg-indigo-950/80 border border-indigo-500/50 text-indigo-300 font-bold shadow-lg">قسمت ۴: سامانه مودیان</span>
+            <a href="/video-tour" class="btn btn-ghost btn-xs text-slate-400 hover:text-white">تور ۲۵ نما</a>
+            <a href="/login" class="btn btn-primary btn-xs rounded-lg text-white">ورود به نپتون</a>
+        </nav>
+    </header>
+
+    <!-- Main Video & Stage Layout -->
+    <main class="max-w-7xl mx-auto w-full my-4 flex-1 flex flex-col items-center justify-center">
+        
+        <!-- Video Canvas Section -->
+        <div class="w-full relative">
+            <div id="videoStage" class="video-stage">
+                
+                <!-- Stage Inner Container -->
+                <div class="stage-inner">
+                    <!-- High-Resolution Presentation Plate -->
+                    <img id="stageImage" 
+                         src="/images/arash_tax_audit_keynote.jpg" 
+                         alt="سپر ضد جریمه سامانه مودیان نپتون" 
+                         class="screenshot-target">
+
+                    <!-- Visual Effects Canvas (Perspective Grid & Shockwaves) -->
+                    <canvas id="vfxCanvas" class="absolute inset-0 w-full h-full pointer-events-none z-20"></canvas>
+
+                    <!-- Anamorphic Indigo Lens Flare -->
+                    <div id="lensFlare" class="anamorphic-flare"></div>
+
+                    <!-- 35mm Film Grain & Vignette -->
+                    <div class="film-grain"></div>
+                    <div class="cinematic-vignette"></div>
+
+                    <!-- Target Focus Neon Spotlight -->
+                    <div id="spotlightFrame" class="spotlight-frame opacity-0" style="top: 20%; left: 18%; width: 64%; height: 55%;"></div>
+
+                    <!-- Animated Radar Arrow Pointer -->
+                    <div id="radarPointer" class="radar-pointer opacity-0" style="top: 40%; left: 50%;">
+                        <div class="flex items-center gap-1.5 bg-slate-950/90 text-indigo-400 px-2.5 py-1 rounded-full border border-indigo-500/60 text-xs font-black shadow-2xl backdrop-blur-md">
+                            <span class="animate-ping inline-flex h-2 w-2 rounded-full bg-indigo-400 opacity-75"></span>
+                            <span id="pointerText">جرایم سنگین ماده ۲۲ قانون پایانه‌ها</span>
+                        </div>
+                    </div>
+
+                    <!-- Teacher Laser Pointer SVG Canvas -->
+                    <svg id="teacherLaserSvg" class="absolute inset-0 w-full h-full pointer-events-none z-40 transition-opacity duration-300 opacity-0">
+                        <line id="laserBeamLine" x1="0" y1="0" x2="0" y2="0" stroke="#4f46e5" stroke-width="2.5" class="teacher-laser-line" />
+                        <circle id="laserDot" cx="0" cy="0" r="4.5" fill="#10b981" filter="drop-shadow(0 0 6px #10b981)" />
+                    </svg>
+
+                    <!-- Cinematic HUD Telemetry (Decision D-141 & D-147) -->
+                    <div class="absolute top-4 right-4 z-30 pointer-events-none flex items-center gap-2 bg-slate-950/70 backdrop-blur-md border border-slate-800 px-3 py-1.5 rounded-xl text-xs font-mono">
+                        <span class="inline-block w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                        <span class="text-indigo-400 font-bold">NEPTUNE TAX SHIELD</span>
+                        <span class="text-slate-500">|</span>
+                        <span id="hudShotBadge" class="text-amber-400 font-bold">SHOT 01</span>
+                        <span class="text-slate-500">|</span>
+                        <span id="hudShotText" class="text-slate-300">EWS // CRANE-DOWN</span>
+                    </div>
+
+                    <div class="absolute top-4 left-4 z-30 pointer-events-none flex items-center gap-2 bg-slate-950/70 backdrop-blur-md border border-slate-800 px-3 py-1.5 rounded-xl text-xs font-mono">
+                        <svg class="w-3.5 h-3.5 text-indigo-400 hud-compass" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polygon points="12 2 15 12 12 22 9 12 12 2"/>
+                        </svg>
+                        <span class="text-slate-300">MOADIAN ENGINE 2.4</span>
+                        <span class="text-slate-500">|</span>
+                        <span id="voiceIndicatorLabel" class="text-emerald-400">گوینده: استاد احمد گنجی</span>
+                    </div>
+
+                    <!-- 16-Bar Audio Spectrum Visualizer -->
+                    <div id="spectrumBars" class="absolute bottom-28 right-6 z-30 pointer-events-none flex items-end gap-1 h-6">
+                        <div class="eq-bar h-1"></div>
+                        <div class="eq-bar h-2"></div>
+                        <div class="eq-bar h-4"></div>
+                        <div class="eq-bar h-3"></div>
+                        <div class="eq-bar h-5"></div>
+                        <div class="eq-bar h-2"></div>
+                        <div class="eq-bar h-6"></div>
+                        <div class="eq-bar h-4"></div>
+                        <div class="eq-bar h-3"></div>
+                        <div class="eq-bar h-5"></div>
+                        <div class="eq-bar h-2"></div>
+                        <div class="eq-bar h-4"></div>
+                        <div class="eq-bar h-6"></div>
+                        <div class="eq-bar h-3"></div>
+                        <div class="eq-bar h-2"></div>
+                        <div class="eq-bar h-1"></div>
+                    </div>
+
+                    <!-- Reels Format Top Hook Banner -->
+                    <div id="reelHookBanner" class="hidden absolute top-14 inset-x-4 z-30 pointer-events-none text-center">
+                        <div class="inline-block bg-red-600/90 text-white font-black text-sm px-4 py-1.5 rounded-full shadow-2xl backdrop-blur-md border border-red-400 animate-pulse">
+                            🚨 ۲۸۰ میلیون تومان جریمه عدم ارسال صورتحساب مودیان!
+                        </div>
+                    </div>
+
+                    <!-- Reels Format Bottom CTA Floating Bar -->
+                    <div id="reelCtaBar" class="hidden absolute bottom-24 inset-x-4 z-30 pointer-events-none text-center">
+                        <div class="inline-block bg-gradient-to-r from-indigo-600 to-emerald-600 text-white font-black text-xs px-4 py-2 rounded-full shadow-2xl border border-indigo-300">
+                            💬 کلمه «مودیان» را کامنت کنید تا لینک تست رایگان براتون ارسال بشه
+                        </div>
+                    </div>
+
+                    <!-- LIFELIKE 3D WEBGL TEACHER AVATAR: ARASH ON STAGE (DECISION D-144, D-148 & D-150) -->
+                    <div id="presenterPodium" class="presenter-podium flex flex-col items-center pointer-events-auto" style="bottom: 8%; left: 8%;">
+                        <div id="humanTeacherFull" class="relative flex flex-col items-center select-none group">
+                            
+                            <!-- 3D WebGL Canvas & Ground Shadow Container -->
+                            <div id="presenter3DContainer" class="relative w-56 sm:w-68 md:w-80 h-72 sm:h-84 md:h-96">
+                                <div class="human-ground-shadow"></div>
+                                <div id="threeAvatarMount" class="w-full h-full relative z-10"></div>
+                            </div>
+
+                            <!-- Teacher Floating 3D Badge & Interactive Controls -->
+                            <div class="mt-1 flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-950/90 backdrop-blur-md border border-indigo-500/50 text-[11px] text-white shadow-2xl transition-all group-hover:border-indigo-300">
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                                </span>
+                                <span class="font-black text-white">استاد آرش</span>
+                                <button onclick="event.stopPropagation(); toggleAvatarSimulatorEngine()" id="avatarEngineToggleBtn" class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-950/90 border border-indigo-600 text-indigo-300 font-mono hover:bg-indigo-900 transition-all" title="تغییر بین موتور WebGL عمیق و شبیه‌ساز اسکلتی فوتورئال (FACS 52 Blendshapes)">
+                                    🧬 اسکلتی FACS
+                                </button>
+                                <span class="text-[9px] text-slate-400 hidden sm:inline">| ۳D Drag</span>
+                                <button onclick="event.stopPropagation(); togglePresenterMode()" class="btn btn-ghost btn-circle btn-xs text-slate-400 hover:text-white" title="تغییر به کادر کوچک (PiP) یا مخفی‌سازی">
+                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Alternate Compact Picture-in-Picture (PiP) Mode -->
+                        <div id="humanTeacherPip" class="hidden relative group bg-slate-950/90 backdrop-blur-xl border border-indigo-500/40 rounded-2xl p-2 shadow-2xl flex items-center gap-3 avatar-glow-ring transition-all hover:border-indigo-300 cursor-pointer" onclick="togglePresenterMode()">
+                            <div class="relative w-14 h-14 rounded-xl overflow-hidden border-2 border-indigo-400 bg-slate-900 shadow-md">
+                                <img src="/images/arash_keynote_presenter.jpg" alt="استاد آرش" class="w-full h-full object-cover">
+                            </div>
+                            <div class="pr-1 pl-2">
+                                <div class="flex items-center gap-1.5 mb-0.5">
+                                    <span class="font-bold text-white text-xs">استاد آرش</span>
+                                    <span class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-950 border border-indigo-700 text-indigo-300 font-mono">PiP</span>
+                                </div>
+                                <p class="text-[10px] text-slate-300">کلیک برای نمایش سه‌بعدی روی صحنه</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Subtitles & Headline Overlay with Kinetic Highlighting -->
+                    <div class="absolute bottom-0 inset-x-0 p-4 sm:p-6 md:p-8 subtitles-glass z-30 flex flex-col justify-end text-center">
+                        <div class="flex items-center justify-center gap-2 mb-2">
+                            <span id="sceneBadge" class="badge badge-primary font-bold text-xs">صحنه ۱: کابوس جریمه ۱۰ درصدی ماده ۲۲ قانون پایانه‌ها</span>
+                            <span id="sceneTimecode" class="text-xs text-slate-400 font-mono">۰۰:۰۰ تا ۰۰:۲۶</span>
+                        </div>
+                        <h2 id="sceneHeadline" class="text-base sm:text-lg md:text-2xl font-black text-white leading-snug drop-shadow-lg mb-1.5">
+                            جریمه ماده ۲۲: ۲۸۰ میلیون تومان، فقط به خاطر چند روز تاخیر یا اشتباه در ارسال فاکتور!
+                        </h2>
+                        <p id="sceneSubtitle" class="text-xs sm:text-sm text-slate-300 max-w-4xl mx-auto line-clamp-2 leading-relaxed">
+                            تا حالا برگه تشخیص جریمه مالیاتی روی میزتان فرود آمده؟! قانونی که با هیچ کسب‌وکاری شوخی ندارد و در یک چشم به هم زدن، ۱۰ درصد از کل فروش سالانه‌تان را دود می‌کند!
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Video Player Control Bar -->
+        <div class="w-full mt-4 bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-2xl p-3 shadow-2xl space-y-3">
+            
+            <!-- Progress Bar with Scrubbing -->
+            <div class="relative w-full h-2.5 bg-slate-800 rounded-full cursor-pointer overflow-hidden group" onclick="seekVideo(event)">
+                <div id="progressBar" class="h-full bg-gradient-to-r from-indigo-500 via-indigo-400 to-emerald-400 rounded-full transition-all duration-150 w-0"></div>
+            </div>
+
+            <!-- Controller Buttons Row -->
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                
+                <!-- Left: Play/Pause, Next/Prev, Timers -->
+                <div class="flex items-center gap-2">
+                    <button onclick="togglePlay()" id="playBtn" class="btn btn-circle btn-primary btn-sm text-white shadow-lg shadow-indigo-900/50">
+                        <svg id="playIcon" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                            <polygon points="5 3 19 12 5 21 5 3"/>
+                        </svg>
+                        <svg id="pauseIcon" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="currentColor">
+                            <rect x="6" y="4" width="4" height="16"/>
+                            <rect x="14" y="4" width="4" height="16"/>
+                        </svg>
+                    </button>
+
+                    <button onclick="prevScene()" class="btn btn-circle btn-ghost btn-xs text-slate-400 hover:text-white" title="صحنه قبل">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="19 20 9 12 19 4 19 20"/>
+                            <line x1="5" y1="19" x2="5" y2="5"/>
+                        </svg>
+                    </button>
+
+                    <button onclick="nextScene()" class="btn btn-circle btn-ghost btn-xs text-slate-400 hover:text-white" title="صحنه بعد">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 4 15 12 5 20 5 4"/>
+                            <line x1="19" y1="5" x2="19" y2="19"/>
+                        </svg>
+                    </button>
+
+                    <div class="font-mono text-xs text-slate-400 px-2">
+                        <span id="currentTime" class="text-white font-bold">۰۰:۰۰</span> / <span>۰۲:۳۵</span>
+                    </div>
+                </div>
+
+                <!-- Center: Voice Selector (Decision D-138 & D-145) -->
+                <div class="flex items-center gap-1 bg-slate-950/70 p-1 rounded-xl border border-slate-800 text-xs">
+                    <span class="text-slate-400 px-2 text-[11px] font-bold">گوینده:</span>
+                    <button onclick="switchVoice('ganji')" id="voiceBtn_ganji" class="px-2.5 py-1 rounded-lg font-bold transition-all bg-indigo-600 text-white shadow">
+                        استاد گنجی (اصلی)
+                    </button>
+                    <button onclick="switchVoice('amir')" id="voiceBtn_amir" class="px-2.5 py-1 rounded-lg font-bold transition-all text-slate-400 hover:text-white">
+                        امیر سودبخش
+                    </button>
+                    <button onclick="switchVoice('dilara')" id="voiceBtn_dilara" class="px-2.5 py-1 rounded-lg font-bold transition-all text-slate-400 hover:text-white">
+                        دیلارا (خانم)
+                    </button>
+                    <button onclick="switchVoice('farid')" id="voiceBtn_farid" class="px-2.5 py-1 rounded-lg font-bold transition-all text-slate-400 hover:text-white">
+                        فرید (تخصصی)
+                    </button>
+                </div>
+
+                <!-- Right: Camera Mode Switcher, Aspect Ratio & Speeds -->
+                <div class="flex items-center gap-2">
+                    <!-- Tax Office Cam Toggle -->
+                    <button onclick="toggleTaxCamMode()" id="taxCamBtn" class="btn btn-sm btn-outline border-indigo-600/70 text-indigo-300 rounded-xl text-xs gap-1.5 hover:bg-indigo-950/40" title="سوییچ بین دوربین اتاق اسناد مالیاتی و داشبورد سامانه مودیان نپتون">
+                        <span>📁</span>
+                        <span id="taxCamLabel">دوربین اتاق ممیزی</span>
+                    </button>
+
+                    <!-- Format Reel Switcher -->
+                    <button onclick="toggleReelFormat()" id="formatToggleBtn" class="btn btn-sm btn-outline border-slate-700 text-slate-300 rounded-xl text-xs gap-1.5 hover:border-indigo-500 hover:text-indigo-400" title="تغییر بین ویدیوی افقی ۱۶:۹ و عمودی ۹:۱۶ اینستاگرام/تیک‌تاک">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                            <line x1="12" y1="18" x2="12.01" y2="18"/>
+                        </svg>
+                        <span id="formatToggleLabel">قالب ریلز (۹:۱۶)</span>
+                    </button>
+
+                    <!-- Playback Speed -->
+                    <select onchange="changeSpeed(this.value)" class="select select-bordered select-xs bg-slate-950 text-slate-300 rounded-lg">
+                        <option value="0.75">0.75x</option>
+                        <option value="1.0" selected>1.0x (عادی)</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                    </select>
+
+                    <!-- Fullscreen -->
+                    <button onclick="toggleFullscreen()" class="btn btn-circle btn-ghost btn-xs text-slate-400 hover:text-white">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 6 Interactive Scene Timeline Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-2 border-t border-slate-800 text-xs">
+                
+                <div onclick="jumpToScene(0)" id="card_0" class="p-3 rounded-xl border border-red-500/40 bg-red-950/20 hover:bg-red-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-red-400 font-black text-sm">01</span>
+                    <div>
+                        <div class="font-bold text-white">جریمه ماده ۲۲</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۰۰ تا ۰۰:۲۶ • قلاب بحران</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(1)" id="card_1" class="p-3 rounded-xl border border-amber-500/40 bg-amber-950/20 hover:bg-amber-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-amber-400 font-black text-sm">02</span>
+                    <div>
+                        <div class="font-bold text-white">باج‌دهی به معتمدها</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۲۶ تا ۰۰:۴۸ • خطاهای واسطه</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(2)" id="card_2" class="p-3 rounded-xl border border-indigo-500/40 bg-indigo-950/20 hover:bg-indigo-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-indigo-400 font-black text-sm">03</span>
+                    <div>
+                        <div class="font-bold text-white">ارسال مستقیم با ۱ کلیک</div>
+                        <div class="text-[10px] text-slate-400">۰۰:۴۸ تا ۰۱:۱۵ • بدون واسطه</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(3)" id="card_3" class="p-3 rounded-xl border border-teal-500/40 bg-teal-950/20 hover:bg-teal-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-teal-400 font-black text-sm">04</span>
+                    <div>
+                        <div class="font-bold text-white">استعلام زنده کارپوشه</div>
+                        <div class="text-[10px] text-slate-400">۰۱:۱۵ تا ۰۱:۴۲ • شناسه ۲۲ رقمی</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(4)" id="card_4" class="p-3 rounded-xl border border-purple-500/40 bg-purple-950/20 hover:bg-purple-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-purple-400 font-black text-sm">05</span>
+                    <div>
+                        <div class="font-bold text-white">صفر شدن قطعی جرایم</div>
+                        <div class="text-[10px] text-slate-400">۰۱:۴۲ تا ۰۲:۰۸ • قبل و بعد</div>
+                    </div>
+                </div>
+
+                <div onclick="jumpToScene(5)" id="card_5" class="p-3 rounded-xl border border-rose-500/40 bg-rose-950/20 hover:bg-rose-900/30 cursor-pointer transition-all flex items-start gap-2.5">
+                    <span class="font-mono text-rose-400 font-black text-sm">06</span>
+                    <div>
+                        <div class="font-bold text-white">تست رایگان ۱۴ روزه</div>
+                        <div class="text-[10px] text-slate-400">۰۲:۰۸ تا ۰۲:۳۵ • دعوت به اقدام</div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Directors & 3D Animation Inspection Panel -->
+        <div class="w-full mt-4 space-y-3">
+            
+            <!-- Shot Grammar Blueprint Panel (Decision D-147) -->
+            <div class="collapse collapse-arrow bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-xl">
+                <input type="checkbox" id="blueprintToggleCheckbox" /> 
+                <div class="collapse-title text-sm font-black text-indigo-400 flex items-center gap-2">
+                    <span>🎬 نقشه کارگردانی پلان‌ها و تناظر سناریو به تصویر (Cinematic Shot Blueprint - D-147)</span>
+                    <span class="badge badge-primary badge-xs font-mono">هوش کارگردانی</span>
+                </div>
+                <div class="collapse-content">
+                    <div id="blueprintInspectorMount" class="pt-2"></div>
+                </div>
+            </div>
+
+            <!-- Photoreal 3D Skeletal Rigging Panel (Decision D-148) -->
+            <div class="collapse collapse-arrow bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-xl">
+                <input type="checkbox" id="photorealRigToggleCheckbox" /> 
+                <div class="collapse-title text-sm font-black text-cyan-400 flex items-center gap-2">
+                    <span>🧬 شبیه‌ساز اسکلتی سه‌بعدی و حالات چهره ۵۲ گانه FACS / ARKit (Photoreal Character Rig - D-148)</span>
+                    <span class="badge badge-info badge-xs font-mono">PBR Skin & SSS</span>
+                </div>
+                <div class="collapse-content text-xs text-slate-300 space-y-3 pt-2">
+                    <p class="leading-relaxed">
+                        کاراکتر استاد آرش مجهز به ساختار استخوان‌بندی انسان‌نمای کامل (<code class="text-cyan-300">THREE.SkinnedMesh</code>)، ماتریال فیزیکی پوست با پراکندگی زیرسطحی نور (<code class="text-cyan-300">Subsurface Scattering</code>)، ریزمنافذ پوستی Normal Map، پرش‌های میکروسکوپی چشم (Saccadic Eye Jumps) و بلندشیپ‌های ۵۲ گانه استاندارد FACS برای لب‌زدن دقیق با واج‌های فارسی است.
+                    </p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-[11px]">
+                        <div class="p-2 rounded-xl bg-slate-950 border border-cyan-800/40">
+                            <span class="text-slate-400 block text-[10px]">استخوان‌های فعال:</span>
+                            <span class="text-cyan-300 font-bold">۹ استخوان سلسله‌مراتبی</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-950 border border-cyan-800/40">
+                            <span class="text-slate-400 block text-[10px]">سیستم چهره:</span>
+                            <span class="text-cyan-300 font-bold">FACS 52 Blendshapes</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-950 border border-cyan-800/40">
+                            <span class="text-slate-400 block text-[10px]">پوست فوتورئال:</span>
+                            <span class="text-cyan-300 font-bold">PBR + SSS Translucent</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-950 border border-cyan-800/40">
+                            <span class="text-slate-400 block text-[10px]">پرش چشم و تنفس:</span>
+                            <span class="text-emerald-400 font-bold">ساکادیک ۰.۳s فعال</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3D Animation Studio & Motion Choreography Panel (Decision D-150) -->
+            <div class="collapse collapse-arrow bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-xl">
+                <input type="checkbox" id="animationStudioToggleCheckbox" /> 
+                <div class="collapse-title text-sm font-black text-emerald-400 flex items-center gap-2">
+                    <span>🎭 استودیوی تولید انیمیشن سه‌بعدی و کارگردانی حرکتی (3D Animation Studio - D-150)</span>
+                    <span class="badge badge-success badge-xs font-mono">Biped Kinematics & FSM</span>
+                </div>
+                <div class="collapse-content text-xs text-slate-300 space-y-3 pt-2">
+                    <p class="leading-relaxed">
+                        تولید و اجرای ترک‌های انیمیشن اسکلتی (<code class="text-emerald-300">THREE.KeyframeTrack</code>) با درونیابی منحنی مکعبی، تلفیق نرم حالات (Cross-Fading)، بیومکانیک گام‌برداری انسان و جلوه‌های موشن‌گرافیک فضایی. روی هر دکمه کلیک کنید تا انیمیشن زنده آرش اجرا شود:
+                    </p>
+                    <div class="flex flex-wrap items-center gap-2 pt-1 font-bold">
+                        <button onclick="trigger3DAnimation('walk')" class="btn btn-xs bg-emerald-700 hover:bg-emerald-600 text-white border-none rounded-lg gap-1">
+                            <span>🚶‍♂️</span> گام‌برداری (Walk)
+                        </button>
+                        <button onclick="trigger3DAnimation('idle')" class="btn btn-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg gap-1">
+                            <span>🧍‍♂️</span> استراحت و تنفس (Idle)
+                        </button>
+                        <button onclick="trigger3DAnimation('explain')" class="btn btn-xs bg-indigo-700 hover:bg-indigo-600 text-white border-none rounded-lg gap-1">
+                            <span>🗣️</span> تدریس و پرزنتیشن (Explain)
+                        </button>
+                        <button onclick="trigger3DAnimation('point')" class="btn btn-xs bg-amber-700 hover:bg-amber-600 text-white border-none rounded-lg gap-1">
+                            <span>🎯</span> نشانه لیزری (Point)
+                        </button>
+                        <button onclick="trigger3DAnimation('shocked')" class="btn btn-xs bg-rose-700 hover:bg-rose-600 text-white border-none rounded-lg gap-1">
+                            <span>⚡</span> شوک بحران (Shocked)
+                        </button>
+                        <button onclick="trigger3DAnimation('celebrate')" class="btn btn-xs bg-purple-700 hover:bg-purple-600 text-white border-none rounded-lg gap-1">
+                            <span>🏆</span> اعلام پیروزی (Celebrate)
+                        </button>
+                        <button onclick="trigger3DHologram()" class="btn btn-xs bg-teal-800 hover:bg-teal-700 text-teal-200 border border-teal-500/50 rounded-lg gap-1">
+                            <span>💫</span> رینگ‌های داده هولوگرافیک (Holo FX)
+                        </button>
+                        <button onclick="trigger3DCinematicDolly()" class="btn btn-xs bg-blue-800 hover:bg-blue-700 text-blue-200 border border-blue-500/50 rounded-lg gap-1">
+                            <span>🎥</span> دالی کمرا زوم (Dolly Zoom)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Global Native Audio Player -->
+    <audio id="episodeAudio" preload="auto"></audio>
+
+    <!-- JavaScript Master Video Controller -->
+    <script>
+        // =========================================================================
+        // 6 SCENES SCRIPT DATA FOR EPISODE 4 (TAX SHIELD & MOADIAN INTELLIGENCE)
+        // =========================================================================
+        const EPISODE_SCENES = [
+            {
+                id: "scene_01",
+                image: "/images/arash_tax_audit_keynote.jpg",
+                softwareImage: "/images/tour/16_tax_center.png",
+                auditOfficeImage: "/images/arash_tax_audit_keynote.jpg",
+                badge: "صحنه ۱: کابوس جریمه ۱۰ درصدی ماده ۲۲ قانون پایانه‌ها",
+                badgeClass: "bg-red-950/80 border-red-500/40 text-red-300",
+                timecode: "۰۰:۰۰ تا ۰۰:۲۶",
+                headline: "جریمه ماده ۲۲: ۲۸۰ میلیون تومان، فقط به خاطر چند روز تاخیر یا اشتباه در ارسال فاکتور!",
+                subtitle: "تا حالا برگه تشخیص جریمه مالیاتی روی میزتان فرود آمده؟! قانونی که با هیچ کسب‌وکاری شوخی ندارد و در یک چشم به هم زدن، ۱۰ درصد از کل فروش سالانه‌تان را دود می‌کند!",
+                pointerText: "جرایم سنگین ماده ۲۲ قانون پایانه‌ها",
+                spotlight: { top: 20, left: 18, width: 64, height: 55 },
+                arrow: { x: 50, y: 40 },
+                zoom: 1.05,
+                hideTeacher: true,
+                teacherPosition: { bottom: 12, left: 10, scale: 1.0, laser: false }
+            },
+            {
+                id: "scene_02",
+                image: "/images/tax_audit_office_backdrop.jpg",
+                softwareImage: "/images/tour/16_tax_center.png",
+                auditOfficeImage: "/images/tax_audit_office_backdrop.jpg",
+                badge: "صحنه ۲: باج‌دهی به معتمدها و خطاهای فلج‌کننده واسطه‌ها",
+                badgeClass: "bg-amber-950/80 border-amber-500/40 text-amber-300",
+                timecode: "۰۰:۲۶ تا ۰۰:۴۸",
+                headline: "سالانه ده‌ها میلیون تومان حق اشتراک به معتمدها، با هر آپدیت قطعی، و ارورهای گیج‌کننده!",
+                subtitle: "شرکت‌های معتمد با اشتراک‌های هنگفت، واسطه‌هایی که در لحظه حساس قطع می‌شوند، و ارورهای نامفهومی که هیچ حسابداری سر از آن‌ها درنمی‌آورد! تا کی باید برای ارسال یک فاکتور ساده باج بدهید؟!",
+                pointerText: "هزینه‌های هنگفت واسطه‌گری و خطاهای ارسال",
+                spotlight: { top: 22, left: 12, width: 75, height: 50 },
+                arrow: { x: 45, y: 45 },
+                zoom: 1.14,
+                hideTeacher: false,
+                teacherPosition: { bottom: 10, left: 45, scale: 1.10, laser: true }
+            },
+            {
+                id: "scene_03",
+                image: "/images/tour/16_tax_center.png",
+                softwareImage: "/images/tour/16_tax_center.png",
+                auditOfficeImage: "/images/tax_audit_office_backdrop.jpg",
+                badge: "صحنه ۳: راهکار نپتون: ارسال مستقیم به کارپوشه بدون ریالی هزینه به معتمد",
+                badgeClass: "bg-indigo-950/80 border-indigo-500/40 text-indigo-300",
+                timecode: "۰۰:۴۸ تا ۰۱:۱۵",
+                headline: "ارسال مستقیم، ۱۰۰٪ رایگان و بی‌واسطه به کارپوشه سازمان مالیاتی تنها با ۱ کلیک!",
+                subtitle: "فقط با یک بار ثبت کلید اختصاصی (Private Key)، نپتون در همان لحظه صدور فاکتور، صورتحساب را طبق آخرین الگوی مالیاتی رمزگذاری کرده و با یک کلیک مستقیم به کارپوشه می‌فرستد!",
+                pointerText: "کلید اختصاصی مودیان و ارسال بی‌واسطه",
+                spotlight: { top: 12, left: 10, width: 80, height: 75 },
+                arrow: { x: 70, y: 50 },
+                zoom: 1.18,
+                hideTeacher: false,
+                teacherPosition: { bottom: 14, left: 74, scale: 1.0, laser: true }
+            },
+            {
+                id: "scene_04",
+                image: "/images/tour/16_tax_center.png",
+                softwareImage: "/images/tour/16_tax_center.png",
+                auditOfficeImage: "/images/tax_audit_office_backdrop.jpg",
+                badge: "صحنه ۴: استعلام زنده کارپوشه و دریافت آنی شناسه یکتای ۲۲ رقمی",
+                badgeClass: "bg-teal-950/80 border-teal-500/40 text-teal-300",
+                timecode: "۰۱:۱۵ تا ۰۱:۴۲",
+                headline: "اعتبارسنجی خودکار شناسه کالا و مالیات بر ارزش افزوده بدون خطا و در کسر ثانیه!",
+                subtitle: "دیگر نگران خطاهای شناسه کالا و عدم تطابق ارزش افزوده نباشید! نپتون تمام فیلدهای قانونی را خودکار اعتبارسنجی می‌کند، کد مالیاتی ۲۲ رقمی را آنی دریافت می‌کند و وضعیت را زنده استعلام می‌گیرد!",
+                pointerText: "شناسه منحصر‌به‌فرد مالیاتی ۲۲ رقمی",
+                spotlight: { top: 32, left: 10, width: 80, height: 48 },
+                arrow: { x: 40, y: 55 },
+                zoom: 1.20,
+                hideTeacher: false,
+                teacherPosition: { bottom: 12, left: 18, scale: 1.0, laser: true }
+            },
+            {
+                id: "scene_05",
+                image: "/images/tour/01_dashboard.png",
+                softwareImage: "/images/tour/01_dashboard.png",
+                auditOfficeImage: "/images/tax_audit_office_backdrop.jpg",
+                badge: "صحنه ۵: قبل و بعد نپتون: صفر شدن قطعی جرایم و خواب راحت مدیران",
+                badgeClass: "bg-purple-950/80 border-purple-500/40 text-purple-300",
+                timecode: "۰۱:۴۲ تا ۰۲:۰۸",
+                headline: "قبل از نپتون: دلهره ممیزی و جرایم سنگین. بعد از نپتون: شفافیت مطلق و ارسال خودکار با تایید فاکتور!",
+                subtitle: "شفافیت مالیاتی مطلق، صفر شدن ریسک جرایم سنگین ماده ۲۲، عدم وابستگی به هیچ شرکت واسطه، و ارسال صورتحساب‌ها هم‌زمان با فروش روزانه!",
+                pointerText: "صفر شدن جرایم و تراز پاک مالیاتی",
+                spotlight: { top: 18, left: 10, width: 80, height: 45 },
+                arrow: { x: 50, y: 38 },
+                zoom: 1.18,
+                hideTeacher: false,
+                teacherPosition: { bottom: 12, left: 62, scale: 1.05, laser: true }
+            },
+            {
+                id: "scene_06",
+                image: "/images/arash_tax_audit_keynote.jpg",
+                softwareImage: "/images/tour/16_tax_center.png",
+                auditOfficeImage: "/images/arash_tax_audit_keynote.jpg",
+                badge: "صحنه ۶: فعال‌سازی رایگان سپر مودیان با کلمه «مودیان»",
+                badgeClass: "bg-rose-950/80 border-rose-500/40 text-rose-300",
+                timecode: "۰۲:۰۸ تا ۰۲:۳۵",
+                headline: "اجازه ندهید حتی یک ریال خرج جریمه مالیاتی شود؛ ۱۴ روز تست کاملاً رایگان سپر نپتون!",
+                subtitle: "همین حالا با چهارده روز تست کاملاً رایگان، سپر مالیاتی نپتون را برای کسب‌وکارتان فعال کنید یا زیر همین ویدیو، کلمه «مودیان» را کامنت بگذارید: نپتون دات‌آی‌آر!",
+                pointerText: "فعال‌سازی آنی با کلمه «مودیان»",
+                spotlight: { top: 5, left: 5, width: 90, height: 90 },
+                arrow: { x: 50, y: 50 },
+                zoom: 1.05,
+                hideTeacher: true,
+                teacherPosition: { bottom: 15, left: 36, scale: 1.15, laser: false }
+            }
+        ];
+
+        // =========================================================================
+        // CINEMATIC WEB AUDIO SFX ENGINE (DECISION D-140) WITH TAX FOLEY
+        // =========================================================================
+        class CinematicSoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.musicGain = null;
+                this.sfxGain = null;
+                this.analyser = null;
+                this.sourceNode = null;
+                this.ambientOscs = [];
+                this.enabled = true;
+                this.isMusicRunning = false;
+            }
+
+            init() {
+                if (this.ctx) return;
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                this.ctx = new AudioCtx();
+
+                this.sfxGain = this.ctx.createGain();
+                this.sfxGain.gain.value = 0.55;
+                this.sfxGain.connect(this.ctx.destination);
+
+                this.musicGain = this.ctx.createGain();
+                this.musicGain.gain.value = 0.22;
+                this.musicGain.connect(this.ctx.destination);
+
+                this.analyser = this.ctx.createAnalyser();
+                this.analyser.fftSize = 512;
+                this.analyser.smoothingTimeConstant = 0.65;
+            }
+
+            attachAudioPlayer(audioElement) {
+                this.init();
+                if (this.sourceNode) return;
+                try {
+                    this.sourceNode = this.ctx.createMediaElementSource(audioElement);
+                    this.sourceNode.connect(this.analyser);
+                    this.analyser.connect(this.ctx.destination);
+                } catch (e) {
+                    console.log("Audio routing attached:", e);
+                }
+            }
+
+            startAmbientMusic() {
+                if (!this.enabled) return;
+                this.init();
+                if (this.ctx.state === 'suspended') this.ctx.resume();
+                if (this.isMusicRunning) return;
+
+                // Corporate High-Tech Harmonic Drone (D2 = 73.4Hz, A2 = 110Hz, F#3 = 185Hz)
+                const freqs = [73.42, 110.0, 185.0];
+                this.ambientOscs = freqs.map(f => {
+                    const osc = this.ctx.createOscillator();
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 350;
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.value = f;
+
+                    const g = this.ctx.createGain();
+                    g.gain.setValueAtTime(0.035, this.ctx.currentTime);
+
+                    const lfo = this.ctx.createOscillator();
+                    lfo.frequency.value = 0.16 + Math.random() * 0.1;
+                    const lfoGain = this.ctx.createGain();
+                    lfoGain.gain.value = 0.018;
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(g.gain);
+                    lfo.start();
+
+                    osc.connect(filter);
+                    filter.connect(g);
+                    g.connect(this.musicGain);
+                    osc.start();
+                    return { osc, lfo };
+                });
+                this.isMusicRunning = true;
+            }
+
+            // Cinematic Sub-Bass Braam Rumble (Scene 1 Article 22 Crisis)
+            playBraam() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                const filter = this.ctx.createBiquadFilter();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(55, now);
+                osc.frequency.exponentialRampToValueAtTime(28, now + 1.2);
+
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(220, now);
+                filter.frequency.exponentialRampToValueAtTime(60, now + 1.2);
+
+                gain.gain.setValueAtTime(0.55, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.sfxGain);
+                osc.start(now);
+                osc.stop(now + 1.25);
+            }
+
+            // Red Tax Stamp Slam (Heavy Thud Impact)
+            playStampThud() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.exponentialRampToValueAtTime(35, now + 0.28);
+
+                gain.gain.setValueAtTime(0.65, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
+
+                osc.connect(gain);
+                gain.connect(this.sfxGain);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            }
+
+            // Camera Whoosh / Transition
+            playSwoosh() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const bufferSize = Math.floor(this.ctx.sampleRate * 0.28);
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(300, now);
+                filter.frequency.exponentialRampToValueAtTime(1800, now + 0.14);
+                filter.frequency.exponentialRampToValueAtTime(250, now + 0.28);
+                filter.Q.value = 2.0;
+
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.35, now + 0.12);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.sfxGain);
+                noise.start(now);
+            }
+
+            // Solution & Tax Shield Chime
+            playChime() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                [783.99, 1046.5, 1318.5, 1567.98].forEach((freq, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.05);
+
+                    gain.gain.setValueAtTime(0.24, now + idx * 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.6);
+
+                    osc.connect(gain);
+                    gain.connect(this.sfxGain);
+                    osc.start(now + idx * 0.05);
+                    osc.stop(now + idx * 0.05 + 0.65);
+                });
+            }
+
+            // 22-Digit Tax ID Barcode Verification Beep
+            playBarcodeScan() {
+                if (!this.enabled) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(2950, now);
+
+                gain.gain.setValueAtTime(0.42, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+                osc.connect(gain);
+                gain.connect(this.sfxGain);
+                osc.start(now);
+                osc.stop(now + 0.09);
+            }
+        }
+
+        const cinematicSound = new CinematicSoundEngine();
+
+        // =========================================================================
+        // SCI-FI VFX ENGINE: CYBER GRID, PARTICLES & SHOCKWAVE (DECISION D-141)
+        // =========================================================================
+        class CinematicVFXEngine {
+            constructor() {
+                this.canvas = document.getElementById('vfxCanvas');
+                this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
+                this.enabled = true;
+                this.particles = [];
+                this.shockwave = null;
+                this.gridOffset = 0;
+                this.initParticles();
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                if (!this.canvas) return;
+                this.canvas.width = this.canvas.offsetWidth;
+                this.canvas.height = this.canvas.offsetHeight;
+            }
+
+            initParticles() {
+                this.particles = [];
+                const count = 45;
+                for (let i = 0; i < count; i++) {
+                    this.particles.push({
+                        x: Math.random() * 1000,
+                        y: Math.random() * 600,
+                        vx: (Math.random() - 0.5) * 0.6,
+                        vy: (Math.random() - 0.5) * 0.6,
+                        radius: Math.random() * 2 + 1,
+                        color: Math.random() > 0.3 ? 'rgba(79, 70, 229, ' : 'rgba(16, 185, 129, '
+                    });
+                }
+            }
+
+            triggerShockwave() {
+                if (!this.canvas) return;
+                this.shockwave = {
+                    x: this.canvas.width / 2,
+                    y: this.canvas.height / 2,
+                    radius: 10,
+                    maxRadius: Math.max(this.canvas.width, this.canvas.height) * 0.8,
+                    opacity: 0.9
+                };
+            }
+
+            render() {
+                if (!this.ctx || !this.enabled) return;
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+                this.ctx.clearRect(0, 0, width, height);
+
+                // 1. Perspective Cyber Grid at Lower Third
+                this.gridOffset = (this.gridOffset + 0.4) % 40;
+                this.ctx.save();
+                this.ctx.strokeStyle = 'rgba(79, 70, 229, 0.15)';
+                this.ctx.lineWidth = 1;
+
+                const horizonY = height * 0.65;
+                for (let y = horizonY; y < height; y += 18 + (y - horizonY) * 0.15) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, y);
+                    this.ctx.lineTo(width, y);
+                    this.ctx.stroke();
+                }
+
+                const vpX = width / 2;
+                for (let x = -width; x <= width * 2; x += 60) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(vpX, horizonY);
+                    this.ctx.lineTo(x + this.gridOffset, height);
+                    this.ctx.stroke();
+                }
+                this.ctx.restore();
+
+                // 2. Constellation Data Particles
+                for (let i = 0; i < this.particles.length; i++) {
+                    const p = this.particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    if (p.x < 0) p.x = width;
+                    if (p.x > width) p.x = 0;
+                    if (p.y < 0) p.y = height;
+                    if (p.y > height) p.y = 0;
+
+                    this.ctx.fillStyle = p.color + '0.7)';
+                    this.ctx.beginPath();
+                    this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    for (let j = i + 1; j < this.particles.length; j++) {
+                        const p2 = this.particles[j];
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy);
+                        if (dist < 85) {
+                            const alpha = (1 - dist / 85) * 0.22;
+                            this.ctx.strokeStyle = `rgba(79, 70, 229, ${alpha})`;
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(p.x, p.y);
+                            this.ctx.lineTo(p2.x, p2.y);
+                            this.ctx.stroke();
+                        }
+                    }
+                }
+
+                // 3. Radial Energy Shockwave Animation
+                if (this.shockwave) {
+                    this.shockwave.radius += 18;
+                    this.shockwave.opacity *= 0.94;
+                    this.ctx.save();
+                    this.ctx.beginPath();
+                    this.ctx.arc(this.shockwave.x, this.shockwave.y, this.shockwave.radius, 0, Math.PI * 2);
+                    this.ctx.strokeStyle = `rgba(79, 70, 229, ${this.shockwave.opacity})`;
+                    this.ctx.lineWidth = 4;
+                    this.ctx.shadowColor = '#4f46e5';
+                    this.ctx.shadowBlur = 20;
+                    this.ctx.stroke();
+                    this.ctx.restore();
+
+                    if (this.shockwave.opacity < 0.02 || this.shockwave.radius > this.shockwave.maxRadius) {
+                        this.shockwave = null;
+                    }
+                }
+            }
+        }
+
+        const cinematicVfx = new CinematicVFXEngine();
+
+        // =========================================================================
+        // TEACHER AVATAR ENGINE: ARASH 3D WEBGL CHOREOGRAPHY (D-144, D-148 & D-150)
+        // =========================================================================
+        let presenterDisplayMode = 'full'; // 'full' | 'pip' | 'hidden'
+        let activeAvatarEngineType = 'depth3D'; // 'depth3D' | 'photorealRig'
+
+        function toggleAvatarSimulatorEngine() {
+            const mount = document.getElementById('threeAvatarMount');
+            if (!mount) return;
+            mount.innerHTML = '';
+
+            const btn = document.getElementById('avatarEngineToggleBtn');
+
+            if (activeAvatarEngineType === 'depth3D') {
+                activeAvatarEngineType = 'photorealRig';
+                if (btn) btn.innerText = '🎭 مش PBR';
+                if (typeof NeptunePhotorealCharacterSimulator !== 'undefined') {
+                    talkingCharacter.presenter3D = new NeptunePhotorealCharacterSimulator({
+                        containerId: 'threeAvatarMount',
+                        fov: 40
+                    });
+                }
+            } else {
+                activeAvatarEngineType = 'depth3D';
+                if (btn) btn.innerText = '🧬 اسکلتی FACS';
+                if (typeof Neptune3DPresenterEngine !== 'undefined') {
+                    talkingCharacter.presenter3D = new Neptune3DPresenterEngine({
+                        containerId: 'threeAvatarMount',
+                        colorMap: '/images/arash_keynote_presenter.jpg',
+                        depthMap: '/images/arash_depth_map.png',
+                        normalMap: '/images/arash_normal_map.png',
+                        displacementScale: 0.18,
+                        fov: 42
+                    });
+                }
+            }
+
+            setTimeout(() => {
+                if (talkingCharacter.presenter3D && talkingCharacter.presenter3D.onResize) {
+                    talkingCharacter.presenter3D.onResize();
+                }
+            }, 100);
+        }
+
+        // 3D Animation & Motion Choreography Triggers (Decision D-150)
+        function trigger3DAnimation(actionName) {
+            if (activeAvatarEngineType !== 'photorealRig') {
+                toggleAvatarSimulatorEngine();
+            }
+
+            if (talkingCharacter && talkingCharacter.presenter3D && talkingCharacter.presenter3D.playAnimation) {
+                talkingCharacter.presenter3D.playAnimation(actionName);
+            }
+
+            if (actionName === 'walk') cinematicSound.playSwoosh();
+            else if (actionName === 'shocked') cinematicSound.playBraam();
+            else if (actionName === 'celebrate') cinematicSound.playChime();
+            else if (actionName === 'point') cinematicSound.playBarcodeScan();
+            else cinematicSound.playSwoosh();
+        }
+
+        function trigger3DHologram() {
+            if (activeAvatarEngineType !== 'photorealRig') {
+                toggleAvatarSimulatorEngine();
+            }
+            if (talkingCharacter && talkingCharacter.presenter3D && talkingCharacter.presenter3D.animEngine) {
+                talkingCharacter.presenter3D.animEngine.spawnHologramDataRings();
+                cinematicSound.playChime();
+            }
+        }
+
+        function trigger3DCinematicDolly() {
+            if (activeAvatarEngineType !== 'photorealRig') {
+                toggleAvatarSimulatorEngine();
+            }
+            if (talkingCharacter && talkingCharacter.presenter3D && talkingCharacter.presenter3D.animEngine) {
+                const targetPos = new THREE.Vector3(0, 1.45, 1.8);
+                const lookAtPos = new THREE.Vector3(0, 1.4, 0);
+                talkingCharacter.presenter3D.animEngine.dollyCameraTo(targetPos, lookAtPos, 1400);
+                cinematicSound.playSwoosh();
+            }
+        }
+
+        function togglePresenterMode() {
+            const fullEl = document.getElementById('humanTeacherFull');
+            const pipEl = document.getElementById('humanTeacherPip');
+            const podium = document.getElementById('presenterPodium');
+
+            if (presenterDisplayMode === 'full') {
+                presenterDisplayMode = 'pip';
+                if (fullEl) fullEl.classList.add('hidden');
+                if (pipEl) pipEl.classList.remove('hidden');
+            } else if (presenterDisplayMode === 'pip') {
+                presenterDisplayMode = 'hidden';
+                if (podium) podium.classList.add('hidden');
+            } else {
+                presenterDisplayMode = 'full';
+                if (podium) podium.classList.remove('hidden');
+                if (fullEl) fullEl.classList.remove('hidden');
+                if (pipEl) pipEl.classList.add('hidden');
+                if (talkingCharacter && talkingCharacter.presenter3D) {
+                    setTimeout(() => talkingCharacter.presenter3D.onResize(), 100);
+                }
+            }
+            if (talkingCharacter) talkingCharacter.updateLaserPointer();
+        }
+
+        class TalkingCharacterEngine {
+            constructor() {
+                this.enabled = true;
+                this.podium = document.getElementById('presenterPodium');
+                this.freqData = new Uint8Array(256);
+                this.presenter3D = null;
+
+                const mount = document.getElementById('threeAvatarMount');
+                if (mount && typeof Neptune3DPresenterEngine !== 'undefined') {
+                    this.presenter3D = new Neptune3DPresenterEngine({
+                        containerId: 'threeAvatarMount',
+                        colorMap: '/images/arash_keynote_presenter.jpg',
+                        depthMap: '/images/arash_depth_map.png',
+                        normalMap: '/images/arash_normal_map.png',
+                        displacementScale: 0.18,
+                        fov: 42
+                    });
+                }
+
+                this.laserSvg = document.getElementById('teacherLaserSvg');
+                this.laserLine = document.getElementById('laserBeamLine');
+                this.laserDot = document.getElementById('laserDot');
+                this.currentLaserTarget = null;
+                this.laserActive = false;
+
+                window.addEventListener('mousemove', (e) => {
+                    const normX = (e.clientX / window.innerWidth) * 2 - 1;
+                    const normY = -(e.clientY / window.innerHeight) * 2 + 1;
+                    if (this.presenter3D) {
+                        this.presenter3D.targetRotationY = normX * 0.28;
+                        this.presenter3D.targetRotationX = -normY * 0.18;
+                    }
+                    this.updateLaserPointer();
+                });
+            }
+
+            moveTo(pos, onComplete) {
+                if (!this.podium) return;
+                this.podium.classList.add('is-walking');
+                this.podium.style.bottom = (pos.bottom || 8) + '%';
+                this.podium.style.left = (pos.left || 10) + '%';
+
+                setTimeout(() => {
+                    this.podium.classList.remove('is-walking');
+                    this.updateLaserPointer();
+                    if (onComplete) onComplete();
+                }, 1250);
+            }
+
+            setLaser(active, target) {
+                this.laserActive = active;
+                this.currentLaserTarget = target;
+                if (!this.laserSvg) return;
+
+                if (!active) {
+                    this.laserSvg.classList.add('opacity-0');
+                    return;
+                }
+                this.laserSvg.classList.remove('opacity-0');
+                this.updateLaserPointer();
+            }
+
+            updateLaserPointer() {
+                if (!this.laserActive || !this.laserSvg || !this.podium || !this.currentLaserTarget) return;
+
+                const stage = document.getElementById('videoStage');
+                if (!stage) return;
+                const stageRect = stage.getBoundingClientRect();
+                const podiumRect = this.podium.getBoundingClientRect();
+
+                const originX = (podiumRect.left + podiumRect.width * 0.28) - stageRect.left;
+                const originY = (podiumRect.top + podiumRect.height * 0.44) - stageRect.top;
+
+                const targetX = (stageRect.width * (this.currentLaserTarget.x || 50)) / 100;
+                const targetY = (stageRect.height * (this.currentLaserTarget.y || 40)) / 100;
+
+                this.laserLine.setAttribute('x1', originX);
+                this.laserLine.setAttribute('y1', originY);
+                this.laserLine.setAttribute('x2', targetX);
+                this.laserLine.setAttribute('y2', targetY);
+
+                this.laserDot.setAttribute('cx', targetX);
+                this.laserDot.setAttribute('cy', targetY);
+            }
+
+            updateAudioVisuals(analyser, isAudioPlaying) {
+                let energy = 0;
+                if (analyser && isAudioPlaying) {
+                    analyser.getByteFrequencyData(this.freqData);
+                    let sum = 0;
+                    for (let i = 0; i < 32; i++) sum += this.freqData[i];
+                    energy = sum / (32 * 255);
+                }
+
+                if (this.presenter3D) {
+                    this.presenter3D.setAudioEnergy(energy, isAudioPlaying);
+                }
+
+                const bars = document.querySelectorAll('#spectrumBars .eq-bar');
+                bars.forEach((bar, idx) => {
+                    const val = isAudioPlaying ? this.freqData[idx * 3] || 0 : 4;
+                    const h = Math.max(3, Math.min(24, Math.floor((val / 255) * 24)));
+                    bar.style.height = h + 'px';
+                });
+            }
+        }
+
+        const talkingCharacter = new TalkingCharacterEngine();
+
+        // =========================================================================
+        // MASTER VIDEO CONTROLLER & SCENE SEQUENCER
+        // =========================================================================
+        let currentSceneIndex = 0;
+        let isPlaying = false;
+        let currentVoice = 'ganji'; // 'ganji' | 'amir' | 'dilara' | 'farid'
+        let isReelMode = false;
+        let isTaxCamActive = false;
+        const audioElement = document.getElementById('episodeAudio');
+
+        // Tax Office vs Software Cam Switcher
+        function toggleTaxCamMode() {
+            const scene = EPISODE_SCENES[currentSceneIndex];
+            const stageImg = document.getElementById('stageImage');
+            const btn = document.getElementById('taxCamBtn');
+            const label = document.getElementById('taxCamLabel');
+            const podium = document.getElementById('presenterPodium');
+
+            isTaxCamActive = !isTaxCamActive;
+
+            const targetImage = isTaxCamActive 
+                ? (scene.auditOfficeImage || "/images/tax_audit_office_backdrop.jpg") 
+                : (scene.softwareImage || scene.image);
+
+            if (stageImg) {
+                stageImg.classList.add('crisis-glitch');
+                setTimeout(() => {
+                    stageImg.src = targetImage;
+                    stageImg.classList.remove('crisis-glitch');
+                }, 150);
+            }
+
+            if (btn && label) {
+                if (isTaxCamActive) {
+                    btn.className = "btn btn-sm bg-indigo-600 border-indigo-500 text-white rounded-xl text-xs gap-1.5 shadow-lg shadow-indigo-900/40";
+                    label.innerText = "دوربین ممیزی (فعال)";
+                } else {
+                    btn.className = "btn btn-sm btn-outline border-slate-700 text-slate-300 rounded-xl text-xs gap-1.5 hover:border-indigo-500 hover:text-indigo-400";
+                    label.innerText = "دوربین اتاق ممیزی";
+                }
+            }
+
+            const isKeynotePhoto = targetImage.includes('arash_tax_audit_keynote');
+            if (podium) {
+                if (isKeynotePhoto || (scene.hideTeacher && isTaxCamActive)) {
+                    podium.classList.add('opacity-0', 'pointer-events-none');
+                    talkingCharacter.setLaser(false);
+                } else if (presenterDisplayMode !== 'hidden') {
+                    podium.classList.remove('opacity-0', 'pointer-events-none');
+                    talkingCharacter.moveTo(scene.teacherPosition, () => {
+                        talkingCharacter.setLaser(scene.teacherPosition.laser, scene.arrow);
+                    });
+                }
+            }
+
+            cinematicSound.playSwoosh();
+        }
+
+        function loadScene(index, autoPlay = true) {
+            currentSceneIndex = Math.max(0, Math.min(index, EPISODE_SCENES.length - 1));
+            const scene = EPISODE_SCENES[currentSceneIndex];
+
+            // Default camera view per scene:
+            // Scenes 0, 1, 5 are office/audit backdrop by default
+            if (currentSceneIndex === 0 || currentSceneIndex === 1 || currentSceneIndex === 5) {
+                isTaxCamActive = true;
+            } else {
+                isTaxCamActive = false;
+            }
+
+            const camBtn = document.getElementById('taxCamBtn');
+            const camLabel = document.getElementById('taxCamLabel');
+            if (camBtn && camLabel) {
+                if (isTaxCamActive) {
+                    camBtn.className = "btn btn-sm bg-indigo-600 border-indigo-500 text-white rounded-xl text-xs gap-1.5 shadow-lg shadow-indigo-900/40";
+                    camLabel.innerText = "دوربین ممیزی (فعال)";
+                } else {
+                    camBtn.className = "btn btn-sm btn-outline border-slate-700 text-slate-300 rounded-xl text-xs gap-1.5 hover:border-indigo-500 hover:text-indigo-400";
+                    camLabel.innerText = "دوربین اتاق ممیزی";
+                }
+            }
+
+            const activeImage = isTaxCamActive 
+                ? (scene.auditOfficeImage || scene.image) 
+                : (scene.softwareImage || scene.image);
+
+            // 1. Shot Evaluation & Camera Zoom
+            let shotEval = null;
+            if (window.neptuneSceneSelector) {
+                shotEval = window.neptuneSceneSelector.evaluateScene(scene);
+                const hudShotText = document.getElementById('hudShotText');
+                const hudShotBadge = document.getElementById('hudShotBadge');
+                if (hudShotText && shotEval) {
+                    hudShotText.innerText = `${shotEval.shotScale.code} // ${shotEval.cameraMotion.name} // زوم ${shotEval.targetZoom}x`;
+                }
+                if (hudShotBadge) {
+                    hudShotBadge.innerText = `SHOT 0${currentSceneIndex + 1}`;
+                }
+            }
+
+            const stageImg = document.getElementById('stageImage');
+            if (stageImg) {
+                stageImg.src = activeImage;
+                const activeZoom = shotEval ? shotEval.targetZoom : (scene.zoom || 1.15);
+                stageImg.style.transform = `scale(${activeZoom})`;
+                if (shotEval && shotEval.emotionalTone === 'CRISIS') {
+                    stageImg.classList.add('crisis-glitch');
+                    setTimeout(() => stageImg.classList.remove('crisis-glitch'), 600);
+                }
+            }
+
+            // 2. Play Foley Effects
+            if (currentSceneIndex === 0) {
+                cinematicSound.playBraam();
+                cinematicSound.playStampThud();
+            } else if (currentSceneIndex === 1) {
+                cinematicSound.playBraam();
+            } else if (currentSceneIndex === 2) {
+                cinematicSound.playChime();
+            } else if (currentSceneIndex === 3) {
+                cinematicSound.playBarcodeScan();
+                cinematicSound.playChime();
+            } else if (currentSceneIndex === 4) {
+                cinematicSound.playChime();
+            } else {
+                cinematicSound.playSwoosh();
+            }
+
+            // 3. Trigger Lens Flare & VFX Shockwave
+            const flare = document.getElementById('lensFlare');
+            if (flare) {
+                flare.classList.remove('active');
+                void flare.offsetWidth;
+                flare.classList.add('active');
+            }
+            cinematicVfx.triggerShockwave();
+
+            // 4. Update Subtitles & Headlines
+            const badge = document.getElementById('sceneBadge');
+            const headline = document.getElementById('sceneHeadline');
+            const subtitle = document.getElementById('sceneSubtitle');
+            const timecode = document.getElementById('sceneTimecode');
+
+            if (badge) {
+                badge.innerText = scene.badge;
+                badge.className = `badge font-bold text-xs ${scene.badgeClass}`;
+            }
+            if (timecode) timecode.innerText = scene.timecode;
+            if (headline) headline.innerText = scene.headline;
+            if (subtitle) subtitle.innerText = scene.subtitle;
+
+            // 5. Update Neon Spotlight & Radar Pointer
+            const spotlight = document.getElementById('spotlightFrame');
+            const pointer = document.getElementById('radarPointer');
+            const pointerText = document.getElementById('pointerText');
+
+            if (spotlight) {
+                spotlight.style.top = scene.spotlight.top + '%';
+                spotlight.style.left = scene.spotlight.left + '%';
+                spotlight.style.width = scene.spotlight.width + '%';
+                spotlight.style.height = scene.spotlight.height + '%';
+                spotlight.classList.remove('opacity-0');
+            }
+
+            if (pointer) {
+                pointer.style.top = scene.arrow.y + '%';
+                pointer.style.left = scene.arrow.x + '%';
+                pointer.classList.remove('opacity-0');
+                if (pointerText) pointerText.innerText = scene.pointerText;
+            }
+
+            // 6. Arash Stage Movement & Laser Aiming
+            const podium = document.getElementById('presenterPodium');
+            const isKeynotePhoto = activeImage.includes('arash_tax_audit_keynote');
+            if (scene.hideTeacher || isKeynotePhoto) {
+                if (podium) {
+                    podium.classList.add('opacity-0', 'pointer-events-none');
+                }
+                talkingCharacter.setLaser(false);
+            } else {
+                if (podium && presenterDisplayMode !== 'hidden') {
+                    podium.classList.remove('opacity-0', 'pointer-events-none');
+                }
+                talkingCharacter.moveTo(scene.teacherPosition, () => {
+                    talkingCharacter.setLaser(scene.teacherPosition.laser, scene.arrow);
+                });
+            }
+
+            // 7. Update Scene Timeline Cards UI
+            for (let i = 0; i < EPISODE_SCENES.length; i++) {
+                const card = document.getElementById(`card_${i}`);
+                if (card) {
+                    if (i === currentSceneIndex) {
+                        card.classList.add('ring-2', 'ring-indigo-400', 'bg-slate-800/80');
+                    } else {
+                        card.classList.remove('ring-2', 'ring-indigo-400', 'bg-slate-800/80');
+                    }
+                }
+            }
+
+            // 8. Load & Play Audio Track
+            const ext = (currentVoice === 'ganji' || currentVoice === 'amir') ? 'wav' : 'mp3';
+            const audioPath = `/audio/episodes/ep04/${currentVoice}/${scene.id}.${ext}`;
+            audioElement.src = audioPath;
+            audioElement.load();
+
+            if (autoPlay) {
+                audioElement.play().then(() => {
+                    setPlayingState(true);
+                    cinematicSound.startAmbientMusic();
+                }).catch(err => {
+                    console.log("Audio autoplay waiting for user click:", err);
+                    setPlayingState(false);
+                });
+            }
+        }
+
+        function setPlayingState(playing) {
+            isPlaying = playing;
+            const playIcon = document.getElementById('playIcon');
+            const pauseIcon = document.getElementById('pauseIcon');
+            if (playIcon && pauseIcon) {
+                if (playing) {
+                    playIcon.classList.add('hidden');
+                    pauseIcon.classList.remove('hidden');
+                } else {
+                    playIcon.classList.remove('hidden');
+                    pauseIcon.classList.add('hidden');
+                }
+            }
+        }
+
+        function togglePlay() {
+            cinematicSound.init();
+            cinematicSound.attachAudioPlayer(audioElement);
+            cinematicSound.startAmbientMusic();
+
+            if (audioElement.paused) {
+                audioElement.play();
+                setPlayingState(true);
+            } else {
+                audioElement.pause();
+                setPlayingState(false);
+            }
+        }
+
+        function nextScene() {
+            if (currentSceneIndex < EPISODE_SCENES.length - 1) {
+                loadScene(currentSceneIndex + 1, true);
+            }
+        }
+
+        function prevScene() {
+            if (currentSceneIndex > 0) {
+                loadScene(currentSceneIndex - 1, true);
+            }
+        }
+
+        function jumpToScene(idx) {
+            cinematicSound.init();
+            cinematicSound.attachAudioPlayer(audioElement);
+            cinematicSound.startAmbientMusic();
+            loadScene(idx, true);
+        }
+
+        function switchVoice(v) {
+            currentVoice = v;
+            const voices = ['ganji', 'amir', 'dilara', 'farid'];
+            voices.forEach(name => {
+                const btn = document.getElementById(`voiceBtn_${name}`);
+                if (btn) {
+                    if (name === v) {
+                        btn.className = "px-2.5 py-1 rounded-lg font-bold transition-all bg-indigo-600 text-white shadow";
+                    } else {
+                        btn.className = "px-2.5 py-1 rounded-lg font-bold transition-all text-slate-400 hover:text-white";
+                    }
+                }
+            });
+
+            const labels = {
+                ganji: "استاد احمد گنجی",
+                amir: "امیر سودبخش",
+                dilara: "دیلارا (هوش مصنوعی)",
+                farid: "فرید (تخصصی)"
+            };
+            const labelEl = document.getElementById('voiceIndicatorLabel');
+            if (labelEl) labelEl.innerText = `گوینده: ${labels[v]}`;
+
+            loadScene(currentSceneIndex, isPlaying);
+        }
+
+        function toggleReelFormat() {
+            const stage = document.getElementById('videoStage');
+            const hookBanner = document.getElementById('reelHookBanner');
+            const ctaBar = document.getElementById('reelCtaBar');
+            const label = document.getElementById('formatToggleLabel');
+
+            isReelMode = !isReelMode;
+            if (isReelMode) {
+                stage.classList.add('reel-mode');
+                if (hookBanner) hookBanner.classList.remove('hidden');
+                if (ctaBar) ctaBar.classList.remove('hidden');
+                if (label) label.innerText = "قالب عریض (۱۶:۹)";
+            } else {
+                stage.classList.remove('reel-mode');
+                if (hookBanner) hookBanner.classList.add('hidden');
+                if (ctaBar) ctaBar.classList.add('hidden');
+                if (label) label.innerText = "قالب ریلز (۹:۱۶)";
+            }
+
+            setTimeout(() => {
+                cinematicVfx.resize();
+                if (talkingCharacter && talkingCharacter.presenter3D) {
+                    talkingCharacter.presenter3D.onResize();
+                }
+                talkingCharacter.updateLaserPointer();
+            }, 650);
+        }
+
+        function changeSpeed(val) {
+            audioElement.playbackRate = parseFloat(val);
+        }
+
+        function toggleFullscreen() {
+            const stage = document.getElementById('videoStage');
+            if (!document.fullscreenElement) {
+                stage.requestFullscreen().catch(err => console.log(err));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function seekVideo(e) {
+            const bar = e.currentTarget;
+            const rect = bar.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const pct = 1 - (clickX / rect.width); // RTL reversed
+            if (audioElement.duration) {
+                audioElement.currentTime = pct * audioElement.duration;
+            }
+        }
+
+        // Audio Events Synchronization
+        audioElement.addEventListener('timeupdate', () => {
+            const cur = audioElement.currentTime || 0;
+            const dur = audioElement.duration || 1;
+            const pct = (cur / dur) * 100;
+            const pBar = document.getElementById('progressBar');
+            if (pBar) pBar.style.width = pct + '%';
+
+            const cTime = document.getElementById('currentTime');
+            if (cTime) {
+                const m = Math.floor(cur / 60);
+                const s = Math.floor(cur % 60);
+                cTime.innerText = `${m < 10 ? '۰' : ''}${m}:${s < 10 ? '۰' : ''}${s}`;
+            }
+        });
+
+        audioElement.addEventListener('ended', () => {
+            if (currentSceneIndex < EPISODE_SCENES.length - 1) {
+                nextScene();
+            } else {
+                setPlayingState(false);
+            }
+        });
+
+        // 60FPS Render & Audio Visualizer Loop
+        function masterRenderLoop() {
+            cinematicVfx.render();
+            talkingCharacter.updateAudioVisuals(cinematicSound.analyser, isPlaying && !audioElement.paused);
+            requestAnimationFrame(masterRenderLoop);
+        }
+
+        // Keyboard Shortcuts
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlay();
+            } else if (e.code === 'ArrowRight' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                nextScene();
+            } else if (e.code === 'ArrowLeft' || e.code === 'ArrowDown') {
+                e.preventDefault();
+                prevScene();
+            }
+        });
+
+        // Auto Initialize First Scene on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.neptuneSceneSelector) {
+                window.neptuneSceneSelector.renderBlueprintInspector('blueprintInspectorMount', EPISODE_SCENES);
+            }
+            loadScene(0, false);
+            masterRenderLoop();
+        });
+    </script>
+</body>
+</html>
