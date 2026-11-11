@@ -17,6 +17,8 @@
     <script src="/js/presenter-3d-engine.js"></script>
     <!-- Cinematic Scene Selection & Shot Grammar (Decision D-147) -->
     <script src="/js/scene-shot-selector.js"></script>
+    <!-- 3D Animation Production & Motion Choreography Engine (Decision D-150) -->
+    <script src="/js/three-animation-engine.js"></script>
     <!-- Photorealistic 3D Skeletal Character Simulator (Decision D-148) -->
     <script src="/js/photoreal-character-simulator.js"></script>
     
@@ -646,6 +648,46 @@
                     </div>
                 </div>
             </div>
+
+            <!-- 3D Animation Studio & Motion Choreography Panel (Decision D-150) -->
+            <div class="collapse collapse-arrow bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-xl">
+                <input type="checkbox" id="animationStudioToggleCheckbox" /> 
+                <div class="collapse-title text-sm font-black text-emerald-400 flex items-center gap-2">
+                    <span>🎭 استودیوی تولید انیمیشن سه‌بعدی و کارگردانی حرکتی (3D Animation Studio - D-150)</span>
+                    <span class="badge badge-success badge-xs font-mono">Biped Kinematics & FSM</span>
+                </div>
+                <div class="collapse-content text-xs text-slate-300 space-y-3 pt-2">
+                    <p class="leading-relaxed">
+                        تولید و اجرای ترک‌های انیمیشن اسکلتی (<code class="text-emerald-300">THREE.KeyframeTrack</code>) با درونیابی منحنی مکعبی، تلفیق نرم حالات (Cross-Fading)، بیومکانیک گام‌برداری انسان و جلوه‌های موشن‌گرافیک فضایی. روی هر دکمه کلیک کنید تا انیمیشن زنده آرش اجرا شود:
+                    </p>
+                    <div class="flex flex-wrap items-center gap-2 pt-1 font-bold">
+                        <button onclick="trigger3DAnimation('walk')" class="btn btn-xs bg-emerald-700 hover:bg-emerald-600 text-white border-none rounded-lg gap-1">
+                            <span>🚶‍♂️</span> گام‌برداری (Walk)
+                        </button>
+                        <button onclick="trigger3DAnimation('idle')" class="btn btn-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg gap-1">
+                            <span>🧍‍♂️</span> استراحت و تنفس (Idle)
+                        </button>
+                        <button onclick="trigger3DAnimation('explain')" class="btn btn-xs bg-cyan-700 hover:bg-cyan-600 text-white border-none rounded-lg gap-1">
+                            <span>🗣️</span> تدریس و پرزنتیشن (Explain)
+                        </button>
+                        <button onclick="trigger3DAnimation('point')" class="btn btn-xs bg-amber-700 hover:bg-amber-600 text-white border-none rounded-lg gap-1">
+                            <span>🎯</span> نشانه لیزری (Point)
+                        </button>
+                        <button onclick="trigger3DAnimation('shocked')" class="btn btn-xs bg-rose-700 hover:bg-rose-600 text-white border-none rounded-lg gap-1">
+                            <span>⚡</span> شوک بحران (Shocked)
+                        </button>
+                        <button onclick="trigger3DAnimation('celebrate')" class="btn btn-xs bg-purple-700 hover:bg-purple-600 text-white border-none rounded-lg gap-1">
+                            <span>🏆</span> اعلام پیروزی (Celebrate)
+                        </button>
+                        <button onclick="trigger3DHologram()" class="btn btn-xs bg-teal-800 hover:bg-teal-700 text-teal-200 border border-teal-500/50 rounded-lg gap-1">
+                            <span>💫</span> رینگ‌های داده هولوگرافیک (Holo FX)
+                        </button>
+                        <button onclick="trigger3DCinematicDolly()" class="btn btn-xs bg-blue-800 hover:bg-blue-700 text-blue-200 border border-blue-500/50 rounded-lg gap-1">
+                            <span>🎥</span> دالی کمرا زوم (Dolly Zoom)
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </main>
@@ -1155,6 +1197,47 @@
                     talkingCharacter.presenter3D.onResize();
                 }
             }, 100);
+        }
+
+        // 3D Animation & Motion Choreography Triggers (Decision D-150)
+        function trigger3DAnimation(actionName) {
+            // Auto switch to photorealRig if in depth3D mode
+            if (activeAvatarEngineType !== 'photorealRig') {
+                toggleAvatarSimulatorEngine();
+            }
+
+            if (talkingCharacter && talkingCharacter.presenter3D && talkingCharacter.presenter3D.playAnimation) {
+                talkingCharacter.presenter3D.playAnimation(actionName);
+            }
+
+            // Audio Foley Feedback
+            if (actionName === 'walk') cinematicSound.playSwoosh();
+            else if (actionName === 'shocked') cinematicSound.playBraam();
+            else if (actionName === 'celebrate') cinematicSound.playChime();
+            else if (actionName === 'point') cinematicSound.playBarcodeScan();
+            else cinematicSound.playSwoosh();
+        }
+
+        function trigger3DHologram() {
+            if (activeAvatarEngineType !== 'photorealRig') {
+                toggleAvatarSimulatorEngine();
+            }
+            if (talkingCharacter && talkingCharacter.presenter3D && talkingCharacter.presenter3D.animEngine) {
+                talkingCharacter.presenter3D.animEngine.spawnHologramDataRings();
+                cinematicSound.playChime();
+            }
+        }
+
+        function trigger3DCinematicDolly() {
+            if (activeAvatarEngineType !== 'photorealRig') {
+                toggleAvatarSimulatorEngine();
+            }
+            if (talkingCharacter && talkingCharacter.presenter3D && talkingCharacter.presenter3D.animEngine) {
+                const targetPos = new THREE.Vector3(0, 1.45, 1.8);
+                const lookAtPos = new THREE.Vector3(0, 1.4, 0);
+                talkingCharacter.presenter3D.animEngine.dollyCameraTo(targetPos, lookAtPos, 1400);
+                cinematicSound.playSwoosh();
+            }
         }
 
         function togglePresenterMode() {

@@ -3429,3 +3429,29 @@ To break beyond the confines of static software recording and enter the world of
      - Target Audience Persona (traditional Iranian factory owner / bazaar merchant sanity-check).
    - Standard output is always a prioritized synthesis of the Top 5 battle-tested concepts.
 
+---
+
+## D-150 — 3D Animation Production, Skeletal Keyframe Tracks, Biped Locomotion Biomechanics & Motion Choreography Standard — 2026-11-11 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+To empower the AI pair programmer with permanent end-to-end 3D animation authoring and motion choreography capabilities, Decision D-150 establishes the definitive 3D animation standard (*«استاندارد جامع تولید انیمیشن سه‌بعدی، بیومکانیک حرکتی و کارگردانی صحنه»*). This formalizes procedural keyframing, Three.js AnimationMixer state machines, Disney's 12 principles adapted to WebGL, mathematical biped locomotion kinematics, 3D spline camera sequencing, and holographic motion graphics.
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **Procedural Keyframe Generation (`THREE.KeyframeTrack` & `THREE.AnimationClip`):**
+   - VectorKeyframeTrack for 3D spatial translations (hip bobbing, spine compression).
+   - QuaternionKeyframeTrack with SLERP interpolation for gimbal-lock-free joint rotations.
+   - NumberKeyframeTrack for continuous morph target / FACS blendshape weight modulation.
+   - Cubic Spline Interpolation (`THREE.InterpolateSmooth`) across key poses.
+2. **Animation Finite State Machine (FSM) & Smooth Blending:**
+   - Managed via `THREE.AnimationMixer` with 6 core production states: `IDLE`, `WALK`, `EXPLAIN`, `POINT_LASER`, `CRISIS_SHOCKED`, `CELEBRATE`.
+   - Cross-Fading duration of 0.25s–0.40s preventing abrupt visual popping.
+   - Additive blend mode for secondary gestural layers on top of baseline locomotion cycles.
+3. **Mathematical Biped Locomotion Kinematics:**
+   - Harmonic phase $\theta = 2\pi f t$ driving dual-frequency pelvic vertical oscillation ($\Delta y = -A_{hip}|\sin(\theta)|$), lateral sway ($\Delta x = A_{sway}\sin(\theta)$), opposing shoulder counter-rotation ($\Delta rot_y = -A_{torso}\sin(\theta)$), and pendulum arm arcs.
+4. **Cinematic 3D Camera Sequencer & Spatial Motion Graphics:**
+   - Smooth 3D Catmull-Rom spline camera dollying with exponential damping tracking.
+   - Interactive 3D holographic data rings and exploded product/ledger breakdowns.
+5. **Runtime Engine Integration:**
+   - Implemented in `public/js/three-animation-engine.js`, wired into `NeptunePhotorealCharacterSimulator`, with interactive controls deployed in `public/episode-03.html`.
+
+

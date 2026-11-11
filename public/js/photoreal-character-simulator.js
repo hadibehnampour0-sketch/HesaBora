@@ -56,6 +56,12 @@ class NeptunePhotorealCharacterSimulator {
         this.initLighting();
         this.buildProceduralHumanRig();
         this.initControls();
+
+        // 3D Animation Engine integration (Decision D-150)
+        if (typeof Neptune3DAnimationEngine !== 'undefined') {
+            this.animEngine = new Neptune3DAnimationEngine(this);
+        }
+
         this.animate();
     }
 
@@ -304,11 +310,22 @@ class NeptunePhotorealCharacterSimulator {
         this.isSpeaking = isSpeaking;
     }
 
+    playAnimation(name) {
+        if (this.animEngine) {
+            this.animEngine.play(name);
+        }
+    }
+
     animate() {
         requestAnimationFrame(() => this.animate());
 
         const delta = this.clock.getDelta();
         const time = this.clock.getElapsedTime();
+
+        // 0. Update 3D Animation Mixer & Motion Graphics (Decision D-150)
+        if (this.animEngine) {
+            this.animEngine.update(delta);
+        }
 
         // 1. Procedural Respiration (Chest & Spine)
         const breathe = Math.sin(time * 1.35) * 0.025;
