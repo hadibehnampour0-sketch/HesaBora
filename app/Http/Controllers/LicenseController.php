@@ -182,6 +182,19 @@ class LicenseController extends Controller
     }
 
     /**
+     * Masterclass Episode 3: Warehouse & Real-time COGS Intelligence.
+     */
+    public function episode03()
+    {
+        $file = public_path('episode-03.html');
+        if (file_exists($file)) {
+            return response()->file($file, ['Content-Type' => 'text/html; charset=UTF-8']);
+        }
+
+        abort(404);
+    }
+
+    /**
      * Instant 14-day Free Trial Request.
      */
     public function requestTrial(Request $request): JsonResponse

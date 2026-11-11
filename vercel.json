@@ -25,6 +25,8 @@
     { "source": "/login/episode-01", "destination": "/episode-01.html" },
     { "source": "/episode-02", "destination": "/episode-02.html" },
     { "source": "/login/episode-02", "destination": "/episode-02.html" },
+    { "source": "/episode-03", "destination": "/episode-03.html" },
+    { "source": "/login/episode-03", "destination": "/episode-03.html" },
     { "source": "/teaser", "destination": "/teaser.html" },
     { "source": "/login/teaser", "destination": "/teaser.html" },
     { "source": "/landing", "destination": "/landing.html" },

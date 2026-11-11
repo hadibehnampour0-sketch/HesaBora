@@ -3303,3 +3303,52 @@ To elevate the visual fidelity and engagement of Neptune ERP's video presentatio
    - Ambient mouse movements trigger subtle 3D gaze parallax, maintaining lifelike eye contact with the viewer.
 5. **3D Spatial Laser Raycasting:**
    - The 3D position of the clicker diode in the avatar's hand (`clickerDiodeMesh.getWorldPosition()`) is projected directly into stage screen coordinates, ensuring the laser beam starts precisely from his hand in 3D space even as he rotates.
+
+---
+
+## D-145 — Neptune Cinematic Ideation Think Tank Protocol (6-Specialist Peer Review Standard) — 2026-11-11 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+To ensure every upcoming masterclass episode, teaser, commercial, and walkthrough for Neptune ERP achieves maximum artistic elegance, emotional resonance, virality, and commercial sales conversion, Decision D-145 establishes the permanent 6-specialist Think Tank Protocol (*«اتاق فکر ۶ نفره متخصصان ایده‌پردازی»*). Rather than relying on unilateral guesswork, every video concept must undergo a rigorous 4-phase dialectic pipeline combining Screenwriting, B2B Sales, Archetypal Storytelling, Viral Social Growth, Behavioral Neuroscience, and Pragmatic Target Persona advocacy.
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **The 6 Mandated Specialist Roles:**
+   - **Role 1 (Screenwriter & Visual Director):** Pacing, visual metaphors, scene composition, lighting contrast, soundscape foley.
+   - **Role 2 (B2B Sales & Conversion Specialist):** Direct ROI, objection preemption, pricing psychology, frictionless CTA, zero-risk trial anchoring.
+   - **Role 3 (Novelist & Master Storyteller):** Hero's Journey monomyth, real stakes (consequence of failure), internal vs. external conflict, catharsis and epiphany.
+   - **Role 4 (Viral Marketing & Growth Hacker):** 0–3s pattern interrupt hook, every-3-seconds visual resets, comment-to-DM triggers, shareability quotient, vertical 9:16 vs 16:9 duality.
+   - **Role 5 (Behavioral Psychologist & Neuroscientist):** Loss aversion framing, dopamine relief triggers, cognitive ease, status quo disruption, Zeigarnik narrative loops.
+   - **Role 6 (Target Persona Pragmatist):** Authentic Iranian business owner / CFO / merchant scrutiny; vetoes unrealism, tests for operational friction and cultural trust.
+2. **The 4-Phase Ideation Protocol:**
+   - **Phase 1 (60 Raw Angles):** 10 distinct ideas proposed per specialist.
+   - **Phase 2 (Dialectic Debate):** Direct cross-examination and peer critique across disciplines.
+   - **Phase 3 (Synthesis Matrix):** Merging cinematic tension, viral retention, and conversion architecture.
+   - **Phase 4 (Final Top 5 Selection):** Synthesizing the 5 definitive, production-ready masterclass concepts.
+
+---
+
+## D-146 — Neptune Masterclass Episode 3: Warehouse & Real-Time Weighted-Average COGS Intelligence Architecture — 2026-11-11 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+Executing Idea #1 selected by the user from the 6-Specialist Think Tank Protocol («شکارچی نشتی‌های پنهان انبار و کارخانه»). Traditional Iranian manufacturing and retail businesses suffer massive capital leakage through untracked warehouse waste, theft, inventory discrepancies, and inaccurate manual Cost of Goods Sold (COGS) calculations. Episode 3 provides a 6-scene masterclass experience proving Neptune's real-time weighted-average COGS formula, multi-warehouse transfers, barcode scanner workflows, and instant zero-risk 14-day trial activation.
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **PAR-SaaS 6-Scene Narrative Structure:**
+   - Scene 1: *«قیچی شدن سرمایه در تاریکی انبار»* (00:00–00:26) - Loss-aversion hook, sub-bass braam rumble, rolling metal shutter foley.
+   - Scene 2: *«کابوس انبارگردانی سنتی و توقف فروش»* (00:26–00:48) - 3-day retail shutdown, manual paper clipboard chaos, discrepancy alarm.
+   - Scene 3: *«راهکار نپتون: بهای تمام‌شده میانگین موزون»* (00:48–01:15) - Real-time COGS calculation per transaction, instant double-entry accounting posting.
+   - Scene 4: *«حواله بین‌انبارها و هشدار نقطه سفارش»* (01:15–01:42) - Multi-warehouse transfer in seconds, waste tracking with tracking codes, barcode scanner integration.
+   - Scene 5: *«تقابل قبل و بعد از استقرار نپتون»* (01:42–02:08) - Transformation from guesswork to penny-accurate stock valuation on mobile devices.
+   - Scene 6: *«دعوت به اقدام و تست رایگان ۱۴ روزه»* (02:08–02:35) - Frictionless download and Instagram/TikTok comment-to-DM loop (`💬 کلمه "انبار" را کامنت کنید`).
+2. **24 Local Broadcast Audio Tracks Across 4 Voices:**
+   - Generated in `public/audio/episodes/ep03/{voice}/scene_{01..06}.{wav|mp3}`.
+   - Ostad Ahmad Ganji (`ganji` - `fa_IR-ganji-medium.onnx` Piper) locked as primary authoritative voice.
+   - Amir Soodbakhsh (`amir`), Dilara Neural (`dilara`), and Farid Neural (`farid`) available via instant runtime switcher.
+3. **Interactive 3D WebGL Avatar Engine Integration:**
+   - Mounts `Neptune3DPresenterEngine` with Three.js, depth-displacement shaders, normal PBR lighting, and 360° mouse drag orbit (`public/episode-03.html`).
+   - 2.4Hz walking gait when Arash transitions across 6 precise stage coordinates, aiming his hand-held laser pointer directly at inventory tables, transfer buttons, and COGS KPI widgets.
+4. **Warehouse Sound Design & Web Audio SFX:**
+   - Industrial roll-up door shutter, sub-bass braam, laser barcode beep, digital calculation chimes, and perspective cyber-grid particle shockwaves.
+5. **Full System Routing & Cross-Episode Navigation:**
+   - Wired in `routes/web.php` (`/episode-03`), `app/Http/Controllers/LicenseController.php::episode03()`, and `vercel.json`.
+   - Updated header navigation across `episode-01.html`, `episode-02.html`, `episode-03.html`, `teaser.html`, and `video-tour.html`.
