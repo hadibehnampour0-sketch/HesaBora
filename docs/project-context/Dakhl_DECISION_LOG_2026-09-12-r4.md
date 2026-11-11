@@ -3279,3 +3279,27 @@ Following user feedback on Episode 1 and Episode 2 that the presenter character 
 6. **Live Synced Jaw & Lip Articulation:**
    - Web Audio frequency decomposition drives natural jaw drop, inner mouth cavity opening, and teeth visibility synchronized with Ostad Ahmad Ganji's voiceover.
    - Natural organic blinking every 3.2 to 5.6 seconds with dual-phase lid descent.
+
+---
+
+## D-144 — Neptune Interactive 3D WebGL Avatar Engine, Depth-Displacement Shaders & Spatial Presenter Orbit Standard — 2026-11-11 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+To elevate the visual fidelity and engagement of Neptune ERP's video presentations, walkthroughs, and masterclasses beyond flat 2D cutouts into true three-dimensional reality (*«ببین چطوری میتونی سه بعدیش کنی»*), Decision D-144 introduces the Interactive 3D WebGL Avatar Engine (`Neptune3DPresenterEngine`). Built on Three.js, hardware-accelerated GLSL depth-displacement vertex shaders, normal-mapped PBR lighting, and real-time audio-reactive jaw drop, Arash becomes a true 3D spatial entity that users can orbit and rotate in 360-degree space with their mouse or touch, while preserving 100% offline-first execution.
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **Hardware-Accelerated Three.js WebGL Core:**
+   - Dedicated WebGL canvas mount point (`#threeAvatarMount`) running Three.js (`/js/three.min.js`, 603KB bundled locally for 100% offline capability).
+   - High-density plane geometry (128×128 subdivisions, 16,384 vertices) dynamically displaced in Z-space according to an AI anatomical depth map (`/images/arash_depth_map.png`).
+2. **GLSL Depth-Displacement & Volumetric Extrusion:**
+   - Vertex shader performs volumetric Z-extrusion (`pos.z += depthVal * uDepthScale`) creating authentic human curves for nose, chin, chest, arms, and remote clicker.
+   - **Real-Time 3D Jaw Drop:** Speech audio energy dynamically depresses mouth vertices in 3D (`pos.y -= uMouthOpen * 0.08`, `pos.z -= uMouthOpen * 0.04`), opening the mouth cavity with depth realism.
+   - **3D Chest Breathing:** Trigonometric sinusoidal wave expands the chest in Z-depth with 0.22Hz natural cadence.
+3. **PBR Lighting & Neon-Cyan Cyber Rim:**
+   - Fragment shader calculates Key Studio Light diffuse reflection and a Fresnel electric cyan rim light (`#00f0ff`) grazing the 3D silhouette based on surface normal vectors (`/images/arash_normal_map.png`).
+4. **Interactive 3D Mouse Orbit & Parallax Gaze:**
+   - Users can click and drag on Arash to orbit and inspect him in 3D space ($\pm 45^\circ$ horizontal yaw, $\pm 15^\circ$ vertical pitch).
+   - Upon release, smooth spring damping restores his stage presentation orientation.
+   - Ambient mouse movements trigger subtle 3D gaze parallax, maintaining lifelike eye contact with the viewer.
+5. **3D Spatial Laser Raycasting:**
+   - The 3D position of the clicker diode in the avatar's hand (`clickerDiodeMesh.getWorldPosition()`) is projected directly into stage screen coordinates, ensuring the laser beam starts precisely from his hand in 3D space even as he rotates.

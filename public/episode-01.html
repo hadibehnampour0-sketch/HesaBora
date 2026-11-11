@@ -12,6 +12,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
     
+    <!-- Three.js 3D WebGL Engine & Neptune 3D Presenter (Decision D-144) -->
+    <script src="/js/three.min.js"></script>
+    <script src="/js/presenter-3d-engine.js"></script>
+    
     <script>
         tailwind.config = {
             theme: {
@@ -388,48 +392,30 @@
                 </div>
 
                 <!-- ========================================================= -->
-                <!-- LIFELIKE HUMAN TEACHER AVATAR: ARASH ON STAGE (DECISION D-143) -->
+                <!-- LIFELIKE 3D WEBGL TEACHER AVATAR: ARASH ON STAGE (DECISION D-144) -->
                 <!-- ========================================================= -->
                 <div id="presenterPodium" class="presenter-podium flex flex-col items-center pointer-events-auto" style="bottom: 8%; left: 8%;">
-                    <!-- Full Standing Keynote Teacher Rig -->
-                    <div id="humanTeacherFull" class="relative flex flex-col items-center select-none group cursor-pointer" onclick="togglePresenterMode()">
+                    <!-- Full 3D Interactive WebGL Presenter Stance -->
+                    <div id="humanTeacherFull" class="relative flex flex-col items-center select-none group">
                         
-                        <!-- 2.5D Skeletal Body Rig with Breathing, Stance & Ground Shadow -->
-                        <div id="humanBodyRig" class="relative human-body-stance transition-all duration-300">
+                        <!-- 3D WebGL Canvas & Ground Shadow Container -->
+                        <div id="presenter3DContainer" class="relative w-56 sm:w-68 md:w-80 h-72 sm:h-84 md:h-96">
                             <!-- Natural Elliptical Floor Shadow -->
                             <div class="human-ground-shadow"></div>
 
-                            <!-- Photorealistic Standing Keynote Presenter Cutout -->
-                            <img id="presenterCutoutImg" src="/images/arash_presenter_cutout.png" 
-                                 alt="استاد آرش - معلم هوش مالی نپتون ERP" 
-                                 class="h-64 sm:h-76 md:h-84 lg:h-92 w-auto object-contain filter drop-shadow-2xl transition-all duration-300 pointer-events-none select-none">
-
-                            <!-- Facial Micro-Rig (Natural Blinking Eyes & Synced Lip Articulation) -->
-                            <div id="humanFaceMicroRig" class="absolute pointer-events-none" style="top: 8%; left: 40%; width: 20%; height: 16%;">
-                                <!-- Organic Eyelid Blink Overlay -->
-                                <div id="avatarEyelids" class="absolute top-2 inset-x-2 h-2 rounded-full bg-slate-900/0 transition-all duration-75"></div>
-
-                                <!-- Dynamic SVG Mouth & Jaw Articulation Overlay -->
-                                <svg id="avatarMouth" class="absolute bottom-1 inset-x-0 mx-auto w-7 h-4 pointer-events-none transition-transform duration-75" viewBox="0 0 40 20" style="transform-origin: center bottom;">
-                                    <ellipse id="mouthShape" cx="20" cy="11" rx="14" ry="2" fill="#4c0519" stroke="#f43f5e" stroke-width="1.2" />
-                                    <rect id="teethShape" x="14" y="8" width="12" height="3" rx="1" fill="#ffffff" opacity="0.8" />
-                                </svg>
-                            </div>
-
-                            <!-- Futuristic Presenter Remote Clicker with Laser Diode -->
-                            <div id="clickerDiode" class="absolute w-2.5 h-2.5 rounded-full bg-cyan-400 border border-white shadow-lg shadow-cyan-400/90" style="top: 36.5%; right: 26%;">
-                                <span class="absolute inset-0 rounded-full bg-cyan-300 animate-ping opacity-75"></span>
-                            </div>
+                            <!-- Mount Point for Hardware-Accelerated Three.js WebGL Canvas -->
+                            <div id="threeAvatarMount" class="w-full h-full relative z-10"></div>
                         </div>
 
-                        <!-- Teacher Floating Nameplate & Action Switcher -->
+                        <!-- Teacher Floating 3D Badge & Interactive Controls -->
                         <div class="mt-1 flex items-center gap-2 px-3 py-1 rounded-full bg-slate-950/90 backdrop-blur-md border border-sky-500/50 text-[11px] text-white shadow-2xl transition-all group-hover:border-amber-400">
                             <span class="relative flex h-2 w-2">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
                             </span>
                             <span class="font-black text-white">استاد آرش</span>
-                            <span class="text-[9px] text-sky-400 font-mono">| معلم صحنه</span>
+                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-sky-950 border border-sky-700 text-sky-300 font-mono">3D WebGL</span>
+                            <span class="text-[9px] text-slate-400 hidden sm:inline">| چرخش ۳D با ماوس</span>
                             <button onclick="event.stopPropagation(); togglePresenterMode()" class="btn btn-ghost btn-circle btn-xs text-slate-400 hover:text-white" title="تغییر به کادر کوچک (PiP) یا مخفی‌سازی">
                                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
@@ -448,7 +434,7 @@
                                 <span class="font-bold text-white text-xs">استاد آرش</span>
                                 <span class="text-[9px] px-1.5 py-0.2 rounded bg-sky-950 border border-sky-700 text-sky-300 font-mono">PiP</span>
                             </div>
-                            <p class="text-[10px] text-slate-300">کلیک برای نمایش تمام‌قد روی صحنه</p>
+                            <p class="text-[10px] text-slate-300">کلیک برای نمایش سه‌بعدی روی صحنه</p>
                         </div>
                     </div>
                 </div>
@@ -1037,7 +1023,7 @@
         const cinematicVfx = new CinematicVFXEngine();
 
         // =========================================================================
-        // TEACHER AVATAR ENGINE: ARASH STAGE CHOREOGRAPHY (DECISIONS D-141, D-142 & D-143)
+        // TEACHER AVATAR ENGINE: ARASH 3D WEBGL CHOREOGRAPHY (DECISIONS D-141, D-142, D-143 & D-144)
         // =========================================================================
         let presenterDisplayMode = 'full'; // 'full' | 'pip' | 'hidden'
         function togglePresenterMode() {
@@ -1057,6 +1043,9 @@
                 if (podium) podium.classList.remove('hidden');
                 if (fullEl) fullEl.classList.remove('hidden');
                 if (pipEl) pipEl.classList.add('hidden');
+                if (talkingCharacter && talkingCharacter.presenter3D) {
+                    setTimeout(() => talkingCharacter.presenter3D.onResize(), 100);
+                }
             }
             if (talkingCharacter) talkingCharacter.updateLaserPointer();
         }
@@ -1064,36 +1053,44 @@
         class TalkingCharacterEngine {
             constructor() {
                 this.enabled = true;
-                this.isMinimized = false;
-                this.lastBlinkTime = 0;
-                this.blinkDuration = 180;
-                this.nextBlinkInterval = 3800;
-                this.mouthShape = document.getElementById('mouthShape');
-                this.teethShape = document.getElementById('teethShape');
-                this.avatarEyelids = document.getElementById('avatarEyelids');
-                this.bodyRig = document.getElementById('humanBodyRig');
-                this.clickerDiode = document.getElementById('clickerDiode');
                 this.podium = document.getElementById('presenterPodium');
                 this.freqData = new Uint8Array(256);
+                this.presenter3D = null;
 
-                // Smoothed Viseme Parameters
-                this.currentJawOpen = 0.1;
-                this.currentLipWidth = 14;
-                this.currentLipRound = 2;
-                this.currentHeadTilt = 0;
+                // Initialize Hardware-Accelerated 3D WebGL Avatar Engine
+                try {
+                    if (typeof Neptune3DPresenterEngine !== 'undefined') {
+                        this.presenter3D = new Neptune3DPresenterEngine('threeAvatarMount', {
+                            cutoutUrl: '/images/arash_presenter_cutout.png',
+                            depthMapUrl: '/images/arash_depth_map.png',
+                            normalMapUrl: '/images/arash_normal_map.png',
+                            depthScale: 0.55
+                        });
+                    }
+                } catch (e) {
+                    console.warn('[Neptune3D] Error mounting 3D avatar:', e);
+                }
             }
 
             walkTo(targetBottom, targetLeft, targetScale) {
                 if (!this.podium) return;
-                // Add walking gait bobbing animation during transition
                 this.podium.classList.add('is-walking');
                 this.podium.style.bottom = `${targetBottom}%`;
+                
+                const curLeft = parseFloat(this.podium.style.left) || 10;
                 this.podium.style.left = `${targetLeft}%`;
                 this.podium.style.transform = `scale(${targetScale})`;
 
-                // Remove walking gait after arrival (1.2s transition duration)
+                // 3D Stride Rotation: Turn body toward target coordinate
+                if (this.presenter3D) {
+                    this.presenter3D.targetRotation.y = (targetLeft > curLeft ? 0.35 : -0.35);
+                }
+
                 setTimeout(() => {
                     if (this.podium) this.podium.classList.remove('is-walking');
+                    if (this.presenter3D) {
+                        this.presenter3D.targetRotation.y = 0.0;
+                    }
                     this.updateLaserPointer();
                 }, 1200);
             }
@@ -1108,19 +1105,26 @@
 
                 if (scene && scene.teacherPosition && scene.teacherPosition.laser && this.enabled && presenterDisplayMode !== 'hidden') {
                     const stage = document.getElementById('videoStage');
-                    const emitter = document.getElementById('clickerDiode') || this.podium;
                     const targetFrame = document.getElementById('spotlightFrame');
 
-                    if (stage && emitter && targetFrame) {
+                    if (stage && targetFrame) {
                         const stageRect = stage.getBoundingClientRect();
-                        const emitterRect = emitter.getBoundingClientRect();
                         const frameRect = targetFrame.getBoundingClientRect();
 
-                        // Start point: Clicker remote diode on Arash's hand
-                        const startX = emitterRect.left + emitterRect.width / 2 - stageRect.left;
-                        const startY = emitterRect.top + emitterRect.height / 2 - stageRect.top;
+                        let startX = 0;
+                        let startY = 0;
 
-                        // End point: Center of highlighted spotlight
+                        // Precise 3D Laser Raycast from Clicker Diode in 3D Space
+                        const emitter3D = this.presenter3D ? this.presenter3D.getLaserEmitterScreenPosition() : null;
+                        if (emitter3D) {
+                            startX = emitter3D.x - stageRect.left;
+                            startY = emitter3D.y - stageRect.top;
+                        } else {
+                            const podiumRect = this.podium.getBoundingClientRect();
+                            startX = podiumRect.left + podiumRect.width * 0.7 - stageRect.left;
+                            startY = podiumRect.top + podiumRect.height * 0.4 - stageRect.top;
+                        }
+
                         const endX = frameRect.left + frameRect.width / 2 - stageRect.left;
                         const endY = frameRect.top + frameRect.height / 2 - stageRect.top;
 
@@ -1142,13 +1146,11 @@
             update(time) {
                 if (!this.enabled || !cinematicSound.analyser) return;
 
-                // 1. Frequency Analysis from Web Audio API
                 cinematicSound.analyser.getByteFrequencyData(this.freqData);
 
-                // Acoustic Bands
-                let lowEnergy = 0;   // Bins 2-8: 90Hz to 360Hz (fundamental pitch & jaw drop)
-                let midEnergy = 0;   // Bins 9-28: 400Hz to 1250Hz (formants A/O/E)
-                let highEnergy = 0;  // Bins 29-70: 1300Hz to 3100Hz (fricatives S/Z/F)
+                let lowEnergy = 0;
+                let midEnergy = 0;
+                let highEnergy = 0;
 
                 for (let i = 2; i <= 8; i++) lowEnergy += this.freqData[i];
                 for (let i = 9; i <= 28; i++) midEnergy += this.freqData[i];
@@ -1159,6 +1161,11 @@
                 highEnergy /= 42;
 
                 const overallVolume = (lowEnergy * 0.5 + midEnergy * 0.35 + highEnergy * 0.15) / 255;
+
+                // Feed frequency energy into 3D WebGL Avatar Engine
+                if (this.presenter3D) {
+                    this.presenter3D.updateSpeechAudio(overallVolume, lowEnergy, highEnergy);
+                }
 
                 // 2. Target Viseme Morphing
                 let targetJaw = 1.2;
