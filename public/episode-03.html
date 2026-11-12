@@ -21,6 +21,8 @@
     <script src="/js/three-animation-engine.js"></script>
     <!-- Photorealistic 3D Skeletal Character Simulator (Decision D-148) -->
     <script src="/js/photoreal-character-simulator.js"></script>
+    <!-- Kinetic UI Actions, Hormozi Typography & Micro-Pacing Engine (Decision D-151) -->
+    <script src="/js/kinetic-movie-engine.js"></script>
     
     <script>
         tailwind.config = {
@@ -522,6 +524,12 @@
 
                 <!-- Right: Aspect Ratio 16:9 vs 9:16 Switcher & Speeds -->
                 <div class="flex items-center gap-2">
+                    <!-- Kinetic Cinema Mode Toggle (D-151) -->
+                    <button onclick="toggleKineticCinemaMode()" id="kineticCinemaBtn" class="btn btn-sm bg-emerald-950/80 border-emerald-500/70 text-emerald-300 rounded-xl text-xs gap-1.5 shadow-lg shadow-emerald-900/30 hover:bg-emerald-900" title="فعال/غیرفعال‌سازی ماوس مجازی، تایپوگرافی کینتیک هرمزی و دکوپاژ پلان‌های خرد">
+                        <span>⚡</span>
+                        <span id="kineticCinemaLabel">سینمایی کینتیک (فعال)</span>
+                    </button>
+
                     <!-- Factory Warehouse Cam Toggle (User Directive) -->
                     <button onclick="toggleFactoryCamMode()" id="factoryCamBtn" class="btn btn-sm btn-outline border-amber-600/70 text-amber-300 rounded-xl text-xs gap-1.5 hover:bg-amber-950/40" title="سوییچ بین دوربین انبار کارخانه و داشبورد نرم‌افزار نپتون">
                         <span>🏭</span>
@@ -1585,6 +1593,11 @@
             audioElement.src = audioPath;
             audioElement.load();
 
+            // 9. Load Kinetic Movie Engine Choreography (Decision D-151)
+            if (window.kineticMovieEngine && isKineticModeActive) {
+                window.kineticMovieEngine.loadSceneChoreography(currentSceneIndex, scene);
+            }
+
             if (autoPlay) {
                 audioElement.play().then(() => {
                     setPlayingState(true);
@@ -1768,8 +1781,45 @@
             }
         });
 
+        // Kinetic Cinema Engine Controls (Decision D-151)
+        let isKineticModeActive = true;
+
+        function toggleKineticCinemaMode() {
+            isKineticModeActive = !isKineticModeActive;
+            const btn = document.getElementById('kineticCinemaBtn');
+            const label = document.getElementById('kineticCinemaLabel');
+
+            if (isKineticModeActive) {
+                if (btn) btn.className = "btn btn-sm bg-emerald-950/80 border-emerald-500/70 text-emerald-300 rounded-xl text-xs gap-1.5 shadow-lg shadow-emerald-900/30 hover:bg-emerald-900";
+                if (label) label.innerText = "سینمایی کینتیک (فعال)";
+                if (window.kineticMovieEngine) {
+                    window.kineticMovieEngine.enabled = true;
+                    window.kineticMovieEngine.loadSceneChoreography(currentSceneIndex, EPISODE_SCENES[currentSceneIndex]);
+                }
+                cinematicSound.playChime();
+            } else {
+                if (btn) btn.className = "btn btn-sm btn-outline border-slate-700 text-slate-400 rounded-xl text-xs gap-1.5 hover:border-emerald-500 hover:text-emerald-300";
+                if (label) label.innerText = "سینمایی کینتیک (غیرفعال)";
+                if (window.kineticMovieEngine) {
+                    window.kineticMovieEngine.enabled = false;
+                    window.kineticMovieEngine.cursor.reset();
+                }
+                cinematicSound.playSwoosh();
+            }
+        }
+
         // Auto Initialize First Scene on Load
         window.addEventListener('DOMContentLoaded', () => {
+            // Initialize Kinetic Movie Engine (Decision D-151)
+            if (typeof NeptuneKineticMovieEngine !== 'undefined') {
+                window.kineticMovieEngine = new NeptuneKineticMovieEngine({
+                    stageId: 'videoStage',
+                    imageId: 'stageImage',
+                    audioElement: audioElement,
+                    soundEngine: cinematicSound
+                });
+            }
+
             if (window.neptuneSceneSelector) {
                 window.neptuneSceneSelector.renderBlueprintInspector('blueprintInspectorMount', EPISODE_SCENES);
             }

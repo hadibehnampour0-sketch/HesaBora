@@ -21,6 +21,8 @@
     <script src="/js/three-animation-engine.js"></script>
     <!-- Photorealistic 3D Skeletal Character Simulator (Decision D-148) -->
     <script src="/js/photoreal-character-simulator.js"></script>
+    <!-- Kinetic UI Actions, Hormozi Typography & Micro-Pacing Engine (Decision D-151) -->
+    <script src="/js/kinetic-movie-engine.js"></script>
     
     <script>
         tailwind.config = {
@@ -501,6 +503,12 @@
 
                 <!-- Right: Camera Mode Switcher, Aspect Ratio & Speeds -->
                 <div class="flex items-center gap-2">
+                    <!-- Kinetic Cinema Mode Toggle (D-151) -->
+                    <button onclick="toggleKineticCinemaMode()" id="kineticCinemaBtn" class="btn btn-sm bg-cyan-950/80 border-cyan-500/70 text-cyan-300 rounded-xl text-xs gap-1.5 shadow-lg shadow-cyan-900/30 hover:bg-cyan-900" title="فعال/غیرفعال‌سازی ماوس مجازی، تایپوگرافی کینتیک هرمزی و دکوپاژ پلان‌های خرد">
+                        <span>⚡</span>
+                        <span id="kineticCinemaLabel">سینمایی کینتیک (فعال)</span>
+                    </button>
+
                     <!-- Tax Office Cam Toggle -->
                     <button onclick="toggleTaxCamMode()" id="taxCamBtn" class="btn btn-sm btn-outline border-indigo-600/70 text-indigo-300 rounded-xl text-xs gap-1.5 hover:bg-indigo-950/40" title="سوییچ بین دوربین اتاق اسناد مالیاتی و داشبورد سامانه مودیان نپتون">
                         <span>📁</span>
@@ -674,6 +682,58 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Kinetic Movie & UI Actions Studio Panel (Decision D-151) -->
+            <div class="collapse collapse-arrow bg-slate-900/80 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-xl">
+                <input type="checkbox" id="kineticStudioToggleCheckbox" checked /> 
+                <div class="collapse-title text-sm font-black text-cyan-400 flex items-center gap-2">
+                    <span>⚡ استودیوی موشن کینتیک، ماوس مجازی، تایپوگرافی هرمزی و پلان‌های خرد (Kinetic Commercial Engine - D-151)</span>
+                    <span class="badge badge-accent badge-xs font-mono">Micro-Pacing & Kinetic UI</span>
+                </div>
+                <div class="collapse-content text-xs text-slate-300 space-y-3 pt-2">
+                    <p class="leading-relaxed">
+                        این موتور با حل دائمی مشکل «اسلایدشو با صدا»، تصاویر نرم‌افزاری را به یک فیلم ویدیویی تبلیغاتی پرانرژی تبدیل می‌کند: ماوس مجازی هوشمند با شبیه‌سازی کلیک، موج‌های ریپل نورانی، تایپ زنده شناسه ۲۲ رقمی، شمارنده مالیاتی زنده، زیرنویس کلمه‌به‌کلمه ضربه‌ای سبک هرمزی، دکوپاژ پلان‌های ۲.۵ تا ۴ ثانیه‌ای (Crash Zoom & Ken Burns)، و اتمسفر نوری متحرک با غبار معلق سینمایی.
+                    </p>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1 font-mono text-[11px]">
+                        <div class="p-2 rounded-xl bg-slate-950 border border-cyan-800/40">
+                            <span class="text-slate-400 block text-[10px]">ماوس مجازی و اکشن‌ها:</span>
+                            <span class="text-cyan-300 font-bold">Bezier + Ripple + Clicks</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-950 border border-cyan-800/40">
+                            <span class="text-slate-400 block text-[10px]">تایپوگرافی کینتیک:</span>
+                            <span class="text-amber-300 font-bold">Hormozi Word Pop 1.3x</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-950 border border-cyan-800/40">
+                            <span class="text-slate-400 block text-[10px]">ریتم پلان‌های خرد:</span>
+                            <span class="text-emerald-400 font-bold">Micro-Cuts 2.5s-4.0s</span>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-950 border border-cyan-800/40">
+                            <span class="text-slate-400 block text-[10px]">اتمسفر ویدیویی:</span>
+                            <span class="text-purple-300 font-bold">Light Rays + Laser Scan</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 pt-2 font-bold">
+                        <button onclick="testKineticAction('click')" class="btn btn-xs bg-cyan-700 hover:bg-cyan-600 text-white border-none rounded-lg gap-1">
+                            <span>🖱️</span> تست کلیک ماوس و ریپل
+                        </button>
+                        <button onclick="testKineticAction('type')" class="btn btn-xs bg-teal-700 hover:bg-teal-600 text-white border-none rounded-lg gap-1">
+                            <span>⌨️</span> تست تایپ شناسه ۲۲ رقمی
+                        </button>
+                        <button onclick="testKineticAction('ticker')" class="btn btn-xs bg-rose-700 hover:bg-rose-600 text-white border-none rounded-lg gap-1">
+                            <span>📈</span> تست شمارنده ۲۸۰ میلیونی
+                        </button>
+                        <button onclick="testKineticAction('zeroTicker')" class="btn btn-xs bg-emerald-700 hover:bg-emerald-600 text-white border-none rounded-lg gap-1">
+                            <span>🛡️</span> تست صفر شدن جریمه
+                        </button>
+                        <button onclick="testKineticAction('shake')" class="btn btn-xs bg-amber-700 hover:bg-amber-600 text-white border-none rounded-lg gap-1">
+                            <span>💥</span> لرزش دوربین (Crash Shake)
+                        </button>
+                        <button onclick="testKineticAction('toast')" class="btn btn-xs bg-indigo-700 hover:bg-indigo-600 text-white border-none rounded-lg gap-1">
+                            <span>🚀</span> تست بنر ارسال موفق
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </main>
@@ -702,7 +762,23 @@
                 arrow: { x: 50, y: 40 },
                 zoom: 1.05,
                 hideTeacher: true,
-                teacherPosition: { bottom: 12, left: 10, scale: 1.0, laser: false }
+                teacherPosition: { bottom: 12, left: 10, scale: 1.0, laser: false },
+                kineticChoreography: {
+                    microShots: [
+                        { start: 0, end: 4.2, shot: 'WIDE_ESTABLISH', zoom: 1.05, originX: 50, originY: 50, label: 'EWS // ESTABLISHING BOARDROOM' },
+                        { start: 4.2, end: 9.0, shot: 'CRASH_ZOOM_IN', zoom: 1.35, originX: 48, originY: 38, label: 'CU // CRASH FOCUS ARTICLE 22' },
+                        { start: 9.0, end: 15.5, shot: 'SLOW_PAN_RIGHT', zoom: 1.28, originX: 65, originY: 42, label: 'MCU // PANNING TAX AUDIT SHEET' },
+                        { start: 15.5, end: 20.8, shot: 'PUNCH_IN_SEAL', zoom: 1.45, originX: 42, originY: 35, label: 'ECU // PUNCH-IN RED PENALTY SEAL' },
+                        { start: 20.8, end: 26.0, shot: 'PULL_BACK', zoom: 1.10, originX: 50, originY: 50, label: 'MLS // WIDE RE-ESTABLISH HERO' }
+                    ],
+                    uiActions: [
+                        { time: 1.5, type: 'MOVE', x: 30, y: 35, duration: 800 },
+                        { time: 4.2, type: 'CLICK', x: 48, y: 40, label: 'ماده ۲۲ قانون پایانه‌ها' },
+                        { time: 6.0, type: 'TICKER', from: 0, to: 280000000, duration: 2200, x: 50, y: 32, prefix: '🚨 جریمه ماده ۲۲:', suffix: ' ریال', isAlert: true },
+                        { time: 14.5, type: 'MOVE', x: 62, y: 48, duration: 900 },
+                        { time: 16.5, type: 'CLICK', x: 62, y: 48, label: 'عدم ارسال صورتحساب' }
+                    ]
+                }
             },
             {
                 id: "scene_02",
@@ -719,7 +795,21 @@
                 arrow: { x: 45, y: 45 },
                 zoom: 1.14,
                 hideTeacher: false,
-                teacherPosition: { bottom: 10, left: 45, scale: 1.10, laser: true }
+                teacherPosition: { bottom: 10, left: 45, scale: 1.10, laser: true },
+                kineticChoreography: {
+                    microShots: [
+                        { start: 0, end: 4.5, shot: 'WIDE_BOARDROOM', zoom: 1.10, originX: 50, originY: 50, label: 'MLS // MEDIATOR CHAOS' },
+                        { start: 4.5, end: 10.0, shot: 'CRASH_ZOOM_ERROR', zoom: 1.38, originX: 45, originY: 42, label: 'CU // SERVER 504 TIMEOUT' },
+                        { start: 10.0, end: 16.5, shot: 'SLOW_PAN_LEFT', zoom: 1.26, originX: 30, originY: 48, label: 'MCU // TRACKING UNRESOLVED INVOICES' },
+                        { start: 16.5, end: 22.0, shot: 'PULL_BACK_PAN', zoom: 1.15, originX: 55, originY: 52, label: 'MLS // AUDIT FRUSTRATION' }
+                    ],
+                    uiActions: [
+                        { time: 1.8, type: 'MOVE', x: 40, y: 40, duration: 750 },
+                        { time: 4.8, type: 'CLICK', x: 45, y: 45, label: 'تلاش مجدد برای ارسال به معتمد...' },
+                        { time: 6.5, type: 'BANNER', title: 'خطای قطعی سرور معتمد', desc: 'کد ۵۰۴ Gateway Timeout - عدم دریافت پاسخ', tone: 'alert', duration: 3200 },
+                        { time: 10.5, type: 'TICKER', from: 10000000, to: 65000000, duration: 1800, x: 48, y: 35, prefix: '💸 هزینه سالانه اشتراک معتمد:', suffix: ' ریال', isAlert: true }
+                    ]
+                }
             },
             {
                 id: "scene_03",
@@ -736,7 +826,23 @@
                 arrow: { x: 70, y: 50 },
                 zoom: 1.18,
                 hideTeacher: false,
-                teacherPosition: { bottom: 14, left: 74, scale: 1.0, laser: true }
+                teacherPosition: { bottom: 14, left: 74, scale: 1.0, laser: true },
+                kineticChoreography: {
+                    microShots: [
+                        { start: 0, end: 4.8, shot: 'WIDE_TAX_CENTER', zoom: 1.12, originX: 50, originY: 50, label: 'EWS // NEPTUNE DIRECT ENGINE' },
+                        { start: 4.8, end: 11.2, shot: 'PUNCH_PRIVATE_KEY', zoom: 1.36, originX: 72, originY: 35, label: 'CU // RSA DIGITAL SIGNATURE' },
+                        { start: 11.2, end: 18.0, shot: 'TRACKING_PAN', zoom: 1.25, originX: 52, originY: 55, label: 'MCU // ONE-CLICK TRANSMISSION' },
+                        { start: 18.0, end: 27.0, shot: 'WIDE_SUCCESS', zoom: 1.15, originX: 50, originY: 50, label: 'MLS // DIRECT INTEGRATION' }
+                    ],
+                    uiActions: [
+                        { time: 2.0, type: 'MOVE', x: 68, y: 35, duration: 800 },
+                        { time: 5.0, type: 'CLICK', x: 72, y: 38, label: 'کلید خصوصی Private Key' },
+                        { time: 7.2, type: 'BANNER', title: 'تولید خودکار امضای دیجیتال CSR', desc: 'رمزگذاری استاندارد RSA با گواهی مودیان', tone: 'success', duration: 3000 },
+                        { time: 12.0, type: 'MOVE', x: 65, y: 62, duration: 800 },
+                        { time: 14.2, type: 'CLICK', x: 65, y: 62, label: 'ارسال مستقیم به کارپوشه (۱ کلیک)' },
+                        { time: 16.5, type: 'BANNER', title: 'ارسال ۱۰۰٪ مستقیم و رایگان', desc: 'صورتحساب بدون واسطه در کارپوشه دارایی ثبت شد', tone: 'success', duration: 3500 }
+                    ]
+                }
             },
             {
                 id: "scene_04",
@@ -753,7 +859,22 @@
                 arrow: { x: 40, y: 55 },
                 zoom: 1.20,
                 hideTeacher: false,
-                teacherPosition: { bottom: 12, left: 18, scale: 1.0, laser: true }
+                teacherPosition: { bottom: 12, left: 18, scale: 1.0, laser: true },
+                kineticChoreography: {
+                    microShots: [
+                        { start: 0, end: 4.5, shot: 'WIDE_VALIDATION', zoom: 1.15, originX: 50, originY: 50, label: 'MLS // INVOICE AUDIT GRID' },
+                        { start: 4.5, end: 11.5, shot: 'CRASH_TAX_ID', zoom: 1.42, originX: 38, originY: 52, label: 'CU // 22-DIGIT UNIQUE TAX ID' },
+                        { start: 11.5, end: 18.5, shot: 'SLOW_PAN_VAT', zoom: 1.30, originX: 55, originY: 48, label: 'MCU // LIVE VAT 10% RECONCILIATION' },
+                        { start: 18.5, end: 27.0, shot: 'PULL_BACK_CLEAN', zoom: 1.16, originX: 50, originY: 50, label: 'MLS // REAL-TIME KARPOOSHEH SYNC' }
+                    ],
+                    uiActions: [
+                        { time: 1.8, type: 'MOVE', x: 38, y: 50, duration: 750 },
+                        { time: 3.8, type: 'TYPE', text: 'TAX-1102938475628192038475', x: 42, y: 52, duration: 1500 },
+                        { time: 9.5, type: 'MOVE', x: 55, y: 58, duration: 700 },
+                        { time: 11.2, type: 'CLICK', x: 55, y: 58, label: 'استعلام زنده کارپوشه' },
+                        { time: 13.0, type: 'BANNER', title: 'وضعیت: تایید نهایی در کارپوشه', desc: 'شناسه ۲۲ رقمی صادر و ارزش افزوده تطبیق داده شد', tone: 'success', duration: 3200 }
+                    ]
+                }
             },
             {
                 id: "scene_05",
@@ -770,7 +891,21 @@
                 arrow: { x: 50, y: 38 },
                 zoom: 1.18,
                 hideTeacher: false,
-                teacherPosition: { bottom: 12, left: 62, scale: 1.05, laser: true }
+                teacherPosition: { bottom: 12, left: 62, scale: 1.05, laser: true },
+                kineticChoreography: {
+                    microShots: [
+                        { start: 0, end: 4.8, shot: 'WIDE_DASHBOARD', zoom: 1.14, originX: 50, originY: 50, label: 'EWS // EXECUTIVE FINANCIAL DASHBOARD' },
+                        { start: 4.8, end: 11.5, shot: 'PUNCH_ZERO_RISK', zoom: 1.38, originX: 52, originY: 36, label: 'CU // ZERO PENALTY AUDIT' },
+                        { start: 11.5, end: 18.0, shot: 'SLOW_PAN_REVENUE', zoom: 1.25, originX: 68, originY: 48, label: 'MCU // TOTAL COMPLIANCE REPORT' },
+                        { start: 18.0, end: 26.0, shot: 'HERO_PULL_BACK', zoom: 1.15, originX: 50, originY: 50, label: 'MLS // PEACE OF MIND' }
+                    ],
+                    uiActions: [
+                        { time: 1.8, type: 'MOVE', x: 45, y: 36, duration: 800 },
+                        { time: 4.2, type: 'CLICK', x: 50, y: 38, label: 'تراز پاک مالیاتی و تطبیق دفاتر' },
+                        { time: 5.8, type: 'TICKER', from: 280000000, to: 0, duration: 2400, x: 50, y: 32, prefix: '🛡️ مانده جرایم مالیاتی:', suffix: ' ریال (صفر مطلق)', isAlert: false },
+                        { time: 12.5, type: 'BANNER', title: 'خواب راحت مدیران مالی', desc: 'تمام فاکتورهای فروش روزانه همگام و تسویه شد', tone: 'success', duration: 3500 }
+                    ]
+                }
             },
             {
                 id: "scene_06",
@@ -787,7 +922,21 @@
                 arrow: { x: 50, y: 50 },
                 zoom: 1.05,
                 hideTeacher: true,
-                teacherPosition: { bottom: 15, left: 36, scale: 1.15, laser: false }
+                teacherPosition: { bottom: 15, left: 36, scale: 1.15, laser: false },
+                kineticChoreography: {
+                    microShots: [
+                        { start: 0, end: 4.5, shot: 'WIDE_HERO_KEYNOTE', zoom: 1.05, originX: 50, originY: 50, label: 'EWS // ARASH CLOSING KEYNOTE' },
+                        { start: 4.5, end: 11.0, shot: 'CRASH_CTA_BUTTON', zoom: 1.30, originX: 50, originY: 48, label: 'CU // FREE 14-DAY TRIAL OFFER' },
+                        { start: 11.0, end: 18.5, shot: 'COMMENT_PROMPT', zoom: 1.22, originX: 48, originY: 52, label: 'MCU // VIRAL COMMENT HOOK «مودیان»' },
+                        { start: 18.5, end: 27.0, shot: 'EPIC_PULL_BACK', zoom: 1.08, originX: 50, originY: 50, label: 'MLS // NEPTUNE.IR LOGO RESOLUTION' }
+                    ],
+                    uiActions: [
+                        { time: 2.0, type: 'MOVE', x: 45, y: 48, duration: 800 },
+                        { time: 4.5, type: 'CLICK', x: 50, y: 50, label: 'شروع تست رایگان ۱۴ روزه' },
+                        { time: 7.0, type: 'TYPE', text: 'مودیان', x: 50, y: 56, duration: 900 },
+                        { time: 10.5, type: 'BANNER', title: 'کد هدیه فعال شد', desc: 'لینک سامانه نپتون به دایرکت / پیامک شما ارسال شد', tone: 'success', duration: 4000 }
+                    ]
+                }
             }
         ];
 
@@ -1550,6 +1699,11 @@
             audioElement.src = audioPath;
             audioElement.load();
 
+            // 9. Load Kinetic Movie Engine Choreography (Decision D-151)
+            if (window.kineticMovieEngine && isKineticModeActive) {
+                window.kineticMovieEngine.loadSceneChoreography(currentSceneIndex, scene);
+            }
+
             if (autoPlay) {
                 audioElement.play().then(() => {
                     setPlayingState(true);
@@ -1731,8 +1885,68 @@
             }
         });
 
+        // Kinetic Cinema Engine Controls & Interactive Testing (Decision D-151)
+        let isKineticModeActive = true;
+
+        function toggleKineticCinemaMode() {
+            isKineticModeActive = !isKineticModeActive;
+            const btn = document.getElementById('kineticCinemaBtn');
+            const label = document.getElementById('kineticCinemaLabel');
+
+            if (isKineticModeActive) {
+                if (btn) btn.className = "btn btn-sm bg-cyan-950/80 border-cyan-500/70 text-cyan-300 rounded-xl text-xs gap-1.5 shadow-lg shadow-cyan-900/30 hover:bg-cyan-900";
+                if (label) label.innerText = "سینمایی کینتیک (فعال)";
+                if (window.kineticMovieEngine) {
+                    window.kineticMovieEngine.enabled = true;
+                    window.kineticMovieEngine.loadSceneChoreography(currentSceneIndex, EPISODE_SCENES[currentSceneIndex]);
+                }
+                cinematicSound.playChime();
+            } else {
+                if (btn) btn.className = "btn btn-sm btn-outline border-slate-700 text-slate-400 rounded-xl text-xs gap-1.5 hover:border-cyan-500 hover:text-cyan-300";
+                if (label) label.innerText = "سینمایی کینتیک (غیرفعال)";
+                if (window.kineticMovieEngine) {
+                    window.kineticMovieEngine.enabled = false;
+                    window.kineticMovieEngine.cursor.reset();
+                }
+                cinematicSound.playSwoosh();
+            }
+        }
+
+        function testKineticAction(type) {
+            if (!window.kineticMovieEngine) return;
+            const engine = window.kineticMovieEngine;
+
+            if (type === 'click') {
+                engine.cursor.clickAt(50, 45, 'تست کلیک سامانه نپتون', () => {
+                    cinematicSound.playChime();
+                });
+            } else if (type === 'type') {
+                engine.cursor.typeText('TAX-1102938475628192038475', 50, 48, 1400);
+            } else if (type === 'ticker') {
+                engine.cursor.runTicker(0, 280000000, 2000, 50, 35, '🚨 جریمه ماده ۲۲:', ' ریال', true);
+            } else if (type === 'zeroTicker') {
+                engine.cursor.runTicker(280000000, 0, 2200, 50, 35, '🛡️ مانده جریمه مالیاتی:', ' ریال (صفر شد!)', false);
+            } else if (type === 'shake') {
+                engine.cameraPacer.triggerShake(9, 20);
+                cinematicSound.playBraam();
+            } else if (type === 'toast') {
+                engine.cursor.showToastBanner('صورتحساب با موفقیت ارسال شد', 'شناسه یکتای مالیاتی ۲۲ رقمی با موفقیت در کارپوشه ثبت شد', 'success', 3500);
+                cinematicSound.playChime();
+            }
+        }
+
         // Auto Initialize First Scene on Load
         window.addEventListener('DOMContentLoaded', () => {
+            // Initialize Kinetic Movie Engine (Decision D-151)
+            if (typeof NeptuneKineticMovieEngine !== 'undefined') {
+                window.kineticMovieEngine = new NeptuneKineticMovieEngine({
+                    stageId: 'videoStage',
+                    imageId: 'stageImage',
+                    audioElement: audioElement,
+                    soundEngine: cinematicSound
+                });
+            }
+
             if (window.neptuneSceneSelector) {
                 window.neptuneSceneSelector.renderBlueprintInspector('blueprintInspectorMount', EPISODE_SCENES);
             }

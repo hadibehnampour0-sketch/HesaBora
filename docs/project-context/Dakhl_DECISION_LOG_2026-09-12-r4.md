@@ -3454,4 +3454,30 @@ To empower the AI pair programmer with permanent end-to-end 3D animation authori
 5. **Runtime Engine Integration:**
    - Implemented in `public/js/three-animation-engine.js`, wired into `NeptunePhotorealCharacterSimulator`, with interactive controls deployed in `public/episode-03.html`.
 
+---
+
+## D-151 — Kinetic UI Actions, Hormozi/Apple Dynamic Typography, Micro-Shot Camera Pacing & Environmental Atmospheric Video Standard — 2026-11-12 — APPROVED (Owner Directive)
+
+### 1. Context & Business Need
+To eliminate the static "slideshow with audio" impression and elevate commercial presentations to the dynamic pacing of world-class video commercials (Apple Keynotes, Sandwich Video, Alex Hormozi typography), Decision D-151 establishes the 4 cinematic motion pillars (*«استاندارد جامع موشن‌گرافیک کینتیک، تایپوگرافی پویای هرمزی/اپل، ریتم پلان‌های خرد و ویدیو-موشن پیوسته اتمسفریک»*).
+
+### 2. Concrete Architectural Decisions & Golden Rules
+1. **Virtual Animated Cursor & Kinetic UI Simulator:**
+   - Smooth Bézier/spring path interpolation with natural deceleration.
+   - Interactive click actions with scale depression, radial neon expanding ripple (`#kineticClickRipple`), and mechanical mouse click audio feedback.
+   - Real-time character-by-character typing into tax/search fields with tactile typing audio.
+   - Dynamic numeric tickers (rolling up penalties during crisis, and dropping to zero upon solution activation).
+2. **Hormozi / Apple-Style Kinetic Typography:**
+   - Real-time word-by-word active highlighting synchronized with audio speech timestamps.
+   - Power words scale up (1.25x–1.35x) with neon yellow/amber glowing borders and drop-shadows.
+   - Floating dynamic emojis (💥, 🚨, 💸, 🛡️, ⚡, ❌, ✅, 💰) pop with elastic spring physics above focal impact words.
+3. **Micro-Shot Camera Pacing (Ken Burns & Crash Zooms):**
+   - No camera freeze exceeds 4.0 seconds; every 25-second scene is choreographed into 4–6 micro-shots (EWS, Crash Zoom CU, Slow Pan Scan, Punch-In ECU, Pull-Back MLS).
+   - Dynamic camera shake on impact events.
+4. **Continuous Environmental Atmospheric Motion:**
+   - 60FPS volumetric light sweep, floating 3D bokeh dust motes, and continuous high-tech scanning laser bar ensure the canvas remains perpetually alive.
+5. **Runtime Engine Delivery:**
+   - Delivered in `public/js/kinetic-movie-engine.js`, fully integrated into `public/episode-04.html` and `public/episode-03.html`.
+
+
 
